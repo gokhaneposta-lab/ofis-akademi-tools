@@ -34,6 +34,12 @@ export default function Home() {
               >
                 Eğitim içeriklerini gör
               </a>
+              <a
+                href="/tools"
+                className="inline-flex items-center justify-center rounded-full border border-slate-700 px-6 py-3 text-sm font-medium text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/60"
+              >
+                Excel Araçları
+              </a>
             </div>
 
             <div className="flex flex-wrap gap-4 text-xs text-slate-400">

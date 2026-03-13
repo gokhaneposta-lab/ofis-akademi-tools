@@ -35,9 +35,9 @@ export default function ToolsHub() {
               Excel Araçları
             </h1>
             <p className="max-w-xl text-sm text-slate-300 sm:text-base">
-              Ofis Akademi için pratik veri araçları. Ad soyad ayırma, CSV
-              verilerini düzenleme ve listeleri birkaç tıkla dönüştürme
-              işlemlerini burada bulabilirsiniz.
+              Excel çalışmalarınızı hızlandıran ücretsiz araçlar. Ad soyad
+              ayırma, CSV verilerini sütunlara bölme ve SQL veya Excel için
+              liste birleştirme gibi işlemleri saniyeler içinde yapabilirsiniz.
             </p>
           </div>
         </header>

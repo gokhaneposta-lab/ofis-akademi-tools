@@ -1,4 +1,43 @@
 "use client";
+
+import Link from "next/link";
+
+const trainingLevels = [
+  {
+    slug: "temel",
+    badge: "SEVİYE 1 · TEMEL",
+    title: "Hızlı Başlangıç & Temel Beceriler",
+    bullets: [
+      "Temel formüller: TOPLA, ORTALAMA, MİN, MAKS, EĞER",
+      "Tablo yapısı, veri temizleme ve filtreleme",
+      "Kısayollar ve hızlı biçimlendirme",
+    ],
+    accent: false,
+  },
+  {
+    slug: "orta",
+    badge: "SEVİYE 2 · ORTA",
+    title: "İşte Gerçekten Kullandığın Formüller",
+    bullets: [
+      "DÜŞEYARA / XLOOKUP, İÇİÇE EĞER, VE, VEYA",
+      "Koşullu toplama & sayma: EĞERSAY, ÇOKETOPLA, ÇOKEĞERSAY",
+      "Metin fonksiyonları: SAĞ, SOL, PARÇAAL, BİRLEŞTİR, METNEBİRLEŞTİR",
+    ],
+    accent: true,
+  },
+  {
+    slug: "ileri",
+    badge: "SEVİYE 3 · İLERİ",
+    title: "PivotTable, Dashboard & Veri Analizi",
+    bullets: [
+      "PivotTable ile özet raporlar ve dilimleyiciler",
+      "Grafikler, mini grafikler ve gösterge panelleri",
+      "Gelişmiş fonksiyonlar: FİLTRE, SIRALA, BENZERSİZ, DÜŞEYARA+EĞERHATA",
+    ],
+    accent: false,
+  },
+] as const;
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50">
@@ -154,47 +193,35 @@ export default function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <div className="flex flex-col gap-2 rounded-2xl bg-slate-950/70 p-5 ring-1 ring-slate-800">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
-                Seviye 1 · Temel
-              </p>
-              <h3 className="text-sm font-semibold text-slate-50">
-                Hızlı Başlangıç & Temel Beceriler
-              </h3>
-              <ul className="mt-2 space-y-1.5 text-xs text-slate-300">
-                <li>- Arayüz, kısayollar, hızlı formatlama</li>
-                <li>- Temel formüller: TOPLA, ORTALAMA, EĞER</li>
-                <li>- Veri temizleme & filtreleme</li>
-              </ul>
-            </div>
-
-            <div className="flex flex-col gap-2 rounded-2xl bg-slate-950/80 p-5 ring-1 ring-emerald-500/60">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
-                Seviye 2 · Uygulamalı
-              </p>
-              <h3 className="text-sm font-semibold text-slate-50">
-                İşte Gerçekten Kullandığın Formüller
-              </h3>
-              <ul className="mt-2 space-y-1.5 text-xs text-slate-300">
-                <li>- DÜŞEYARA/XLOOKUP, İÇİÇE EĞER, METİN fonksiyonları</li>
-                <li>- Tarih, saat ve finans fonksiyonları</li>
-                <li>- Hata yakalama ve sağlam modeller kurma</li>
-              </ul>
-            </div>
-
-            <div className="flex flex-col gap-2 rounded-2xl bg-slate-950/70 p-5 ring-1 ring-slate-800">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
-                Seviye 3 · Analiz
-              </p>
-              <h3 className="text-sm font-semibold text-slate-50">
-                PivotTable, Dashboard & Veri Analizi
-              </h3>
-              <ul className="mt-2 space-y-1.5 text-xs text-slate-300">
-                <li>- Tablo yapısı, gelişmiş sıralama & filtreleme</li>
-                <li>- PivotTable ile özet raporlar</li>
-                <li>- Grafikler & görsel gösterge panelleri</li>
-              </ul>
-            </div>
+            {trainingLevels.map((level) => (
+              <Link
+                key={level.slug}
+                href={`/egitimler/${level.slug}`}
+                className={`group flex flex-col gap-2 rounded-2xl p-5 ring-1 transition hover:-translate-y-0.5 hover:ring-emerald-400/70 ${
+                  level.accent
+                    ? "bg-slate-950/80 ring-emerald-500/60 shadow-lg shadow-emerald-900/30"
+                    : "bg-slate-950/70 ring-slate-800 hover:bg-slate-900"
+                }`}
+              >
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
+                  {level.badge}
+                </p>
+                <h3 className="text-sm font-semibold text-slate-50">
+                  {level.title}
+                </h3>
+                <ul className="mt-2 space-y-1.5 text-xs text-slate-300">
+                  {level.bullets.map((item) => (
+                    <li key={item} className="flex gap-1.5">
+                      <span className="mt-[3px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-400" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <span className="mt-3 text-[11px] font-medium text-emerald-300 group-hover:text-emerald-200">
+                  Seviye detaylarını gör →
+                </span>
+              </Link>
+            ))}
           </div>
         </section>
 

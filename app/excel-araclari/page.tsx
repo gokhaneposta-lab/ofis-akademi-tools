@@ -6,17 +6,17 @@ import Link from "next/link";
 const tools = [
   {
     name: "Ad Soyad Ayırıcı",
-    href: "/tools/ad-soyad-ayir",
+    href: "/excel-araclari/ad-soyad-ayir",
     description: "Tam ad listesini otomatik olarak ad ve soyad olarak ayırır.",
   },
   {
     name: "CSV Ayırıcı",
-    href: "/tools/csv-ayir",
+    href: "/excel-araclari/csv-ayir",
     description: "CSV verilerini otomatik olarak sütunlara ayırır.",
   },
   {
     name: "Liste Birleştirici",
-    href: "/tools/liste-birlestir",
+    href: "/excel-araclari/liste-birlestir",
     description:
       "Birden fazla satırdaki verileri seçilen ayraç ile tek satırda birleştirir.",
   },

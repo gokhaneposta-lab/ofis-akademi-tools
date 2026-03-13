@@ -35,7 +35,7 @@ export default function Home() {
                 Eğitim içeriklerini gör
               </a>
               <a
-                href="/tools"
+                href="/excel-araclari"
                 className="inline-flex items-center justify-center rounded-full border border-slate-700 px-6 py-3 text-sm font-medium text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/60"
               >
                 Excel Araçları

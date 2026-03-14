@@ -66,12 +66,17 @@ const trainingLevels = [
   },
 ] as const;
 
+type AboneStatus = "idle" | "loading" | "success" | "error";
+
 export default function Home() {
   const [formulaIndex, setFormulaIndex] = useState(0);
   const [toplamSatis, setToplamSatis] = useState(428900);
   const [aylikArtis, setAylikArtis] = useState(18);
   const [siparis, setSiparis] = useState(1274);
   const [iadeOrani, setIadeOrani] = useState(2.1);
+  const [aboneEmail, setAboneEmail] = useState("");
+  const [aboneStatus, setAboneStatus] = useState<AboneStatus>("idle");
+  const [aboneError, setAboneError] = useState("");
 
   // Formülü periyodik değiştir
   useEffect(() => {
@@ -152,7 +157,7 @@ export default function Home() {
               </span>
               <span className="inline-flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Dosya + video + mini quizler
+                Dosya + uygulama + mini alıştırmalar
               </span>
               <span className="inline-flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -383,12 +388,12 @@ export default function Home() {
                 Ücretsiz Excel öğrenme alanı
               </h2>
               <p className="text-base text-slate-700 leading-relaxed">
-                İlk adımlar tamamen ücretsiz. Mini videolar, uygulama dosyaları
-                ve kısa quizlerle, Excel&apos;de güçlü bir temel kur.
+                İlk adımlar tamamen ücretsiz. Metin anlatımlar, uygulama dosyaları
+                ve kısa alıştırmalarla Excel&apos;de güçlü bir temel kur.
               </p>
               <ul className="mt-2 space-y-1.5 text-sm text-slate-700">
-                <li>· 7 günlük giriş programı</li>
-                <li>· 10+ uygulamalı örnek dosya</li>
+                <li>· Adım adım konular (temel, orta, ileri)</li>
+                <li>· Uygulamalı örnek Excel dosyaları</li>
                 <li>· Temel formüller için hızlı rehber</li>
               </ul>
             </div>
@@ -398,25 +403,61 @@ export default function Home() {
                   Ücretsiz Katıl
                 </p>
                 <p className="mt-2 text-xs text-slate-200">
-                  E-posta bırak, başlangıç setine direkt eriş.
+                  E-posta bırak, başlangıç setine (Excel linkleri) e-posta ile ulaş.
                 </p>
-                <form
-                  className="mt-3 flex flex-col gap-3 sm:flex-row"
-                  onSubmit={(e) => e.preventDefault()}
-                >
-                  <input
-                    type="email"
-                    required
-                    placeholder="ornek@eposta.com"
-                    className="h-10 flex-1 rounded-full border border-slate-700 bg-slate-900 px-3 text-xs text-slate-50 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400"
-                  />
-                  <button
-                    type="submit"
-                    className="h-10 rounded-full bg-emerald-400 px-5 text-xs font-semibold text-slate-950 shadow shadow-emerald-500/30 transition hover:bg-emerald-300"
+                {aboneStatus === "success" ? (
+                  <div className="mt-3 rounded-lg bg-emerald-500/20 border border-emerald-500/40 px-3 py-2 text-xs text-emerald-200">
+                    E-postanı gönderdik. Gelen kutunu kontrol et; Excel seti linkleri orada.
+                  </div>
+                ) : (
+                  <form
+                    className="mt-3 flex flex-col gap-3 sm:flex-row"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (!aboneEmail.trim()) return;
+                      setAboneStatus("loading");
+                      setAboneError("");
+                      try {
+                        const res = await fetch("/api/abone", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ email: aboneEmail.trim() }),
+                        });
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                          setAboneError(data.error ?? "Bir hata oluştu.");
+                          setAboneStatus("error");
+                          return;
+                        }
+                        setAboneStatus("success");
+                        setAboneEmail("");
+                      } catch {
+                        setAboneError("Bağlantı hatası. Lütfen tekrar dene.");
+                        setAboneStatus("error");
+                      }
+                    }}
                   >
-                    Ücretsiz Başla
-                  </button>
-                </form>
+                    <input
+                      type="email"
+                      required
+                      value={aboneEmail}
+                      onChange={(e) => setAboneEmail(e.target.value)}
+                      placeholder="ornek@eposta.com"
+                      disabled={aboneStatus === "loading"}
+                      className="h-10 flex-1 rounded-full border border-slate-700 bg-slate-900 px-3 text-xs text-slate-50 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 disabled:opacity-60"
+                    />
+                    <button
+                      type="submit"
+                      disabled={aboneStatus === "loading"}
+                      className="h-10 rounded-full bg-emerald-400 px-5 text-xs font-semibold text-slate-950 shadow shadow-emerald-500/30 transition hover:bg-emerald-300 disabled:opacity-60"
+                    >
+                      {aboneStatus === "loading" ? "Gönderiliyor…" : "Ücretsiz Başla"}
+                    </button>
+                  </form>
+                )}
+                {aboneStatus === "error" && aboneError && (
+                  <p className="mt-2 text-[11px] text-red-300">{aboneError}</p>
+                )}
                 <p className="mt-2 text-[11px] text-slate-400">
                   Spam yok. Sadece Excel ve veri analizi için pratik içerikler.
                 </p>

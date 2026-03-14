@@ -325,7 +325,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8 grid gap-[2px] md:grid-cols-3 border border-slate-300 rounded-xl overflow-hidden bg-slate-300" style={{ backgroundImage: "linear-gradient(to right, rgba(15,23,42,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.05) 1px, transparent 1px)", backgroundSize: "1.5rem 1.5rem" }}>
-            <div className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50">
+            <Link href="/excel-araclari/rapor-sablonlari" className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50 hover:border-slate-600/50 transition">
               <div>
                 <h3 className="text-sm font-semibold text-slate-50">
                   Otomatik Rapor Şablonları
@@ -338,9 +338,9 @@ export default function Home() {
               <p className="text-[11px] font-medium text-emerald-300">
                 · Örnek veri setleri · Hazır formüller
               </p>
-            </div>
+            </Link>
 
-            <div className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50">
+            <Link href="/excel-araclari/hata-kontrol-checklist" className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50 hover:border-slate-600/50 transition">
               <div>
                 <h3 className="text-sm font-semibold text-slate-50">
                   Hata Kontrol Checklist&apos;i
@@ -353,9 +353,9 @@ export default function Home() {
               <p className="text-[11px] font-medium text-emerald-300">
                 · Yaygın tuzaklar · Pratik çözümler
               </p>
-            </div>
+            </Link>
 
-            <div className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50">
+            <Link href="/excel-araclari/ksayol-formul-kartlari" className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50 hover:border-slate-600/50 transition">
               <div>
                 <h3 className="text-sm font-semibold text-slate-50">
                   Kısayol & Formül Kartları
@@ -368,7 +368,7 @@ export default function Home() {
               <p className="text-[11px] font-medium text-emerald-300">
                 · Yazdırılabilir · Masana asılabilir
               </p>
-            </div>
+            </Link>
           </div>
         </section>
 

@@ -1,12 +1,65 @@
 "use client";
 
-import { use, useCallback } from "react";
+import { use, useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import ExcelPracticeGrid from "@/components/ExcelPracticeGrid";
 import type { PracticeGridDef } from "@/components/ExcelPracticeGrid";
 import { THEME } from "@/lib/theme";
 import { buildLevelWorkbook, downloadWorkbook, type SheetFromTable } from "@/lib/egitimExcelExport";
+
+/** Excel kısayolları için küçük ikonlar (Ctrl+X makas, Ctrl+C/V, Ctrl+T tablo) */
+function ShortcutIcon({ type, className = "h-4 w-4" }: { type: "cut" | "copy" | "paste" | "table"; className?: string }) {
+  const c = className;
+  if (type === "cut") {
+    return (
+      <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="6" cy="6" r="3" />
+        <circle cx="6" cy="18" r="3" />
+        <line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
+        <line x1="15.5" y1="8.5" x2="8.5" y2="15.5" />
+      </svg>
+    );
+  }
+  if (type === "copy") {
+    return (
+      <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+      </svg>
+    );
+  }
+  if (type === "paste") {
+    return (
+      <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+        <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+      </svg>
+    );
+  }
+  if (type === "table") {
+    return (
+      <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="3" y="3" width="18" height="18" rx="1" />
+        <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+      </svg>
+    );
+  }
+  return null;
+}
+
+function ShortcutBadge({ keys, label, icon }: { keys: string; label: string; icon: "cut" | "copy" | "paste" | "table" }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded border px-2 py-0.5 text-xs font-medium"
+      style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}
+      title={label}
+    >
+      <ShortcutIcon type={icon} className="h-3.5 w-3.5 opacity-80" />
+      <span>{keys}</span>
+    </span>
+  );
+}
 
 /** Tek bir fonksiyon: kullanım, sözdizimi, parametreler ve isteğe bağlı örnek tablo */
 export type FunctionDef = {
@@ -684,6 +737,9 @@ export default function TrainingLevelPage({
   const config = levelConfig[level as LevelKey];
   const levelKey = level as LevelKey;
 
+  const pdfContentRef = useRef<HTMLDivElement>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
   const handleDownloadExcel = useCallback(() => {
     const sheets = getLevelPracticeSheets(levelKey);
     const extraSheets = levelKey === "ileri" ? ileriEkSayfalar : [];
@@ -691,6 +747,45 @@ export default function TrainingLevelPage({
     const safeName = config.label.replace(/\s+/g, "-").replace(/·/g, "") + "-Ornekler.xlsx";
     downloadWorkbook(wb, safeName);
   }, [levelKey, config.label]);
+
+  const handleDownloadPdf = useCallback(async () => {
+    const el = pdfContentRef.current;
+    if (!el) return;
+    setPdfLoading(true);
+    try {
+      const [{ default: h2c }, { default: JsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
+      const canvas = await h2c(el, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        height: el.scrollHeight,
+        width: el.scrollWidth,
+        windowHeight: el.scrollHeight,
+        windowWidth: el.scrollWidth,
+      });
+      const pdf = new JsPDF("l", "mm", "a4"); // yatay A4 (297×210 mm)
+      const pageWidth = 297;
+      const pageHeight = 210;
+      const imgW = canvas.width;
+      const imgH = canvas.height;
+      const scale = pageWidth / imgW;
+      const scaledH = imgH * scale;
+      const totalPages = Math.ceil(scaledH / pageHeight);
+      for (let i = 0; i < totalPages; i++) {
+        if (i > 0) pdf.addPage([297, 210], "l");
+        pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, -i * pageHeight, pageWidth, scaledH);
+      }
+      const safeName = config.label.replace(/\s+/g, "-").replace(/·/g, "") + "-Egitim-Ozeti.pdf";
+      pdf.save(safeName);
+    } catch (err) {
+      console.error("PDF oluşturulamadı:", err);
+    } finally {
+      setPdfLoading(false);
+    }
+  }, [config.label]);
 
   if (!config) {
     return (
@@ -721,29 +816,40 @@ export default function TrainingLevelPage({
         description={config.description}
       />
 
-      <main className="mx-auto max-w-5xl flex flex-col px-4 py-6 sm:px-6 lg:px-8 pb-10">
+      <main className="mx-auto max-w-6xl flex flex-col px-4 py-6 sm:px-6 lg:px-8 pb-10">
+        {/* Yatay A4 oranında içerik alanı (297×210) */}
+        <div ref={pdfContentRef} className="space-y-4 mx-auto w-full max-w-[1122px] print:max-w-none">
         <div
-          className="rounded-b shadow-lg border border-t-0 overflow-hidden mb-6"
+          className="rounded-b shadow-lg border border-t-0 overflow-hidden"
           style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
         >
-          <div className="grid gap-0 text-sm sm:grid-cols-[minmax(0,1.2fr),minmax(0,1fr)]">
-            <div className="p-4 border-b sm:border-b-0 sm:border-r" style={{ borderColor: THEME.gridLine, background: THEME.headerBg }}>
+          <div className="grid gap-0 text-sm grid-cols-[1fr_1fr_auto]">
+            <div className="p-3 border-b sm:border-b-0 sm:border-r" style={{ borderColor: THEME.gridLine, background: THEME.headerBg }}>
               <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-600">Kimler için?</h2>
-              <p className="mt-2 text-gray-800">{config.target}</p>
+              <p className="mt-1 text-gray-800 text-xs">{config.target}</p>
             </div>
-            <div className="p-4" style={{ background: THEME.sheetBg }}>
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-600">Bu seviyede odaklanacağın şeyler</h2>
-              <ul className="mt-2 space-y-1.5 text-gray-700">
+            <div className="p-3 sm:border-r" style={{ background: THEME.sheetBg, borderColor: THEME.gridLine }}>
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-600">Odak</h2>
+              <ul className="mt-1 space-y-0.5 text-gray-700 text-xs">
                 {config.focus.map((item) => (
                   <li key={item} className="flex gap-1.5">
-                    <span className="mt-[5px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#217346]" />
+                    <span className="mt-[4px] h-1 w-1 flex-shrink-0 rounded-full bg-[#217346]" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
+            <div className="p-3 flex flex-col justify-center gap-1.5 border-t sm:border-t-0" style={{ borderColor: THEME.gridLine, background: "#f0f4f8" }}>
+              <span className="text-[10px] font-semibold uppercase text-gray-500">Sık kullanılan kısayollar</span>
+              <div className="flex flex-wrap gap-1.5">
+                <ShortcutBadge keys="Ctrl+X" label="Kes" icon="cut" />
+                <ShortcutBadge keys="Ctrl+C" label="Kopyala" icon="copy" />
+                <ShortcutBadge keys="Ctrl+V" label="Yapıştır" icon="paste" />
+                <ShortcutBadge keys="Ctrl+T" label="Tabloya dönüştür" icon="table" />
+              </div>
+            </div>
           </div>
-          <div className="px-4 py-3 border-t flex flex-wrap items-center gap-2" style={{ borderColor: THEME.gridLine, background: "#f0f4f8" }}>
+          <div className="px-4 py-2 border-t flex flex-wrap items-center gap-2" style={{ borderColor: THEME.gridLine, background: "#f0f4f8" }}>
             <span className="text-xs text-gray-600">Bu seviyedeki tüm uygulama örneklerini tek Excel dosyasında indir:</span>
             <button
               type="button"
@@ -756,10 +862,22 @@ export default function TrainingLevelPage({
               </svg>
               {config.label} – Örnek Excel İndir
             </button>
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              disabled={pdfLoading}
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60"
+              style={{ background: "#c53030" }}
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              {pdfLoading ? "PDF hazırlanıyor…" : "PDF olarak indir"}
+            </button>
           </div>
         </div>
 
-        <section className="space-y-4">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {config.functionGroups.map((group) => (
             <article
               key={group.title}
@@ -777,8 +895,15 @@ export default function TrainingLevelPage({
                     className="rounded-lg border p-3 space-y-2"
                     style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}
                   >
-                    <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: THEME.ribbon }}>
-                      {fn.name}
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: THEME.ribbon }}>
+                        {fn.name}
+                      </span>
+                      {fn.name.includes("Ctrl+T") && (
+                        <ShortcutIcon type="table" className="h-3.5 w-3.5 opacity-70" />
+                      )}
+                      {fn.syntax?.includes("Ctrl+X") && <ShortcutIcon type="cut" className="h-3.5 w-3.5 opacity-70" />}
+                      {fn.syntax?.includes("Kes") && fn.syntax?.includes("Ctrl") && <ShortcutIcon type="cut" className="h-3.5 w-3.5 opacity-70" />}
                     </span>
                     <p className="text-xs text-gray-700">{fn.use}</p>
                     {fn.syntax && (
@@ -828,6 +953,7 @@ export default function TrainingLevelPage({
             </article>
           ))}
         </section>
+        </div>
 
         <div className="mt-8 text-center text-xs text-gray-500">Ofis Akademi · Excel & Veri Analizi</div>
       </main>

@@ -6,6 +6,18 @@ import { THEME } from "@/lib/theme";
 
 const tools = [
   {
+    name: "Otomatik Rapor Şablonları",
+    href: "/excel-araclari/rapor-sablonlari",
+    description:
+      "Haftalık satış, stok ve performans raporları için örnek veri setleri ve hazır formüllü Excel şablonları.",
+  },
+  {
+    name: "Hata Kontrol Checklist'i",
+    href: "/excel-araclari/hata-kontrol-checklist",
+    description:
+      "Dosya teslim etmeden önce formül, bağlantı ve hücre güvenliği kontrollerini adım adım işaretle.",
+  },
+  {
     name: "Ad Soyad Ayırıcı",
     href: "/excel-araclari/ad-soyad-ayir",
     description: "Tam ad listesini otomatik olarak ad ve soyad olarak ayırır.",
@@ -20,6 +32,12 @@ const tools = [
     href: "/excel-araclari/liste-birlestir",
     description:
       "Birden fazla satırdaki verileri seçilen ayraç ile tek satırda birleştirir.",
+  },
+  {
+    name: "Kısayol & Formül Kartları",
+    href: "/excel-araclari/ksayol-formul-kartlari",
+    description:
+      "En çok kullanılan Excel kısayolları ve formülleri tek sayfada — PDF indir, yazdır, masana as.",
   },
 ];
 

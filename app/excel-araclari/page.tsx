@@ -1,7 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
+import PageRibbon from "@/components/PageRibbon";
+import { THEME } from "@/lib/theme";
 
 const tools = [
   {
@@ -24,53 +25,90 @@ const tools = [
 
 export default function ToolsHub() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-10 sm:px-6 lg:px-8">
-        <header className="mb-8 sm:mb-10">
-          <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-300 ring-1 ring-emerald-400/30">
-            Ofis Akademi · Excel Araçları
-          </span>
-          <div className="mt-4 space-y-3">
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-              Excel Araçları
-            </h1>
-            <p className="max-w-xl text-sm text-slate-300 sm:text-base">
-              Excel çalışmalarınızı hızlandıran ücretsiz araçlar. Ad soyad
-              ayırma, CSV verilerini sütunlara bölme ve SQL veya Excel için
-              liste birleştirme gibi işlemleri saniyeler içinde yapabilirsiniz.
-            </p>
-          </div>
-        </header>
+    <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
+      <PageRibbon
+        title="Excel Araçları"
+        description="Ad soyad ayırma, CSV sütunlara bölme ve liste birleştirme gibi işlemleri saniyeler içinde yapın."
+      />
 
-        <section className="flex-1">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool) => (
-              <article
-                key={tool.href}
-                className="group flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-lg shadow-emerald-900/20 transition hover:-translate-y-0.5 hover:border-emerald-400/60 hover:shadow-emerald-800/40"
+      {/* Sayfa alanı - tablo görünümü */}
+      <div
+        className="mx-4 mt-2 mb-6 overflow-hidden rounded-b shadow-lg border border-t-0"
+        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
+      >
+        {/* Sütun başlıkları */}
+        <div
+          className="flex border-b"
+          style={{ background: THEME.cornerBg, borderColor: THEME.gridLine }}
+        >
+          <div
+            className="w-12 flex-shrink-0 border-r flex items-center justify-center text-xs font-semibold text-gray-600 py-2"
+            style={{ borderColor: THEME.gridLine }}
+          />
+          <div
+            className="flex-1 border-r px-3 py-2 text-xs font-semibold text-gray-700"
+            style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}
+          >
+            A — Araç
+          </div>
+          <div
+            className="flex-[2] border-r px-3 py-2 text-xs font-semibold text-gray-700"
+            style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}
+          >
+            B — Açıklama
+          </div>
+          <div
+            className="w-28 flex-shrink-0 px-3 py-2 text-xs font-semibold text-gray-700 text-center"
+            style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}
+          >
+            İşlem
+          </div>
+        </div>
+
+        {/* Satırlar */}
+        {tools.map((tool, i) => (
+          <div
+            key={tool.href}
+            className="flex border-b group hover:bg-[#f0f7f4] transition-colors"
+            style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}
+          >
+            <div
+              className="w-12 flex-shrink-0 border-r flex items-center justify-center text-xs text-gray-500 py-3"
+              style={{ borderColor: THEME.gridLine, background: THEME.headerBg }}
+            >
+              {i + 1}
+            </div>
+            <div
+              className="flex-1 border-r px-3 py-3 text-sm font-medium text-gray-900"
+              style={{ borderColor: THEME.gridLine }}
+            >
+              {tool.name}
+            </div>
+            <div
+              className="flex-[2] border-r px-3 py-3 text-sm text-gray-600"
+              style={{ borderColor: THEME.gridLine }}
+            >
+              {tool.description}
+            </div>
+            <div
+              className="w-28 flex-shrink-0 flex items-center justify-center p-2"
+              style={{ borderColor: THEME.gridLine }}
+            >
+              <Link
+                href={tool.href}
+                className="inline-flex items-center justify-center rounded px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-90"
+                style={{ background: THEME.ribbon }}
               >
-                <div>
-                  <h2 className="text-sm font-semibold text-slate-50 sm:text-base">
-                    {tool.name}
-                  </h2>
-                  <p className="mt-2 text-xs text-slate-300 sm:text-sm">
-                    {tool.description}
-                  </p>
-                </div>
-
-                <div className="mt-4">
-                  <Link
-                    href={tool.href}
-                    className="inline-flex w-full items-center justify-center rounded-full bg-emerald-400 px-4 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/30 transition group-hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:text-sm"
-                  >
-                    Aracı Aç
-                  </Link>
-                </div>
-              </article>
-            ))}
+                Aç
+              </Link>
+            </div>
           </div>
-        </section>
-      </main>
+        ))}
+      </div>
+
+      <div className="text-center text-xs text-gray-500 pb-4">
+        {"Ofis Akademi · Excel & Veri Analizi"}
+      </div>
     </div>
   );
 }

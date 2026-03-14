@@ -1,6 +1,34 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
+
+/** Gösterge panelinde dönüşümlü gösterilecek Excel formülleri */
+const DASHBOARD_FORMULAS = [
+  "=TOPLA(E2:E31)",
+  "=ORTALAMA(E2:E31)",
+  "=MİN(E2:E31)",
+  "=MAKS(E2:E31)",
+  "=SAY(E2:E31)",
+  "=EĞERSAY(E2:E31;\">0\")",
+  "=ÇOKETOPLA(E2:E31;A2:A31;\"Satış\")",
+  "=DÜŞEYARA(G2;A2:E31;5;0)",
+];
+
+/** Belirli aralıkta rastgele tam sayı */
+function randomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/** Rastgele sayıyı Türkçe para formatında (428.900₺) */
+function formatCurrency(value: number) {
+  return value.toLocaleString("tr-TR") + "₺";
+}
+
+/** Rastgele yüzde (örn. %18) */
+function formatPercent(value: number, decimals = 0) {
+  return "%" + value.toLocaleString("tr-TR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
 
 const trainingLevels = [
   {
@@ -39,13 +67,49 @@ const trainingLevels = [
 ] as const;
 
 export default function Home() {
+  const [formulaIndex, setFormulaIndex] = useState(0);
+  const [toplamSatis, setToplamSatis] = useState(428900);
+  const [aylikArtis, setAylikArtis] = useState(18);
+  const [siparis, setSiparis] = useState(1274);
+  const [iadeOrani, setIadeOrani] = useState(2.1);
+
+  // Formülü periyodik değiştir
+  useEffect(() => {
+    const t = setInterval(() => {
+      setFormulaIndex((i) => (i + 1) % DASHBOARD_FORMULAS.length);
+    }, 3500);
+    return () => clearInterval(t);
+  }, []);
+
+  // Rakamları hafif rastgele değiştir (canlı hissi)
+  useEffect(() => {
+    const t = setInterval(() => {
+      setToplamSatis((v) => Math.max(200000, v + randomInt(-8000, 8000)));
+      setAylikArtis((v) => Math.max(5, Math.min(35, v + randomInt(-3, 3))));
+      setSiparis((v) => Math.max(800, v + randomInt(-80, 80)));
+      setIadeOrani((v) => Math.max(0.5, Math.min(5, v + (Math.random() - 0.5) * 0.8)));
+    }, 2200);
+    return () => clearInterval(t);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-      <main className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-10 sm:px-8 lg:px-12">
+    <div className="min-h-screen bg-[#e9f5f1] text-slate-900 relative overflow-hidden">
+      {/* Excel hücre grid arka plan */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.12]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, #0f172a 1px, transparent 1px),
+            linear-gradient(to bottom, #0f172a 1px, transparent 1px)
+          `,
+          backgroundSize: "min(2rem, 3vw) min(2rem, 3vw)",
+        }}
+      />
+      <main className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-10 sm:px-8 lg:px-12">
         {/* Hero */}
         <section className="grid flex-1 gap-10 py-8 sm:py-14 lg:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)] lg:items-center">
           <div className="space-y-8">
-            <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300 ring-1 ring-emerald-400/30">
+            <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.14em] text-emerald-800 ring-1 ring-emerald-600/40">
               Ofis Akademi · Excel & Veri Analizi
             </span>
 
@@ -53,53 +117,53 @@ export default function Home() {
               <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
                 Excel&apos;i <span className="bg-gradient-to-r from-emerald-300 via-cyan-300 to-sky-400 bg-clip-text text-transparent">Gerçekten Öğren</span>
               </h1>
-              <p className="max-w-xl text-balance text-sm leading-relaxed text-slate-300 sm:text-base">
+              <p className="max-w-xl text-balance text-base leading-relaxed text-slate-800 sm:text-lg">
                 Formüllerle boğuşmayı bırak. Günlük iş akışlarında gerçekten
                 kullandığın Excel ve veri analizi becerilerini, adım adım ve
                 uygulamalı olarak öğren.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href="#free"
-                className="inline-flex items-center justify-center rounded-full bg-emerald-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-300"
+                className="inline-flex shrink-0 items-center justify-center rounded-full bg-emerald-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-300"
               >
                 Ücretsiz Öğrenmeye Başla
               </a>
               <a
                 href="#topics"
-                className="inline-flex items-center justify-center rounded-full border border-slate-700 px-6 py-3 text-sm font-medium text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/60"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
               >
                 Eğitim içeriklerini gör
               </a>
               <a
                 href="/excel-araclari"
-                className="inline-flex items-center justify-center rounded-full border border-slate-700 px-6 py-3 text-sm font-medium text-slate-100 transition hover:border-slate-500 hover:bg-slate-900/60"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
               >
                 Excel Araçları
               </a>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-xs text-slate-400">
+            <div className="flex flex-wrap gap-4 text-sm text-slate-600">
               <span className="inline-flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 Gerçek ofis senaryoları
               </span>
               <span className="inline-flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 Dosya + video + mini quizler
               </span>
               <span className="inline-flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 Sıfırdan ileri seviye
               </span>
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative group/dashboard">
             <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr from-emerald-500/30 via-sky-500/20 to-transparent blur-3xl" />
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-emerald-500/10 backdrop-blur">
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-emerald-500/10 backdrop-blur transition-shadow duration-300 group-hover/dashboard:shadow-emerald-500/20">
               <div className="mb-4 flex items-center justify-between text-xs text-slate-400">
                 <span>Excel Gösterge Paneli</span>
                 <span>Canlı Uygulama</span>
@@ -108,35 +172,53 @@ export default function Home() {
                 <div className="space-y-3 rounded-2xl bg-slate-950/60 p-4 ring-1 ring-slate-800">
                   <div className="flex items-center justify-between text-[11px] text-slate-400">
                     <span>Satış Özeti</span>
-                    <span>=TOPLA(E2:E31)</span>
+                    <span className="font-mono tabular-nums transition-opacity duration-300" title="Dönen Excel formülleri">
+                      {DASHBOARD_FORMULAS[formulaIndex]}
+                    </span>
                   </div>
                   <div className="grid grid-cols-4 gap-2 text-[11px] text-slate-200">
-                    <div className="rounded-xl bg-emerald-500/10 p-3">
+                    <div className="rounded-xl bg-emerald-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">Toplam Satış</p>
-                      <p className="mt-1 text-base font-semibold text-emerald-300">
-                        428.900₺
+                      <p className="mt-1 text-base font-semibold text-emerald-300 origin-bottom-left group-hover/dashboard:animate-[dashboard-number-pulse_0.5s_ease-out] tabular-nums">
+                        {formatCurrency(toplamSatis)}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-sky-500/10 p-3">
+                    <div className="rounded-xl bg-sky-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">Aylık Artış</p>
-                      <p className="mt-1 text-base font-semibold text-sky-300">
-                        %18
+                      <p className="mt-1 text-base font-semibold text-sky-300 origin-bottom-left group-hover/dashboard:animate-[dashboard-number-pulse_0.5s_ease-out_0.05s] tabular-nums">
+                        {formatPercent(aylikArtis)}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-violet-500/10 p-3">
+                    <div className="rounded-xl bg-violet-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">Sipariş</p>
-                      <p className="mt-1 text-base font-semibold text-violet-300">
-                        1.274
+                      <p className="mt-1 text-base font-semibold text-violet-300 origin-bottom-left group-hover/dashboard:animate-[dashboard-number-pulse_0.5s_ease-out_0.1s] tabular-nums">
+                        {siparis.toLocaleString("tr-TR")}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-amber-500/10 p-3">
+                    <div className="rounded-xl bg-amber-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">İade Oranı</p>
-                      <p className="mt-1 text-base font-semibold text-amber-300">
-                        %2,1
+                      <p className="mt-1 text-base font-semibold text-amber-300 origin-bottom-left group-hover/dashboard:animate-[dashboard-number-pulse_0.5s_ease-out_0.15s] tabular-nums">
+                        {formatPercent(iadeOrani, 1)}
                       </p>
                     </div>
                   </div>
-                  <div className="mt-2 h-20 rounded-xl bg-gradient-to-r from-emerald-500/20 via-sky-500/10 to-transparent" />
+                  {/* Mini grafik alanı - hover'da daha yavaş dalgalanma */}
+                  <div className="mt-3 rounded-xl bg-slate-900/50 px-3 py-2">
+                    <p className="text-[9px] text-slate-500 mb-1.5">Satış trendi</p>
+                    <div className="flex items-end justify-between gap-0.5 h-10">
+                      {[10, 6, 14, 8, 11, 5, 16, 9, 12, 7].map((h, i) => (
+                        <div
+                          key={i}
+                          className="w-1.5 flex-1 rounded-t bg-gradient-to-t from-emerald-500/70 to-sky-400/60 origin-bottom group-hover/dashboard:animate-[dashboard-bar-wave_1.25s_ease-in-out_infinite]"
+                          style={{
+                            height: `${h}px`,
+                            minHeight: 4,
+                            animationDelay: `${i * 0.08}s`,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 <div className="space-y-3">
                   <div className="rounded-2xl bg-slate-950/60 p-4 ring-1 ring-slate-800">
@@ -182,25 +264,25 @@ export default function Home() {
               <h2 className="text-xl font-semibold sm:text-2xl">
                 Excel eğitim içerikleri
               </h2>
-              <p className="mt-2 max-w-xl text-sm text-slate-300">
+              <p className="mt-2 max-w-xl text-base text-slate-700">
                 Konular, ofiste yaşanan gerçek problemler üzerinden kurgulandı.
                 Her bölüm, kendi dosyası ve egzersizleriyle birlikte gelir.
               </p>
             </div>
-            <div className="text-xs text-slate-400">
+            <div className="text-sm text-slate-600">
               Temelden ileri seviyeye net yol haritası
             </div>
           </div>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-8 grid gap-[2px] md:grid-cols-3 border border-slate-300 rounded-xl overflow-hidden bg-slate-300 shadow-[inset_0_0_0_1px_rgba(15,23,42,0.06)]" style={{ backgroundImage: "linear-gradient(to right, rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.04) 1px, transparent 1px)", backgroundSize: "1.5rem 1.5rem" }}>
             {trainingLevels.map((level) => (
               <Link
                 key={level.slug}
                 href={`/egitimler/${level.slug}`}
-                className={`group flex flex-col gap-2 rounded-2xl p-5 ring-1 transition hover:-translate-y-0.5 hover:ring-emerald-400/70 ${
+                className={`group flex flex-col gap-2 rounded-none p-5 ring-0 border border-slate-700/50 bg-slate-950/90 transition hover:-translate-y-0.5 hover:ring-2 hover:ring-emerald-400/70 hover:z-10 ${
                   level.accent
-                    ? "bg-slate-950/80 ring-emerald-500/60 shadow-lg shadow-emerald-900/30"
-                    : "bg-slate-950/70 ring-slate-800 hover:bg-slate-900"
+                    ? "ring-2 ring-emerald-500/60 shadow-lg shadow-emerald-900/30"
+                    : "hover:bg-slate-900/95"
                 }`}
               >
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
@@ -235,15 +317,15 @@ export default function Home() {
               <h2 className="text-xl font-semibold sm:text-2xl">
                 Faydalı Excel araçları
               </h2>
-              <p className="mt-2 max-w-xl text-sm text-slate-300">
+              <p className="mt-2 max-w-xl text-base text-slate-700">
                 Eğitimle birlikte gelen hazır dosya ve araçlar, günlük iş
                 hayatında direkt kullanabileceğin şekilde tasarlandı.
               </p>
             </div>
           </div>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <div className="flex flex-col justify-between gap-3 rounded-2xl bg-slate-950/70 p-5 ring-1 ring-slate-800">
+          <div className="mt-8 grid gap-[2px] md:grid-cols-3 border border-slate-300 rounded-xl overflow-hidden bg-slate-300" style={{ backgroundImage: "linear-gradient(to right, rgba(15,23,42,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.05) 1px, transparent 1px)", backgroundSize: "1.5rem 1.5rem" }}>
+            <div className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50">
               <div>
                 <h3 className="text-sm font-semibold text-slate-50">
                   Otomatik Rapor Şablonları
@@ -258,7 +340,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex flex-col justify-between gap-3 rounded-2xl bg-slate-950/80 p-5 ring-1 ring-slate-800">
+            <div className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50">
               <div>
                 <h3 className="text-sm font-semibold text-slate-50">
                   Hata Kontrol Checklist&apos;i
@@ -273,7 +355,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex flex-col justify-between gap-3 rounded-2xl bg-slate-950/70 p-5 ring-1 ring-slate-800">
+            <div className="flex flex-col justify-between gap-3 rounded-none bg-slate-950/90 p-5 border border-slate-700/50">
               <div>
                 <h3 className="text-sm font-semibold text-slate-50">
                   Kısayol & Formül Kartları
@@ -295,23 +377,23 @@ export default function Home() {
           id="free"
           className="border-t border-slate-800/80 py-10 sm:py-14"
         >
-          <div className="grid gap-6 rounded-3xl bg-gradient-to-r from-emerald-500/15 via-sky-500/10 to-transparent p-6 ring-1 ring-emerald-500/40 sm:grid-cols-[minmax(0,1.5fr),minmax(0,1fr)] sm:p-8">
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold sm:text-2xl">
+          <div className="grid gap-[2px] rounded-2xl overflow-hidden border border-slate-300 bg-slate-200/80 sm:grid-cols-[minmax(0,1.5fr),minmax(0,1fr)]" style={{ backgroundImage: "linear-gradient(to right, rgba(15,23,42,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.06) 1px, transparent 1px)", backgroundSize: "1.5rem 1.5rem" }}>
+            <div className="space-y-4 rounded-none border border-slate-300/80 bg-gradient-to-r from-emerald-500/10 via-sky-500/5 to-transparent p-6 sm:p-8">
+              <h2 className="text-xl font-semibold text-slate-800 sm:text-2xl">
                 Ücretsiz Excel öğrenme alanı
               </h2>
-              <p className="text-sm text-slate-100">
+              <p className="text-base text-slate-700 leading-relaxed">
                 İlk adımlar tamamen ücretsiz. Mini videolar, uygulama dosyaları
                 ve kısa quizlerle, Excel&apos;de güçlü bir temel kur.
               </p>
-              <ul className="mt-2 space-y-1.5 text-xs text-slate-100/90">
+              <ul className="mt-2 space-y-1.5 text-sm text-slate-700">
                 <li>· 7 günlük giriş programı</li>
                 <li>· 10+ uygulamalı örnek dosya</li>
                 <li>· Temel formüller için hızlı rehber</li>
               </ul>
             </div>
-            <div className="flex flex-col justify-between gap-4">
-              <div className="rounded-2xl bg-slate-950/70 p-4 text-sm text-slate-100 ring-1 ring-emerald-500/40">
+            <div className="flex flex-col justify-between gap-4 rounded-none border border-slate-300/80 bg-slate-100/50 p-6 sm:p-8">
+              <div className="rounded-xl border border-slate-300 bg-slate-950/90 p-4 text-sm ring-1 ring-slate-700">
                 <p className="text-xs font-medium uppercase tracking-[0.16em] text-emerald-300">
                   Ücretsiz Katıl
                 </p>
@@ -335,7 +417,7 @@ export default function Home() {
                     Ücretsiz Başla
                   </button>
                 </form>
-                <p className="mt-2 text-[10px] text-slate-400">
+                <p className="mt-2 text-[11px] text-slate-400">
                   Spam yok. Sadece Excel ve veri analizi için pratik içerikler.
                 </p>
               </div>
@@ -343,10 +425,10 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="border-t border-slate-800/80 py-6 text-xs text-slate-500">
+        <footer className="border-t border-slate-300 py-6 text-sm text-slate-600">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span>© {new Date().getFullYear()} Ofis Akademi</span>
-            <span className="text-slate-600">
+            <span className="text-slate-700">
               Excel & veri analizi ile ofis hayatını kolaylaştır.
             </span>
           </div>

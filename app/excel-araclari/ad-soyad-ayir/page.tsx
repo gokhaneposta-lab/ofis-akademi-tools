@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import CopyButton from "../../../components/CopyButton";
+import Link from "next/link";
+import PageRibbon from "@/components/PageRibbon";
+import { THEME } from "@/lib/theme";
 
 export default function AdSoyadAyirici() {
   const [input, setInput] = useState("");
@@ -10,7 +12,6 @@ export default function AdSoyadAyirici() {
   const [outputFormat, setOutputFormat] = useState<"table" | "excel">("table");
 
   function splitNames() {
-    // Split by new lines, trim whitespace, ignore empty lines
     const lines = input
       .split("\n")
       .map((line) => line.trim())
@@ -18,12 +19,7 @@ export default function AdSoyadAyirici() {
 
     const output = lines.map((line) => {
       const parts = line.split(/\s+/).filter(Boolean);
-
-      // Her satır için: son kelime soyad, önceki tüm kelimeler ad
-      if (parts.length === 0) {
-        return { firstName: "", lastName: "" };
-      }
-
+      if (parts.length === 0) return { firstName: "", lastName: "" };
       return {
         firstName: parts.slice(0, -1).join(" "),
         lastName: parts[parts.length - 1],
@@ -36,203 +32,273 @@ export default function AdSoyadAyirici() {
 
   function handleCopy() {
     if (!result.length) return;
-
     let text = "";
-
     if (mode === "split") {
       if (outputFormat === "excel") {
-        text =
-          "Ad;Soyad\n" +
-          result
-            .map((row) => `${row.firstName};${row.lastName}`)
-            .join("\n");
+        text = "Ad;Soyad\n" + result.map((row) => `${row.firstName};${row.lastName}`).join("\n");
       } else {
-        text =
-          "Ad\tSoyad\n" +
-          result
-            .map((row) => `${row.firstName}\t${row.lastName}`)
-            .join("\n");
+        text = "Ad\tSoyad\n" + result.map((row) => `${row.firstName}\t${row.lastName}`).join("\n");
       }
     } else {
-      text = result
-        .map((row) => row.lastName || row.firstName)
-        .filter(Boolean)
-        .join("\n");
+      text = result.map((row) => row.lastName || row.firstName).filter(Boolean).join("\n");
     }
-
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1300);
   }
 
+  const inputLines = input ? input.split("\n").filter((l) => l.trim()).length : 0;
+  const rowCount = Math.max(1, Math.min(inputLines || 1, 20));
+
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-3 py-10 sm:px-4 sm:py-12">
-      <div className="w-full max-w-3xl rounded-2xl bg-slate-900/90 backdrop-blur border border-slate-800 shadow-xl shadow-emerald-900/30 p-6 sm:p-8 flex flex-col gap-7">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-emerald-300 tracking-tight mb-1">
-            Ad Soyad Ayırıcı
-          </h1>
-          <p className="text-slate-400 text-sm sm:text-[0.9rem]">
-            Tam ad listesindeki ad ve soyad bilgilerini otomatik ayırın veya sadece soyadları çıkarın.
-            Her satıra bir kişi yazın.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
-              Mod Seçimi
-            </span>
-            <div className="inline-flex rounded-full bg-slate-800/80 border border-slate-700 p-1 gap-1 w-full sm:w-auto">
-              <button
-                type="button"
-                onClick={() => setMode("split")}
-                className={`flex-1 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${
-                  mode === "split"
-                    ? "bg-emerald-400 text-slate-950 shadow shadow-emerald-500/30"
-                    : "text-slate-300 hover:text-emerald-300"
-                }`}
-              >
-                Ad + Soyad Ayır
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("surnameOnly")}
-                className={`flex-1 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${
-                  mode === "surnameOnly"
-                    ? "bg-emerald-400 text-slate-950 shadow shadow-emerald-500/30"
-                    : "text-slate-300 hover:text-emerald-300"
-                }`}
-              >
-                Sadece Soyadı Çıkar
-              </button>
-            </div>
-          </div>
-
-          {mode === "split" && (
-            <div className="flex flex-col gap-1.5 mt-2 sm:mt-0">
-              <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
-                Çıktı Formatı
-              </span>
-              <div className="inline-flex rounded-full bg-slate-800/80 border border-slate-700 p-1 gap-1 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={() => setOutputFormat("table")}
-                  className={`flex-1 whitespace-nowrap rounded-full px-3 py-1.5 text-xs sm:text-sm font-medium transition ${
-                    outputFormat === "table"
-                      ? "bg-slate-900 text-emerald-300 shadow-inner shadow-slate-900/80"
-                      : "text-slate-300 hover:text-emerald-300"
-                  }`}
-                >
-                  Tablo
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOutputFormat("excel")}
-                  className={`flex-1 whitespace-nowrap rounded-full px-3 py-1.5 text-xs sm:text-sm font-medium transition ${
-                    outputFormat === "excel"
-                      ? "bg-slate-900 text-emerald-300 shadow-inner shadow-slate-900/80"
-                      : "text-slate-300 hover:text-emerald-300"
-                  }`}
-                >
-                  Excel (Ad;Soyad)
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={6}
-          placeholder={`Örn:\nMELİHA ELVİN GÜZEL YILDIRIM\nAHMET MEHMET DEMİR`}
-          className="w-full rounded-xl bg-slate-900/80 text-slate-50 border border-slate-700 focus:border-emerald-400 focus:ring-emerald-400/60 focus:ring-2 outline-none p-4 text-sm resize-y transition placeholder:text-slate-500"
-        />
-        <div className="flex flex-col gap-3 sm:flex-row items-stretch">
+    <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
+      <PageRibbon
+        title="Ad Soyad Ayırıcı"
+        description="Tam ad listesini ad ve soyad olarak ayırın; tablo veya Excel formatında kopyalayın."
+      >
+        <div className="flex flex-wrap items-center gap-1 ml-auto">
           <button
+            type="button"
+            onClick={() => setMode("split")}
+            className={`px-4 py-1.5 text-sm font-medium rounded transition ${
+              mode === "split" ? "bg-white/25" : "hover:bg-white/15"
+            }`}
+          >
+            Ad + Soyad Ayır
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("surnameOnly")}
+            className={`px-4 py-1.5 text-sm font-medium rounded transition ${
+              mode === "surnameOnly" ? "bg-white/25" : "hover:bg-white/15"
+            }`}
+          >
+            Sadece Soyad
+          </button>
+          {mode === "split" && (
+            <>
+              <div className="w-px h-6 bg-white/30 mx-1" />
+              <button
+                type="button"
+                onClick={() => setOutputFormat("table")}
+                className={`px-3 py-1.5 text-sm rounded transition ${
+                  outputFormat === "table" ? "bg-white/25" : "hover:bg-white/15"
+                }`}
+              >
+                Tablo
+              </button>
+              <button
+                type="button"
+                onClick={() => setOutputFormat("excel")}
+                className={`px-3 py-1.5 text-sm rounded transition ${
+                  outputFormat === "excel" ? "bg-white/25" : "hover:bg-white/15"
+                }`}
+              >
+                Excel (;)
+              </button>
+            </>
+          )}
+          <div className="flex-1 min-w-[8px]" />
+          <button
+            type="button"
             onClick={splitNames}
-            className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded-full bg-emerald-400 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-md shadow-emerald-500/30 transition hover:bg-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="px-4 py-1.5 text-sm font-semibold rounded bg-white text-[#217346] hover:bg-gray-100 transition"
           >
             Ayır
           </button>
-          <CopyButton
+          <button
+            type="button"
             onClick={handleCopy}
             disabled={!result.length}
-            copied={copied}
-            label="Tüm Sonuçları Kopyala"
-            copiedLabel="Kopyalandı"
-          />
+            className={`px-4 py-1.5 text-sm font-medium rounded transition flex items-center gap-2 ${
+              copied
+                ? "bg-green-600 text-white"
+                : "bg-white/20 hover:bg-white/30 disabled:opacity-40 disabled:cursor-not-allowed"
+            }`}
+          >
+            {copied ? (
+              <>✓ Kopyalandı</>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <rect x="9" y="9" width="13" height="13" rx="2" strokeWidth="2" />
+                  <rect x="3" y="3" width="13" height="13" rx="2" strokeWidth="2" />
+                </svg>
+                Kopyala
+              </>
+            )}
+          </button>
         </div>
+      </PageRibbon>
+
+      {/* Formül çubuğu alanı */}
+      <div
+        className="flex items-center gap-2 px-4 py-1.5 border-b text-sm"
+        style={{ background: THEME.formulaBarBg, borderColor: THEME.gridLine }}
+      >
+        <span
+          className="w-12 flex-shrink-0 text-center py-1 text-gray-600 font-medium"
+          style={{ background: THEME.headerBg, border: `1px solid ${THEME.gridLine}` }}
+        >
+          A1
+        </span>
+        <span className="text-gray-500">|</span>
+        <span className="text-gray-500 text-xs">Tam ad listesi (her satıra bir kişi)</span>
+      </div>
+
+      {/* Sayfa alanı - Excel sheet görünümü */}
+      <div className="mx-4 mt-2 mb-6 overflow-hidden rounded-b shadow-lg border border-t-0" style={{ borderColor: THEME.gridLine, background: "#fafafa" }}>
+        {/* Sütun harfleri + köşe */}
+        <div className="flex" style={{ background: THEME.cornerBg, borderBottom: `1px solid ${THEME.gridLine}` }}>
+          <div
+            className="w-10 flex-shrink-0 border-r flex items-center justify-center text-xs font-semibold text-gray-600"
+            style={{ borderColor: THEME.gridLine, minHeight: 24 }}
+          />
+          <div
+            className="flex-1 flex border-l"
+            style={{ borderColor: THEME.gridLine }}
+          >
+            <div className="w-full text-center text-xs font-semibold text-gray-600 py-0.5" style={{ borderBottom: `1px solid ${THEME.gridLine}` }}>
+              A
+            </div>
+          </div>
+        </div>
+
+        {/* Satırlar: satır numarası + giriş alanı */}
+        <div className="flex" style={{ borderBottom: `1px solid ${THEME.gridLine}` }}>
+          <div
+            className="w-10 flex flex-col flex-shrink-0"
+            style={{ background: THEME.headerBg, borderRight: `1px solid ${THEME.gridLine}` }}
+          >
+            {Array.from({ length: rowCount }, (_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-center text-xs text-gray-600 border-b"
+                style={{ borderColor: THEME.gridLine, minHeight: 28 }}
+              >
+                {i + 1}
+              </div>
+            ))}
+          </div>
+          <div className="flex-1 min-w-0" style={{ background: THEME.sheetBg }}>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows={rowCount}
+              placeholder={"Örn:\nMELİHA ELVİN GÜZEL YILDIRIM\nAHMET MEHMET DEMİR"}
+              className="w-full resize-none border-0 p-2 text-sm outline-none placeholder:text-gray-400"
+              style={{
+                background: THEME.sheetBg,
+                minHeight: rowCount * 28,
+                fontFamily: "inherit",
+                lineHeight: "28px",
+                borderLeft: `1px solid ${THEME.gridLine}`,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Sonuç bölümü - Excel tablosu */}
         {result.length > 0 && (
-          <div className="mt-3 space-y-2">
-            {mode === "split" && outputFormat === "table" && (
-              <div className="overflow-x-auto rounded-lg border border-slate-800/80 bg-slate-950/70 shadow-inner">
-                <table className="w-full text-left min-w-[270px]">
-                  <thead>
-                    <tr className="text-xs uppercase tracking-wider text-emerald-400 bg-slate-900/70 border-b border-slate-800">
-                      <th className="py-2 px-3">Ad</th>
-                      <th className="py-2 px-3">Soyad</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {result.map((row, i) => (
-                      <tr
-                        key={i}
-                        className={
-                          i % 2 === 0
-                            ? "bg-slate-900/70"
-                            : "bg-slate-800/60"
-                        }
+          <>
+            <div className="flex" style={{ background: THEME.cornerBg, borderBottom: `1px solid ${THEME.gridLine}` }}>
+              <div
+                className="w-10 flex-shrink-0 border-r flex items-center justify-center text-xs font-semibold text-gray-600"
+                style={{ borderColor: THEME.gridLine, minHeight: 26 }}
+              />
+              <div className="flex-1 flex">
+                <div className="flex-1 border-r text-center text-xs font-semibold py-1.5 text-gray-700" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
+                  A — Ad
+                </div>
+                <div className="flex-1 text-center text-xs font-semibold py-1.5 text-gray-700" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
+                  B — Soyad
+                </div>
+              </div>
+            </div>
+            {mode === "split" && (outputFormat === "table" || outputFormat === "excel") && (
+              <div className="flex">
+                <div
+                  className="w-10 flex flex-col flex-shrink-0"
+                  style={{ background: THEME.headerBg, borderRight: `1px solid ${THEME.gridLine}` }}
+                >
+                  {result.map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-center text-xs text-gray-600 border-b"
+                      style={{ borderColor: THEME.gridLine, minHeight: 28 }}
+                    >
+                      {i + 1}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex-1 flex flex-col">
+                  {result.map((row, i) => (
+                    <div
+                      key={i}
+                      className="flex border-b"
+                      style={{ borderColor: THEME.gridLine }}
+                    >
+                      <div
+                        className="flex-1 px-2 py-1.5 text-sm border-r"
+                        style={{ borderColor: THEME.gridLine, minHeight: 28 }}
                       >
-                        <td className="py-2 px-3 text-sm text-slate-100">{row.firstName}</td>
-                        <td className="py-2 px-3 text-sm text-emerald-200">{row.lastName}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        {row.firstName}
+                      </div>
+                      <div
+                        className="flex-1 px-2 py-1.5 text-sm font-medium"
+                        style={{ minHeight: 28, color: "#217346" }}
+                      >
+                        {row.lastName}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-
             {mode === "split" && outputFormat === "excel" && (
-              <div className="rounded-lg border border-slate-800/80 bg-slate-950/70 shadow-inner p-3">
-                <div className="text-xs font-medium text-slate-400 mb-2">
-                  Excel formatında çıktı (Ad;Soyad):
-                </div>
-                <pre className="text-xs sm:text-sm text-slate-100 font-mono whitespace-pre-wrap">
-                  {"Ad;Soyad\n"}
-                  {result
-                    .map((row) => `${row.firstName};${row.lastName}`)
-                    .join("\n")}
-                </pre>
+              <div className="px-2 py-2 text-xs text-gray-500 border-t" style={{ borderColor: THEME.gridLine, background: THEME.formulaBarBg }}>
+                Excel&apos;e yapıştır: Ad;Soyad (noktalı virgül ayraçlı)
               </div>
             )}
-
             {mode === "surnameOnly" && (
-              <div className="rounded-xl border border-emerald-500/40 bg-slate-900 shadow-lg shadow-emerald-900/40 p-4 sm:p-5">
-                <div className="text-xs sm:text-sm font-semibold text-emerald-300 mb-3">
-                  Sadece soyad listesi:
+              <div className="flex">
+                <div
+                  className="w-10 flex flex-col flex-shrink-0"
+                  style={{ background: THEME.headerBg, borderRight: `1px solid ${THEME.gridLine}` }}
+                >
+                  {result.map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-center text-xs text-gray-600 border-b"
+                      style={{ borderColor: THEME.gridLine, minHeight: 28 }}
+                    >
+                      {i + 1}
+                    </div>
+                  ))}
                 </div>
-                <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                  {result.map((row, index) => {
+                <div className="flex-1 flex flex-col">
+                  {result.map((row, i) => {
                     const surname = row.lastName || row.firstName;
                     return (
-                      <li
-                        key={index}
-                        className="text-base sm:text-[1.05rem] text-emerald-300 bg-slate-950/90 rounded-lg px-3 py-2.5 border border-slate-800/80"
+                      <div
+                        key={i}
+                        className="px-2 py-1.5 text-sm border-b font-medium"
+                        style={{ borderColor: THEME.gridLine, minHeight: 28, color: "#217346" }}
                       >
                         {surname}
-                      </li>
+                      </div>
                     );
                   })}
-                </ul>
+                </div>
               </div>
             )}
-          </div>
+          </>
         )}
-        <div className="text-xs text-slate-500 mt-1">
-          Ofis Akademi · Excel & Veri Analizi
-        </div>
+      </div>
+
+      {/* Alt bilgi */}
+      <div className="text-center text-xs text-gray-500 pb-4">
+        {"Ofis Akademi · Excel & Veri Analizi"}
       </div>
     </div>
   );

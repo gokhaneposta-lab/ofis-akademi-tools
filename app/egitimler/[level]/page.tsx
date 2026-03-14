@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useCallback, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import ExcelPracticeGrid from "@/components/ExcelPracticeGrid";
@@ -8,12 +8,15 @@ import type { PracticeGridDef } from "@/components/ExcelPracticeGrid";
 import { THEME } from "@/lib/theme";
 import { buildLevelWorkbook, downloadWorkbook, type SheetFromTable } from "@/lib/egitimExcelExport";
 
+/** PDF'de html2canvas'ın yakalayabilmesi için SVG'lere açık width/height ve stroke veriliyor */
+const svgProps = { width: 24, height: 24, viewBox: "0 0 24 24" as const, fill: "none" as const, stroke: "#374151", strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+
 /** Excel kısayolları için küçük ikonlar (Ctrl+X makas, Ctrl+C/V, Ctrl+T tablo) */
 function ShortcutIcon({ type, className = "h-4 w-4" }: { type: "cut" | "copy" | "paste" | "table"; className?: string }) {
   const c = className;
   if (type === "cut") {
     return (
-      <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <svg className={c} {...svgProps}>
         <circle cx="6" cy="6" r="3" />
         <circle cx="6" cy="18" r="3" />
         <line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
@@ -23,7 +26,7 @@ function ShortcutIcon({ type, className = "h-4 w-4" }: { type: "cut" | "copy" | 
   }
   if (type === "copy") {
     return (
-      <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <svg className={c} {...svgProps}>
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
       </svg>
@@ -31,7 +34,7 @@ function ShortcutIcon({ type, className = "h-4 w-4" }: { type: "cut" | "copy" | 
   }
   if (type === "paste") {
     return (
-      <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <svg className={c} {...svgProps}>
         <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
         <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
       </svg>
@@ -39,26 +42,13 @@ function ShortcutIcon({ type, className = "h-4 w-4" }: { type: "cut" | "copy" | 
   }
   if (type === "table") {
     return (
-      <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <svg className={c} {...svgProps}>
         <rect x="3" y="3" width="18" height="18" rx="1" />
         <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
       </svg>
     );
   }
   return null;
-}
-
-function ShortcutBadge({ keys, label, icon }: { keys: string; label: string; icon: "cut" | "copy" | "paste" | "table" }) {
-  return (
-    <span
-      className="inline-flex items-center gap-1 rounded border px-2 py-0.5 text-xs font-medium"
-      style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}
-      title={label}
-    >
-      <ShortcutIcon type={icon} className="h-3.5 w-3.5 opacity-80" />
-      <span>{keys}</span>
-    </span>
-  );
 }
 
 /** Tek bir fonksiyon: kullanım, sözdizimi, parametreler ve isteğe bağlı örnek tablo */
@@ -739,6 +729,13 @@ export default function TrainingLevelPage({
 
   const pdfContentRef = useRef<HTMLDivElement>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfFallback, setPdfFallback] = useState<{ url: string; name: string } | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pdfFallback?.url) URL.revokeObjectURL(pdfFallback.url);
+    };
+  }, [pdfFallback?.url]);
 
   const handleDownloadExcel = useCallback(() => {
     const sheets = getLevelPracticeSheets(levelKey);
@@ -749,43 +746,144 @@ export default function TrainingLevelPage({
   }, [levelKey, config.label]);
 
   const handleDownloadPdf = useCallback(async () => {
+    if (typeof window === "undefined") return;
     const el = pdfContentRef.current;
     if (!el) return;
+    if (pdfFallback?.url) {
+      URL.revokeObjectURL(pdfFallback.url);
+    }
+    setPdfFallback(null);
     setPdfLoading(true);
     try {
+      // Öğenin boyutlarının hazır olması için birkaç frame / kısa bekleme
+      await new Promise((r) => requestAnimationFrame(r));
+      await new Promise((r) => setTimeout(r, 100));
+      let h = el.scrollHeight || el.offsetHeight;
+      let w = el.scrollWidth || el.offsetWidth;
+      if (!h || !w) {
+        console.warn("PDF: içerik alanı henüz boyutlanmamış, kısa bekleniyor…");
+        await new Promise((r) => setTimeout(r, 300));
+        h = el.scrollHeight || el.offsetHeight;
+        w = el.scrollWidth || el.offsetWidth;
+      }
+      if (!h || !w) {
+        console.warn("PDF: içerik alanı boyutlanamadı.");
+        setPdfLoading(false);
+        return;
+      }
       const [{ default: h2c }, { default: JsPDF }] = await Promise.all([
         import("html2canvas"),
         import("jspdf"),
       ]);
+      // Yatay A4 oranı: 297×210 mm → 1122 px genişlik (96 dpi). Yakalama genişliğini buna sabitle.
+      const a4LandscapeW = 1122;
       const canvas = await h2c(el, {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
         logging: false,
-        height: el.scrollHeight,
-        width: el.scrollWidth,
-        windowHeight: el.scrollHeight,
-        windowWidth: el.scrollWidth,
+        height: h,
+        width: Math.max(w, a4LandscapeW),
+        windowHeight: h,
+        windowWidth: Math.max(w, a4LandscapeW),
+        onclone: (clonedDoc, clonedEl) => {
+          clonedEl.style.width = `${a4LandscapeW}px`;
+          clonedEl.style.maxWidth = `${a4LandscapeW}px`;
+          // html2canvas "lab"/"lch" renklerini desteklemiyor (Tailwind v4); hepsini rgb'ye çevir
+          const colorProps = ["color", "backgroundColor", "borderColor", "borderTopColor", "borderRightColor", "borderBottomColor", "borderLeftColor", "fill", "stroke"] as const;
+          const toRgb = (value: string): string | null => {
+            if (!value || value === "transparent" || value === "rgba(0, 0, 0, 0)") return null;
+            if (!/lab\(|lch\(/i.test(value)) return null;
+            try {
+              const canvas = clonedDoc.createElement("canvas");
+              canvas.width = 1;
+              canvas.height = 1;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) return null;
+              ctx.fillStyle = value;
+              ctx.fillRect(0, 0, 1, 1);
+              const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+              return `rgb(${r},${g},${b})`;
+            } catch {
+              // Canvas lab/lch desteklemiyorsa Tailwind gri tonlarına yakın yedek
+              return "rgb(75, 85, 99)";
+            }
+          };
+          const camelToKebab = (s: string) => s.replace(/([A-Z])/g, "-$1").toLowerCase().replace(/^-/, "");
+          const walk = (el: Element) => {
+            const style = clonedDoc.defaultView?.getComputedStyle(el);
+            if (style) {
+              for (const prop of colorProps) {
+                const value = style.getPropertyValue(camelToKebab(prop));
+                if (value) {
+                  const rgb = toRgb(value);
+                  if (rgb) (el as HTMLElement).style[prop] = rgb;
+                }
+              }
+            }
+            el.querySelectorAll("*").forEach(walk);
+          };
+          walk(clonedEl);
+          // SVG'lerin canvas'ta çizilmesi için boyutlarını zorla
+          clonedEl.querySelectorAll("svg").forEach((svg) => {
+            svg.setAttribute("width", "24");
+            svg.setAttribute("height", "24");
+            if (!svg.getAttribute("stroke") || svg.getAttribute("stroke") === "currentColor") svg.setAttribute("stroke", "#374151");
+          });
+        },
       });
       const pdf = new JsPDF("l", "mm", "a4"); // yatay A4 (297×210 mm)
-      const pageWidth = 297;
-      const pageHeight = 210;
+      const pageWidthMm = 297;
+      const pageHeightMm = 210;
       const imgW = canvas.width;
       const imgH = canvas.height;
-      const scale = pageWidth / imgW;
-      const scaledH = imgH * scale;
-      const totalPages = Math.ceil(scaledH / pageHeight);
+      // Ham sayfa yüksekliği (px)
+      const rawPageHeightPx = Math.floor((pageHeightMm / pageWidthMm) * imgW);
+      // Harflerin ortadan kesilmemesi için dilimi satır hizasına yuvarla (scale 2'de ~24–48px satır yüksekliği)
+      const LINE_HEIGHT_PX = 24;
+      const pageHeightPx = Math.floor(rawPageHeightPx / LINE_HEIGHT_PX) * LINE_HEIGHT_PX;
+      const totalPages = Math.ceil(imgH / pageHeightPx);
       for (let i = 0; i < totalPages; i++) {
         if (i > 0) pdf.addPage([297, 210], "l");
-        pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, -i * pageHeight, pageWidth, scaledH);
+        const sy = i * pageHeightPx;
+        const sh = Math.min(pageHeightPx, imgH - sy);
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = imgW;
+        sliceCanvas.height = sh;
+        const ctx = sliceCanvas.getContext("2d");
+        if (!ctx) {
+          pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, -i * pageHeightMm, pageWidthMm, imgH * (pageWidthMm / imgW));
+          continue;
+        }
+        ctx.drawImage(canvas, 0, sy, imgW, sh, 0, 0, imgW, sh);
+        const sliceData = sliceCanvas.toDataURL("image/png");
+        const sliceHeightMm = (sh / pageHeightPx) * pageHeightMm;
+        pdf.addImage(sliceData, "PNG", 0, 0, pageWidthMm, sliceHeightMm);
       }
       const safeName = config.label.replace(/\s+/g, "-").replace(/·/g, "") + "-Egitim-Ozeti.pdf";
-      pdf.save(safeName);
+      // Blob + programatik tıklama: linki document'a ekleyip tıklatmak birçok tarayıcıda gerekli
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = safeName;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      // Tarayıcı async sonrası programatik indirmeyi engelleyebilir; yedek olarak tıklanabilir link ver
+      setPdfFallback({ url, name: safeName });
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        setPdfFallback((prev) => (prev?.url === url ? null : prev));
+      }, 60_000);
     } catch (err) {
-      console.error("PDF oluşturulamadı:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("PDF oluşturulamadı:", msg, err);
     } finally {
       setPdfLoading(false);
     }
-  }, [config.label]);
+  }, [config.label, pdfFallback?.url]);
 
   if (!config) {
     return (
@@ -816,19 +914,19 @@ export default function TrainingLevelPage({
         description={config.description}
       />
 
-      <main className="mx-auto max-w-6xl flex flex-col px-4 py-6 sm:px-6 lg:px-8 pb-10">
+      <main className="mx-auto max-w-6xl flex flex-col px-4 py-6 sm:px-6 lg:px-8 pb-10 min-h-screen">
         {/* Yatay A4 oranında içerik alanı (297×210) */}
-        <div ref={pdfContentRef} className="space-y-4 mx-auto w-full max-w-[1122px] print:max-w-none">
+        <div ref={pdfContentRef} className="space-y-4 mx-auto w-full max-w-[1122px] print:max-w-none pb-24">
         <div
           className="rounded-b shadow-lg border border-t-0 overflow-hidden"
           style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
         >
-          <div className="grid gap-0 text-sm grid-cols-[1fr_1fr_auto]">
+          <div className="grid gap-0 text-sm grid-cols-[1fr_1fr]">
             <div className="p-3 border-b sm:border-b-0 sm:border-r" style={{ borderColor: THEME.gridLine, background: THEME.headerBg }}>
               <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-600">Kimler için?</h2>
               <p className="mt-1 text-gray-800 text-xs">{config.target}</p>
             </div>
-            <div className="p-3 sm:border-r" style={{ background: THEME.sheetBg, borderColor: THEME.gridLine }}>
+            <div className="p-3" style={{ background: THEME.sheetBg, borderColor: THEME.gridLine }}>
               <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-600">Odak</h2>
               <ul className="mt-1 space-y-0.5 text-gray-700 text-xs">
                 {config.focus.map((item) => (
@@ -838,15 +936,6 @@ export default function TrainingLevelPage({
                   </li>
                 ))}
               </ul>
-            </div>
-            <div className="p-3 flex flex-col justify-center gap-1.5 border-t sm:border-t-0" style={{ borderColor: THEME.gridLine, background: "#f0f4f8" }}>
-              <span className="text-[10px] font-semibold uppercase text-gray-500">Sık kullanılan kısayollar</span>
-              <div className="flex flex-wrap gap-1.5">
-                <ShortcutBadge keys="Ctrl+X" label="Kes" icon="cut" />
-                <ShortcutBadge keys="Ctrl+C" label="Kopyala" icon="copy" />
-                <ShortcutBadge keys="Ctrl+V" label="Yapıştır" icon="paste" />
-                <ShortcutBadge keys="Ctrl+T" label="Tabloya dönüştür" icon="table" />
-              </div>
             </div>
           </div>
           <div className="px-4 py-2 border-t flex flex-wrap items-center gap-2" style={{ borderColor: THEME.gridLine, background: "#f0f4f8" }}>
@@ -874,14 +963,29 @@ export default function TrainingLevelPage({
               </svg>
               {pdfLoading ? "PDF hazırlanıyor…" : "PDF olarak indir"}
             </button>
+            {pdfFallback && (
+              <a
+                href={pdfFallback.url}
+                download={pdfFallback.name}
+                onClick={() => {
+                  setTimeout(() => {
+                    URL.revokeObjectURL(pdfFallback.url);
+                    setPdfFallback(null);
+                  }, 500);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-green-700 bg-green-100 hover:bg-green-200 transition"
+              >
+                PDF hazır — indirmek için tıklayın
+              </a>
+            )}
           </div>
         </div>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
           {config.functionGroups.map((group) => (
             <article
               key={group.title}
-              className="rounded-b shadow border border-t-0 overflow-hidden"
+              className="rounded-b shadow border border-t-0"
               style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
             >
               <div className="px-4 py-2 border-b" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>

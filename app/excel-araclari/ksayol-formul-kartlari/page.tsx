@@ -81,23 +81,54 @@ export default function KsayolFormulKartlariPage() {
   const [pdfLoading, setPdfLoading] = useState(false);
 
   const handleDownloadPdf = useCallback(async () => {
+    if (typeof window === "undefined") return;
     const el = sheetRef.current;
     if (!el) return;
     setPdfLoading(true);
     try {
+      await new Promise((r) => requestAnimationFrame(r));
+      const h = el.offsetHeight || el.scrollHeight;
+      const w = el.offsetWidth || el.scrollWidth;
+      if (!h || !w) {
+        console.warn("PDF: içerik alanı henüz boyutlanmamış.");
+        setPdfLoading(false);
+        return;
+      }
       const [{ default: h2c }, { default: JsPDF }] = await Promise.all([
         import("html2canvas"),
         import("jspdf"),
       ]);
+      // html2canvas lab() rengini desteklemiyor; klonda Tailwind lab() değişkenlerini hex ile override et
+      const hexOverrides = `
+        :root, * {
+          --color-slate-50: #f8fafc;
+          --color-slate-100: #f1f5f9;
+          --color-slate-200: #e2e8ec;
+          --color-slate-300: #cbd5e1;
+          --color-slate-400: #94a3b8;
+          --color-slate-500: #64748b;
+          --color-slate-600: #475569;
+          --color-slate-700: #334155;
+          --color-slate-800: #1e293b;
+          --color-slate-900: #0f172a;
+          --color-slate-950: #020617;
+        }
+      `;
       const canvas = await h2c(el, {
         scale: 2,
         useCORS: true,
+        allowTaint: true,
         logging: false,
         backgroundColor: "#ffffff",
-        height: el.offsetHeight,
-        width: el.offsetWidth,
-        windowHeight: el.offsetHeight,
-        windowWidth: el.offsetWidth,
+        height: h,
+        width: w,
+        windowHeight: h,
+        windowWidth: w,
+        onclone(_, clonedEl) {
+          const style = clonedEl.ownerDocument.createElement("style");
+          style.textContent = hexOverrides;
+          clonedEl.ownerDocument.head.appendChild(style);
+        },
       });
       const pdf = new JsPDF("p", "mm", "a4");
       const pageW = A4_WIDTH_MM;
@@ -105,12 +136,20 @@ export default function KsayolFormulKartlariPage() {
       const imgW = canvas.width;
       const imgH = canvas.height;
       const scale = Math.min(pageW / imgW, pageH / imgH);
-      const w = imgW * scale;
-      const h = imgH * scale;
-      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, w, h);
-      pdf.save("OfisAkademi-Kisayol-Formul-Kartlari.pdf");
+      const wPx = imgW * scale;
+      const hPx = imgH * scale;
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, wPx, hPx);
+      // Blob + programatik tıklama: pdf.save() bazı tarayıcılarda çalışmıyor
+      const blob = pdf.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "OfisAkademi-Kisayol-Formul-Kartlari.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("PDF oluşturulamadı:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("PDF oluşturulamadı:", msg, err);
     } finally {
       setPdfLoading(false);
     }

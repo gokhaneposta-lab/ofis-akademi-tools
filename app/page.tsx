@@ -248,9 +248,9 @@ export default function Home() {
                   <div className="rounded-2xl bg-gradient-to-r from-emerald-500/30 to-sky-500/40 p-[1px]">
                     <div className="flex items-center justify-between rounded-[1rem] bg-slate-950/90 px-4 py-3 text-[11px] text-slate-200">
                       <span className="font-medium">
-                        7 günde Excel akışını kur
+                        Adım adım ücretsiz içerik
                       </span>
-                      <span className="text-emerald-300">Ücretsiz mini program</span>
+                      <span className="text-emerald-300">Temel · Orta · İleri</span>
                     </div>
                   </div>
                 </div>

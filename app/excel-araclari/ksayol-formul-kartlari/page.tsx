@@ -115,7 +115,7 @@ export default function KsayolFormulKartlariPage() {
         }
       `;
       const canvas = await h2c(el, {
-        scale: 2,
+        scale: 1.5,
         useCORS: true,
         allowTaint: true,
         logging: false,
@@ -138,7 +138,7 @@ export default function KsayolFormulKartlariPage() {
       const scale = Math.min(pageW / imgW, pageH / imgH);
       const wPx = imgW * scale;
       const hPx = imgH * scale;
-      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, wPx, hPx);
+      pdf.addImage(canvas.toDataURL("image/jpeg", 0.88), "JPEG", 0, 0, wPx, hPx);
       // Blob + programatik tıklama: pdf.save() bazı tarayıcılarda çalışmıyor
       const blob = pdf.output("blob");
       const url = URL.createObjectURL(blob);

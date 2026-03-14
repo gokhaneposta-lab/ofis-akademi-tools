@@ -778,10 +778,11 @@ export default function TrainingLevelPage({
       // Yatay A4 oranı: 297×210 mm → 1122 px genişlik (96 dpi). Yakalama genişliğini buna sabitle.
       const a4LandscapeW = 1122;
       const canvas = await h2c(el, {
-        scale: 2,
+        scale: 1.5,
         useCORS: true,
         allowTaint: true,
         logging: false,
+        backgroundColor: "#ffffff",
         height: h,
         width: Math.max(w, a4LandscapeW),
         windowHeight: h,
@@ -852,13 +853,13 @@ export default function TrainingLevelPage({
         sliceCanvas.height = sh;
         const ctx = sliceCanvas.getContext("2d");
         if (!ctx) {
-          pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, -i * pageHeightMm, pageWidthMm, imgH * (pageWidthMm / imgW));
+          pdf.addImage(canvas.toDataURL("image/jpeg", 0.88), "JPEG", 0, -i * pageHeightMm, pageWidthMm, imgH * (pageWidthMm / imgW));
           continue;
         }
         ctx.drawImage(canvas, 0, sy, imgW, sh, 0, 0, imgW, sh);
-        const sliceData = sliceCanvas.toDataURL("image/png");
+        const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.88);
         const sliceHeightMm = (sh / pageHeightPx) * pageHeightMm;
-        pdf.addImage(sliceData, "PNG", 0, 0, pageWidthMm, sliceHeightMm);
+        pdf.addImage(sliceData, "JPEG", 0, 0, pageWidthMm, sliceHeightMm);
       }
       const safeName = config.label.replace(/\s+/g, "-").replace(/·/g, "") + "-Egitim-Ozeti.pdf";
       // Blob + programatik tıklama: linki document'a ekleyip tıklatmak birçok tarayıcıda gerekli

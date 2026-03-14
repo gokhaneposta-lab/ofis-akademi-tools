@@ -4,7 +4,13 @@ import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import { THEME } from "@/lib/theme";
 
-const tools = [
+type Tool = {
+  name: string;
+  href: string;
+  description: string;
+};
+
+const egiticiAraclar: Tool[] = [
   {
     name: "Otomatik Rapor Şablonları",
     href: "/excel-araclari/rapor-sablonlari",
@@ -17,6 +23,15 @@ const tools = [
     description:
       "Dosya teslim etmeden önce formül, bağlantı ve hücre güvenliği kontrollerini adım adım işaretle.",
   },
+  {
+    name: "Kısayol & Formül Kartları",
+    href: "/excel-araclari/ksayol-formul-kartlari",
+    description:
+      "En çok kullanılan Excel kısayolları ve formülleri tek sayfada — PDF indir, yazdır, masana as.",
+  },
+];
+
+const hizliAraclar: Tool[] = [
   {
     name: "Ad Soyad Ayırıcı",
     href: "/excel-araclari/ad-soyad-ayir",
@@ -34,27 +49,137 @@ const tools = [
       "Birden fazla satırdaki verileri seçilen ayraç ile tek satırda birleştirir.",
   },
   {
-    name: "Kısayol & Formül Kartları",
-    href: "/excel-araclari/ksayol-formul-kartlari",
-    description:
-      "En çok kullanılan Excel kısayolları ve formülleri tek sayfada — PDF indir, yazdır, masana as.",
+    name: "Tekrarlananları Kaldır",
+    href: "/excel-araclari/tekrarlananlari-kaldir",
+    description: "Listedeki tekrar eden satırları kaldırır; benzersiz liste üretir.",
+  },
+  {
+    name: "Sayıyı Yazıya Çevir",
+    href: "/excel-araclari/sayi-yaziya",
+    description: "Rakamları Türkçe yazıya dönüştürür (fatura, çek, sözleşme için TL/kuruş).",
+  },
+  {
+    name: "Satır / Sütun Döndür (Transpoz)",
+    href: "/excel-araclari/transpoz",
+    description: "Satırları sütunlara, sütunları satırlara çevirir; Excel'e yapıştırmaya uygun.",
+  },
+  {
+    name: "Kelime & Karakter Sayacı",
+    href: "/excel-araclari/kelime-karakter-sayaci",
+    description: "Metindeki kelime ve karakter sayısı (boşluklu / boşluksuz).",
+  },
+  {
+    name: "Hafta Numarası & Gün Adı",
+    href: "/excel-araclari/hafta-gun",
+    description: "Tarihten ISO hafta numarası ve gün adı (Pazartesi, Salı…).",
   },
 ];
 
-export default function ToolsHub() {
-  return (
-    <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Excel Araçları"
-        description="Ad soyad ayırma, CSV sütunlara bölme ve liste birleştirme gibi işlemleri saniyeler içinde yapın."
-      />
+const finansAraclar: Tool[] = [
+  {
+    name: "IBAN Doğrulama",
+    href: "/excel-araclari/iban-dogrulama",
+    description: "IBAN numaralarını doğrulayın (TR ve uluslararası MOD-97).",
+  },
+  {
+    name: "Faiz Hesaplama",
+    href: "/excel-araclari/faiz-hesaplama",
+    description: "Basit ve bileşik faiz tutarını hesaplayın.",
+  },
+  {
+    name: "Kredi Taksit Hesaplama",
+    href: "/excel-araclari/kredi-taksit",
+    description: "Aylık taksit, toplam geri ödeme ve toplam faizi hesaplayın.",
+  },
+  {
+    name: "Yüzde Hesaplama",
+    href: "/excel-araclari/yuzde-hesaplama",
+    description: "X'in Y%'si kaç? A, B'nin yüzde kaçı? KDV, komisyon, marj.",
+  },
+  {
+    name: "Tarih Farkı (Vade / Gün)",
+    href: "/excel-araclari/tarih-farki",
+    description: "İki tarih arasındaki gün sayısını hesaplayın.",
+  },
+];
 
-      {/* Sayfa alanı - tablo görünümü */}
+const istatistikAraclar: Tool[] = [
+  {
+    name: "Betimsel İstatistik",
+    href: "/excel-araclari/betimsel-istatistik",
+    description: "Ortalama, medyan, mod, standart sapma, varyans, min, max, açıklık — sayı listesinden tek seferde.",
+  },
+  {
+    name: "Çeyrekler & Yüzdelik",
+    href: "/excel-araclari/ceyrek-yuzdelik",
+    description: "Minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90).",
+  },
+  {
+    name: "Korelasyon (Pearson)",
+    href: "/excel-araclari/korelasyon",
+    description: "İki değişken (X, Y) arasındaki Pearson korelasyon katsayısı r.",
+  },
+  {
+    name: "Z-Skor",
+    href: "/excel-araclari/z-score",
+    description: "Her değerin z-skoru; aykırı değer tespiti için.",
+  },
+  {
+    name: "Frekans Dağılımı",
+    href: "/excel-araclari/frekans-dagilimi",
+    description: "Sayıları sınıf aralıklarına bölerek frekans tablosu (histogram verisi).",
+  },
+  {
+    name: "Basit Doğrusal Regresyon",
+    href: "/excel-araclari/basit-regresyon",
+    description: "Y = a + b·X: eğim, kesişim ve R² — iki sütun X, Y.",
+  },
+];
+
+const SECTIONS: { id: string; title: string; subtitle: string; tools: Tool[] }[] = [
+  {
+    id: "ogrenme",
+    title: "Öğrenme & pratik",
+    subtitle: "Eğitici araçlar: şablonlar, checklist, kısayol kartları",
+    tools: egiticiAraclar,
+  },
+  {
+    id: "hizli",
+    title: "Hızlı işlem",
+    subtitle: "Anında kullan: metin, veri, tarih ve sayı araçları",
+    tools: hizliAraclar,
+  },
+  {
+    id: "finans",
+    title: "Finans & bankacılık",
+    subtitle: "IBAN, faiz, kredi taksit, yüzde, vade hesaplamaları",
+    tools: finansAraclar,
+  },
+  {
+    id: "istatistik",
+    title: "İstatistik",
+    subtitle: "Betimsel istatistik, çeyrekler, korelasyon, regresyon",
+    tools: istatistikAraclar,
+  },
+];
+
+function ToolTable({
+  tools,
+  title,
+  subtitle,
+}: {
+  tools: Tool[];
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <div>
+      {title ? <h2 className="mb-1 text-base font-bold text-gray-800">{title}</h2> : null}
+      {subtitle ? <p className="mb-3 text-xs text-gray-500">{subtitle}</p> : null}
       <div
-        className="mx-4 mt-2 mb-6 overflow-hidden rounded-b shadow-lg border border-t-0"
+        className="overflow-hidden rounded-b shadow-lg border border-t-0"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
-        {/* Sütun başlıkları */}
         <div
           className="flex border-b"
           style={{ background: THEME.cornerBg, borderColor: THEME.gridLine }}
@@ -82,12 +207,10 @@ export default function ToolsHub() {
             İşlem
           </div>
         </div>
-
-        {/* Satırlar */}
         {tools.map((tool, i) => (
           <div
             key={tool.href}
-            className="flex border-b group hover:bg-[#f0f7f4] transition-colors"
+            className="flex border-b group hover:bg-[#f0f7f4] transition-colors last:border-b-0"
             style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}
           >
             <div
@@ -121,6 +244,41 @@ export default function ToolsHub() {
               </Link>
             </div>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function ToolsHub() {
+  return (
+    <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
+      <PageRibbon
+        title="Excel Araçları"
+        description="Dört ana başlıkta: öğrenme & pratik, hızlı işlem, finans & bankacılık, istatistik."
+      />
+
+      <div className="mx-4 mt-2 mb-6 max-w-5xl">
+        {SECTIONS.map((section, index) => (
+          <section
+            key={section.id}
+            className="mb-10 rounded-xl border bg-white p-5 sm:p-6 shadow-sm"
+            style={{ borderColor: THEME.gridLine }}
+          >
+            <div className="flex items-start gap-3 mb-4">
+            <span
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+              style={{ background: THEME.ribbon }}
+            >
+              {index + 1}
+            </span>
+            <div>
+              <h2 className="text-base font-bold text-gray-800">{section.title}</h2>
+              <p className="text-xs text-gray-500 mt-0.5">{section.subtitle}</p>
+            </div>
+          </div>
+          <ToolTable tools={section.tools} title="" subtitle="" />
+          </section>
         ))}
       </div>
 

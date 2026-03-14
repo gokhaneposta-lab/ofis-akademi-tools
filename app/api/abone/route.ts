@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 /** Site base URL (production'da NEXT_PUBLIC_SITE_URL veya VERCEL_URL kullanın) */
 function getBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
@@ -12,6 +10,15 @@ function getBaseUrl(): string {
 
 export async function POST(request: Request) {
   try {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.error("RESEND_API_KEY is not set");
+      return NextResponse.json(
+        { error: "E-posta gönderilemedi. Lütfen daha sonra tekrar dene." },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const email = typeof body.email === "string" ? body.email.trim() : "";
 
@@ -24,6 +31,7 @@ export async function POST(request: Request) {
     const linkOrta = `${baseUrl}/egitimler/orta`;
     const linkIleri = `${baseUrl}/egitimler/ileri`;
 
+    const resend = new Resend(apiKey);
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM ?? "Ofis Akademi <onboarding@resend.dev>",
       to: [email],

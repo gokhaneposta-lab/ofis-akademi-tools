@@ -320,11 +320,19 @@ export default function Home() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold sm:text-2xl">
-                Faydalı Excel araçları
+                Excel Araçları
               </h2>
               <p className="mt-2 max-w-xl text-base text-slate-700">
-                Eğitimle birlikte gelen hazır dosya ve araçlar, günlük iş
-                hayatında direkt kullanabileceğin şekilde tasarlandı.
+                Eğitimle birlikte gelen hazır dosya ve araçlar; hesaplama, metin,
+                finans ve istatistik araçları günlük işte anında kullanıma hazır.
+              </p>
+              <p className="mt-2">
+                <Link
+                  href="/excel-araclari"
+                  className="text-sm font-semibold text-emerald-600 hover:text-emerald-500 underline underline-offset-2"
+                >
+                  Tüm Excel Araçları sayfası →
+                </Link>
               </p>
             </div>
           </div>

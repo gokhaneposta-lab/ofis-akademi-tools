@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-/** Site base URL (production'da NEXT_PUBLIC_SITE_URL veya VERCEL_URL kullanın) */
+/** Site base URL — e-postadaki linkler buna gider. Vercel'de NEXT_PUBLIC_SITE_URL tanımlı olmalı. */
 function getBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "http://localhost:3000";
+  return "https://ofisakademi.com";
 }
 
 export async function POST(request: Request) {

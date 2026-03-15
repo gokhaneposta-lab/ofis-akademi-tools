@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 const STORAGE_KEY = "ofis-akademi-hata-kontrol-checklist";
@@ -177,6 +179,13 @@ export default function HataKontrolChecklistPage() {
       </PageRibbon>
 
       <div className="mx-4 mt-6 mb-10 max-w-3xl space-y-8">
+        <NasilKullanilir
+          steps={[
+            "Excel dosyanızı teslim etmeden önce bu maddeleri sırayla kontrol edin.",
+            "Her maddeyi tamamladıkça işaretleyin; ilerleme otomatik kaydedilir.",
+            "İpucu ve Excel yolu olan maddelerde detayı görmek için genişletin.",
+          ]}
+        />
         {/* İlerleme */}
         <div className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -255,6 +264,9 @@ export default function HataKontrolChecklistPage() {
           </ul>
         </section>
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/hata-kontrol-checklist" />
+        </div>
         <div className="pt-4 text-center text-xs text-slate-500">
           Ofis Akademi · Excel & Veri Analizi
         </div>

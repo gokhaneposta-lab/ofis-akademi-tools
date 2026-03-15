@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { sayiyiYaziyaCevir } from "@/lib/sayiYaziya";
 
@@ -69,6 +71,15 @@ export default function SayiYaziyaPage() {
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Yazıya çevirmek istediğiniz sayıları (her satıra bir tane) aşağıdaki kutuya yapıştırın. Virgül veya nokta ondalık ayracı kullanabilirsiniz.",
+            "Türk lirası & kuruş veya sade sayı, büyük harf seçeneklerini işaretleyin.",
+            "Çevir butonuna tıklayın.",
+            "Sonucu kopyalayıp fatura, çek veya sözleşme metnine yapıştırın.",
+          ]}
+          excelAlternatif={<>Excel&apos;de Türkçe sayı yazıya çeviri hazır fonksiyon değildir; VBA makrosu veya eklenti kullanılabilir. İngilizce için <code className="bg-gray-100 px-1 rounded text-xs">NUMBERVALUE</code> ve metin birleştirme ile kısmen yapılabilir.</>}
+        />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between flex-wrap">
           <div className="flex flex-col gap-2">
             <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Format</span>
@@ -136,6 +147,9 @@ export default function SayiYaziyaPage() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/sayi-yaziya" />
+        </div>
         <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
     </div>

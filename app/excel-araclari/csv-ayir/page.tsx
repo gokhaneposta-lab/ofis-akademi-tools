@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 type SeparatorMode = "auto" | "comma" | "semicolon" | "tab";
@@ -120,6 +122,14 @@ export default function CsvAyirici() {
         className="mx-auto mt-2 mb-6 max-w-4xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "CSV metnini veya Excel'den kopyaladığınız hücreleri aşağıdaki kutuya yapıştırın.",
+            "Ayırıcı otomatik algılanır; isterseniz virgül, noktalı virgül veya sekme seçin.",
+            "Tablo göründükten sonra Sonucu Kopyala ile alıp Excel'e yapıştırın.",
+          ]}
+          excelAlternatif={<>Excel&apos;de CSV&apos;yi sütunlara ayırmak için <strong>Veri</strong> sekmesinden <strong>Metni Sütunlara Dönüştür</strong> sihirbazını kullanabilirsiniz.</>}
+        />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium uppercase tracking-wide text-gray-600">
@@ -218,6 +228,9 @@ export default function CsvAyirici() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/csv-ayir" />
+        </div>
         <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel &amp; Veri Analizi</div>
       </div>
     </div>

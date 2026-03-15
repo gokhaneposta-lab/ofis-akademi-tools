@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseTwoColumns, pearson, mean, std } from "@/lib/istatistik";
 
@@ -63,6 +65,14 @@ export default function KorelasyonPage() {
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "X ve Y sütunlarını Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki sayı; Tab veya noktalı virgül ile ayrılmış).",
+            "Hesapla butonuna tıklayın.",
+            "Pearson korelasyon katsayısı (r) ve özet istatistikler görünür; Sonucu Kopyala ile alabilirsiniz.",
+          ]}
+          excelAlternatif={<>Excel&apos;de Pearson korelasyon: <code className="bg-gray-100 px-1 rounded text-xs">=KOREL(A:A;B:B)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=CORREL(A:A;B:B)</code>.</>}
+        />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">X ve Y değerleri (her satırda iki sayı — Tab veya noktalı virgül ile)</label>
           <textarea
@@ -122,6 +132,9 @@ export default function KorelasyonPage() {
             </div>
           </div>
         )}
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/korelasyon" />
+        </div>
         <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
     </div>

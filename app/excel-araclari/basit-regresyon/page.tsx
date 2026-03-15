@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseTwoColumns, linearRegression } from "@/lib/istatistik";
 
@@ -55,6 +57,14 @@ export default function BasitRegresyonPage() {
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "X ve Y sütunlarını Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki sayı; Tab veya ; ile ayrılmış).",
+            "Hesapla butonuna tıklayın.",
+            "Y = a + b·X doğrusunun kesişim (a), eğim (b) ve R² görünür; Sonucu Kopyala ile alabilirsiniz.",
+          ]}
+          excelAlternatif={<>Excel&apos;de eğim: <code className="bg-gray-100 px-1 rounded text-xs">=EĞİM(Y;X)</code>, kesişim: <code className="bg-gray-100 px-1 rounded text-xs">=KESİŞİM(Y;X)</code>. Tam çıktı: <code className="bg-gray-100 px-1 rounded text-xs">=DOĞRUSAL()</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=LINEST()</code>.</>}
+        />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">X ve Y değerleri (her satırda iki sayı — Tab veya ; ile)</label>
           <textarea
@@ -106,6 +116,9 @@ export default function BasitRegresyonPage() {
             <p className="text-xs text-gray-500">R² 0–1 arası; 1'e yakın = doğrusal ilişki güçlü.</p>
           </div>
         )}
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/basit-regresyon" />
+        </div>
         <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
     </div>

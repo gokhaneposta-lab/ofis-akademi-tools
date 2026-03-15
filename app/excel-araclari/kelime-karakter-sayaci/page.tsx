@@ -3,6 +3,8 @@
 import React, { useState, useMemo } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 function countWords(text: string): number {
@@ -49,6 +51,14 @@ export default function KelimeKarakterSayaciPage() {
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Metni veya Excel'den kopyaladığınız hücreleri aşağıdaki kutuya yapıştırın.",
+            "Kelime sayısı ve karakter sayıları (boşluklu / boşluksuz) anında hesaplanır.",
+            "İsterseniz Sonucu Kopyala ile özeti panoya alıp rapora yapıştırın.",
+          ]}
+          excelAlternatif={<>Excel&apos;de karakter sayısı için <code className="bg-gray-100 px-1 rounded text-xs">=UZUNLUK(A1)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=LEN(A1)</code>; kelime sayısı için formül: boşluk sayısı+1 veya <code className="bg-gray-100 px-1 rounded text-xs">=LEN(TRIM(A1))-LEN(SUBSTITUTE(A1;" ";""))+1</code> (İngilizce).</>}
+        />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Metin (yapıştırın veya yazın)</label>
           <textarea
@@ -80,6 +90,9 @@ export default function KelimeKarakterSayaciPage() {
           <CopyButton onClick={handleCopy} disabled={!input.trim()} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
         </div>
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/kelime-karakter-sayaci" />
+        </div>
         <div className="text-xs text-gray-500">Ofis Akademi · Metin araçları</div>
       </div>
     </div>

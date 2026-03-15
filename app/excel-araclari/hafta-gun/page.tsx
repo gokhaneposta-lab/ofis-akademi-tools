@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 const GUN_ADLARI = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
@@ -104,6 +106,14 @@ export default function HaftaGunPage() {
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Tarih sütununu Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satıra bir tarih; DD.MM.YYYY veya YYYY-MM-DD).",
+            "Hesapla butonuna tıklayın.",
+            "Tabloda hafta numarası (ISO) ve gün adı görünür; Sonucu Kopyala ile Excel'e yapıştırın.",
+          ]}
+          excelAlternatif={<>Excel&apos;de hafta numarası: <code className="bg-gray-100 px-1 rounded text-xs">=ISOHAFTASAY(A1)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=ISOWEEKNUM(A1)</code>. Gün adı için <code className="bg-gray-100 px-1 rounded text-xs">=HAFTANINGÜNÜ(A1;2)</code> (2 = Pazartesi başlangıç) ve özel sayı biçimi &quot;gggg&quot; veya metin listesi.</>}
+        />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Tarihler (her satıra bir tarih — DD.MM.YYYY veya YYYY-MM-DD)</label>
           <textarea
@@ -157,6 +167,9 @@ export default function HaftaGunPage() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/hafta-gun" />
+        </div>
         <div className="text-xs text-gray-500">Ofis Akademi · Tarih araçları</div>
       </div>
     </div>

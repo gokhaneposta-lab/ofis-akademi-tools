@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 export default function AdSoyadAyirici() {
@@ -137,6 +139,20 @@ export default function AdSoyadAyirici() {
           </button>
         </div>
       </PageRibbon>
+
+      <div className="mx-auto mt-2 mb-6 max-w-3xl px-4 sm:px-6 flex flex-col gap-6">
+        <NasilKullanilir
+          steps={[
+            "Excel veya listeden tam ad sütununu kopyalayıp aşağıdaki alana yapıştırın (her satırda bir ad).",
+            "Ad + Soyad ayır veya Sadece Soyad modunu seçin; çıktıyı Tablo veya Excel (;) formatında alabilirsiniz.",
+            "Ayır butonuna tıklayın.",
+            "Sonucu Kopyala ile alıp Excel'e yapıştırın.",
+          ]}
+          excelAlternatif={
+            <>Excel&apos;de ad soyad ayırmak için <strong>Veri</strong> &gt; <strong>Metni Sütunlara Dönüştür</strong> veya formülle <code className="bg-gray-100 px-1 rounded text-xs">=SOL(A1;BUL(" ";A1)-1)</code> / <code className="bg-gray-100 px-1 rounded text-xs">=SAĞ(A1;UZUNLUK(A1)-BUL(" ";A1))</code> kullanabilirsiniz.</>
+          }
+        />
+      </div>
 
       {/* Formül çubuğu alanı */}
       <div
@@ -304,6 +320,9 @@ export default function AdSoyadAyirici() {
       </div>
 
       {/* Alt bilgi */}
+      <div className="mx-auto mt-6 max-w-3xl px-4">
+        <BenzerExcelAraclari currentHref="/excel-araclari/ad-soyad-ayir" />
+      </div>
       <div className="text-center text-xs text-gray-500 pb-4">
         {"Ofis Akademi · Excel & Veri Analizi"}
       </div>

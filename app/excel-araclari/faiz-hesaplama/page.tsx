@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 export default function FaizHesaplamaPage() {
@@ -66,6 +68,14 @@ export default function FaizHesaplamaPage() {
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Anapara (₺), yıllık faiz oranı (%) ve süreyi girin; süreyi yıl veya ay seçin.",
+            "Hesapla butonuna tıklayın.",
+            "Basit ve bileşik faiz tutarları ile toplam getiri görünür; Sonucu Kopyala ile alabilirsiniz.",
+          ]}
+          excelAlternatif={<>Excel&apos;de basit faiz: <code className="bg-gray-100 px-1 rounded text-xs">=Anapara*Oran*Süre</code>. Bileşik: <code className="bg-gray-100 px-1 rounded text-xs">=FAIZ(oran;dönem;-anapara)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=GELECEK_DEĞER(oran;dönem;;-anapara)</code> ile toplam değer.</>}
+        />
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Anapara (₺)</label>
@@ -131,6 +141,9 @@ export default function FaizHesaplamaPage() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/faiz-hesaplama" />
+        </div>
         <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
     </div>

@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers, mean, std, variance } from "@/lib/istatistik";
 
@@ -77,6 +79,14 @@ export default function BetimselIstatistikPage() {
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Sayıları virgül, boşluk veya satır sonu ile ayrılmış şekilde aşağıdaki kutuya yapıştırın (Excel'den sütun kopyalayabilirsiniz).",
+            "Hesapla butonuna tıklayın.",
+            "Ortalama, medyan, mod, standart sapma, varyans, min, max ve açıklık görünür; Sonucu Kopyala ile alabilirsiniz.",
+          ]}
+          excelAlternatif={<>Excel&apos;de: <code className="bg-gray-100 px-1 rounded text-xs">=ORTALAMA()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=MEDYAN()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=STDSAPMA.S()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=VAR.S()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=MİN()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=MAKS()</code>.</>}
+        />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (virgül, boşluk veya satır sonu ile ayrılmış)</label>
           <textarea
@@ -114,6 +124,9 @@ export default function BetimselIstatistikPage() {
             </table>
           </div>
         )}
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/betimsel-istatistik" />
+        </div>
         <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
     </div>

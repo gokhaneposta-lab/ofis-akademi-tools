@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { downloadWorkbook } from "@/lib/egitimExcelExport";
 import {
@@ -73,6 +75,13 @@ export default function RaporSablonlariPage() {
       </PageRibbon>
 
       <div className="mx-4 mt-6 mb-10 max-w-3xl space-y-8">
+        <NasilKullanilir
+          steps={[
+            "Aşağıdaki listeden istediğiniz şablonun yanındaki İndir butonuna tıklayın.",
+            "Excel dosyası indirilir; kendi verinizi yazın veya örnek veriyi düzenleyin.",
+            "Hazır formüller (TOPLA, ORTALAMA, EĞER vb.) zaten hücrelerde tanımlıdır.",
+          ]}
+        />
         {/* İndirilebilir şablonlar */}
         <section>
           <h2 className="text-base font-semibold text-slate-800 mb-3">
@@ -165,6 +174,9 @@ export default function RaporSablonlariPage() {
           </ul>
         </section>
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/rapor-sablonlari" />
+        </div>
         <div className="pt-4 text-center text-xs text-slate-500">
           Ofis Akademi · Excel & Veri Analizi
         </div>

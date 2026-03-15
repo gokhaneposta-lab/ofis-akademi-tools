@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { validateIBAN } from "@/lib/iban";
 
@@ -47,6 +49,14 @@ export default function IbanDogrulamaPage() {
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Doğrulamak istediğiniz IBAN'ları aşağıdaki kutuya yapıştırın (her satıra bir IBAN; boşluk olmadan).",
+            "Doğrula butonuna tıklayın.",
+            "Geçerli / Geçersiz sonucunu görün; geçerli IBAN'ları kopyalayıp kullanabilirsiniz.",
+          ]}
+          excelAlternatif={<>Excel&apos;de IBAN doğrulama hazır fonksiyon değildir; MOD 97 algoritması VBA veya formülle uygulanabilir. Banka sistemleri genelde otomatik kontrol eder.</>}
+        />
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -80,6 +90,9 @@ export default function IbanDogrulamaPage() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/iban-dogrulama" />
+        </div>
         <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
     </div>

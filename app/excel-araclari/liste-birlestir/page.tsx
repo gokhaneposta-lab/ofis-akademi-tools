@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 type DelimiterOption = "semicolon" | "comma" | "pipe" | "space" | "newline" | "custom";
@@ -97,6 +99,15 @@ export default function ListeBirlestirici() {
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Birleştirmek istediğiniz satırları (her satırda bir değer) aşağıdaki kutuya yapıştırın.",
+            "Ayracı seçin: noktalı virgül, virgül, pipe veya satır sonu.",
+            "Birleştir butonuna tıklayın; SQL IN formatı isterseniz ilgili seçeneği işaretleyin.",
+            "Sonucu kopyalayıp Excel veya sorguya yapıştırın.",
+          ]}
+          excelAlternatif={<>Excel&apos;de listeyi tek hücrede birleştirmek için <code className="bg-gray-100 px-1 rounded text-xs">=METNEBİRLEŞTİR(";";1;A1:A10)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=TEXTJOIN(";";TRUE;A1:A10)</code> kullanabilirsiniz.</>}
+        />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Ayraç</span>
@@ -181,6 +192,9 @@ export default function ListeBirlestirici() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/liste-birlestir" />
+        </div>
         <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel &amp; Veri Analizi</div>
       </div>
     </div>

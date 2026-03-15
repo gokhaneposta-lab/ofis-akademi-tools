@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 export default function TekrarlananlariKaldirPage() {
@@ -56,6 +58,21 @@ export default function TekrarlananlariKaldirPage() {
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Excel veya başka bir listeden satırları kopyalayıp aşağıdaki kutuya yapıştırın (her satırda bir değer).",
+            "İsterseniz seçenekleri ayarlayın: baştaki/sondaki boşlukları temizle, büyük/küçük harf duyarlı.",
+            "Tekrarları Kaldır butonuna tıklayın.",
+            "Oluşan benzersiz listeyi Sonucu Kopyala ile alıp tekrar Excel'e yapıştırın.",
+          ]}
+          excelAlternatif={
+            <>
+              Excel&apos;de tekrar eden satırları kaldırmak için <strong>Veri</strong> sekmesinden <strong>Yinelenenleri Kaldır</strong> kullanabilirsiniz.
+              Tek sütunda benzersiz değer listesi için <code className="bg-gray-100 px-1 rounded text-xs">=BENZERSİZ(A:A)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=UNIQUE(A:A)</code> (Excel 365).
+            </>
+          }
+        />
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between flex-wrap">
           <div className="flex flex-col gap-2">
             <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Seçenekler</span>
@@ -128,6 +145,9 @@ export default function TekrarlananlariKaldirPage() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/tekrarlananlari-kaldir" />
+        </div>
         <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
     </div>

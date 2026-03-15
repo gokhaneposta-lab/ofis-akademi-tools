@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 type Delimiter = "tab" | "comma" | "semicolon";
@@ -72,6 +74,15 @@ export default function TranspozPage() {
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Excel'den satırları veya sütunları kopyalayıp aşağıdaki kutuya yapıştırın (Tab ile ayrılmış olmalı).",
+            "Girdi ayırıcısını seçin: sekme, virgül veya noktalı virgül.",
+            "Döndür butonuna tıklayın.",
+            "Sonucu kopyalayıp Excel'e yapıştırın; satırlar sütun, sütunlar satır olacaktır.",
+          ]}
+          excelAlternatif={<>Excel&apos;de transpoz için veriyi kopyalayıp <strong>Yapıştır</strong> &gt; <strong>Özel Yapıştır</strong> &gt; <strong>Devrik</strong> seçeneğini işaretleyebilirsiniz.</>}
+        />
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Veri ayırıcı (girdi)</span>
           <div className="inline-flex rounded-lg border p-1 gap-1" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
@@ -142,6 +153,9 @@ export default function TranspozPage() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/transpoz" />
+        </div>
         <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
     </div>

@@ -3,6 +3,8 @@
 import { useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 /** A4: 210×297 mm - tek sayfa cheat sheet */
@@ -175,6 +177,15 @@ export default function KsayolFormulKartlariPage() {
       </div>
 
       <main className="mx-auto max-w-4xl px-4 py-6 pb-10 print:py-0 print:max-w-none">
+        <div className="print:hidden">
+          <NasilKullanilir
+            steps={[
+              "Aşağıdaki kartta kısayollar ve formüller tek sayfada listelenir.",
+              "PDF İndir ile A4 formatında indirip yazdırabilir veya masanıza asabilirsiniz.",
+              "Yazdırırken tarayıcıdan Yazdır (Ctrl+P) ile doğrudan da çıktı alabilirsiniz.",
+            ]}
+          />
+        </div>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <p className="text-sm text-slate-600">
             A4 sayfaya sığacak şekilde tasarlandı. Yazdırabilir veya PDF indirebilirsiniz.
@@ -270,6 +281,9 @@ export default function KsayolFormulKartlariPage() {
           </div>
         </div>
 
+        <div className="mt-6 print:hidden">
+          <BenzerExcelAraclari currentHref="/excel-araclari/ksayol-formul-kartlari" />
+        </div>
         <p className="mt-4 text-center text-xs text-slate-500 print:hidden">
           Ofis Akademi · Excel & Veri Analizi
         </p>

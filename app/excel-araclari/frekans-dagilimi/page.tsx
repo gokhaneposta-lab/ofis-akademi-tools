@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers } from "@/lib/istatistik";
 
@@ -77,6 +79,14 @@ export default function FrekansDagilimiPage() {
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Sayıları aşağıdaki kutuya yapıştırın (Excel'den sütun kopyalayabilirsiniz).",
+            "Sınıf genişliğini (aralık) girin (örn. 10 → 0–10, 10–20, 20–30).",
+            "Hesapla butonuna tıklayın; frekans tablosu görünür. Tabloyu Kopyala ile Excel'e yapıştırabilirsiniz.",
+          ]}
+          excelAlternatif={<>Excel&apos;de frekans: <code className="bg-gray-100 px-1 rounded text-xs">=FREKANS(veri;aralık_sınırları)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=FREQUENCY()</code>. Histogram için Veri Analizi eklentisi de kullanılabilir.</>}
+        />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel'den yapıştırın)</label>
           <textarea
@@ -129,6 +139,9 @@ export default function FrekansDagilimiPage() {
             </table>
           </div>
         )}
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/frekans-dagilimi" />
+        </div>
         <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
     </div>

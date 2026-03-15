@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import NasilKullanilir from "@/components/NasilKullanilir";
+import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
 type Mod = "x_yuzde" | "a_b_yuzde";
@@ -61,6 +63,14 @@ export default function YuzdeHesaplamaPage() {
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
+        <NasilKullanilir
+          steps={[
+            "Hesaplama türünü seçin: X'in Y%'si kaç? veya A, B'nin yüzde kaçı?",
+            "İki değeri girin (virgül veya nokta ondalık ayracı).",
+            "Hesapla butonuna tıklayın; sonucu kopyalayabilirsiniz.",
+          ]}
+          excelAlternatif={<>Excel&apos;de X'in Y%'si: <code className="bg-gray-100 px-1 rounded text-xs">=A1*B1/100</code>. A B'nin % kaçı: <code className="bg-gray-100 px-1 rounded text-xs">=A1/B1*100</code>.</>}
+        />
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Hesaplama türü</span>
           <div className="inline-flex rounded-lg border p-1 gap-1" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
@@ -129,6 +139,9 @@ export default function YuzdeHesaplamaPage() {
           </div>
         )}
 
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/yuzde-hesaplama" />
+        </div>
         <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
     </div>

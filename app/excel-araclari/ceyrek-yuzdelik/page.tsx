@@ -56,8 +56,8 @@ export default function CeyrekYuzdelikPage() {
   return (
     <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
       <PageRibbon
-        title="Çeyrekler & Yüzdelik"
-        description="Veri seti için minimum, Q1, medyan, Q3, maksimum ve isteğe bağlı özel yüzdelik dilimi (örn. %90)."
+        title="Çeyrek (Quartile) ve Yüzdelik Hesaplama"
+        description="Quartile ve percentile hesaplama: minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90)."
       />
       <div
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"

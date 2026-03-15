@@ -50,8 +50,8 @@ export default function BasitRegresyonPage() {
   return (
     <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
       <PageRibbon
-        title="Basit Doğrusal Regresyon"
-        description="İki değişken arasında Y = a + b·X doğrusu: eğim (b), kesişim (a) ve R². Excel'den 2 sütun yapıştırın."
+        title="Regresyon Hesaplama (Doğrusal)"
+        description="Basit doğrusal regresyon: Y = a + b·X, eğim, kesişim ve R². Excel'den 2 sütun yapıştırın."
       />
       <div
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"

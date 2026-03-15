@@ -105,34 +105,34 @@ const finansAraclar: Tool[] = [
 
 const istatistikAraclar: Tool[] = [
   {
-    name: "Betimsel İstatistik",
+    name: "Ortalama, Medyan, Standart Sapma Hesaplama",
     href: "/excel-araclari/betimsel-istatistik",
-    description: "Ortalama, medyan, mod, standart sapma, varyans, min, max, açıklık — sayı listesinden tek seferde.",
+    description: "Betimsel istatistik: ortalama, medyan, mod, standart sapma, varyans, min, max — sayı listesinden tek seferde.",
   },
   {
-    name: "Çeyrekler & Yüzdelik",
+    name: "Çeyrek (Quartile) ve Yüzdelik Hesaplama",
     href: "/excel-araclari/ceyrek-yuzdelik",
-    description: "Minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90).",
+    description: "Quartile ve percentile hesaplama: minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90).",
   },
   {
-    name: "Korelasyon (Pearson)",
+    name: "Korelasyon Hesaplama (Pearson)",
     href: "/excel-araclari/korelasyon",
-    description: "İki değişken (X, Y) arasındaki Pearson korelasyon katsayısı r.",
+    description: "İki değişken (X, Y) arasındaki Pearson korelasyon katsayısı r — ücretsiz korelasyon hesaplama.",
   },
   {
-    name: "Z-Skor",
+    name: "Z Skor (Z-Score) Hesaplama",
     href: "/excel-araclari/z-score",
-    description: "Her değerin z-skoru; aykırı değer tespiti için.",
+    description: "Z skor hesaplama: her değerin z-skoru, aykırı değer tespiti.",
   },
   {
-    name: "Frekans Dağılımı",
+    name: "Frekans Dağılımı Hesaplama",
     href: "/excel-araclari/frekans-dagilimi",
-    description: "Sayıları sınıf aralıklarına bölerek frekans tablosu (histogram verisi).",
+    description: "Sayıları sınıf aralıklarına bölerek frekans tablosu (histogram verisi) oluşturma.",
   },
   {
-    name: "Basit Doğrusal Regresyon",
+    name: "Regresyon Hesaplama (Doğrusal)",
     href: "/excel-araclari/basit-regresyon",
-    description: "Y = a + b·X: eğim, kesişim ve R² — iki sütun X, Y.",
+    description: "Basit doğrusal regresyon: Y = a + b·X, eğim, kesişim ve R² — iki sütun X, Y.",
   },
 ];
 
@@ -157,8 +157,8 @@ const SECTIONS: { id: string; title: string; subtitle: string; tools: Tool[] }[]
   },
   {
     id: "istatistik",
-    title: "İstatistik",
-    subtitle: "Betimsel istatistik, çeyrekler, korelasyon, regresyon",
+    title: "Excel Veri Analizi Araçları",
+    subtitle: "İstatistik araçları: çeyrek hesaplama, yüzdelik hesaplama, z skor, korelasyon hesaplama, regresyon",
     tools: istatistikAraclar,
   },
 ];

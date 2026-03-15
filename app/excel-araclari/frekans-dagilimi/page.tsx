@@ -72,8 +72,8 @@ export default function FrekansDagilimiPage() {
   return (
     <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
       <PageRibbon
-        title="Frekans Dağılımı"
-        description="Sayıları sınıf aralıklarına bölerek frekans tablosu oluşturun. Histogram için veri hazırlığı."
+        title="Frekans Dağılımı Hesaplama"
+        description="Sayıları sınıf aralıklarına bölerek frekans tablosu oluşturma. Histogram verisi, frekans dağılımı hesaplama."
       />
       <div
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"

@@ -259,6 +259,9 @@ export default function ToolsHub() {
       />
 
       <div className="mx-4 mt-2 mb-6 max-w-5xl">
+        <p className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm leading-relaxed text-slate-700">
+          Ücretsiz Excel araçları ile ad soyad ayırma, CSV verilerini sütunlara ayırma, liste birleştirme, sayıyı yazıya çevirme ve veri temizleme işlemlerini tarayıcıda saniyeler içinde yapabilirsiniz. Ofis Akademi Excel araçları kurulum gerektirmez ve tamamen ücretsizdir.
+        </p>
         {SECTIONS.map((section, index) => (
           <section
             key={section.id}

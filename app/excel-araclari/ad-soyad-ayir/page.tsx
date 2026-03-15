@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
+import JsonLdTool from "@/components/JsonLd";
 import { THEME } from "@/lib/theme";
 
 export default function AdSoyadAyirici() {
@@ -52,6 +53,12 @@ export default function AdSoyadAyirici() {
 
   return (
     <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
+      <JsonLdTool
+        name="Ad Soyad Ayırıcı — Ücretsiz Excel Aracı"
+        description="Tam ad listesini ad ve soyad olarak ayırın; Excel'e yapıştırıp tablo veya noktalı virgül formatında kopyalayın. Ücretsiz, tarayıcıda çalışır."
+        path="/excel-araclari/ad-soyad-ayir"
+        keywords={["excel ad soyad ayırma", "ad soyad ayırıcı", "isim soyisim ayırma", "Excel araçları"]}
+      />
       <PageRibbon
         title="Ad Soyad Ayırıcı"
         description="Tam ad listesini ad ve soyad olarak ayırın; tablo veya Excel formatında kopyalayın."

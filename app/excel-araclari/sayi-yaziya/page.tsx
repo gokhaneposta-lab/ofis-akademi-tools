@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import JsonLdTool from "@/components/JsonLd";
 import { THEME } from "@/lib/theme";
 import { sayiyiYaziyaCevir } from "@/lib/sayiYaziya";
 
@@ -53,6 +54,12 @@ export default function SayiYaziyaPage() {
 
   return (
     <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
+      <JsonLdTool
+        name="Sayıyı Yazıya Çevir — Ücretsiz Excel Aracı"
+        description="Rakamları Türkçe yazıya dönüştürün. Excel sayı yazıya çevir, fatura ve çek metni. TL ve kuruş formatı. Ücretsiz, tarayıcıda çalışır."
+        path="/excel-araclari/sayi-yaziya"
+        keywords={["excel sayı yazıya çevir", "sayıyı yazıya çevirme", "rakam yazıya", "fatura yazı", "Excel araçları"]}
+      />
       <PageRibbon
         title="Sayıyı Yazıya Çevir"
         description="Rakamları Türkçe yazıya dönüştürün. Fatura, çek ve sözleşme metinlerinde kullanım için TL ve kuruş formatı desteklenir."

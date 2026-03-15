@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import JsonLdTool from "@/components/JsonLd";
 import { THEME } from "@/lib/theme";
 
 type DelimiterOption = "semicolon" | "comma" | "pipe" | "space" | "newline" | "custom";
@@ -81,6 +82,12 @@ export default function ListeBirlestirici() {
 
   return (
     <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
+      <JsonLdTool
+        name="Liste Birleştirici — Ücretsiz Excel Aracı"
+        description="Birden fazla satırdaki değerleri seçtiğiniz ayraç ile tek satırda birleştirin. Excel liste birleştirme, SQL IN formatı. Ücretsiz, tarayıcıda çalışır."
+        path="/excel-araclari/liste-birlestir"
+        keywords={["excel liste birleştirme", "liste birleştirici", "satırları birleştir", "Excel araçları"]}
+      />
       <PageRibbon
         title="Liste Birleştirici"
         description="Birden fazla satırdaki değerleri seçtiğiniz ayraç ile tek satırda birleştirin. ID, TC, telefon listelerini SQL veya Excel için hazırlayın."

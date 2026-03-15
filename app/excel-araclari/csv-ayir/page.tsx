@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import JsonLdTool from "@/components/JsonLd";
 import { THEME } from "@/lib/theme";
 
 type SeparatorMode = "auto" | "comma" | "semicolon" | "tab";
@@ -104,6 +105,12 @@ export default function CsvAyirici() {
 
   return (
     <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
+      <JsonLdTool
+        name="CSV Ayırıcı — Ücretsiz Excel Aracı"
+        description="CSV metnini satır ve sütunlara ayırın. Virgül, noktalı virgül veya tab ayırıcıyı otomatik algılar. Ücretsiz, tarayıcıda çalışır."
+        path="/excel-araclari/csv-ayir"
+        keywords={["csv ayırma", "CSV sütunlara ayır", "Excel CSV", "veri ayırma", "Excel araçları"]}
+      />
       <PageRibbon
         title="CSV Ayırıcı"
         description="CSV metnini satır ve sütunlara ayırın. Ayırıcıyı otomatik algılar veya elle seçebilirsiniz."

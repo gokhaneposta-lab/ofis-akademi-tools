@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
+import JsonLdTool from "@/components/JsonLd";
 import { THEME } from "@/lib/theme";
 
 /** DD.MM.YYYY, DD/MM/YYYY, YYYY-MM-DD, Excel serial vb. */
@@ -150,6 +151,12 @@ export default function TarihFarkiPage() {
 
   return (
     <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
+      <JsonLdTool
+        name="Tarih Farkı (Vade / Yıl-Ay-Gün) — Ücretsiz Excel Aracı"
+        description="İki tarih arasındaki farkı Yıl, Ay, Gün ve toplam gün olarak hesaplayın. Excel'den çok satır yapıştırın, vade ve gün farkı alın. Ücretsiz, tarayıcıda çalışır."
+        path="/excel-araclari/tarih-farki"
+        keywords={["tarih farkı hesaplama", "vade hesaplama", "iki tarih arası gün", "Excel tarih farkı", "yıl ay gün farkı", "Excel araçları"]}
+      />
       <PageRibbon
         title="Tarih Farkı (Vade / Yıl-Ay-Gün)"
         description="Excel'den yapıştırdığınız başlama ve bitiş tarihleri için aradaki farkı Yıl, Ay, Gün ve toplam gün olarak hesaplayın."

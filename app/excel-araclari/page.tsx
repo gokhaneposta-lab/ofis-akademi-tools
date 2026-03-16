@@ -69,6 +69,21 @@ const hizliAraclar: Tool[] = [
     description: "Metindeki kelime ve karakter sayısı (boşluklu / boşluksuz).",
   },
   {
+    name: "Boşluk Temizle",
+    href: "/excel-araclari/bosluk-temizle",
+    description: "Excel başındaki ve sondaki boşlukları siler; metin içi çoklu boşlukları tek boşluğa indirir (TRIM).",
+  },
+  {
+    name: "Metni Kolonlara Böl",
+    href: "/excel-araclari/kolonlara-bol",
+    description: "Metni virgül, noktalı virgül veya sekme ile kolonlara ayırır — Excel Metni Sütunlara Dönüştür alternatifi.",
+  },
+  {
+    name: "Büyük / Küçük Harf Dönüştür",
+    href: "/excel-araclari/buyuk-kucuk-harf",
+    description: "Metni büyük harf, küçük harf veya her kelimenin ilk harfi büyük (Proper) yapar. UPPER, LOWER, PROPER.",
+  },
+  {
     name: "Hafta Numarası & Gün Adı",
     href: "/excel-araclari/hafta-gun",
     description: "Tarihten ISO hafta numarası ve gün adı (Pazartesi, Salı…).",

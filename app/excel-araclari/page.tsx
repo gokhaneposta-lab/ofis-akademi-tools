@@ -54,6 +54,11 @@ const hizliAraclar: Tool[] = [
     description: "Listedeki tekrar eden satırları kaldırır; benzersiz liste üretir.",
   },
   {
+    name: "Tarih Farkı (Vade / Gün / Yaş)",
+    href: "/excel-araclari/tarih-farki",
+    description: "İki tarih arası gün, ay, yıl hesaplar. Vade farkı veya yaş hesaplama (doğum tarihi → bugün) için ideal.",
+  },
+  {
     name: "Sayıyı Yazıya Çevir",
     href: "/excel-araclari/sayi-yaziya",
     description: "Rakamları Türkçe yazıya dönüştürür (fatura, çek, sözleşme için TL/kuruş).",
@@ -111,11 +116,6 @@ const finansAraclar: Tool[] = [
     href: "/excel-araclari/yuzde-hesaplama",
     description: "X'in Y%'si kaç? A, B'nin yüzde kaçı? KDV, komisyon, marj.",
   },
-  {
-    name: "Tarih Farkı (Vade / Gün)",
-    href: "/excel-araclari/tarih-farki",
-    description: "İki tarih arasındaki gün sayısını hesaplayın.",
-  },
 ];
 
 const istatistikAraclar: Tool[] = [
@@ -151,6 +151,34 @@ const istatistikAraclar: Tool[] = [
   },
 ];
 
+const mantikFormulAraclar: Tool[] = [
+  {
+    name: "Excel Formül Asistanı",
+    href: "/excel-araclari/formul-asistani",
+    description: "Yapmak istediğinizi yazın (örn. iki kolonu birleştir); size uygun Excel fonksiyonunu önerir (Türkçe / İngilizce).",
+  },
+  {
+    name: "DÜŞEYARA Formül Oluşturucu",
+    href: "/excel-araclari/duseyara-olusturucu",
+    description: "Aranan değer, tablo ve sütun numarasından DÜŞEYARA formülü üretir. Kopyalayıp Excel'e yapıştırın.",
+  },
+  {
+    name: "EĞER Formül Oluşturucu",
+    href: "/excel-araclari/eger-olusturucu",
+    description: "Koşul, doğruysa ve yanlışsa değerlerinden EĞER formülü oluşturur.",
+  },
+  {
+    name: "İç içe EĞER Oluşturucu",
+    href: "/excel-araclari/ic-ice-eger-olusturucu",
+    description: "Birden fazla koşul–sonuç satırından iç içe EĞER formülü üretir (not aralığı, kademe vb.).",
+  },
+  {
+    name: "Excel Formül Açıklayıcı",
+    href: "/excel-araclari/formul-aciklayici",
+    description: "Yapıştırdığınız Excel formülünü Türkçe olarak adım adım açıklar.",
+  },
+];
+
 const SECTIONS: { id: string; title: string; subtitle: string; tools: Tool[] }[] = [
   {
     id: "ogrenme",
@@ -169,6 +197,12 @@ const SECTIONS: { id: string; title: string; subtitle: string; tools: Tool[] }[]
     title: "Finans & bankacılık",
     subtitle: "IBAN, faiz, kredi taksit, yüzde, vade hesaplamaları",
     tools: finansAraclar,
+  },
+  {
+    id: "mantik",
+    title: "Mantık & Formül",
+    subtitle: "DÜŞEYARA, EĞER formül oluşturucu ve formül açıklayıcı — eğitimde kullanın",
+    tools: mantikFormulAraclar,
   },
   {
     id: "istatistik",

@@ -154,14 +154,14 @@ export default function TarihFarkiPage() {
   return (
     <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
       <JsonLdTool
-        name="Tarih Farkı (Vade / Yıl-Ay-Gün) — Ücretsiz Excel Aracı"
-        description="İki tarih arasındaki farkı Yıl, Ay, Gün ve toplam gün olarak hesaplayın. Excel'den çok satır yapıştırın, vade ve gün farkı alın. Ücretsiz, tarayıcıda çalışır."
+        name="Tarih Farkı (Vade / Gün / Yaş) — Ücretsiz Excel Aracı"
+        description="İki tarih arası vade, gün veya yaş hesaplama. Yıl, ay, gün ve toplam gün. Doğum tarihinden bugüne yaş hesaplama. Excel'den çok satır yapıştırın. Ücretsiz."
         path="/excel-araclari/tarih-farki"
         keywords={["tarih farkı hesaplama", "vade hesaplama", "iki tarih arası gün", "Excel tarih farkı", "yıl ay gün farkı", "Excel araçları"]}
       />
       <PageRibbon
-        title="Tarih Farkı (Vade / Yıl-Ay-Gün)"
-        description="Excel'den yapıştırdığınız başlama ve bitiş tarihleri için aradaki farkı Yıl, Ay, Gün ve toplam gün olarak hesaplayın."
+        title="Tarih Farkı (Vade / Gün / Yaş)"
+        description="İki tarih arası Yıl, Ay, Gün ve toplam gün hesaplar. Vade farkı veya yaş hesaplama (doğum tarihi → bugün) için kullanın. Excel'den çok satır yapıştırabilirsiniz."
       />
 
       <div

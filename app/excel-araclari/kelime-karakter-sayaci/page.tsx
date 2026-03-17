@@ -66,12 +66,12 @@ export default function KelimeKarakterSayaciPage() {
               <ExcelFormulBlok
                 baslik="Karakter sayısı için:"
                 formül="=UZUNLUK(A1)"
-                aciklama="UZUNLUK (İngilizce: LEN) fonksiyonu metindeki toplam karakter sayısını verir; boşluklar dahildir. Boşluksuz karakter sayısı için =UZUNLUK(DEĞİŞTİR(A1;" ";"")) kullanabilirsiniz."
+                aciklama="UZUNLUK (İngilizce: LEN) fonksiyonu metindeki toplam karakter sayısını verir; boşluklar dahildir. Boşluksuz karakter sayısı için =UZUNLUK(DEĞİŞTİR(A1;&quot; &quot;;&quot;&quot;)) kullanabilirsiniz."
               />
               <ExcelFormulBlok
                 baslik="Kelime sayısı için (boşlukla ayrılmış kelimeler):"
                 formül='=UZUNLUK(TRIM(A1))-UZUNLUK(DEĞİŞTİR(TRIM(A1);" ";""))+1'
-                aciklama="Bu formül boşluk sayısına dayanır: TEMİZLE ile baş/son boşluk alınır, DEĞİŞTİR ile tüm boşluklar silinir; iki uzunluk farkı + 1 yaklaşık kelime sayısını verir. İngilizce Excel'de TRIM → LEN, DEĞİŞTİR → SUBSTITUTE."
+                aciklama="Bu formül boşluk sayısına dayanır: TEMİZLE ile baş/son boşluk alınır, DEĞİŞTİR ile tüm boşluklar silinir; iki uzunluk farkı + 1 yaklaşık kelime sayısını verir. İngilizce Excel&apos;de TRIM → LEN, DEĞİŞTİR → SUBSTITUTE."
               />
             </>
           }

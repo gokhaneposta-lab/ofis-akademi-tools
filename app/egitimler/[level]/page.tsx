@@ -1358,13 +1358,13 @@ export default function TrainingLevelPage({
                   <img
                     src={group.image}
                     alt=""
-                    className="max-w-[200px] w-full rounded border shadow-sm object-cover"
+                    className="max-w-[640px] w-full rounded border shadow-sm object-cover"
                     style={{ borderColor: THEME.gridLine }}
                   />
                 </div>
               )}
               <div className="p-4 space-y-4">
-                {group.functions.map((fn) => (
+                {(group.functions as unknown as FunctionDef[]).map((fn) => (
                   <div
                     key={fn.name}
                     className="rounded-lg border p-3 space-y-2"

@@ -21,14 +21,14 @@ body {
   background-color: var(--background);
 }
 
-/* Excel dashboard hover animasyonları – sadece hover'da çalışır, performans dostu (GPU) */
+/* Excel dashboard animasyonları – sütunlar sürekli dalgalanır, daha yüksek hareket */
 @keyframes dashboard-bar-wave {
   0%,
   100% {
     transform: scaleY(1);
   }
   50% {
-    transform: scaleY(1.4);
+    transform: scaleY(1.85);
   }
 }
 

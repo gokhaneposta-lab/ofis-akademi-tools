@@ -445,6 +445,126 @@ const levelConfig = {
           },
         ],
       },
+      {
+        title: "Sık Sorulan: Ondalık Ayırıcı ve Bölge Ayarları",
+        description: "Türkiye'de Excel formüllerinde virgül mü nokta mı kullanılır?",
+        image: "/images/egitimler/temel-ondalik.png",
+        functions: [
+          {
+            name: "Ondalık ayırıcı virgül mü nokta mı?",
+            use: "Türkiye bölge ayarında formül parametreleri noktalı virgül (;) ile ayrılır, ondalık ayırıcı virgüldür. Sayı yazarken 12,5; formülde =TOPLA(A1;A2) kullanırsınız. İngilizce Excel'de virgül parametre ayırıcı, nokta ondalık ayırıcıdır.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Değer Olarak Yapıştır",
+        description: "Formül yerine sadece sonucu yapıştırmak.",
+        image: "/images/egitimler/temel-deger-yapistir.png",
+        functions: [
+          {
+            name: "Kopyaladığım formül değil, sonuç yapışsın",
+            use: "Hücreyi kopyalayıp yapıştırırken Özel Yapıştır (Ctrl+Alt+V) kullanın; \"Değerler\" seçeneğini işaretleyin. Böylece formül değil, hesaplanmış sayı veya metin yapışır. Kısayol: kopyala → hedefe sağ tık → Yapıştır Seçenekleri → Değerler (sadece 123 ikonu).",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Satır veya Sütun Sabitleme",
+        description: "Kaydırırken başlıkların hep görünmesi.",
+        image: "/images/egitimler/temel-bolmeleri-dondur.png",
+        functions: [
+          {
+            name: "Bölmeleri dondur (Freeze Panes)",
+            use: "Üst satırları veya sol sütunları sabitlemek için: Görünüm sekmesi → Pencere → Bölmeleri Dondur. Önce sabitlenecek satırın altındaki ve sütunun sağındaki hücreyi seçin, sonra Bölmeleri Dondur'u tıklayın. İlk satır veya ilk sütun için hazır seçenekler de vardır.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Otomatik Toplam Kısayolu",
+        description: "Hızlı toplam ve ortalama.",
+        image: "/images/egitimler/temel-otomatik-toplam.png",
+        functions: [
+          {
+            name: "Alt + = ile otomatik TOPLA",
+            use: "Toplam alınacak sayıların hemen altındaki (veya sağındaki) boş hücreyi seçin, Alt+= tuşlarına basın. Excel otomatik TOPLA formülünü yazar. Birden fazla satır/ sütun seçiliyse her biri için ayrı TOPLA oluşur.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Tarih Sayı Olarak Görünüyor",
+        description: "Tarih yerine 45000 gibi sayı neden çıkar?",
+        image: "/images/egitimler/temel-tarih-sayi.png",
+        functions: [
+          {
+            name: "Tarih hücresi neden sayı?",
+            use: "Excel tarihleri seri numarası olarak saklar (1 Ocak 1900 = 1). Hücre \"Genel\" veya \"Sayı\" formatındaysa tarih sayı gibi görünür. Çözüm: Hücreyi seçin → Sağ tık → Hücreleri Biçimlendir → Tarih (veya Özel: GG.AA.YYYY) seçin.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Boş Hücreleri Doldurma",
+        description: "Aynı değeri yukarıdaki gibi doldurmak.",
+        image: "/images/egitimler/temel-bos-hucre-doldur.png",
+        functions: [
+          {
+            name: "Boş hücrelere üstteki değeri yazmak",
+            use: "Boş hücreleri seçin (Ctrl ile çoklu seçim veya F5 → Özel → Boşluklar). Sonra = yazıp üstteki dolu hücreyi referans alın (örn. =A2) ve Ctrl+Enter ile tüm seçime aynı formülü uygulayın. İsterseniz sonucu Değer olarak yapıştırıp formülü kaldırın.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Yazdırma ve Sayfa Sığdırma",
+        description: "Tüm sütunlar tek sayfaya sığsın.",
+        image: "/images/egitimler/temel-yazdirma-sayfa.png",
+        functions: [
+          {
+            name: "Yazdırırken tüm sütunlar tek sayfaya",
+            use: "Sayfa Düzeni sekmesi → Genişlik ve Yükseklik açılır listelerinden \"1 sayfa\" seçin; veya Yazdırma Alanı → Ölçekle → Sığdır: 1 sayfa genişliğe, 1 sayfa yüksekliğe. Önizleme ile kontrol edin.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Hücre Birleştirme Ne Zaman Sorun Çıkarır?",
+        description: "Birleştirilmiş hücreler ve formül/filtre.",
+        image: "/images/egitimler/temel-birlestirme.png",
+        functions: [
+          {
+            name: "Hücreleri birleştirmek ne zaman sakıncalı?",
+            use: "Birleştirilmiş hücreler sıralama, filtre ve bazı formüllerde sorun çıkarabilir; birleşik alan tek hücre sayılır. Başlık için \"Hücreyi Ortala ve Birleştir\" yerine sadece \"Hücreyi Ortala\" kullanıp birleştirmemek veri tablolarında daha güvenlidir.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Açılır Liste (Veri Doğrulama)",
+        description: "Hücrede liste kutusu ile seçim.",
+        image: "/images/egitimler/temel-acilir-liste.png",
+        functions: [
+          {
+            name: "Dropdown liste nasıl yapılır?",
+            use: "Liste öğelerini bir sütuna yazın (örn. A1:A5). Listenin görüneceği hücreyi seçin → Veri sekmesi → Veri Doğrulama → İzin Ver: Liste → Kaynak: =A1:A5 (veya doğrudan \"Elma;Armut;Muz\"). Hücrede ok çıkacak; tıklayınca seçenekler görünür.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Kopyala-Yapıştırda Sadece Biçim veya Sadece Değer",
+        description: "Özel yapıştır seçenekleri.",
+        image: "/images/egitimler/temel-ozel-yapistir.png",
+        functions: [
+          {
+            name: "Sadece biçimi veya sadece değeri yapıştırmak",
+            use: "Kopyala (Ctrl+C) sonrası hedefe yapıştırırken Ctrl+Alt+V ile Özel Yapıştır açılır: Değerler (sadece sayı/metin), Biçimler (renk, kenarlık, yazı tipi), Formüller vb. ayrı ayrı seçilebilir. Sadece biçim için \"Biçimler\" seçin.",
+            params: [],
+          },
+        ],
+      },
     ],
   },
   orta: {
@@ -600,6 +720,126 @@ const levelConfig = {
           },
         ],
       },
+      {
+        title: "Sık Sorulan: İki Listeyi Karşılaştırma",
+        description: "A'da var B'de yok gibi listeler.",
+        image: "/images/egitimler/orta-iki-listeyi-karsilastir.png",
+        functions: [
+          {
+            name: "İki listeyi karşılaştırmak (A'da var B'de yok)",
+            use: "EĞERSAY veya SAYI ile: B listesinde olmayan A kayıtlarını bulmak için =EĞERSAY(B:B;A2)=0 koşulu kullanılabilir (A2'de A listesinden bir değer). Filtreleyerek veya yardımcı sütunda DOĞRU/YANLIŞ gösterip \"sadece A'da olanlar\" çıkarılır. Site üzerindeki İki Listeyi Karşılaştır aracı da aynı mantıkla çalışır.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: #YOK Hatası",
+        description: "DÜŞEYARA veya arama formüllerinde bulunamadı.",
+        image: "/images/egitimler/orta-yok-hatasi.png",
+        functions: [
+          {
+            name: "#YOK neden olur, nasıl gizlenir?",
+            use: "#YOK, aranan değer tabloda bulunamadığında (DÜŞEYARA, KAÇINCI vb.) oluşur. Gizlemek için formülü EĞERHATA veya EĞERYOK ile sarın: =EĞERHATA(DÜŞEYARA(...);\"-\") veya Excel 365'te =EĞERYOK(DÜŞEYARA(...);\"-\"). Böylece bulunamayanlarda \"-\" veya boş görünür.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: #BAŞV! (#REF!) Hatası",
+        description: "Geçersiz hücre referansı.",
+        image: "/images/egitimler/orta-basv-hatasi.png",
+        functions: [
+          {
+            name: "#BAŞV! hatası ne anlama gelir?",
+            use: "Silinen satır/sütun veya taşınan hücreye referans kaldığında oluşur. Formülde artık var olmayan bir aralık (örn. B sütunu silindiyse) yazıyorsa #BAŞV! görürsünüz. Çözüm: Formülü düzeltip doğru aralığı yazın veya silme/taşıma işlemini geri alın.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Metin Olarak Kaydedilmiş Sayılar",
+        description: "Sol hizalı sayılar, toplam almıyor.",
+        image: "/images/egitimler/orta-metin-sayi.png",
+        functions: [
+          {
+            name: "Metin olan sayıları sayıya çevirmek",
+            use: "Sol hizalı, yeşil uyarı köşesi varsa hücre \"metin\" formatındadır. Tek hücre: Hücreyi seç → uyarı ikonuna tıkla → \"Sayıya Dönüştür\". Toplu: Boş bir hücreye 1 yaz, kopyala; sayıya çevrilecek aralığı seç → Özel Yapıştır → Çarp. Böylece metin * 1 = sayı olur.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Tarih ve Saati Ayrı Sütunlara Bölmek",
+        description: "Tarih + saat tek hücredeyse.",
+        image: "/images/egitimler/orta-tarih-saat-ayir.png",
+        functions: [
+          {
+            name: "Tarih ve saati ayırmak",
+            use: "Tarih+saat tek hücredeyse: Tarih için =TAMSAYI(A2), saat için =A2-TAMSAYI(A2) ve hücreyi saat formatında gösterin; veya =METNEÇEVİR ile metin parçalayabilirsiniz. GÜN/AY/YIL ve SAAT/DAKİKA/SANIYE fonksiyonları da bileşenleri sayı olarak verir.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Koşullu Biçimlendirme ile Vurgulama",
+        description: "Belirli koşula göre renklendirme.",
+        image: "/images/egitimler/orta-kosullu-bicim.png",
+        functions: [
+          {
+            name: "Koşula göre hücre rengi vermek",
+            use: "Biçimlendirilecek aralığı seçin → Giriş → Koşullu Biçimlendirme → Kural türü seçin (örn. \"Büyüktür\" 50 → kırmızı dolgu). Özel formül için \"Formül kullan\" seçip =A2>50 gibi yazın. Kuralı düzenleyip uygulama aralığını genişletebilirsiniz.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Yinelenenleri Kaldırma",
+        description: "Tekrarlayan satırları temizlemek.",
+        image: "/images/egitimler/orta-yinelenenleri-kaldir.png",
+        functions: [
+          {
+            name: "Tekrarlayan satırları kaldırmak",
+            use: "Veriyi seçin → Veri sekmesi → Yinelenenleri Kaldır. Hangi sütunlara göre tekrar sayılacağını seçin (tüm sütunlar aynıysa tek satır kalır). Dikkat: Kalıcı siler; önce dosyanın kopyasında deneyin. BENZERSİZ fonksiyonu (Excel 365) ile formülle de benzersiz liste alınabilir.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Metni Sütunlara Bölme",
+        description: "Virgülle veya ayırıcıyla ayrılmış metin.",
+        image: "/images/egitimler/orta-metni-sutunlara.png",
+        functions: [
+          {
+            name: "Virgülle ayrılmış metni sütunlara bölmek",
+            use: "Veriyi veya tek sütunu seçin → Veri → Metni Sütunlara Dönüştür. Sınırlandırılmış seçin, ayırıcı olarak virgül veya noktalı virgül işaretleyin; Son. Türkiye'de CSV'de genelde noktalı virgül kullanılır. Site üzerindeki CSV Ayır aracı da aynı işi tarayıcıda yapar.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Tabloda Formül Otomatik Genişlemesi",
+        description: "Excel tablosunda yeni satıra formül yayılması.",
+        image: "/images/egitimler/orta-tablo-formul.png",
+        functions: [
+          {
+            name: "Tablo (Ctrl+T) formülü otomatik dolduruyor mu?",
+            use: "Evet. Veriyi Tabloya Dönüştür (Ctrl+T) yaptığınızda, tablo sütunundaki bir hücreye formül yazdığınızda Excel aynı sütundaki tüm satırlara otomatik uygular. Yeni satır eklediğinizde de formül otomatik iner. Sütun adları tablo başlığından gelir; =[@Tutar] gibi yapı kullanılabilir.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Ad Tanımla ile Formülleri Okunaklı Yapma",
+        description: "Aralıklara isim vermek.",
+        image: "/images/egitimler/orta-ad-tanimla.png",
+        functions: [
+          {
+            name: "Formülde A1:B10 yerine isim kullanmak",
+            use: "Formüller sekmesi → Ad Tanımla. Aralığa \"SatisVerisi\" gibi bir ad verin; formülde =TOPLA(SatisVerisi) yazabilirsiniz. Tablo kullanıyorsanız sütun adları zaten otomatik referans olur. Adlar sayfa ekleyip silerken daha az kırılır; raporları okumak kolaylaşır.",
+            params: [],
+          },
+        ],
+      },
     ],
   },
   ileri: {
@@ -709,6 +949,126 @@ const levelConfig = {
             params: [
               { name: "koşul1, koşul2, ...", description: "VE: hepsi doğru olmalı. VEYA: en az biri doğru olmalı; sonucu EĞER ile değere çevirirsin." },
             ],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: PivotTable Veri Kaynağını Güncelleme",
+        description: "Kaynak genişlediğinde Pivot'u yenilemek.",
+        image: "/images/egitimler/ileri-pivot-veri-yenile.png",
+        functions: [
+          {
+            name: "PivotTable veri eklenince güncellenmiyor",
+            use: "PivotTable Araçları → Analiz → Verileri Yenile (veya veri aralığını genişletip Pivot'un kaynağını değiştirin). Yeni satırlar eklediyseniz: Pivot'a sağ tık → PivotTable Seçenekleri → Veri → Kaynak veriyi yeni aralığa göre güncelleyin. Tablo (Ctrl+T) kullanırsanız kaynak otomatik büyür.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Dilimleyici Birden Fazla Pivot'a Bağlama",
+        description: "Bir dilimleyici tüm raporları filtrelesin.",
+        image: "/images/egitimler/ileri-dilimleyici-baglanti.png",
+        functions: [
+          {
+            name: "Aynı dilimleyiciyi birden fazla Pivot'ta kullanmak",
+            use: "Dilimleyiciye sağ tık → Dilimleyici Rapor Bağlantıları (veya PivotTable Bağlantıları). Listeden bağlanacak PivotTable'ları işaretleyin. Aynı veri kaynağından türetilmiş Pivot'lar için aynı alan adları olmalı.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: FİLTRE Sonucu Dinamik Liste",
+        description: "Excel 365 dinamik dizi davranışı.",
+        image: "/images/egitimler/ileri-filtre-dinamik.png",
+        functions: [
+          {
+            name: "FİLTRE sonucu komşu hücrelere taşıyor",
+            use: "FİLTRE (ve SIRALA, BENZERSİZ) dinamik dizi döndürür; sonuç otomatik olarak aşağı/sağa \"taşar\". Altındaki hücrelere yazı yazmayın; taşan alan tek blok sayılır. Excel 365 / 2021 gerekir. Eski sürümde DÜŞEYARA + EĞERSAY kombinasyonları veya yardımcı sütun kullanılır.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Grafik Veri Aralığını Dinamik Yapma",
+        description: "Yeni satır eklenince grafiğin güncellenmesi.",
+        image: "/images/egitimler/ileri-grafik-dinamik.png",
+        functions: [
+          {
+            name: "Grafik yeni eklenen veriyi göstermiyor",
+            use: "Veriyi Tablo (Ctrl+T) yaparsanız grafik tablo genişledikçe güncellenir. Alternatif: Grafik veri kaynağını formülle tanımlayın (Ad Tanımla ile OFFSET veya INDIS ile dinamik aralık). Excel 365'te tablo kullanmak çoğu senaryoda yeterlidir.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Gösterge Paneli ve Koşullu Biçimlendirme",
+        description: "KPI'ları renk veya ikonla göstermek.",
+        image: "/images/egitimler/ileri-gosterge-paneli.png",
+        functions: [
+          {
+            name: "Hedef/gerçekleşen göstergesi (gauge) nasıl yapılır?",
+            use: "İlerleme çubuğu: Koşullu Biçimlendirme → Veri Çubukları. Yüzde veya hedef karşılaştırması için hücrede yüzde değeri tutup Veri Çubukları veya Simge Setleri (yeşil/sarı/kırmızı ok) kullanın. Dashboard'da genelde formülle hedef/gerçek oranı hesaplanır, hücre bu oranı gösterir; biçimlendirme otomatik renk verir.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Çoklu Koşullu Toplam (ÇOKETOPLA Sınırı)",
+        description: "ÇOKETOPLA'da OR mantığı.",
+        image: "/images/egitimler/ileri-coketopla-or.png",
+        functions: [
+          {
+            name: "Birden fazla değerden birine uyuyorsa toplam (OR)",
+            use: "ÇOKETOPLA tek başına AND mantığıdır (hepsi sağlanmalı). OR için: ayrı ÇOKETOPLA'ları toplayın (=ÇOKETOPLA(...;A:A;\"Elma\")+ÇOKETOPLA(...;A:A;\"Armut\")). Veya yardımcı sütunda EĞER(VEYA(A2=\"Elma\";A2=\"Armut\");1;0) ile işaretleyip o sütuna göre ÇOKETOPLA yapın.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Tarih Dilimleyici ve Mali Yıl",
+        description: "Pivot'ta mali yıl veya çeyrek gruplama.",
+        image: "/images/egitimler/ileri-tarih-gruplama.png",
+        functions: [
+          {
+            name: "PivotTable'da tarihi ay/yıl/çeyrek gruplamak",
+            use: "Tarih alanını Pivot'a sürükleyin; otomatik Ay, Çeyrek, Yıl grupları oluşur. Gruplandır'a sağ tık → Gruplandır → Başlangıç/bitiş ve adım (Ay, Ay sayısı vb.) seçin. Mali yıl farklı başlıyorsa yardımcı sütunda =AY(A2)+ (mali yıl ay kayması) ile hesaplayıp o sütunu kullanın.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Yinelenen Başlıklar ve Birleştirilmiş Hücre",
+        description: "Pivot ve dış raporlarda birleştirme.",
+        image: "/images/egitimler/ileri-yinelenen-baslik.png",
+        functions: [
+          {
+            name: "Pivot'ta aynı başlık tekrar ediyor",
+            use: "PivotTable tasarım tercihidir: PivotTable Seçenekleri → Düzen ve Biçim → \"Yinelenen öğe etiketlerini göster\" işaretli olursa aynı satır etiketi her satırda tekrarlanır (okunabilirlik). İşareti kaldırırsanız sadece değiştiği yerde yazılır. Dış tablolarda birleştirilmiş hücre kullanmak sıralama/filtre sorunu çıkarır; mümkünse kaçının.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Dış Veri ve Power Query Giriş",
+        description: "Veri sekmesinden veri çekmek.",
+        image: "/images/egitimler/ileri-power-query.png",
+        functions: [
+          {
+            name: "Excel'e dış kaynaktan veri almak",
+            use: "Veri sekmesi → Veri Al (Power Query). Excel dosyası, CSV, web sayfası, SQL vb. bağlanabilir. Sorguyu düzenleyip Yükle ile sayfaya getirirsiniz; veri yenile ile güncellenir. Tekrarlayan raporları otomatikleştirmek için idealdir. Temel/orta seviye sonrası öğrenilmesi faydalıdır.",
+            params: [],
+          },
+        ],
+      },
+      {
+        title: "Sık Sorulan: Makro ve VBA Ne Zaman Gerekir?",
+        description: "Formül yetmediğinde otomasyon.",
+        image: "/images/egitimler/ileri-makro.png",
+        functions: [
+          {
+            name: "Makro ne zaman kullanılır?",
+            use: "Tekrarlayan tıklama, dosya aç/kapa, özel biçimlendirme toplu uygulama gibi işler formülle zor veya imkânsızdır; makro (VBA) ile otomatikleştirilebilir. Önce formül, PivotTable ve Power Query ile çözülebilir mi bakın; gerçekten tekrarlayan manuel adımlar varsa makro düşünülür. Güvenlik: Makro içeren dosyalar .xlsm olur; güvenilmeyen kaynaktan açmayın.",
+            params: [],
           },
         ],
       },
@@ -993,6 +1353,16 @@ export default function TrainingLevelPage({
                 <h2 className="text-sm font-semibold text-gray-800 sm:text-base">{group.title}</h2>
                 <p className="mt-0.5 text-xs text-gray-600 sm:text-sm">{group.description}</p>
               </div>
+              {"image" in group && group.image && (
+                <div className="px-4 pt-3">
+                  <img
+                    src={group.image}
+                    alt=""
+                    className="max-w-[200px] w-full rounded border shadow-sm object-cover"
+                    style={{ borderColor: THEME.gridLine }}
+                  />
+                </div>
+              )}
               <div className="p-4 space-y-4">
                 {group.functions.map((fn) => (
                   <div

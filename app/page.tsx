@@ -86,14 +86,14 @@ export default function Home() {
     return () => clearInterval(t);
   }, []);
 
-  // Rakamları hafif rastgele değiştir (canlı hissi)
+  // Rakamları daha hızlı hafif rastgele değiştir (canlı hissi)
   useEffect(() => {
     const t = setInterval(() => {
       setToplamSatis((v) => Math.max(200000, v + randomInt(-8000, 8000)));
       setAylikArtis((v) => Math.max(5, Math.min(35, v + randomInt(-3, 3))));
       setSiparis((v) => Math.max(800, v + randomInt(-80, 80)));
       setIadeOrani((v) => Math.max(0.5, Math.min(5, v + (Math.random() - 0.5) * 0.8)));
-    }, 2200);
+    }, 1100);
     return () => clearInterval(t);
   }, []);
 
@@ -184,41 +184,41 @@ export default function Home() {
                   <div className="grid grid-cols-4 gap-2 text-[11px] text-slate-200">
                     <div className="rounded-xl bg-emerald-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">Toplam Satış</p>
-                      <p className="mt-1 text-base font-semibold text-emerald-300 origin-bottom-left group-hover/dashboard:animate-[dashboard-number-pulse_0.5s_ease-out] tabular-nums">
+                      <p className="mt-1 text-base font-semibold text-emerald-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite] tabular-nums">
                         {formatCurrency(toplamSatis)}
                       </p>
                     </div>
                     <div className="rounded-xl bg-sky-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">Aylık Artış</p>
-                      <p className="mt-1 text-base font-semibold text-sky-300 origin-bottom-left group-hover/dashboard:animate-[dashboard-number-pulse_0.5s_ease-out_0.05s] tabular-nums">
+                      <p className="mt-1 text-base font-semibold text-sky-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.15s] tabular-nums">
                         {formatPercent(aylikArtis)}
                       </p>
                     </div>
                     <div className="rounded-xl bg-violet-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">Sipariş</p>
-                      <p className="mt-1 text-base font-semibold text-violet-300 origin-bottom-left group-hover/dashboard:animate-[dashboard-number-pulse_0.5s_ease-out_0.1s] tabular-nums">
+                      <p className="mt-1 text-base font-semibold text-violet-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.3s] tabular-nums">
                         {siparis.toLocaleString("tr-TR")}
                       </p>
                     </div>
                     <div className="rounded-xl bg-amber-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">İade Oranı</p>
-                      <p className="mt-1 text-base font-semibold text-amber-300 origin-bottom-left group-hover/dashboard:animate-[dashboard-number-pulse_0.5s_ease-out_0.15s] tabular-nums">
+                      <p className="mt-1 text-base font-semibold text-amber-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.45s] tabular-nums">
                         {formatPercent(iadeOrani, 1)}
                       </p>
                     </div>
                   </div>
-                  {/* Mini grafik alanı - hover'da daha yavaş dalgalanma */}
+                  {/* Mini grafik – sürekli dalgalanma, hover gerekmez */}
                   <div className="mt-3 rounded-xl bg-slate-900/50 px-3 py-2">
                     <p className="text-[9px] text-slate-500 mb-1.5">Satış trendi</p>
                     <div className="flex items-end justify-between gap-0.5 h-10">
                       {[10, 6, 14, 8, 11, 5, 16, 9, 12, 7].map((h, i) => (
                         <div
                           key={i}
-                          className="w-1.5 flex-1 rounded-t bg-gradient-to-t from-emerald-500/70 to-sky-400/60 origin-bottom group-hover/dashboard:animate-[dashboard-bar-wave_1.25s_ease-in-out_infinite]"
+                          className="w-1.5 flex-1 rounded-t bg-gradient-to-t from-emerald-500/70 to-sky-400/60 origin-bottom animate-[dashboard-bar-wave_1.4s_ease-in-out_infinite]"
                           style={{
                             height: `${h}px`,
                             minHeight: 4,
-                            animationDelay: `${i * 0.08}s`,
+                            animationDelay: `${i * 0.1}s`,
                           }}
                         />
                       ))}

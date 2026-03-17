@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -112,7 +113,23 @@ export default function HaftaGunPage() {
             "Hesapla butonuna tıklayın.",
             "Tabloda hafta numarası (ISO) ve gün adı görünür; Sonucu Kopyala ile Excel'e yapıştırın.",
           ]}
-          excelAlternatif={<>Excel&apos;de hafta numarası: <code className="bg-gray-100 px-1 rounded text-xs">=ISOHAFTASAY(A1)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=ISOWEEKNUM(A1)</code>. Gün adı için <code className="bg-gray-100 px-1 rounded text-xs">=HAFTANINGÜNÜ(A1;2)</code> (2 = Pazartesi başlangıç) ve özel sayı biçimi &quot;gggg&quot; veya metin listesi.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de tarihten ISO hafta numarası ve gün adı almak için aşağıdaki formülleri kullanabilirsiniz. A1 tarih hücresidir.
+              </p>
+              <ExcelFormulBlok
+                baslik="Hafta numarası (ISO 8601) için:"
+                formül="=ISOHAFTASAY(A1)"
+                aciklama="ISOHAFTASAY (İngilizce: ISOWEEKNUM) fonksiyonu tarihin yıl içindeki ISO hafta numarasını verir; hafta Pazartesi başlar. Raporlama ve planlama için sık kullanılır."
+              />
+              <ExcelFormulBlok
+                baslik="Gün adı (Pazartesi = 1) için:"
+                formül="=HAFTANINGÜNÜ(A1;2)"
+                aciklama="HAFTANINGÜNÜ (WEEKDAY) ikinci parametre 2 ise Pazartesi 1, Pazar 7 olur. Sonucu sayı yerine metin göstermek için özel sayı biçimi 'gggg' kullanın veya CHOOSE ile =SEÇ(HAFTANINGÜNÜ(A1;2);'Pazartesi';'Salı';...) yazabilirsiniz."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Tarihler (her satıra bir tarih — DD.MM.YYYY veya YYYY-MM-DD)</label>

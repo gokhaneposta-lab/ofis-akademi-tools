@@ -44,7 +44,14 @@ export default function DuseyaraOlusturucuPage() {
             "Oluşan formülü kopyalayıp Excel'de ilgili hücreye yapıştırın.",
           ]}
           excelAlternatif={
-            <>Excel&apos;de DÜŞEYARA dört parametre alır: <strong>aranan_değer</strong>, <strong>tablo</strong>, <strong>sütun_sayısı</strong>, <strong>0</strong> (tam) veya <strong>1</strong> (yaklaşık). Tablo sol sütununda arama yapılır.</>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de DÜŞEYARA (VLOOKUP) dört parametre alır: <strong>aranan_değer</strong> (ne arayacağınız), <strong>tablo</strong> (arama yapılacak aralık, örn. E2:F100), <strong>sütun_sayısı</strong> (tablonun kaçıncı sütunundan değer döndürüleceği), <strong>0</strong> (tam eşleşme) veya <strong>1</strong> (yaklaşık eşleşme).
+              </p>
+              <p>
+                Arama her zaman tablonun en sol sütununda yapılır. Tam eşleşme için son parametreyi 0 veya YANLIŞ yazın; listelerde sık kullanılır. Bu araç sizin için doğru formülü oluşturur; kopyalayıp Excel&apos;e yapıştırabilirsiniz.
+              </p>
+            </div>
           }
         />
         <div className="grid gap-4 sm:grid-cols-1">

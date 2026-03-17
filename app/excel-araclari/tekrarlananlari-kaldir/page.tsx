@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -67,8 +68,14 @@ export default function TekrarlananlariKaldirPage() {
           ]}
           excelAlternatif={
             <>
-              Excel&apos;de tekrar eden satırları kaldırmak için <strong>Veri</strong> sekmesinden <strong>Yinelenenleri Kaldır</strong> kullanabilirsiniz.
-              Tek sütunda benzersiz değer listesi için <code className="bg-gray-100 px-1 rounded text-xs">=BENZERSİZ(A:A)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=UNIQUE(A:A)</code> (Excel 365).
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de tekrar eden satırları kaldırmak için <strong>Veri</strong> sekmesinden <strong>Yinelenenleri Kaldır</strong> kullanabilirsiniz: veriyi seçin → Veri → Yinelenenleri Kaldır → Hangi sütunlara göre kaldırılacağını seçin → Tamam. Tüm satır aynıysa tekrar sayılır.
+              </p>
+              <ExcelFormulBlok
+                baslik="Tek sütunda benzersiz liste (Excel 365):"
+                formül="=BENZERSİZ(A:A)"
+                aciklama="BENZERSİZ (İngilizce: UNIQUE) fonksiyonu bir aralıktaki yinelenen değerleri kaldırıp yalnızca benzersiz değerleri döndürür. A:A yerine kendi sütun aralığınızı yazın. Sonuç dinamik bir liste olarak aşağıya doğru dolar; yeni benzersiz değer eklendiğinde liste kendini günceller."
+              />
             </>
           }
         />

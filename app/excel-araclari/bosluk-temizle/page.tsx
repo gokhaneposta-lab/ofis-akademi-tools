@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -49,7 +50,14 @@ export default function BoslukTemizlePage() {
           ]}
           excelAlternatif={
             <>
-              Excel&apos;de tek hücre için <code className="bg-gray-100 px-1 rounded text-xs">=TRIM(A1)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=TEMİZLE(A1)</code> kullanın. Baştaki/sondaki ve metin içi çoklu boşluklar tek boşluğa iner.
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de tek hücredeki baştaki ve sondaki boşlukları, ayrıca metin içindeki ardışık boşlukları tek boşluğa indirmek için aşağıdaki formülü kullanabilirsiniz.
+              </p>
+              <ExcelFormulBlok
+                baslik="Tek hücre için:"
+                formül="=TRIM(A1)"
+                aciklama="TRIM (Türkçe: TEMİZLE) fonksiyonu metnin başındaki ve sonundaki boşlukları siler; kelimeler arasındaki birden fazla boşluğu da tek boşluğa indirir. A1 yerine kendi hücre adresinizi yazın. Tüm sütun için B1'e =TRIM(A1) yazıp aşağı çoğaltabilirsiniz."
+              />
             </>
           }
         />

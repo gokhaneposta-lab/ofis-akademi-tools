@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -69,7 +70,23 @@ export default function YuzdeHesaplamaPage() {
             "İki değeri girin (virgül veya nokta ondalık ayracı).",
             "Hesapla butonuna tıklayın; sonucu kopyalayabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de X'in Y%'si: <code className="bg-gray-100 px-1 rounded text-xs">=A1*B1/100</code>. A B'nin % kaçı: <code className="bg-gray-100 px-1 rounded text-xs">=A1/B1*100</code>.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de yüzde hesaplama: bir sayının yüzde kaçı, veya iki sayıdan birinin diğerinin yüzde kaçı olduğu formülle bulunur.
+              </p>
+              <ExcelFormulBlok
+                baslik="X'in Y%'si kaç (örn. KDV, komisyon):"
+                formül="=A1*B1/100"
+                aciklama="A1 ana sayı, B1 yüzde oranı (örn. 18 KDV için). Sonuç = sayı × oran / 100. Örnek: 1000 TL'nin %18'i = 1000*18/100 = 180."
+              />
+              <ExcelFormulBlok
+                baslik="A, B'nin yüzde kaçı:"
+                formül="=A1/B1*100"
+                aciklama="İki değerin oranını yüzde olarak bulmak için: A1/B1*100. Örnek: 50, 200'ün %25'idir (50/200*100 = 25). B1 sıfır olmamalı."
+              />
+            </>
+          }
         />
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Hesaplama türü</span>

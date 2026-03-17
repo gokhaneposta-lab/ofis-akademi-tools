@@ -78,7 +78,16 @@ export default function SayiYaziyaPage() {
             "Çevir butonuna tıklayın.",
             "Sonucu kopyalayıp fatura, çek veya sözleşme metnine yapıştırın.",
           ]}
-          excelAlternatif={<>Excel&apos;de Türkçe sayı yazıya çeviri hazır fonksiyon değildir; VBA makrosu veya eklenti kullanılabilir. İngilizce için <code className="bg-gray-100 px-1 rounded text-xs">NUMBERVALUE</code> ve metin birleştirme ile kısmen yapılabilir.</>}
+          excelAlternatif={
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de Türkçe &quot;sayıyı yazıya çevirme&quot; (fatura, çek, sözleşme için) hazır bir fonksiyon değildir. İngilizce sürümde NUMBERSTRING benzeri işlevler bazı dillerde vardır; Türkçe için genelde VBA makrosu veya eklenti kullanılır.
+              </p>
+              <p>
+                Bu araç sayıyı Türkçe yazıya (TL ve kuruş dahil) anında çevirir; sonucu kopyalayıp Excel veya Word&apos;e yapıştırabilirsiniz. Kurulum gerektirmez, tarayıcıda çalışır.
+              </p>
+            </div>
+          }
         />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between flex-wrap">
           <div className="flex flex-col gap-2">

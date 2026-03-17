@@ -11,6 +11,7 @@ const toolPaths = [...hrefMatches].map((m) => m[1]);
 const staticPaths = [
   "",
   "/excel-araclari",
+  "/egitimler",
   "/egitimler/temel",
   "/egitimler/orta",
   "/egitimler/ileri",
@@ -25,7 +26,7 @@ const urlEntries = allPaths
     <loc>${loc}</loc>
     <lastmod>${now}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${p === "" ? "1.0" : p === "/excel-araclari" ? "0.9" : "0.8"}</priority>
+    <priority>${p === "" ? "1.0" : p === "/excel-araclari" || p === "/egitimler" ? "0.9" : "0.8"}</priority>
   </url>`;
   })
   .join("\n");

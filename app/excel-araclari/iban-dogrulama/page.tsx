@@ -55,7 +55,16 @@ export default function IbanDogrulamaPage() {
             "Doğrula butonuna tıklayın.",
             "Geçerli / Geçersiz sonucunu görün; geçerli IBAN'ları kopyalayıp kullanabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de IBAN doğrulama hazır fonksiyon değildir; MOD 97 algoritması VBA veya formülle uygulanabilir. Banka sistemleri genelde otomatik kontrol eder.</>}
+          excelAlternatif={
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de IBAN doğrulama için hazır bir fonksiyon yoktur. IBAN, MOD 97 algoritması ile kontrol edilir: sayısal değer 97&apos;ye bölünür, kalan 1 olmalıdır.
+              </p>
+              <p>
+                Bu kontrolü Excel&apos;de uzun formül zinciri veya VBA makrosu ile yapabilirsiniz; çoğu kullanıcı için banka sistemleri ve bu gibi çevrimiçi araçlar daha pratiktir. Bu araç TR ve uluslararası IBAN&apos;ları anında doğrular.
+              </p>
+            </div>
+          }
         />
         <textarea
           value={input}

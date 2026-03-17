@@ -4,6 +4,7 @@ import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -149,7 +150,21 @@ export default function AdSoyadAyirici() {
             "Sonucu Kopyala ile alıp Excel'e yapıştırın.",
           ]}
           excelAlternatif={
-            <>Excel&apos;de ad soyad ayırmak için <strong>Veri</strong> &gt; <strong>Metni Sütunlara Dönüştür</strong> veya formülle <code className="bg-gray-100 px-1 rounded text-xs">=SOL(A1;BUL(" ";A1)-1)</code> / <code className="bg-gray-100 px-1 rounded text-xs">=SAĞ(A1;UZUNLUK(A1)-BUL(" ";A1))</code> kullanabilirsiniz.</>
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de ad soyad ayırmak için <strong>Veri</strong> &gt; <strong>Metni Sütunlara Dönüştür</strong> sihirbazını kullanabilirsiniz. Formülle yapmak isterseniz aşağıdaki örnekler A1&apos;de tam ad olduğunu varsayar.
+              </p>
+              <ExcelFormulBlok
+                baslik="Adı almak için:"
+                formül='=SOL(A1;BUL(" ";A1)-1)'
+                aciklama="SOL fonksiyonu metnin sol tarafını alır. BUL fonksiyonu boşluğun yerini bulur. Böylece ilk boşluğa kadar olan kısım (ad) ayrılır."
+              />
+              <ExcelFormulBlok
+                baslik="Soyadı almak için:"
+                formül='=SAĞ(A1;UZUNLUK(A1)-BUL(" ";A1))'
+                aciklama="SAĞ fonksiyonu metnin sağ tarafını alır. UZUNLUK metnin toplam karakter sayısını verir, BUL boşluğun konumunu bulur. Böylece boşluktan sonraki kısım (soyad) alınır."
+              />
+            </>
           }
         />
       </div>

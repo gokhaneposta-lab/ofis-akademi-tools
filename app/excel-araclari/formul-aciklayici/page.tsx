@@ -136,7 +136,14 @@ export default function FormulAciklayiciPage() {
             "İsterseniz açıklamayı kopyalayıp not veya eğitim materyalinde kullanın.",
           ]}
           excelAlternatif={
-            <>Excel&apos;de formül çubuğunda formülü seçip F9 ile parça parça hesaplatabilirsiniz. Bu araç ise formülü Türkçe cümlelerle açıklar.</>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de formül çubuğunda formülün bir kısmını seçip <strong>F9</strong> tuşuna basarak o parçanın hesaplanmış değerini görebilirsiniz; adım adım debug için kullanışlıdır.
+              </p>
+              <p>
+                Bu araç ise yapıştırdığınız Excel formülünü Türkçe cümlelerle açıklar: hangi fonksiyon ne parametre alıyor, mantık nasıl işliyor. Başkasının yazdığı formülü anlamak veya eğitim amaçlı kullanmak için uygundur.
+              </p>
+            </div>
           }
         />
         <div>

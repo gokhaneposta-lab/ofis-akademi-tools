@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseTwoColumns, linearRegression } from "@/lib/istatistik";
@@ -63,7 +64,18 @@ export default function BasitRegresyonPage() {
             "Hesapla butonuna tıklayın.",
             "Y = a + b·X doğrusunun kesişim (a), eğim (b) ve R² görünür; Sonucu Kopyala ile alabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de eğim: <code className="bg-gray-100 px-1 rounded text-xs">=EĞİM(Y;X)</code>, kesişim: <code className="bg-gray-100 px-1 rounded text-xs">=KESİŞİM(Y;X)</code>. Tam çıktı: <code className="bg-gray-100 px-1 rounded text-xs">=DOĞRUSAL()</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=LINEST()</code>.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de basit doğrusal regresyon Y = a + b·X için eğim (b) ve kesişim (a) fonksiyonlarla hesaplanır.
+              </p>
+              <ExcelFormulBlok
+                baslik="Eğim (b) ve kesişim (a) için:"
+                formül="=EĞİM(Y_aralığı;X_aralığı)"
+                aciklama="EĞİM (SLOPE) doğrunun eğimini, KESİŞİM (INTERCEPT) y eksenini kestiği noktayı verir. Örnek: Y değerleri B1:B20, X değerleri A1:A20 ise =EĞİM(B1:B20;A1:A20) ve =KESİŞİM(B1:B20;A1:A20). R² için =PEARSON(A:A;B:A)^2 veya DOĞRUSAL (LINEST) ile daha detaylı çıktı alabilirsiniz."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">X ve Y değerleri (her satırda iki sayı — Tab veya ; ile)</label>

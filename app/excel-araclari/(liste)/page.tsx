@@ -10,27 +10,6 @@ type Tool = {
   description: string;
 };
 
-const egiticiAraclar: Tool[] = [
-  {
-    name: "Otomatik Rapor Şablonları",
-    href: "/excel-araclari/rapor-sablonlari",
-    description:
-      "Haftalık satış, stok ve performans raporları için örnek veri setleri ve hazır formüllü Excel şablonları.",
-  },
-  {
-    name: "Hata Kontrol Checklist'i",
-    href: "/excel-araclari/hata-kontrol-checklist",
-    description:
-      "Dosya teslim etmeden önce formül, bağlantı ve hücre güvenliği kontrollerini adım adım işaretle.",
-  },
-  {
-    name: "Kısayol & Formül Kartları",
-    href: "/excel-araclari/ksayol-formul-kartlari",
-    description:
-      "En çok kullanılan Excel kısayolları ve formülleri tek sayfada — PDF indir, yazdır, masana as.",
-  },
-];
-
 const hizliAraclar: Tool[] = [
   {
     name: "Ad Soyad Ayırıcı",
@@ -93,6 +72,16 @@ const hizliAraclar: Tool[] = [
     href: "/excel-araclari/hafta-gun",
     description: "Tarihten ISO hafta numarası ve gün adı (Pazartesi, Salı…).",
   },
+  {
+    name: "Tarih Format Dönüştürücü",
+    href: "/excel-araclari/tarih-format-donusturucu",
+    description: "Tarih formatlarını farklı biçimlere çevirir (ISO, Türkçe uzun, GG.AA.YYYY vb.).",
+  },
+  {
+    name: "Excel Dosya Birleştirici",
+    href: "/excel-araclari/excel-dosya-birlestirici",
+    description: "Birden fazla Excel dosyasını tek dosyada birleştirir. Aynı kolon yapısına sahip dosyaları alt alta ekleyerek tek Excel çıktısı oluşturur.",
+  },
 ];
 
 const finansAraclar: Tool[] = [
@@ -151,6 +140,34 @@ const istatistikAraclar: Tool[] = [
   },
 ];
 
+const databaseAraclar: Tool[] = [
+  {
+    name: "Excel → SQL INSERT Dönüştürücü",
+    href: "/excel-araclari/excel-sql-insert",
+    description: "Excel tablosunu SQL INSERT komutlarına dönüştürür. Veritabanına veri eklemek için kullanılır.",
+  },
+  {
+    name: "Excel → JSON Dönüştürücü",
+    href: "/excel-araclari/excel-json",
+    description: "Excel veya CSV verisini JSON formatına çevirir. API ve yazılım geliştirme için kullanılır.",
+  },
+  {
+    name: "İki Listeyi Karşılaştır",
+    href: "/excel-araclari/iki-listeyi-karsilastir",
+    description: "İki listeyi karşılaştırır ve ortak veya farklı kayıtları bulur.",
+  },
+  {
+    name: "E-posta Liste Temizleme",
+    href: "/excel-araclari/email-liste-temizleme",
+    description: "E-posta listesinde tekrar eden veya geçersiz formatta olan adresleri temizler.",
+  },
+  {
+    name: "Telefon Numarası Formatlama",
+    href: "/excel-araclari/telefon-formatlama",
+    description: "Telefon numaralarını standart formata çevirir (yerel, uluslararası, parantez, boşluk/tire/nokta).",
+  },
+];
+
 const mantikFormulAraclar: Tool[] = [
   {
     name: "Excel Formül Asistanı",
@@ -181,22 +198,10 @@ const mantikFormulAraclar: Tool[] = [
 
 const SECTIONS: { id: string; title: string; subtitle: string; tools: Tool[] }[] = [
   {
-    id: "ogrenme",
-    title: "Öğrenme & pratik",
-    subtitle: "Eğitici araçlar: şablonlar, checklist, kısayol kartları",
-    tools: egiticiAraclar,
-  },
-  {
     id: "hizli",
     title: "Hızlı işlem",
     subtitle: "Anında kullan: metin, veri, tarih ve sayı araçları",
     tools: hizliAraclar,
-  },
-  {
-    id: "finans",
-    title: "Finans & bankacılık",
-    subtitle: "IBAN, faiz, kredi taksit, yüzde, vade hesaplamaları",
-    tools: finansAraclar,
   },
   {
     id: "mantik",
@@ -205,10 +210,22 @@ const SECTIONS: { id: string; title: string; subtitle: string; tools: Tool[] }[]
     tools: mantikFormulAraclar,
   },
   {
+    id: "finans",
+    title: "Finans & bankacılık",
+    subtitle: "IBAN, faiz, kredi taksit, yüzde, vade hesaplamaları",
+    tools: finansAraclar,
+  },
+  {
     id: "istatistik",
     title: "Excel Veri Analizi Araçları",
     subtitle: "İstatistik araçları: çeyrek hesaplama, yüzdelik hesaplama, z skor, korelasyon hesaplama, regresyon",
     tools: istatistikAraclar,
+  },
+  {
+    id: "database",
+    title: "Database & Veri Dönüştürme Araçları",
+    subtitle: "Excel ile veritabanı arasında veri taşıma ve dönüştürme: SQL INSERT, aktarım",
+    tools: databaseAraclar,
   },
 ];
 
@@ -304,12 +321,12 @@ export default function ToolsHub() {
     <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
       <PageRibbon
         title="Excel Araçları"
-        description="Dört ana başlıkta: öğrenme & pratik, hızlı işlem, finans & bankacılık, istatistik."
+        description="Beş ana başlıkta: hızlı işlem, mantık & formül, finans & bankacılık, istatistik, database & veri dönüştürme."
       />
 
       <div className="mx-4 mt-2 mb-6 max-w-5xl">
         <p className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm leading-relaxed text-slate-700">
-          Ücretsiz Excel araçları ile ad soyad ayırma, CSV verilerini sütunlara ayırma, liste birleştirme, sayıyı yazıya çevirme ve veri temizleme işlemlerini tarayıcıda saniyeler içinde yapabilirsiniz. Ofis Akademi Excel araçları kurulum gerektirmez ve tamamen ücretsizdir.
+          Ücretsiz Excel araçları: hızlı işlem (ad soyad ayırma, CSV kolonlara ayırma, liste birleştirme, sayıyı yazıya çevirme, boşluk temizleme, büyük/küçük harf, tarih farkı, tarih format dönüştürme, Excel dosya birleştirme); mantık & formül (formül asistanı, DÜŞEYARA ve EĞER oluşturucu, formül açıklayıcı); finans (IBAN doğrulama, faiz, kredi taksit, yüzde); istatistik (betimsel istatistik, çeyrek-yüzdelik, korelasyon, z skor, regresyon); database & veri dönüştürme (Excel → SQL INSERT, Excel → JSON, iki listeyi karşılaştır, e-posta temizleme, telefon formatlama). Tarayıcıda çalışır, kurulum gerekmez. Ofis Akademi.
         </p>
         {SECTIONS.map((section, index) => (
           <section

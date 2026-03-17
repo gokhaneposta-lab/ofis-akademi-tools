@@ -29,6 +29,7 @@ const pathTitles: Record<string, string> = {
   "/excel-araclari/rapor-sablonlari": "Otomatik Rapor Şablonları",
   "/excel-araclari/hata-kontrol-checklist": "Hata Kontrol Checklist'i",
   "/excel-araclari/ksayol-formul-kartlari": "Kısayol & Formül Kartları",
+  "/egitimler": "Excel Eğitimleri",
   "/egitimler/temel": "Seviye 1 · Temel",
   "/egitimler/orta": "Seviye 2 · Orta",
   "/egitimler/ileri": "Seviye 3 · İleri",

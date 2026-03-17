@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -57,7 +58,23 @@ export default function KelimeKarakterSayaciPage() {
             "Kelime sayısı ve karakter sayıları (boşluklu / boşluksuz) anında hesaplanır.",
             "İsterseniz Sonucu Kopyala ile özeti panoya alıp rapora yapıştırın.",
           ]}
-          excelAlternatif={<>Excel&apos;de karakter sayısı için <code className="bg-gray-100 px-1 rounded text-xs">=UZUNLUK(A1)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=LEN(A1)</code>; kelime sayısı için formül: boşluk sayısı+1 veya <code className="bg-gray-100 px-1 rounded text-xs">=LEN(TRIM(A1))-LEN(SUBSTITUTE(A1;" ";""))+1</code> (İngilizce).</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de karakter ve kelime sayısını formülle alabilirsiniz. A1 metnin bulunduğu hücredir.
+              </p>
+              <ExcelFormulBlok
+                baslik="Karakter sayısı için:"
+                formül="=UZUNLUK(A1)"
+                aciklama="UZUNLUK (İngilizce: LEN) fonksiyonu metindeki toplam karakter sayısını verir; boşluklar dahildir. Boşluksuz karakter sayısı için =UZUNLUK(DEĞİŞTİR(A1;" ";"")) kullanabilirsiniz."
+              />
+              <ExcelFormulBlok
+                baslik="Kelime sayısı için (boşlukla ayrılmış kelimeler):"
+                formül='=UZUNLUK(TRIM(A1))-UZUNLUK(DEĞİŞTİR(TRIM(A1);" ";""))+1'
+                aciklama="Bu formül boşluk sayısına dayanır: TEMİZLE ile baş/son boşluk alınır, DEĞİŞTİR ile tüm boşluklar silinir; iki uzunluk farkı + 1 yaklaşık kelime sayısını verir. İngilizce Excel'de TRIM → LEN, DEĞİŞTİR → SUBSTITUTE."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Metin (yapıştırın veya yazın)</label>

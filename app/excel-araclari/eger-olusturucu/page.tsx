@@ -49,7 +49,14 @@ export default function EgerOlusturucuPage() {
             "Oluşan EĞER formülünü kopyalayıp Excel'de hücreye yapıştırın.",
           ]}
           excelAlternatif={
-            <>Excel&apos;de <code className="bg-gray-100 px-1 rounded text-xs">=EĞER(koşul;doğruysa;yanlışsa)</code> — koşul doğruysa ikinci, yanlışsa üçüncü değer döner. Metinler tırnak içinde yazılır.</>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de EĞER (IF) fonksiyonu üç parametre alır: <strong>koşul</strong> (mantıksal ifade, örn. A1&gt;10), <strong>doğruysa</strong> (koşul doğru olduğunda dönecek değer), <strong>yanlışsa</strong> (koşul yanlış olduğunda dönecek değer). Metinler çift tırnak içinde yazılır.
+              </p>
+              <p>
+                Örnek: =EĞER(B2&gt;=50;&quot;Geçti&quot;;&quot;Kaldı&quot;). Koşulda karşılaştırma operatörleri (&gt;, &lt;, =, &lt;&gt;, &gt;=, &lt;=) ve AND/OR (VE/VEYA) kullanılabilir. Bu araç sizin için EĞER formülünü adım adım oluşturur.
+              </p>
+            </div>
           }
         />
         <div className="grid gap-4">

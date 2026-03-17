@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers, mean, std } from "@/lib/istatistik";
@@ -61,7 +62,18 @@ export default function ZScorePage() {
             "Hesapla butonuna tıklayın.",
             "Her değerin z-skoru tabloda görünür; |z| > 2 genelde aykırı kabul edilir. Tabloyu Kopyala ile Excel'e yapıştırabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de z-skor: <code className="bg-gray-100 px-1 rounded text-xs">=(A1-ORTALAMA(A:A))/STDSAPMA.S(A:A)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=(A1-AVERAGE(A:A))/STDEV.S(A:A)</code>.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de z skor (z-score), bir değerin ortalamadan kaç standart sapma uzakta olduğunu gösterir. Aykırı değer tespiti ve standartlaştırma için kullanılır.
+              </p>
+              <ExcelFormulBlok
+                baslik="Tek hücrenin z skoru için:"
+                formül="=(A1-ORTALAMA(A:A))/STDSAPMA.S(A:A)"
+                aciklama="Ortalama (ORTALAMA / AVERAGE) veri setinin ortalamasıdır; STDSAPMA.S (STDEV.S) örnek standart sapmasıdır. Formül: (değer - ortalama) / standart sapma. Sonuç genelde -3 ile +3 arasındadır; 2'den büyük veya -2'den küçük değerler aykırı sayılabilir."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel sütunundan yapıştırın)</label>

@@ -128,7 +128,16 @@ export default function CsvAyirici() {
             "Ayırıcı otomatik algılanır; isterseniz virgül, noktalı virgül veya sekme seçin.",
             "Tablo göründükten sonra Sonucu Kopyala ile alıp Excel'e yapıştırın.",
           ]}
-          excelAlternatif={<>Excel&apos;de CSV&apos;yi sütunlara ayırmak için <strong>Veri</strong> sekmesinden <strong>Metni Sütunlara Dönüştür</strong> sihirbazını kullanabilirsiniz.</>}
+          excelAlternatif={
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de CSV verisini sütunlara ayırmak için <strong>Veri</strong> sekmesinden <strong>Metni Sütunlara Dönüştür</strong> sihirbazını kullanın. CSV dosyasını Excel&apos;de açtığınızda tüm veri tek sütunda görünür; bu sihirbaz virgül veya noktalı virgül gibi ayırıcıya göre veriyi sütunlara böler.
+              </p>
+              <p>
+                Adımlar: Veriyi seçin (veya tek sütunu seçin) → Veri → Metni Sütunlara Dönüştür → Sınırlandırılmış → Ayırıcıyı virgül veya noktalı virgül olarak seçin → Son. Türkçe Excel&apos;de ondalık ayırıcı virgül ise CSV ayırıcısı genelde noktalı virgül olur.
+              </p>
+            </div>
+          }
         />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1.5">

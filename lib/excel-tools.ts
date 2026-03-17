@@ -35,4 +35,11 @@ export const EXCEL_TOOLS: ExcelTool[] = [
   { name: "EĞER Formül Oluşturucu", href: "/excel-araclari/eger-olusturucu" },
   { name: "İç içe EĞER Oluşturucu", href: "/excel-araclari/ic-ice-eger-olusturucu" },
   { name: "Excel Formül Açıklayıcı", href: "/excel-araclari/formul-aciklayici" },
+  { name: "Excel → SQL INSERT Dönüştürücü", href: "/excel-araclari/excel-sql-insert" },
+  { name: "Excel → JSON Dönüştürücü", href: "/excel-araclari/excel-json" },
+  { name: "İki Listeyi Karşılaştır", href: "/excel-araclari/iki-listeyi-karsilastir" },
+  { name: "E-posta Liste Temizleme", href: "/excel-araclari/email-liste-temizleme" },
+  { name: "Telefon Numarası Formatlama", href: "/excel-araclari/telefon-formatlama" },
+  { name: "Tarih Format Dönüştürücü", href: "/excel-araclari/tarih-format-donusturucu" },
+  { name: "Excel Dosya Birleştirici", href: "/excel-araclari/excel-dosya-birlestirici" },
 ];

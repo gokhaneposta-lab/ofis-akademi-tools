@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -57,7 +58,24 @@ export default function BuyukKucukHarfPage() {
           ]}
           excelAlternatif={
             <>
-              Excel&apos;de <code className="bg-gray-100 px-1 rounded text-xs">=BÜYÜKHARF(A1)</code> / <code className="bg-gray-100 px-1 rounded text-xs">=UPPER(A1)</code>, <code className="bg-gray-100 px-1 rounded text-xs">=KÜÇÜKHARF(A1)</code> / <code className="bg-gray-100 px-1 rounded text-xs">=LOWER(A1)</code>, <code className="bg-gray-100 px-1 rounded text-xs">=YAZIM.DÜZENİ(A1)</code> / <code className="bg-gray-100 px-1 rounded text-xs">=PROPER(A1)</code> kullanabilirsiniz.
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de metni büyük harf, küçük harf veya her kelimenin ilk harfi büyük (Proper) yapmak için aşağıdaki fonksiyonları kullanabilirsiniz. A1 metnin bulunduğu hücredir.
+              </p>
+              <ExcelFormulBlok
+                baslik="Büyük harf için:"
+                formül="=BÜYÜKHARF(A1)"
+                aciklama="BÜYÜKHARF (İngilizce: UPPER) fonksiyonu metnin tüm harflerini büyük harfe çevirir. Örneğin 'merhaba' → 'MERHABA'."
+              />
+              <ExcelFormulBlok
+                baslik="Küçük harf için:"
+                formül="=KÜÇÜKHARF(A1)"
+                aciklama="KÜÇÜKHARF (İngilizce: LOWER) fonksiyonu metnin tüm harflerini küçük harfe çevirir."
+              />
+              <ExcelFormulBlok
+                baslik="Her kelimenin ilk harfi büyük (Proper) için:"
+                formül="=YAZIM.DÜZENİ(A1)"
+                aciklama="YAZIM.DÜZENİ (İngilizce: PROPER) fonksiyonu her kelimenin ilk harfini büyük, diğerlerini küçük yapar. Örneğin 'excel araçları' → 'Excel Araçları'."
+              />
             </>
           }
         />

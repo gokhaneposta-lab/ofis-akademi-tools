@@ -5,6 +5,7 @@ import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -174,7 +175,23 @@ export default function TarihFarkiPage() {
             "Hesapla butonuna tıklayın.",
             "Tabloda Yıl, Ay, Gün ve Toplam Gün görünür; Sonucu Kopyala ile Excel'e yapıştırın.",
           ]}
-          excelAlternatif={<>Excel&apos;de iki tarih arası gün: <code className="bg-gray-100 px-1 rounded text-xs">=B2-A2</code>. Yıl/ay/gün ayrı ayrı için <code className="bg-gray-100 px-1 rounded text-xs">=TARİHFARKI</code> (Excel 365) veya <code className="bg-gray-100 px-1 rounded text-xs">=DATEDIF(A2;B2;"Y")</code>, <code className="bg-gray-100 px-1 rounded text-xs">"YM"</code>, <code className="bg-gray-100 px-1 rounded text-xs">"MD"</code>.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de iki tarih arasındaki farkı gün, yıl veya ay olarak hesaplamak için aşağıdaki yöntemleri kullanabilirsiniz. A2 başlangıç, B2 bitiş tarihi olsun.
+              </p>
+              <ExcelFormulBlok
+                baslik="İki tarih arası gün sayısı için:"
+                formül="=B2-A2"
+                aciklama="Tarih hücreleri Excel&apos;de sayı olarak saklanır; iki tarihi çıkardığınızda aradaki gün sayısı elde edilir. Vade farkı veya yaş hesaplama (doğum tarihi ile bugün) için sık kullanılır."
+              />
+              <ExcelFormulBlok
+                baslik="Yıl, ay ve gün ayrı ayrı (Excel 365):"
+                formül="=TARİHFARKI(A2;B2;'Y')"
+                aciklama="TARİHFARKI (DATEDIF) üçüncü parametrede 'Y' (yıl), 'YM' (ay farkı), 'MD' (gün farkı) alabilir. Tam yaş veya vade için yıl ve kalan ay/gün ayrı hesaplanabilir. Eski sürümlerde =DATEDIF(A2;B2;'Y') kullanın."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">

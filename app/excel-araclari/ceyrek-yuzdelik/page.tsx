@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers, percentile, quartile } from "@/lib/istatistik";
@@ -69,7 +70,23 @@ export default function CeyrekYuzdelikPage() {
             "İsterseniz özel yüzdelik dilimini girin (örn. 90 → %90).",
             "Hesapla butonuna tıklayın; minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik görünür.",
           ]}
-          excelAlternatif={<>Excel&apos;de: <code className="bg-gray-100 px-1 rounded text-xs">=ÇEYREK(A:A;1)</code> (Q1), <code className="bg-gray-100 px-1 rounded text-xs">2</code> (medyan), <code className="bg-gray-100 px-1 rounded text-xs">3</code> (Q3). Yüzdelik: <code className="bg-gray-100 px-1 rounded text-xs">=YÜZDELİK(A:A;0,9)</code> (%90).</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de çeyrek (quartile) ve yüzdelik (percentile) hesaplamak için ÇEYREK ve YÜZDELİK fonksiyonlarını kullanabilirsiniz.
+              </p>
+              <ExcelFormulBlok
+                baslik="Çeyrek değerleri (Q1, medyan, Q3) için:"
+                formül="=ÇEYREK(A:A;1)"
+                aciklama="ÇEYREK (QUARTILE) ikinci parametrede 0 (min), 1 (Q1), 2 (medyan), 3 (Q3), 4 (max) alır. Kutu grafiği (box plot) için Q1 ve Q3 sık kullanılır. Veri aralığı A:A veya A1:A100 olabilir."
+              />
+              <ExcelFormulBlok
+                baslik="Belirli yüzdelik dilim için (örn. %90):"
+                formül="=YÜZDELİK(A:A;0,9)"
+                aciklama="YÜZDELİK (PERCENTILE) ikinci parametrede 0 ile 1 arası ondalık alır; 0,9 = %90. yüzdelik dilim. Yani değerlerin %90'ı bu sonuçtan küçük veya eşittir. Excel 2010+ için YÜZDELİK.ÇEYREKLİ veya PERCENTILE.INC kullanılabilir."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel'den yapıştırabilirsiniz)</label>

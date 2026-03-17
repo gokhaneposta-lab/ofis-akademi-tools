@@ -69,7 +69,14 @@ export default function IcIceEgerOlusturucuPage() {
             "Oluşan iç içe EĞER formülünü kopyalayıp Excel'e yapıştırın.",
           ]}
           excelAlternatif={
-            <>Excel&apos;de her koşul için bir EĞER açılır; yanlış kısmında bir sonraki EĞER gelir. Çok koşulda IFS (EĞERLER) veya XLOOKUP da kullanılabilir.</>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de birden fazla koşula göre sonuç vermek için iç içe EĞER kullanılır: her EĞER&apos;in &quot;yanlışsa&quot; kısmına bir sonraki EĞER yazılır. Örnek: not aralığı (0-49 Kaldı, 50-69 Orta, 70+ İyi) veya kademe belirleme.
+              </p>
+              <p>
+                Excel 365&apos;te EĞERLER (IFS) ile koşulları tek fonksiyonda sırayla yazabilirsiniz; okunaklılık artar. Alternatif olarak XLOOKUP veya DÜŞEYARA ile tablo tabanlı eşleştirme de kullanılabilir. Bu araç iç içe EĞER formülünü otomatik üretir.
+              </p>
+            </div>
           }
         />
         <div>

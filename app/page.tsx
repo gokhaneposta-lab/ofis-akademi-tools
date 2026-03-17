@@ -273,6 +273,14 @@ export default function Home() {
                 Konular, ofiste yaşanan gerçek problemler üzerinden kurgulandı.
                 Her bölüm, kendi dosyası ve egzersizleriyle birlikte gelir.
               </p>
+              <p className="mt-2">
+                <Link
+                  href="/egitimler"
+                  className="text-sm font-semibold text-emerald-600 hover:text-emerald-500 underline underline-offset-2"
+                >
+                  Tüm Excel Eğitimleri sayfası →
+                </Link>
+              </p>
             </div>
             <div className="text-sm text-slate-600">
               Temelden ileri seviyeye net yol haritası

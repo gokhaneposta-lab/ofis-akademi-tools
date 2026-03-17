@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -74,7 +75,23 @@ export default function FaizHesaplamaPage() {
             "Hesapla butonuna tıklayın.",
             "Basit ve bileşik faiz tutarları ile toplam getiri görünür; Sonucu Kopyala ile alabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de basit faiz: <code className="bg-gray-100 px-1 rounded text-xs">=Anapara*Oran*Süre</code>. Bileşik: <code className="bg-gray-100 px-1 rounded text-xs">=FAIZ(oran;dönem;-anapara)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=GELECEK_DEĞER(oran;dönem;;-anapara)</code> ile toplam değer.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de basit faiz ve bileşik faiz hesaplamak için aşağıdaki formülleri kullanabilirsiniz.
+              </p>
+              <ExcelFormulBlok
+                baslik="Basit faiz tutarı için:"
+                formül="=Anapara*Oran*Süre"
+                aciklama="Basit faizde faiz tutarı = anapara × yıllık oran × süre (yıl). Örnek: 10000 TL, %10, 2 yıl → 10000*0,1*2 = 2000 TL faiz. Oran ondalık (0,1) veya yüzde hücre referansı olabilir."
+              />
+              <ExcelFormulBlok
+                baslik="Bileşik faiz — toplam gelecek değer:"
+                formül="=GELECEK_DEĞER(oran;dönem_sayısı;;-anapara)"
+                aciklama="GELECEK_DEĞER (FV) dönemlik bileşik faizle anaparanın ulaşacağı toplam tutarı verir. oran dönemlik (yıllık %12 ise aylık 0,01), dönem_sayısı toplam dönem. Sadece faiz tutarı için toplam değerden anaparayı çıkarın. FAIZ fonksiyonu da belirli dönemdeki faizi verir."
+              />
+            </>
+          }
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

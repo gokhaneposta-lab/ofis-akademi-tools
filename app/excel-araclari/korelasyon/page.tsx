@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseTwoColumns, pearson, mean, std } from "@/lib/istatistik";
@@ -71,7 +72,18 @@ export default function KorelasyonPage() {
             "Hesapla butonuna tıklayın.",
             "Pearson korelasyon katsayısı (r) ve özet istatistikler görünür; Sonucu Kopyala ile alabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de Pearson korelasyon: <code className="bg-gray-100 px-1 rounded text-xs">=KOREL(A:A;B:B)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=CORREL(A:A;B:B)</code>.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de iki değişken (X ve Y) arasındaki Pearson korelasyon katsayısını KOREL fonksiyonu ile hesaplayabilirsiniz.
+              </p>
+              <ExcelFormulBlok
+                baslik="Pearson korelasyon katsayısı için:"
+                formül="=KOREL(A:A;B:B)"
+                aciklama="KOREL (İngilizce: CORREL) iki eşit uzunluktaki aralığı alır ve -1 ile +1 arasında korelasyon katsayısı döner. +1'e yakın pozitif, -1'e yakın negatif ilişki; 0'a yakın zayıf ilişki anlamına gelir. A:A X değerleri, B:B Y değerleri; satır sayıları eşit olmalı."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">X ve Y değerleri (her satırda iki sayı — Tab veya noktalı virgül ile)</label>

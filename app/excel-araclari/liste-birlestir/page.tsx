@@ -5,6 +5,7 @@ import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -106,7 +107,18 @@ export default function ListeBirlestirici() {
             "Birleştir butonuna tıklayın; SQL IN formatı isterseniz ilgili seçeneği işaretleyin.",
             "Sonucu kopyalayıp Excel veya sorguya yapıştırın.",
           ]}
-          excelAlternatif={<>Excel&apos;de listeyi tek hücrede birleştirmek için <code className="bg-gray-100 px-1 rounded text-xs">=METNEBİRLEŞTİR(";";1;A1:A10)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=TEXTJOIN(";";TRUE;A1:A10)</code> kullanabilirsiniz.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de bir aralıktaki hücreleri tek hücrede, seçtiğiniz ayraçla birleştirmek için METNEBİRLEŞTİR (TEXTJOIN) fonksiyonunu kullanabilirsiniz. Excel 365 ve sonrasında kullanılabilir.
+              </p>
+              <ExcelFormulBlok
+                baslik="Listeyi ayraçla birleştirmek için:"
+                formül='=METNEBİRLEŞTİR(";";1;A1:A10)'
+                aciklama="METNEBİRLEŞTİR (TEXTJOIN) üç parametre alır: ayraç (örn. noktalı virgül), boş hücreleri yok say (1 veya DOĞRU), birleştirilecek aralık (A1:A10). Sonuç tek hücrede 'değer1;değer2;değer3' şeklinde gelir. Ayracı virgül veya boşluk yapmak için ilk parametreyi ',' veya ' ' yazın."
+              />
+            </>
+          }
         />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1.5">

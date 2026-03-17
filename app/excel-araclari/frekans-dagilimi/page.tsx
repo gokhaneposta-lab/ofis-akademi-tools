@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers } from "@/lib/istatistik";
@@ -85,7 +86,18 @@ export default function FrekansDagilimiPage() {
             "Sınıf genişliğini (aralık) girin (örn. 10 → 0–10, 10–20, 20–30).",
             "Hesapla butonuna tıklayın; frekans tablosu görünür. Tabloyu Kopyala ile Excel'e yapıştırabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de frekans: <code className="bg-gray-100 px-1 rounded text-xs">=FREKANS(veri;aralık_sınırları)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=FREQUENCY()</code>. Histogram için Veri Analizi eklentisi de kullanılabilir.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de sayıları sınıf aralıklarına göre saymak (frekans dağılımı) için FREKANS fonksiyonu veya Veri Analizi histogramı kullanılır.
+              </p>
+              <ExcelFormulBlok
+                baslik="Frekans dağılımı (sınıf sayıları) için:"
+                formül="=FREKANS(veri_aralığı;sınıf_sınırları)"
+                aciklama="FREKANS (FREQUENCY) iki parametre alır: sayıların bulunduğu aralık (örn. A1:A100) ve sınıf üst sınırları (örn. 10, 20, 30...). Sonuç bir dizi olarak döner; sınıf_sınırları kadar hücre seçip formülü Ctrl+Shift+Enter ile dizi formülü olarak girmeniz gerekir. Histogram grafiği için Veri → Veri Analizi → Histogram da kullanılabilir."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel'den yapıştırın)</label>

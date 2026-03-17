@@ -101,7 +101,14 @@ export default function KolonlaraBolPage() {
             "Sonucu Kopyala ile tabloyu Excel'e yapıştırın.",
           ]}
           excelAlternatif={
-            <>Excel&apos;de <strong>Veri</strong> sekmesi → <strong>Metni Sütunlara Dönüştür</strong> sihirbazı ile aynı işlemi yapabilirsiniz. Virgül veya noktalı virgülle ayrılmış metni kolonlara böler.</>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de metni kolonlara bölmek için <strong>Veri</strong> sekmesinden <strong>Metni Sütunlara Dönüştür</strong> sihirbazını kullanın. Bu özellik virgül, noktalı virgül veya sekme ile ayrılmış metni otomatik algılayıp sütunlara dağıtır.
+              </p>
+              <p>
+                Adımlar: Veriyi seçin → Veri → Metni Sütunlara Dönüştür → Sınırlandırılmış seçin → Ayırıcı olarak virgül veya noktalı virgül işaretleyin → Son. Sabit genişlikle bölmek isterseniz ilgili adımda sütun çizgilerini kendiniz ayarlayabilirsiniz.
+              </p>
+            </div>
           }
         />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

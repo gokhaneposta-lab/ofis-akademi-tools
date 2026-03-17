@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers, mean, std, variance } from "@/lib/istatistik";
@@ -85,7 +86,18 @@ export default function BetimselIstatistikPage() {
             "Hesapla butonuna tıklayın.",
             "Ortalama, medyan, mod, standart sapma, varyans, min, max ve açıklık görünür; Sonucu Kopyala ile alabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de: <code className="bg-gray-100 px-1 rounded text-xs">=ORTALAMA()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=MEDYAN()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=STDSAPMA.S()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=VAR.S()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=MİN()</code>, <code className="bg-gray-100 px-1 rounded text-xs">=MAKS()</code>.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de betimsel istatistik (ortalama, medyan, standart sapma, varyans, min, max) tek fonksiyonlarla hesaplanır. A:A veya A1:A100 gibi sayı aralığını kullanın.
+              </p>
+              <ExcelFormulBlok
+                baslik="Sık kullanılan fonksiyonlar:"
+                formül="=ORTALAMA(A:A)"
+                aciklama="ORTALAMA (AVERAGE) aritmetik ortalama, MEDYAN (MEDIAN) ortanca değer, STDSAPMA.S (STDEV.S) örnek standart sapması, VAR.S (VAR.S) örnek varyansı, MİN (MIN) minimum, MAKS (MAX) maksimum. Mod için =MOD.SNÇ(A:A) veya =MODE.SNGL. Tümünü tek seferde almak için Veri Analizi eklentisindeki Betimsel İstatistik kullanabilirsiniz."
+              />
+            </>
+          }
         />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (virgül, boşluk veya satır sonu ile ayrılmış)</label>

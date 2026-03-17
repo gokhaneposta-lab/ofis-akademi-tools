@@ -75,7 +75,14 @@ export default function FormulAsistaniPage() {
             "İsterseniz sonucu kopyalayıp not alabilir veya ilgili formül oluşturucu aracımıza gidebilirsiniz.",
           ]}
           excelAlternatif={
-            <>Excel&apos;de <strong>Ekle → İşlev</strong> veya formül çubuğundaki <strong>fx</strong> ile fonksiyon arama yapabilirsiniz. Bu araç doğal dil isteğinizi fonksiyon adına çevirir.</>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de fonksiyon bulmak için <strong>Ekle → İşlev</strong> veya formül çubuğundaki <strong>fx</strong> butonunu kullanabilirsiniz; kategori ve isimle arama yapılır.
+              </p>
+              <p>
+                Bu araç, &quot;iki sütunu birleştir&quot; veya &quot;tarihten ay çıkar&quot; gibi doğal dil ifadelerinizi Türkçe ve İngilizce Excel fonksiyon adlarına çevirir. Hangi fonksiyonun ne işe yaradığını hatırlamıyorsanız buradan hızlıca ulaşabilirsiniz.
+              </p>
+            </div>
           }
         />
         <div>

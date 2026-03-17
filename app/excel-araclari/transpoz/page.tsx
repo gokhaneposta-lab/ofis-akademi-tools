@@ -81,7 +81,16 @@ export default function TranspozPage() {
             "Döndür butonuna tıklayın.",
             "Sonucu kopyalayıp Excel'e yapıştırın; satırlar sütun, sütunlar satır olacaktır.",
           ]}
-          excelAlternatif={<>Excel&apos;de transpoz için veriyi kopyalayıp <strong>Yapıştır</strong> &gt; <strong>Özel Yapıştır</strong> &gt; <strong>Devrik</strong> seçeneğini işaretleyebilirsiniz.</>}
+          excelAlternatif={
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Excel&apos;de satırları sütunlara, sütunları satırlara çevirmek (transpoz) için veriyi kopyalayıp hedefe <strong>Yapıştır</strong> → <strong>Özel Yapıştır</strong> (veya Ctrl+Alt+V) → <strong>Devrik</strong> kutusunu işaretleyip Tamam deyin.
+              </p>
+              <p>
+                Formülle yapmak isterseniz <code className="bg-gray-100 px-1 rounded text-xs">=TRANSPOSE(A1:C5)</code> kullanabilirsiniz: aralığı seçip formülü girin ve Ctrl+Shift+Enter ile dizi formülü olarak onaylayın. Devrik tablo dinamik olarak güncellenir.
+              </p>
+            </div>
+          }
         />
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Veri ayırıcı (girdi)</span>

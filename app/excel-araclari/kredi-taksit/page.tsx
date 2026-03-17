@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
+import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 
@@ -73,7 +74,18 @@ export default function KrediTaksitPage() {
             "Hesapla butonuna tıklayın.",
             "Aylık taksit, toplam geri ödeme ve toplam faiz görünür; Sonucu Kopyala ile alabilirsiniz.",
           ]}
-          excelAlternatif={<>Excel&apos;de aylık taksit: <code className="bg-gray-100 px-1 rounded text-xs">=DEVRESEL_ÖDEME(yıllık_faiz/12;vade_ay;-kredi_tutarı)</code> veya <code className="bg-gray-100 px-1 rounded text-xs">=PMT(rate/12;nper;-pv)</code>.</>}
+          excelAlternatif={
+            <>
+              <p className="text-sm text-gray-700 mb-2">
+                Excel&apos;de sabit taksitli kredi için aylık ödeme tutarını DEVRESEL_ÖDEME (PMT) fonksiyonu ile hesaplayabilirsiniz.
+              </p>
+              <ExcelFormulBlok
+                baslik="Aylık taksit tutarı için:"
+                formül="=DEVRESEL_ÖDEME(yıllık_faiz/12;vade_ay;-kredi_tutarı)"
+                aciklama="DEVRESEL_ÖDEME (İngilizce: PMT) üç ana parametre alır: dönemlik faiz oranı (yıllık oranı 12'ye bölün), toplam taksit sayısı (vade ay), kredi tutarı (negatif yazılır -pv). Sonuç aylık eşit taksit tutarıdır. Toplam geri ödeme = taksit × vade; toplam faiz = toplam geri ödeme - kredi tutarı."
+              />
+            </>
+          }
         />
         <div className="grid gap-4 sm:grid-cols-3">
           <div>

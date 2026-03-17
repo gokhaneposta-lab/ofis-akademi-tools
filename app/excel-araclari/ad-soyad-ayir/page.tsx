@@ -52,7 +52,7 @@ export default function AdSoyadAyirici() {
   }
 
   const inputLines = input ? input.split("\n").filter((l) => l.trim()).length : 0;
-  const rowCount = Math.max(1, Math.min(inputLines || 1, 20));
+  const rowCount = Math.max(7, Math.min(inputLines || 7, 20));
 
   return (
     <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
@@ -65,81 +65,7 @@ export default function AdSoyadAyirici() {
       <PageRibbon
         title="Ad Soyad Ayırıcı"
         description="Tam ad listesini ad ve soyad olarak ayırın; tablo veya Excel formatında kopyalayın."
-      >
-        <div className="flex flex-wrap items-center gap-1 ml-auto">
-          <button
-            type="button"
-            onClick={() => setMode("split")}
-            className={`px-4 py-1.5 text-sm font-medium rounded transition ${
-              mode === "split" ? "bg-white/25" : "hover:bg-white/15"
-            }`}
-          >
-            Ad + Soyad Ayır
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("surnameOnly")}
-            className={`px-4 py-1.5 text-sm font-medium rounded transition ${
-              mode === "surnameOnly" ? "bg-white/25" : "hover:bg-white/15"
-            }`}
-          >
-            Sadece Soyad
-          </button>
-          {mode === "split" && (
-            <>
-              <div className="w-px h-6 bg-white/30 mx-1" />
-              <button
-                type="button"
-                onClick={() => setOutputFormat("table")}
-                className={`px-3 py-1.5 text-sm rounded transition ${
-                  outputFormat === "table" ? "bg-white/25" : "hover:bg-white/15"
-                }`}
-              >
-                Tablo
-              </button>
-              <button
-                type="button"
-                onClick={() => setOutputFormat("excel")}
-                className={`px-3 py-1.5 text-sm rounded transition ${
-                  outputFormat === "excel" ? "bg-white/25" : "hover:bg-white/15"
-                }`}
-              >
-                Excel (;)
-              </button>
-            </>
-          )}
-          <div className="flex-1 min-w-[8px]" />
-          <button
-            type="button"
-            onClick={splitNames}
-            className="px-4 py-1.5 text-sm font-semibold rounded bg-white text-[#217346] hover:bg-gray-100 transition"
-          >
-            Ayır
-          </button>
-          <button
-            type="button"
-            onClick={handleCopy}
-            disabled={!result.length}
-            className={`px-4 py-1.5 text-sm font-medium rounded transition flex items-center gap-2 ${
-              copied
-                ? "bg-green-600 text-white"
-                : "bg-white/20 hover:bg-white/30 disabled:opacity-40 disabled:cursor-not-allowed"
-            }`}
-          >
-            {copied ? (
-              <>✓ Kopyalandı</>
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <rect x="9" y="9" width="13" height="13" rx="2" strokeWidth="2" />
-                  <rect x="3" y="3" width="13" height="13" rx="2" strokeWidth="2" />
-                </svg>
-                Kopyala
-              </>
-            )}
-          </button>
-        </div>
-      </PageRibbon>
+      />
 
       <div className="mx-auto mt-2 mb-6 max-w-3xl px-4 sm:px-6 flex flex-col gap-6">
         <NasilKullanilir
@@ -169,6 +95,54 @@ export default function AdSoyadAyirici() {
         />
       </div>
 
+      {/* Mod / çıktı seçenekleri — veri giriş alanının üstünde */}
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 mb-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between flex-wrap">
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Mod &amp; çıktı</span>
+            <div className="inline-flex rounded-lg border p-1 gap-1 flex-wrap" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
+              <button
+                type="button"
+                onClick={() => setMode("split")}
+                className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${mode === "split" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
+                style={mode === "split" ? { background: THEME.ribbon } : undefined}
+              >
+                Ad + Soyad Ayır
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("surnameOnly")}
+                className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${mode === "surnameOnly" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
+                style={mode === "surnameOnly" ? { background: THEME.ribbon } : undefined}
+              >
+                Sadece Soyad
+              </button>
+              {mode === "split" && (
+                <>
+                  <span className="self-center text-gray-400 mx-0.5">|</span>
+                  <button
+                    type="button"
+                    onClick={() => setOutputFormat("table")}
+                    className={`whitespace-nowrap rounded px-3 py-1.5 text-xs font-medium transition ${outputFormat === "table" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
+                    style={outputFormat === "table" ? { background: THEME.ribbon } : undefined}
+                  >
+                    Tablo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOutputFormat("excel")}
+                    className={`whitespace-nowrap rounded px-3 py-1.5 text-xs font-medium transition ${outputFormat === "excel" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
+                    style={outputFormat === "excel" ? { background: THEME.ribbon } : undefined}
+                  >
+                    Excel (;)
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Formül çubuğu alanı */}
       <div
         className="flex items-center gap-2 px-4 py-1.5 border-b text-sm"
@@ -185,7 +159,7 @@ export default function AdSoyadAyirici() {
       </div>
 
       {/* Sayfa alanı - Excel sheet görünümü */}
-      <div className="mx-4 mt-2 mb-6 overflow-hidden rounded-b shadow-lg border border-t-0" style={{ borderColor: THEME.gridLine, background: "#fafafa" }}>
+      <div className="mx-4 mt-0 mb-4 overflow-hidden rounded-b shadow-lg border border-t-0" style={{ borderColor: THEME.gridLine, background: "#fafafa" }}>
         {/* Sütun harfleri + köşe */}
         <div className="flex" style={{ background: THEME.cornerBg, borderBottom: `1px solid ${THEME.gridLine}` }}>
           <div
@@ -332,6 +306,28 @@ export default function AdSoyadAyirici() {
             )}
           </>
         )}
+      </div>
+
+      {/* Veri giriş alanının altında: Ayır + Sonucu Kopyala */}
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 mt-3 flex flex-col gap-3 sm:flex-row items-stretch sm:items-center">
+        <button
+          type="button"
+          onClick={splitNames}
+          className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+          style={{ background: THEME.ribbon }}
+        >
+          Ayır
+        </button>
+        <button
+          type="button"
+          onClick={handleCopy}
+          disabled={!result.length}
+          className={`inline-flex min-w-[180px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-medium transition ${
+            copied ? "bg-green-600 text-white" : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          }`}
+        >
+          {copied ? "✓ Kopyalandı" : "Sonucu Kopyala (Excel)"}
+        </button>
       </div>
 
       {/* Alt bilgi */}

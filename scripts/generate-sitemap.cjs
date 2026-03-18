@@ -11,13 +11,23 @@ const toolPaths = [...hrefMatches].map((m) => m[1]);
 const slugFromFile = (filePath) => {
   if (!fs.existsSync(filePath)) return [];
   const content = fs.readFileSync(filePath, "utf8");
-  return [...content.matchAll(/slug:\s*"([^"]+)"/g)].map((m) => m[1]);
+  // Blog post slugs only (avoid matching category objects etc.)
+  return [...content.matchAll(/slug:\s*"([^"]+)"\s*,\s*\n\s*title:\s*"/g)].map((m) => m[1]);
 };
 const blogSlugs = [
   ...slugFromFile(path.join(__dirname, "..", "lib", "blog-posts.ts")),
   ...slugFromFile(path.join(__dirname, "..", "lib", "blog-posts-extra.ts")),
 ];
 const blogPaths = ["/blog", ...blogSlugs.map((s) => `/blog/${s}`)];
+const blogCategoryPaths = [
+  "/blog/kategori/formuller",
+  "/blog/kategori/metin",
+  "/blog/kategori/veri-analizi",
+  "/blog/kategori/finans",
+  "/blog/kategori/donusturme",
+  "/blog/kategori/dogrulama",
+  "/blog/kategori/kaynaklar",
+];
 
 const staticPaths = [
   "",
@@ -28,7 +38,12 @@ const staticPaths = [
   "/egitimler/orta",
   "/egitimler/ileri",
 ];
-const allPaths = [...staticPaths, ...blogPaths.filter((p) => p !== "/blog"), ...toolPaths];
+const allPaths = [
+  ...staticPaths,
+  ...blogCategoryPaths,
+  ...blogPaths.filter((p) => p !== "/blog"),
+  ...toolPaths,
+];
 const now = new Date().toISOString().split("T")[0];
 
 const urlEntries = allPaths

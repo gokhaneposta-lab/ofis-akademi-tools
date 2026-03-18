@@ -20,6 +20,73 @@ export type BlogPost = {
 
 import { BLOG_POSTS_EXTRA } from "./blog-posts-extra";
 
+export type BlogCategorySlug =
+  | "formuller"
+  | "metin"
+  | "veri-analizi"
+  | "finans"
+  | "donusturme"
+  | "dogrulama"
+  | "kaynaklar";
+
+export const BLOG_CATEGORIES: Array<{
+  slug: BlogCategorySlug;
+  label: string;
+  description: string;
+}> = [
+  { slug: "formuller", label: "Formüller", description: "DÜŞEYARA, EĞER ve diğer formül rehberleri." },
+  { slug: "metin", label: "Metin", description: "Boşluk, harf dönüştürme, kolonlara bölme, liste işlemleri." },
+  { slug: "veri-analizi", label: "Veri Analizi", description: "İstatistik, korelasyon, regresyon ve dağılım hesapları." },
+  { slug: "finans", label: "Finans", description: "Faiz, kredi taksit ve yüzde hesapları." },
+  { slug: "donusturme", label: "Dönüştürme", description: "CSV, JSON, SQL gibi format dönüşümleri." },
+  { slug: "dogrulama", label: "Doğrulama", description: "IBAN, e-posta, telefon gibi kontroller ve temizlik." },
+  { slug: "kaynaklar", label: "Kaynaklar", description: "Şablonlar, checklist'ler ve kısayol kartları." },
+];
+
+export function getCategoryBySlug(slug: string): (typeof BLOG_CATEGORIES)[number] | undefined {
+  return BLOG_CATEGORIES.find((c) => c.slug === slug);
+}
+
+export function categorizePost(post: Pick<BlogPost, "slug" | "toolHref" | "toolName" | "title">): BlogCategorySlug {
+  const s = `${post.slug} ${post.title} ${post.toolHref} ${post.toolName}`.toLowerCase();
+  if (s.includes("kredi") || s.includes("faiz") || s.includes("yuzde") || s.includes("yüzde")) return "finans";
+  if (s.includes("iban") || s.includes("telefon") || s.includes("email") || s.includes("e-posta")) return "dogrulama";
+  if (s.includes("json") || s.includes("sql") || s.includes("csv")) return "donusturme";
+  if (s.includes("regresyon") || s.includes("korelasyon") || s.includes("z-score") || s.includes("istatistik") || s.includes("frekans"))
+    return "veri-analizi";
+  if (s.includes("formul") || s.includes("düşeyara") || s.includes("duseyara") || s.includes("eger")) return "formuller";
+  if (s.includes("sablon") || s.includes("checklist") || s.includes("kart")) return "kaynaklar";
+  return "metin";
+}
+
+export function getCategoryLabelForPost(post: Pick<BlogPost, "slug" | "toolHref" | "toolName" | "title">): string {
+  const cat = categorizePost(post);
+  return getCategoryBySlug(cat)?.label || "Excel";
+}
+
+export function getBenefitLine(post: Pick<BlogPost, "title" | "toolName" | "slug">): string {
+  const t = post.title.toLowerCase();
+  if (t.includes("1000") || t.includes("saniy")) return "1000 satırı saniyeler içinde çözün.";
+  if (t.includes("tek tık") || t.includes("tek tıkla")) return "Tek tıkla sonucu alıp Excel'e yapıştırın.";
+  if (t.includes("anında") || t.includes("aninda")) return "Anında sonuç alın, vakit kaybetmeyin.";
+  if (post.slug.includes("iban")) return "IBAN listesini tek tıkla doğrulayın.";
+  if (post.slug.includes("csv")) return "CSV'yi tek tıkla sütunlara ayırın.";
+  if (post.slug.includes("tarih-farki")) return "Tarih farkını toplu hesaplayın.";
+  if (post.slug.includes("iki-liste")) return "Ortak ve farklı kayıtları anında bulun.";
+  return `${post.toolName} ile 5 saniyede çözün.`;
+}
+
+export function getPostPlainText(post: BlogPost): string {
+  const parts = post.content.map((b) => {
+    if (b.type === "p") return b.text;
+    if (b.type === "h3") return b.text;
+    if (b.type === "ul") return b.items.join(" ");
+    if (b.type === "formula") return `${b.label} ${b.formula}`;
+    return "";
+  });
+  return `${post.title} ${post.description} ${parts.join(" ")}`.trim();
+}
+
 const BLOG_POSTS_CORE: BlogPost[] = [
   {
     slug: "excelde-ad-soyad-ayirma",
@@ -105,4 +172,27 @@ export function getPostBySlug(slug: string): BlogPost | undefined {
 
 export function getAllSlugs(): string[] {
   return BLOG_POSTS.map((p) => p.slug);
+}
+
+export function getPostByToolHref(toolHref: string): BlogPost | undefined {
+  return BLOG_POSTS.find((p) => p.toolHref === toolHref);
+}
+
+export function getPostsByCategory(category: BlogCategorySlug): BlogPost[] {
+  return BLOG_POSTS.filter((p) => categorizePost(p) === category);
+}
+
+export function getAllCategorySlugs(): BlogCategorySlug[] {
+  return BLOG_CATEGORIES.map((c) => c.slug);
+}
+
+export function getRelatedPosts(slug: string, limit = 3): BlogPost[] {
+  const post = getPostBySlug(slug);
+  if (!post) return [];
+  const cat = categorizePost(post);
+  const sameCategory = BLOG_POSTS.filter((p) => p.slug !== slug && categorizePost(p) === cat);
+  const take = sameCategory.slice(0, limit);
+  if (take.length >= limit) return take;
+  const rest = BLOG_POSTS.filter((p) => p.slug !== slug && !take.some((x) => x.slug === p.slug));
+  return [...take, ...rest.slice(0, limit - take.length)];
 }

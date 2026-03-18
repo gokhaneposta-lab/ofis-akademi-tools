@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageRibbon from "@/components/PageRibbon";
-import { getPostBySlug, getAllSlugs, type ContentBlock } from "@/lib/blog-posts";
+import { getPostBySlug, getAllSlugs, getRelatedPosts, getBenefitLine, type ContentBlock } from "@/lib/blog-posts";
 import { THEME } from "@/lib/theme";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
@@ -93,6 +93,27 @@ export default async function BlogPostPage({ params }: Props) {
         description={post.description}
       />
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+        <div
+          className="mb-6 rounded-2xl border-2 p-4 sm:p-5"
+          style={{ borderColor: THEME.ribbon, background: "#f0f7f4" }}
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-semibold text-gray-900">
+              Bu işlemi 5 saniyede yapmak ister misiniz?
+            </p>
+            <Link
+              href={post.toolHref}
+              className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+              style={{ background: THEME.ribbon }}
+            >
+              Aracı kullan
+            </Link>
+          </div>
+          <p className="mt-2 text-sm text-gray-700">
+            {getBenefitLine(post)}
+          </p>
+        </div>
+
         <p className="text-sm text-gray-500 mb-6">
           {new Date(post.date).toLocaleDateString("tr-TR", {
             day: "numeric",
@@ -179,6 +200,23 @@ export default async function BlogPostPage({ params }: Props) {
             {post.toolName}
           </Link>
         </div>
+
+        <section className="mt-10">
+          <h2 className="text-base font-semibold text-gray-900 mb-3">İlgili yazılar</h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {getRelatedPosts(slug, 3).map((p) => (
+              <Link
+                key={p.slug}
+                href={`/blog/${p.slug}`}
+                className="block rounded-xl border bg-white/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                style={{ borderColor: THEME.gridLine }}
+              >
+                <p className="text-sm font-semibold text-gray-900 line-clamp-2">{p.title}</p>
+                <p className="mt-1 text-sm text-gray-600 line-clamp-2">{p.description}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
       </main>
       <div className="text-center text-xs text-gray-500 pb-6">
         Ofis Akademi · Excel & Veri Analizi

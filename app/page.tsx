@@ -148,6 +148,12 @@ export default function Home() {
               >
                 Excel Araçları
               </a>
+              <a
+                href="/blog"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
+              >
+                Blog
+              </a>
             </div>
 
             <div className="flex flex-wrap gap-4 text-sm text-slate-600">

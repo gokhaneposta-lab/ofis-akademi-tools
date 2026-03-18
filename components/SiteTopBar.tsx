@@ -29,6 +29,7 @@ const pathTitles: Record<string, string> = {
   "/excel-araclari/rapor-sablonlari": "Otomatik Rapor Şablonları",
   "/excel-araclari/hata-kontrol-checklist": "Hata Kontrol Checklist'i",
   "/excel-araclari/ksayol-formul-kartlari": "Kısayol & Formül Kartları",
+  "/blog": "Blog",
   "/egitimler": "Excel Eğitimleri",
   "/egitimler/temel": "Seviye 1 · Temel",
   "/egitimler/orta": "Seviye 2 · Orta",
@@ -38,7 +39,7 @@ const pathTitles: Record<string, string> = {
 export default function SiteTopBar() {
   const pathname = usePathname();
   const router = useRouter();
-  const currentTitle = pathTitles[pathname] ?? "Ofis Akademi";
+  const currentTitle = pathTitles[pathname] ?? (pathname?.startsWith("/blog/") ? "Blog" : "Ofis Akademi");
   const isHome = pathname === "/";
 
   return (
@@ -74,6 +75,13 @@ export default function SiteTopBar() {
             <path d="M19 13H5v-2h14v2zM19 17H5v-2h14v2zM19 9H5V7h14v2z" />
           </svg>
           Ana Sayfa
+        </Link>
+        <span className="text-gray-400">|</span>
+        <Link
+          href="/blog"
+          className={`transition ${pathname === "/blog" ? "font-medium opacity-100" : "opacity-90 hover:opacity-100"}`}
+        >
+          Blog
         </Link>
         <span className="text-gray-400">|</span>
         <span className="font-medium">{currentTitle} — Ofis Akademi</span>

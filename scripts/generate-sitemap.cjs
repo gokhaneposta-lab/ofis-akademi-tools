@@ -8,15 +8,27 @@ const content = fs.readFileSync(excelToolsPath, "utf8");
 const hrefMatches = content.matchAll(/href:\s*"([^"]+)"/g);
 const toolPaths = [...hrefMatches].map((m) => m[1]);
 
+const slugFromFile = (filePath) => {
+  if (!fs.existsSync(filePath)) return [];
+  const content = fs.readFileSync(filePath, "utf8");
+  return [...content.matchAll(/slug:\s*"([^"]+)"/g)].map((m) => m[1]);
+};
+const blogSlugs = [
+  ...slugFromFile(path.join(__dirname, "..", "lib", "blog-posts.ts")),
+  ...slugFromFile(path.join(__dirname, "..", "lib", "blog-posts-extra.ts")),
+];
+const blogPaths = ["/blog", ...blogSlugs.map((s) => `/blog/${s}`)];
+
 const staticPaths = [
   "",
   "/excel-araclari",
+  "/blog",
   "/egitimler",
   "/egitimler/temel",
   "/egitimler/orta",
   "/egitimler/ileri",
 ];
-const allPaths = [...staticPaths, ...toolPaths];
+const allPaths = [...staticPaths, ...blogPaths.filter((p) => p !== "/blog"), ...toolPaths];
 const now = new Date().toISOString().split("T")[0];
 
 const urlEntries = allPaths

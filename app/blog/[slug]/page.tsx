@@ -65,6 +65,10 @@ export default async function BlogPostPage({ params }: Props) {
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
+  const mid = Math.max(3, Math.ceil(post.content.length / 2));
+  const firstHalf = post.content.slice(0, mid);
+  const secondHalf = post.content.slice(mid);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -97,8 +101,42 @@ export default async function BlogPostPage({ params }: Props) {
           })}
         </p>
         <article className="max-w-none">
-          {post.content.map((block, i) => (
-            <BlogContent key={i} block={block} />
+          {firstHalf.map((block, i) => (
+            <BlogContent key={`a-${i}`} block={block} />
+          ))}
+        </article>
+
+        <div
+          className="my-8 rounded-2xl border-2 p-5 text-center"
+          style={{ borderColor: THEME.ribbon, background: "#f0f7f4" }}
+        >
+          <p className="text-sm font-semibold text-gray-900 mb-1">
+            En hızlı çözüm: ücretsiz aracımızı kullanın
+          </p>
+          <p className="text-sm text-gray-700 mb-4">
+            Listeyi yapıştırın, tek tıkla sonucu alın ve Excel'e yapıştırın.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href={post.toolHref}
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-base font-semibold text-white transition hover:opacity-90"
+              style={{ background: THEME.ribbon }}
+            >
+              {post.toolName} aracını aç
+            </Link>
+            <Link
+              href="/excel-araclari"
+              className="text-sm font-medium hover:underline"
+              style={{ color: THEME.ribbon }}
+            >
+              Tüm Excel araçları →
+            </Link>
+          </div>
+        </div>
+
+        <article className="max-w-none">
+          {secondHalf.map((block, i) => (
+            <BlogContent key={`b-${i}`} block={block} />
           ))}
         </article>
 
@@ -107,7 +145,7 @@ export default async function BlogPostPage({ params }: Props) {
           style={{ borderColor: THEME.ribbon, background: "#f0f7f4" }}
         >
           <p className="text-sm font-medium text-gray-800 mb-3">
-            Bu işlemi tek tıkla yapmak için ücretsiz aracımızı kullanın:
+            Bu işlemi saniyeler içinde yapmak için ücretsiz aracımızı deneyin:
           </p>
           <Link
             href={post.toolHref}
@@ -132,6 +170,13 @@ export default async function BlogPostPage({ params }: Props) {
             style={{ color: THEME.ribbon }}
           >
             Excel Araçları
+          </Link>
+          <Link
+            href={post.toolHref}
+            className="text-sm font-medium hover:underline"
+            style={{ color: THEME.ribbon }}
+          >
+            {post.toolName}
           </Link>
         </div>
       </main>

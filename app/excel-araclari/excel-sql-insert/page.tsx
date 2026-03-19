@@ -112,7 +112,7 @@ export default function ExcelSqlInsertPage() {
         <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
           <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
           <p className="mt-2 text-sm text-gray-700">
-            Excel’deki tabloyu, veritabanına veri eklemek için kullanılabilecek <span className="font-semibold">SQL INSERT</span komutlarına dönüştürür. Sütun başlıklarını kolon adı olarak kullanır.
+            Excel'deki tabloyu, veritabanına veri eklemek için kullanılabilecek SQL INSERT komutlarına dönüştürür. Sütun başlıklarını kolon adı olarak kullanır.
           </p>
         </section>
 

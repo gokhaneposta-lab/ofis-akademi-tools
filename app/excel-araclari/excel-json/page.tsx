@@ -152,7 +152,7 @@ export default function ExcelJsonPage() {
               className="underline"
               style={{ color: THEME.ribbon }}
             >
-              Excel -> JSON rehberine
+              Excel'den JSON rehberine
             </Link>{" "}
             bakabilirsin.
           </p>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
@@ -72,6 +73,7 @@ export default function SayiYaziyaPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Yazıya çevirmek istediğiniz sayıları (her satıra bir tane) aşağıdaki kutuya yapıştırın. Virgül veya nokta ondalık ayracı kullanabilirsiniz.",
             "Türk lirası & kuruş veya sade sayı, büyük harf seçeneklerini işaretleyin.",
@@ -89,6 +91,56 @@ export default function SayiYaziyaPage() {
             </div>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Sayıları Türkçe yazıya çevirir. Vergi/fatura metinlerinde tutarları <span className="font-semibold">TL ve kuruş</span> şeklinde yazmanıza yardımcı olur.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Girdi</p>
+              <p className="text-gray-700"><span className="font-mono">1250,50</span></p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Çıktı</p>
+              <p className="text-gray-700">Ondalık varsa <span className="font-semibold">kuruş</span> da eklenir; TL + kuruş para metni döner.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">“Türk lirası & kuruş” seçeneği</span>
+              <br />
+              Kuruş/ondalık varsa kuruş kısmını da metne dahil eder.
+            </p>
+            <p>
+              <span className="font-semibold">“Büyük harf” ne yapar?</span>
+              <br />
+              Çıktı yazısını büyük harfe dönüştürür.
+            </p>
+            <p>
+              <span className="font-semibold">Excel’e nasıl aktarırım?</span>
+              <br />
+              Kopyala → ilgili metin alanına yapıştır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla örnek için{" "}
+            <Link href="/blog/excelde-sayiyi-yaziya-cevirme" className="underline" style={{ color: THEME.ribbon }}>
+              sayıyı yazıya çevirme rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between flex-wrap">
           <div className="flex flex-col gap-2">
             <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Format</span>

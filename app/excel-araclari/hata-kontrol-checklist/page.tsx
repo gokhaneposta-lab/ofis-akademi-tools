@@ -180,12 +180,62 @@ export default function HataKontrolChecklistPage() {
 
       <div className="mx-4 mt-6 mb-10 max-w-3xl space-y-8">
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel dosyanızı teslim etmeden önce bu maddeleri sırayla kontrol edin.",
             "Her maddeyi tamamladıkça işaretleyin; ilerleme otomatik kaydedilir.",
             "İpucu ve Excel yolu olan maddelerde detayı görmek için genişletin.",
           ]}
         />
+
+        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-800">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-slate-700">
+            Dosya tesliminden önce en sık görülen hataları hızlıca gözden geçirmek için kullanılır. Boş hücre, tekrar, yanlış veri tipi/format ve bağlantı-güvenlik gibi konuları tek bir checklist’te toplar.
+          </p>
+        </section>
+
+        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-800">Örnek kullanım</h2>
+          <ul className="mt-2 space-y-1 text-sm text-slate-700">
+            <li>1) Formüllerde hata (#YOK, #DEĞER!, #BAŞV! gibi) var mı kontrol et.</li>
+            <li>2) Tarih/sayı metin karışımı gibi veri tipi sorunlarını işaretle.</li>
+            <li>3) Dış bağlantılar/kırık linkler gibi teslim öncesi riskleri gözden geçir.</li>
+          </ul>
+        </section>
+
+        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-800">Sık sorulan sorular</h2>
+          <div className="mt-2 space-y-2 text-sm text-slate-700">
+            <p>
+              <span className="font-semibold">İşaretler kaydediliyor mu?</span>
+              <br />
+              Evet, yalnızca bu cihaz/tarayıcıda ilerleme kaydedilir.
+            </p>
+            <p>
+              <span className="font-semibold">Excel yolu ne işe yarar?</span>
+              <br />
+              Her madde için nereden kontrol edeceğini kısaca gösterir.
+            </p>
+            <p>
+              <span className="font-semibold">Her dosyada şart mı?</span>
+              <br />
+              Özellikle rapor ve büyük veri içeren dosyalarda hata riskini azaltır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-slate-600">
+            Daha detaylı rehber için{" "}
+            <Link
+              href="/blog/excel-hata-kontrol-checklist"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              hata kontrol checklist yazısına
+            </Link>{" "}
+            bakabilirsiniz.
+          </p>
+        </section>
+
         {/* İlerleme */}
         <div className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">

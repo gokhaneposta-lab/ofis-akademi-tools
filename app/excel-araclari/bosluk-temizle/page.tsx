@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -43,6 +44,7 @@ export default function BoslukTemizlePage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel veya başka bir kaynaktan metni kopyalayıp aşağıdaki kutuya yapıştırın.",
             "Metin otomatik temizlenir: her satırın başı/sonu ve ardışık boşluklar tek boşluğa indirilir.",
@@ -61,6 +63,50 @@ export default function BoslukTemizlePage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Metinlerdeki baştaki/sondaki boşlukları temizleyip kelimeler arasındaki birden fazla boşluğu tek boşluğa indirir. Böylece eşleştirme, arama ve sıralamada oluşan “görünmez hata”ları azaltır.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p><span className="font-semibold">Girdi:</span> <span className="font-mono">  Ayşe   Kaya  </span></p>
+            <p><span className="font-semibold">Çıktı:</span> <span className="font-mono">Ayşe Kaya</span></p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold text-gray-900">TRIM ne yapar?</span>
+              <br />
+              Metnin başı/sonu boşluklarını siler ve kelimeler arası ardışık boşlukları tekler.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Excel formülleriyle aynı mı?</span>
+              <br />
+              Mantık olarak benzer; araç toplu işlem yapmayı kolaylaştırır.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Hangi durumlarda şart?</span>
+              <br />
+              DÜŞEYARA/XLOOKUP, EĞER ve filtreleme öncesi “eşleşmiyor” sorunlarında.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla örnek için{" "}
+            <Link href="/blog/excelde-bosluk-temizleme" className="underline" style={{ color: THEME.ribbon }}>
+              boşluk temizleme rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
+
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Metin (yapıştırın)</label>
           <textarea

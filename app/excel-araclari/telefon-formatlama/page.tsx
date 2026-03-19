@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -101,6 +102,7 @@ export default function TelefonFormatlamaPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Telefon numaralarını aşağıdaki alana yapıştırın (her satırda bir numara). Sadece rakam veya 0 ile başlayan numara olabilir; Excel'den sütun kopyalayabilirsiniz.",
             "Ayırıcı (boşluk, tire, nokta), görünüm (yerel 0 ile / uluslararası +90) ve alan kodu parantez seçeneklerini belirleyin.",
@@ -108,6 +110,63 @@ export default function TelefonFormatlamaPage() {
             "Sonucu kopyalayıp Excel veya başka uygulamaya yapıştırın.",
           ]}
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Telefon numaralarını tek tek ya da liste halinde standart görünüme çevirir. Ayırıcı (boşluk/tire/nokta), yerel veya uluslararası format ve (istersen) alan kodu parantez seçeneklerini kullanabilirsin.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Girdi</p>
+              <p className="text-gray-700">
+                <span className="font-mono">05321234567</span>
+              </p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Çıktı (yerel)</p>
+              <p className="text-gray-700">
+                <span className="font-mono">0532 123 45 67</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold text-gray-900">Neden bazı satırlar geçersiz?</span>
+              <br />
+              Numara 10–11 hane aralığında olmalı; uzunluk/kırpma beklediğiniz gibi değilse geçersiz sayılır.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Uluslararası format ne yapar?</span>
+              <br />
+              Başına <span className="font-semibold">+90</span> koyup alan kodunu uygun şekilde dönüştürür.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Excel’e nasıl aktarırım?</span>
+              <br />
+              Sonucu kopyala → Excel’de ilgili hücreye Ctrl+V yap.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha detaylı örnekler için{" "}
+            <Link
+              href="/blog/excel-telefon-numarasi-formatlama"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              telefon numarası formatlama rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
 
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Telefon numaraları (her satırda bir)</label>

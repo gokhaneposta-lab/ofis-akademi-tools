@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -81,6 +82,7 @@ export default function FrekansDagilimiPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Sayıları aşağıdaki kutuya yapıştırın (Excel'den sütun kopyalayabilirsiniz).",
             "Sınıf genişliğini (aralık) girin (örn. 10 → 0–10, 10–20, 20–30).",
@@ -99,6 +101,63 @@ export default function FrekansDagilimiPage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Sayıları belirli aralıklara (sınıf aralıkları) böler ve her aralığın kaç kez geçtiğini (frekans) hesaplar. Histogram/veri dağılımı için temel tablodur.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> <span className="font-mono">5, 12, 18, 22, 25, 33, 38, 42, 55</span>
+            </p>
+            <p>
+              <span className="font-semibold">Sınıf genişliği:</span> <span className="font-mono">10</span>
+            </p>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-2">Frekans tablosu (özet)</p>
+              <p className="text-gray-700">0 – 10 → 1</p>
+              <p className="text-gray-700">10 – 20 → 2</p>
+              <p className="text-gray-700">20 – 30 → 2</p>
+              <p className="text-gray-700">30 – 40 → 2</p>
+              <p className="text-gray-700">40 – 50 → 1</p>
+              <p className="text-gray-700">50 – 60 → 1</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold text-gray-900">Sınıf genişliği neyi belirler?</span>
+              <br />
+              Aralıkların büyüklüğünü (örn. 10 → 0–10, 10–20, 20–30...).
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Excel’de nasıl karşılığı var?</span>
+              <br />
+              FREKANS dizi formülü veya Veri Analizi histogram.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Excel’e nasıl aktarırım?</span>
+              <br />
+              Tabloyu “Tabloyu Kopyala” ile panoya alıp Excel’e yapıştır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Detay için{" "}
+            <Link href="/blog/excel-frekans-dagilimi-hesaplama" className="underline" style={{ color: THEME.ribbon }}>
+              frekans dağılımı rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
+
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel'den yapıştırın)</label>
           <textarea

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -108,6 +109,7 @@ export default function HaftaGunPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Tarih sütununu Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satıra bir tarih; DD.MM.YYYY veya YYYY-MM-DD).",
             "Hesapla butonuna tıklayın.",
@@ -131,6 +133,55 @@ export default function HaftaGunPage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Tarihlerden ISO hafta numarasını ve gün adını toplu olarak hesaplar. Planlama, raporlama ve haftalık analizlerde işinizi hızlandırır.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Girdi</p>
+              <p className="text-gray-700"><span className="font-mono">2025-03-01</span></p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Çıktı</p>
+              <p className="text-gray-700">Hafta: <span className="font-mono">9</span> · Gün: <span className="font-mono">Cumartesi</span></p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold text-gray-900">Hafta numarası ISO mu?</span>
+              <br />
+              Evet. ISO 8601 (Pazartesi hafta başı) mantığıyla hesaplar.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Hangi formatlar çalışır?</span>
+              <br />
+              <span className="font-mono">DD.MM.YYYY</span> ve <span className="font-mono">YYYY-MM-DD</span>.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Excel’e nasıl aktarırım?</span>
+              <br />
+              “Tabloyu Kopyala” ile Excel’e yapıştır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Detaylı açıklama için{" "}
+            <Link href="/blog/excelde-hafta-numarasi-ve-gun-adi" className="underline" style={{ color: THEME.ribbon }}>
+              hafta numarası rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Tarihler (her satıra bir tarih — DD.MM.YYYY veya YYYY-MM-DD)</label>
           <textarea

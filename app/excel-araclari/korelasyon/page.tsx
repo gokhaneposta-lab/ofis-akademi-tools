@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -67,6 +68,7 @@ export default function KorelasyonPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "X ve Y sütunlarını Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki sayı; Tab veya noktalı virgül ile ayrılmış).",
             "Hesapla butonuna tıklayın.",
@@ -85,6 +87,58 @@ export default function KorelasyonPage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            X ve Y iki değişkeni arasındaki ilişkinin gücünü ölçer. Sonuç olarak <span className="font-semibold">Pearson korelasyon katsayısı</span> olan <span className="font-semibold">r</span> değerini verir.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> <span className="font-mono">1 10</span>, <span className="font-mono">2 20</span>, <span className="font-mono">3 30</span>
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> Doğrusal artış varsa <span className="font-semibold">r ≈ +1</span> görürsün.
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold text-gray-900">r hangi aralıkta olur?</span>
+              <br />
+              Genelde <span className="font-semibold">-1</span> ile <span className="font-semibold">+1</span> arasında.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">r 0’a yakınsa?</span>
+              <br />
+              Doğrusal ilişki zayıftır.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Excel’e nasıl aktarırım?</span>
+              <br />
+              “Sonucu Kopyala” ile panoya al.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla yorum için{" "}
+            <Link
+              href="/blog/excel-korelasyon-pearson-hesaplama"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              korelasyon rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
+
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">X ve Y değerleri (her satırda iki sayı — Tab veya noktalı virgül ile)</label>
           <textarea

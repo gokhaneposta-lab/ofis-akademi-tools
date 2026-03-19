@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -97,6 +98,7 @@ export default function TarihFormatDonusturucuPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Tarihleri aşağıdaki alana yapıştırın (her satırda bir tarih). 01/03/2025, 01.03.2025, 2025-03-01 gibi formatlar desteklenir.",
             "Hedef formatı seçin: ISO (YYYY-MM-DD), Türkçe uzun (01 Mart 2025), GG.AA.YYYY veya GG/AA/YYYY.",
@@ -126,6 +128,59 @@ export default function TarihFormatDonusturucuPage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Elinizdeki tarihleri farklı okunabilir formatlara (ISO, Türkçe uzun, GG.AA.YYYY gibi) dönüştürür. Excel’de “tarih mi metin mi?” karışıklığını azaltmaya yardımcı olur.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Girdi</p>
+              <p className="text-gray-700"><span className="font-mono">01/03/2025</span></p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Çıktı (ISO)</p>
+              <p className="text-gray-700"><span className="font-mono">2025-03-01</span></p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Hangi giriş formatları desteklenir?</span>
+              <br />
+              01/03/2025, 01.03.2025, 2025-03-01 gibi formatlar.
+            </p>
+            <p>
+              <span className="font-semibold">Geçersiz satır ne olur?</span>
+              <br />
+              O satır hata listesine düşer (dönüştürülmez).
+            </p>
+            <p>
+              <span className="font-semibold">Excel’e nasıl taşınır?</span>
+              <br />
+              Sonucu kopyala → Excel’de yapıştır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla örnek için{" "}
+            <Link
+              href="/blog/excelde-tarih-format-donusturme"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              tarih format dönüştürme rehberine
+            </Link>{" "}
+            bakabilirsin.
+          </p>
+        </section>
 
         <div>
           <span className="block text-xs font-medium text-gray-600 mb-2">Hedef format</span>

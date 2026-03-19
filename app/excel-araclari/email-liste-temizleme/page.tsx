@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -83,6 +84,7 @@ export default function EmailListeTemizlemePage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "E-posta listesini aşağıdaki alana yapıştırın (her satırda bir adres). Excel'den tek sütun kopyalayabilirsiniz.",
             "Temizle butonuna tıklayın.",
@@ -90,6 +92,71 @@ export default function EmailListeTemizlemePage() {
             "Sonucu Kopyala ile temiz listeyi alıp Excel veya e-posta yazılımına yapıştırın.",
           ]}
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            E-posta listesinde tekrar eden veya geçersiz formatta olan adresleri ayıklar. Böylece kampanya/raporlar için daha temiz ve güvenilir bir liste elde edersin.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Girdi</p>
+              <p className="text-gray-700">
+                <span className="font-mono">ahmet@gmail.com</span>
+                <br />
+                <span className="font-mono">mehmet@gmail.com</span>
+                <br />
+                <span className="font-mono">ahmet@gmail.com</span>
+                <br />
+                <span className="font-mono">abc</span>
+              </p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Çıktı</p>
+              <p className="text-gray-700">
+                <span className="font-mono">ahmet@gmail.com</span>
+                <br />
+                <span className="font-mono">mehmet@gmail.com</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold text-gray-900">Tekrarları nasıl anlıyor?</span>
+              <br />
+              Büyük/küçük harf farkını eşleştirmeden sayar; örn. <span className="font-mono">Ahmet@Gmail.com</span> ile aynı kabul eder.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Geçersiz format ne demek?</span>
+              <br />
+              Basit e-posta formatı doğrulamasını geçmeyen (örn. <span className="font-mono">@</span> veya <span className="font-mono">.</span> koşulları) satırlar elenir.
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Excel’e nasıl aktarırım?</span>
+              <br />
+              “Sonucu Kopyala” ile listeyi kopyalayıp Excel’e yapıştır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            İstersen{" "}
+            <Link
+              href="/blog/excel-email-liste-temizleme"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              e-posta temizleme rehberine
+            </Link>{" "}
+            de göz at.
+          </p>
+        </section>
 
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">E-posta listesi (her satırda bir adres)</label>

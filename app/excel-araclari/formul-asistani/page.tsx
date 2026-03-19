@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -69,6 +70,7 @@ export default function FormulAsistaniPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Arama kutusuna Excel'de yapmak istediğinizi yazın (örn. iki kolonu birleştir, toplam al, koşula göre değer ver).",
             "Altta önerilen fonksiyonlar (Türkçe / İngilizce) ve kısa açıklama görünür.",
@@ -85,6 +87,44 @@ export default function FormulAsistaniPage() {
             </div>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Excel’de ne yapmak istediğini yazdığında (doğal dil) sana uygun fonksiyon adlarını ve kısa açıklamalarını önerir. Türkçe ve İngilizce karşılıklarıyla hızlı arama yapmanı sağlar.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek arama</p>
+              <p className="text-gray-700">“iki kolonu birleştir”</p>
+              <p className="text-gray-700 mt-2">“tarih farkı”</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Neler önerir?</p>
+              <p className="text-gray-700">Örn. <span className="font-mono">BİRLEŞTİR (CONCAT)</span> ve <span className="font-mono">TARİHFARKI / GÜN360 (DATEDIF)</span></p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Öneriler neye göre?</span><br />En çok kullanılan fonksiyonları ve anahtar kelime eşleşmelerini kullanır.</p>
+            <p><span className="font-semibold text-gray-900">Kopyalama ne işe yarar?</span><br />Kısayol gibi: önerilen fonksiyon adlarını ve açıklamayı tek seferde notlarına yapıştırabilirsin.</p>
+            <p><span className="font-semibold text-gray-900">Formül oluşturucuya bağlanıyor mu?</span><br />Evet. Benzer araçlar üzerinden ilgili oluşturucu sayfalarına geçebilirsin.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/excel-araclari/formul-asistani" className="underline" style={{ color: THEME.ribbon }}>
+              formül asistanı
+            </Link>{" "}
+            ve{" "}
+            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
+              eğitim seviyelerine
+            </Link>{" "}
+            göz at.
+          </div>
+        </section>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Excel'de ne yapmak istiyorsunuz?</label>
           <input

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -63,6 +64,7 @@ export default function IcIceEgerOlusturucuPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Her satıra bir koşul ve sonuç girin (örn. A1>90 → AA). Üstteki satırlar önceliklidir.",
             "Hiçbir koşul sağlanmazsa dönecek değeri \"Aksi halde\" alanına yazın.",
@@ -79,6 +81,42 @@ export default function IcIceEgerOlusturucuPage() {
             </div>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Birden fazla koşuldan (örn. puan aralıkları) tek bir sonuç üretmek için iç içe EĞER (nested IF) formülünü hazırlar. Sonuç aralığı, yukarıdan aşağı öncelik sırasıyla çalışır.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">Satırlar: <span className="font-mono">A1&gt;90 → AA</span>, <span className="font-mono">A1&gt;80 → BA</span>, <span className="font-mono">A1&gt;70 → BB</span></p>
+              <p className="text-gray-700 mt-2">Aksi halde: <span className="font-mono">CC</span></p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">
+                <span className="font-mono">=EĞER(A1&gt;90;&quot;AA&quot;;EĞER(A1&gt;80;&quot;BA&quot;;EĞER(A1&gt;70;&quot;BB&quot;;&quot;CC&quot;))))</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Satır sırası önemli mi?</span><br />Evet. Yukarıdaki koşullar önce değerlendirilir.</p>
+            <p><span className="font-semibold text-gray-900">Koşul karşılanmazsa ne olur?</span><br />“Aksi halde” alanındaki değer döner.</p>
+            <p><span className="font-semibold text-gray-900">Daha modern alternatif var mı?</span><br />Excel 365’te EĞERLER (IFS) fonksiyonu bazı senaryolarda daha okunaklıdır.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
+              Temel mantık eğitimlerine
+            </Link>{" "}
+            göz atabilirsin.
+          </div>
+        </section>
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-gray-600">Koşul → Sonuç</span>

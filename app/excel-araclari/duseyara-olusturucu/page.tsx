@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -38,6 +39,7 @@ export default function DuseyaraOlusturucuPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Aranan değer (hücre veya değer), arama tablosu (örn. Sheet2!A:B) ve dönecek sütun numarasını girin.",
             "Tam eşleşme (0) veya yaklaşık eşleşme (1) seçin.",
@@ -54,6 +56,48 @@ export default function DuseyaraOlusturucuPage() {
             </div>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            DÜŞEYARA ile tabloda aradığın değeri bulup aynı tablodaki başka bir sütundan sonucu getirmen için formülü otomatik üretir. Tam veya yaklaşık eşleşme seçerek listelerde doğru sonuç alırsın.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">
+                Aranan: <span className="font-mono">A2</span> · Tablo: <span className="font-mono">Sheet2!A:B</span> · Sütun: <span className="font-mono">2</span>
+              </p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">
+                <span className="font-mono">=DÜŞEYARA(A2;Sheet2!A:B;2;0)</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Tam eşleşme ne zaman?</span><br />Listede aradığın değer aynen geçiyorsa <strong>0</strong> seç.</p>
+            <p><span className="font-semibold text-gray-900">Yaklaşık eşleşme ne zaman?</span><br />Değerler sıralıysa ve aradığın aralığa en yakın sonucu istiyorsan <strong>1</strong> seç.</p>
+            <p><span className="font-semibold text-gray-900">Excel’e nasıl yapıştırırım?</span><br />Oluşan formülü kopyalayıp ilgili hücreye Ctrl+V yap.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
+              DÜŞEYARA eğitimi
+            </Link>{" "}
+            ve{" "}
+            <Link href="/blog/excel-duseyara-formul-olusturma" className="underline" style={{ color: THEME.ribbon }}>
+              rehber yazısı
+            </Link>{" "}
+            sayfasına bak.
+          </div>
+        </section>
+
         <div className="grid gap-4 sm:grid-cols-1">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Aranan değer (hücre veya değer)</label>

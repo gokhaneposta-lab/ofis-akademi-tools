@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -43,6 +44,7 @@ export default function EgerOlusturucuPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Koşulu girin (örn. A1>50, B2=\"Evet\").",
             "Koşul doğruysa dönecek metin veya formülü, yanlışsa dönecek değeri yazın.",
@@ -59,6 +61,43 @@ export default function EgerOlusturucuPage() {
             </div>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Koşul doğruysa “doğruysa”, değilse “yanlışsa” değerini kullanarak EĞER (IF) formülünü otomatik oluşturur. Not, geçti/kaldı, kontrol ve sınıflandırma senaryolarında hız sağlar.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">Koşul: <span className="font-mono">A1&gt;50</span> · Doğruysa: Geçti · Yanlışsa: Kaldı</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700"><span className="font-mono">=EĞER(A1&gt;50;&quot;Geçti&quot;;&quot;Kaldı&quot;)</span></p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Metinleri tırnak içine almalı mıyım?</span><br />Evet. Araç doğru formatta ekler. Örn. &quot;Geçti&quot; gibi.</p>
+            <p><span className="font-semibold text-gray-900">Koşulda AND/OR var mı?</span><br />Evet. Koşul ifaden içinde VE/VEYA kullanabilirsin (örn. A1&gt;50 VE B1&gt;80).</p>
+            <p><span className="font-semibold text-gray-900">Sonuç olarak sayı mı dönebilir?</span><br />Evet. “Doğruysa/Yanlışsa” alanlarına sayı yazabilirsin.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
+              Temel EĞER eğitimi
+            </Link>{" "}
+            ve{" "}
+            <Link href="/blog/excel-eger-formul-olusturma" className="underline" style={{ color: THEME.ribbon }}>
+              rehber yazısı
+            </Link>{" "}
+            sayfasına bak.
+          </div>
+        </section>
         <div className="grid gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Koşul</label>

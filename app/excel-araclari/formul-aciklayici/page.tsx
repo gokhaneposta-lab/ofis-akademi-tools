@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -130,6 +131,7 @@ export default function FormulAciklayiciPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel'den kopyaladığınız formülü (örn. =EĞER(A1>50;\"Geçti\";\"Kaldı\")) aşağıdaki kutuya yapıştırın.",
             "Açıklama otomatik oluşur. EĞER ve DÜŞEYARA formülleri ayrıntılı açıklanır.",
@@ -146,6 +148,45 @@ export default function FormulAciklayiciPage() {
             </div>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Yapıştırdığın Excel formülünü Türkçe cümlelerle özetleyip adım adım açıklamaya yardımcı olur. Özellikle <span className="font-mono">EĞER</span> ve <span className="font-mono">DÜŞEYARA</span> gibi yaygın fonksiyonlarda daha net bilgi verir.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Girdi</p>
+              <p className="font-mono text-gray-700"><span>=EĞER(A1&gt;50;&quot;Geçti&quot;;&quot;Kaldı&quot;)</span></p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Çıktı (özet)</p>
+              <p className="text-gray-700">
+                <span className="font-semibold">A1&gt;50</span> koşulu kontrol edilir. Koşul doğruysa <span className="font-semibold">Geçti</span>, yanlışsa <span className="font-semibold">Kaldı</span> döner.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Her formül açıklanır mı?</span><br />Temel olarak desteklenen yaygın fonksiyonlarda daha detaylı açıklama sağlar; çok karmaşık formüllerde genel özet sunar.</p>
+            <p><span className="font-semibold text-gray-900">Dil nasıl?</span><br />Açıklamalar Türkçe üretilir.</p>
+            <p><span className="font-semibold text-gray-900">Çıktıyı kullanabilir miyim?</span><br />Evet. Kutuda görünene göre kopyalayarak ders notuna veya metne ekleyebilirsin.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
+              temel eğitim içeriklerine
+            </Link>{" "}
+            göz at.
+          </div>
+        </section>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Excel formülü (yapıştırın)</label>
           <textarea

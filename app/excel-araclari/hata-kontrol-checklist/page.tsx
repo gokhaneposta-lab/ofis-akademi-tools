@@ -6,6 +6,7 @@ import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 const STORAGE_KEY = "ofis-akademi-hata-kontrol-checklist";
 
@@ -139,6 +140,27 @@ export default function HataKontrolChecklistPage() {
   const [checked, setChecked] = useState<Record<string, boolean>>(getDefaultChecked);
   const [mounted, setMounted] = useState(false);
 
+  const howToSteps = [
+    "Excel dosyanızı teslim etmeden önce bu maddeleri sırayla kontrol edin.",
+    "Her maddeyi tamamladıkça işaretleyin; ilerleme otomatik kaydedilir.",
+    "İpucu ve Excel yolu olan maddelerde detayı görmek için genişletin.",
+  ];
+
+  const faq = [
+    {
+      question: "İşaretler kaydediliyor mu?",
+      answer: "Evet, yalnızca bu cihaz/tarayıcıda ilerleme kaydedilir.",
+    },
+    {
+      question: "Excel yolu ne işe yarar?",
+      answer: "Her madde için nereden kontrol edeceğini kısaca gösterir.",
+    },
+    {
+      question: "Her dosyada şart mı?",
+      answer: "Özellikle rapor ve büyük veri içeren dosyalarda hata riskini azaltır.",
+    },
+  ];
+
   useEffect(() => {
     setMounted(true);
     const saved = loadChecked();
@@ -177,15 +199,18 @@ export default function HataKontrolChecklistPage() {
           ← Excel Araçları
         </Link>
       </PageRibbon>
+      <ToolJsonLd
+        name="Hata Kontrol Checklist'i"
+        description="Dosya teslim etmeden önce formül, bağlantı ve hücre güvenliği kontrollerini adım adım işaretle."
+        path="/excel-araclari/hata-kontrol-checklist"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
 
       <div className="mx-4 mt-6 mb-10 max-w-3xl space-y-8">
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "Excel dosyanızı teslim etmeden önce bu maddeleri sırayla kontrol edin.",
-            "Her maddeyi tamamladıkça işaretleyin; ilerleme otomatik kaydedilir.",
-            "İpucu ve Excel yolu olan maddelerde detayı görmek için genişletin.",
-          ]}
+          steps={howToSteps}
         />
 
         <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">

@@ -8,11 +8,33 @@ import NasilKullanilir from "@/components/NasilKullanilir";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { validateIBAN } from "@/lib/iban";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 export default function IbanDogrulamaPage() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
   const [copied, setCopied] = useState(false);
+
+  const howToSteps = [
+    "Doğrulamak istediğiniz IBAN'ları aşağıdaki kutuya yapıştırın (her satıra bir IBAN; boşluk olmadan).",
+    "Doğrula butonuna tıklayın.",
+    "Geçerli / Geçersiz sonucunu görün; geçerli IBAN'ları kopyalayıp kullanabilirsiniz.",
+  ];
+
+  const faq = [
+    {
+      question: "Boşluklu IBAN girebilir miyim?",
+      answer: "Evet. Araç boşlukları otomatik temizler.",
+    },
+    {
+      question: "Toplu IBAN kontrolü destekleniyor mu?",
+      answer: "Evet. Her satıra bir IBAN yazarak toplu doğrulama yapabilirsiniz.",
+    },
+    {
+      question: "Sonuçları nasıl aktarırım?",
+      answer: "Sonucu kopyalayıp Excel'e yapıştırabilirsiniz.",
+    },
+  ];
 
   function handleValidate() {
     const lines = input.split(/\r?\n/).map((l) => l.trim().replace(/\s/g, "")).filter(Boolean);
@@ -45,6 +67,13 @@ export default function IbanDogrulamaPage() {
         title="IBAN Doğrulama"
         description="IBAN numaralarını doğrulayın. Türkiye ve uluslararası IBAN formatı (MOD-97) desteklenir. Her satıra bir IBAN yazın veya yapıştırın."
       />
+      <ToolJsonLd
+        name="IBAN Doğrulama"
+        description="IBAN numaralarını doğrulayın. Türkiye ve uluslararası IBAN formatı (MOD-97) desteklenir. Her satıra bir IBAN yazın veya yapıştırın."
+        path="/excel-araclari/iban-dogrulama"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
 
       <div
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
@@ -52,11 +81,7 @@ export default function IbanDogrulamaPage() {
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "Doğrulamak istediğiniz IBAN'ları aşağıdaki kutuya yapıştırın (her satıra bir IBAN; boşluk olmadan).",
-            "Doğrula butonuna tıklayın.",
-            "Geçerli / Geçersiz sonucunu görün; geçerli IBAN'ları kopyalayıp kullanabilirsiniz.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <div className="space-y-2 text-sm text-gray-700">
               <p>

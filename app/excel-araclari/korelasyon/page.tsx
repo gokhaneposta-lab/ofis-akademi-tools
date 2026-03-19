@@ -9,11 +9,33 @@ import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseTwoColumns, pearson, mean, std } from "@/lib/istatistik";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 export default function KorelasyonPage() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState<{ r: number; n: number; ortalamaX: number; ortalamaY: number; stdX: number; stdY: number } | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const howToSteps = [
+    "X ve Y sütunlarını Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki sayı; Tab veya noktalı virgül ile ayrılmış).",
+    "Hesapla butonuna tıklayın.",
+    "Pearson korelasyon katsayısı (r) ve özet istatistikler görünür; Sonucu Kopyala ile alabilirsiniz.",
+  ];
+
+  const faq = [
+    {
+      question: "r hangi aralıkta olur?",
+      answer: "Genelde -1 ile +1 arasında.",
+    },
+    {
+      question: "r 0’a yakınsa?",
+      answer: "Doğrusal ilişki zayıftır.",
+    },
+    {
+      question: "Excel’e nasıl aktarırım?",
+      answer: "“Sonucu Kopyala” ile panoya al.",
+    },
+  ];
 
   function handleHesapla() {
     const { x, y } = parseTwoColumns(input);
@@ -63,17 +85,20 @@ export default function KorelasyonPage() {
         title="Korelasyon Hesaplama (Pearson)"
         description="İki değişken (X ve Y) arasındaki Pearson korelasyon katsayısı r hesaplama. Excel'den 2 sütun yapıştırın."
       />
+      <ToolJsonLd
+        name="Korelasyon Hesaplama (Pearson)"
+        description="İki değişken (X ve Y) arasındaki Pearson korelasyon katsayısı r hesaplama. Excel'den 2 sütun yapıştırın."
+        path="/excel-araclari/korelasyon"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
       <div
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "X ve Y sütunlarını Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki sayı; Tab veya noktalı virgül ile ayrılmış).",
-            "Hesapla butonuna tıklayın.",
-            "Pearson korelasyon katsayısı (r) ve özet istatistikler görünür; Sonucu Kopyala ile alabilirsiniz.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <>
               <p className="text-sm text-gray-700 mb-2">

@@ -7,6 +7,7 @@ import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 export default function DuseyaraOlusturucuPage() {
   const [aranan, setAranan] = useState("A2");
@@ -14,6 +15,27 @@ export default function DuseyaraOlusturucuPage() {
   const [sutun, setSutun] = useState("2");
   const [tamEslesme, setTamEslesme] = useState(true);
   const [copied, setCopied] = useState(false);
+
+  const howToSteps = [
+    "Aranan değer (hücre veya değer), arama tablosu (örn. Sheet2!A:B) ve dönecek sütun numarasını girin.",
+    "Tam eşleşme (0) veya yaklaşık eşleşme (1) seçin.",
+    "Oluşan formülü kopyalayıp Excel'de ilgili hücreye yapıştırın.",
+  ];
+
+  const faq = [
+    {
+      question: "Tam eşleşme ne zaman?",
+      answer: "Listede aradığın değer aynen geçiyorsa 0 seç.",
+    },
+    {
+      question: "Yaklaşık eşleşme ne zaman?",
+      answer: "Değerler sıralıysa ve aradığın aralığa en yakın sonucu istiyorsan 1 seç.",
+    },
+    {
+      question: "Excel’e nasıl yapıştırırım?",
+      answer: "Oluşan formülü kopyalayıp ilgili hücreye Ctrl+V yap.",
+    },
+  ];
 
   const sutunNum = parseInt(sutun, 10) || 1;
   const formula = `=DÜŞEYARA(${aranan.trim() || "A2"};${tablo.trim() || "Sheet2!A:B"};${Math.max(1, sutunNum)};${tamEslesme ? "0" : "1"})`;
@@ -34,17 +56,20 @@ export default function DuseyaraOlusturucuPage() {
         title="DÜŞEYARA Formül Oluşturucu"
         description="Aranan değer, arama tablosu ve sütun numarasından DÜŞEYARA (VLOOKUP) formülü oluşturur. Tam veya yaklaşık eşleşme seçebilirsiniz."
       />
+      <ToolJsonLd
+        name="DÜŞEYARA Formül Oluşturucu"
+        description="Aranan değer, arama tablosu ve sütun numarasından DÜŞEYARA (VLOOKUP) formülü oluşturur. Tam veya yaklaşık eşleşme seçebilirsiniz."
+        path="/excel-araclari/duseyara-olusturucu"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
       <div
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "Aranan değer (hücre veya değer), arama tablosu (örn. Sheet2!A:B) ve dönecek sütun numarasını girin.",
-            "Tam eşleşme (0) veya yaklaşık eşleşme (1) seçin.",
-            "Oluşan formülü kopyalayıp Excel'de ilgili hücreye yapıştırın.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <div className="space-y-2 text-sm text-gray-700">
               <p>

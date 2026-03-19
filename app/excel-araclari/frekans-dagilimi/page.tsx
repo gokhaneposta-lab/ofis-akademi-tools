@@ -9,6 +9,7 @@ import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers } from "@/lib/istatistik";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 type Bin = { label: string; min: number; max: number; count: number };
 
@@ -40,6 +41,27 @@ export default function FrekansDagilimiPage() {
   const [binWidthStr, setBinWidthStr] = useState("10");
   const [bins, setBins] = useState<Bin[]>([]);
   const [copied, setCopied] = useState(false);
+
+  const howToSteps = [
+    "Sayıları aşağıdaki kutuya yapıştırın (Excel'den sütun kopyalayabilirsiniz).",
+    "Sınıf genişliğini (aralık) girin (örn. 10 → 0–10, 10–20, 20–30).",
+    "Hesapla butonuna tıklayın; frekans tablosu görünür. Tabloyu Kopyala ile Excel'e yapıştırabilirsiniz.",
+  ];
+
+  const faq = [
+    {
+      question: "Sınıf genişliği neyi belirler?",
+      answer: "Aralıkların büyüklüğünü (örn. 10 → 0–10, 10–20, 20–30...).",
+    },
+    {
+      question: "Excel’de nasıl karşılığı var?",
+      answer: "FREKANS dizi formülü veya Veri Analizi histogram.",
+    },
+    {
+      question: "Excel’e nasıl aktarırım?",
+      answer: "Tabloyu “Tabloyu Kopyala” ile panoya alıp Excel’e yapıştır.",
+    },
+  ];
 
   function handleHesapla() {
     const arr = parseNumbers(input);
@@ -77,17 +99,20 @@ export default function FrekansDagilimiPage() {
         title="Frekans Dağılımı Hesaplama"
         description="Sayıları sınıf aralıklarına bölerek frekans tablosu oluşturma. Histogram verisi, frekans dağılımı hesaplama."
       />
+      <ToolJsonLd
+        name="Frekans Dağılımı Hesaplama"
+        description="Sayıları sınıf aralıklarına bölerek frekans tablosu oluşturma. Histogram verisi, frekans dağılımı hesaplama."
+        path="/excel-araclari/frekans-dagilimi"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
       <div
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "Sayıları aşağıdaki kutuya yapıştırın (Excel'den sütun kopyalayabilirsiniz).",
-            "Sınıf genişliğini (aralık) girin (örn. 10 → 0–10, 10–20, 20–30).",
-            "Hesapla butonuna tıklayın; frekans tablosu görünür. Tabloyu Kopyala ile Excel'e yapıştırabilirsiniz.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <>
               <p className="text-sm text-gray-700 mb-2">

@@ -9,6 +9,7 @@ import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers, percentile, quartile } from "@/lib/istatistik";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 export default function CeyrekYuzdelikPage() {
   const [input, setInput] = useState("");
@@ -16,6 +17,27 @@ export default function CeyrekYuzdelikPage() {
   const [result, setResult] = useState<Record<string, number> | null>(null);
   const [customValue, setCustomValue] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const howToSteps = [
+    "Sayıları aşağıdaki kutuya yapıştırın (virgül veya satır sonu ile ayrılmış).",
+    "İsterseniz özel yüzdelik dilimini girin (örn. 90 → %90).",
+    "Hesapla butonuna tıklayın; minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik görünür.",
+  ];
+
+  const faq = [
+    {
+      question: "Yüzdelik (%90) ne demek?",
+      answer: "Değerlerin %90'ı bu sonuçtan küçük veya eşittir.",
+    },
+    {
+      question: "Q1/Q3 ne işe yarar?",
+      answer: "Dağılımın “orta” kısmını gösterir; kutu grafiği (box plot) için temel değerlerdir.",
+    },
+    {
+      question: "Excel’e nasıl aktarırım?",
+      answer: "“Sonucu Kopyala” ile panoya alıp Ctrl+V yap.",
+    },
+  ];
 
   function handleHesapla() {
     const arr = parseNumbers(input);
@@ -61,17 +83,20 @@ export default function CeyrekYuzdelikPage() {
         title="Çeyrek (Quartile) ve Yüzdelik Hesaplama"
         description="Quartile ve percentile hesaplama: minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90)."
       />
+      <ToolJsonLd
+        name="Çeyrek (Quartile) ve Yüzdelik Hesaplama"
+        description="Quartile ve percentile hesaplama: minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90)."
+        path="/excel-araclari/ceyrek-yuzdelik"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
       <div
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "Sayıları aşağıdaki kutuya yapıştırın (virgül veya satır sonu ile ayrılmış).",
-            "İsterseniz özel yüzdelik dilimini girin (örn. 90 → %90).",
-            "Hesapla butonuna tıklayın; minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik görünür.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <>
               <p className="text-sm text-gray-700 mb-2">

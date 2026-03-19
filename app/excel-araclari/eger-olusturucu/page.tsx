@@ -7,6 +7,7 @@ import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 function escapeForFormula(s: string): string {
   const t = s.trim();
@@ -20,6 +21,27 @@ export default function EgerOlusturucuPage() {
   const [dogruysa, setDogruysa] = useState("Geçti");
   const [yanlissa, setYanlissa] = useState("Kaldı");
   const [copied, setCopied] = useState(false);
+
+  const howToSteps = [
+    "Koşulu girin (örn. A1>50, B2=\"Evet\").",
+    "Koşul doğruysa dönecek metin veya formülü, yanlışsa dönecek değeri yazın.",
+    "Oluşan EĞER formülünü kopyalayıp Excel'de hücreye yapıştırın.",
+  ];
+
+  const faq = [
+    {
+      question: "Metinleri tırnak içine almalı mıyım?",
+      answer: "Evet. Araç doğru formatta ekler (örn. \"Geçti\" gibi).",
+    },
+    {
+      question: "Koşulda AND/OR var mı?",
+      answer: "Evet. Koşul ifaden içinde VE/VEYA kullanabilirsin (örn. A1>50 VE B1>80).",
+    },
+    {
+      question: "Sonuç olarak sayı mı dönebilir?",
+      answer: "Evet. Doğruysa/Yanlışsa alanlarına sayı yazabilirsin.",
+    },
+  ];
 
   const formula = `=EĞER(${kosul.trim() || "A1>50"};${escapeForFormula(dogruysa)};${escapeForFormula(yanlissa)})`;
 
@@ -39,17 +61,20 @@ export default function EgerOlusturucuPage() {
         title="EĞER Formül Oluşturucu"
         description="Koşul, doğruysa ve yanlışsa değerlerinden EĞER (IF) formülü oluşturur. Kopyalayıp Excel'e yapıştırın."
       />
+      <ToolJsonLd
+        name="EĞER Formül Oluşturucu"
+        description="Koşul, doğruysa ve yanlışsa değerlerinden EĞER (IF) formülü oluşturur. Kopyalayıp Excel'e yapıştırın."
+        path="/excel-araclari/eger-olusturucu"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
       <div
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "Koşulu girin (örn. A1>50, B2=\"Evet\").",
-            "Koşul doğruysa dönecek metin veya formülü, yanlışsa dönecek değeri yazın.",
-            "Oluşan EĞER formülünü kopyalayıp Excel'de hücreye yapıştırın.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <div className="space-y-2 text-sm text-gray-700">
               <p>

@@ -9,11 +9,33 @@ import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseTwoColumns, linearRegression } from "@/lib/istatistik";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 export default function BasitRegresyonPage() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState<{ a: number; b: number; r2: number; n: number } | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const howToSteps = [
+    "X ve Y sütunlarını Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki sayı; Tab veya ; ile ayrılmış).",
+    "Hesapla butonuna tıklayın.",
+    "Y = a + b·X doğrusunun kesişim (a), eğim (b) ve R² görünür; Sonucu Kopyala ile alabilirsiniz.",
+  ];
+
+  const faq = [
+    {
+      question: "Minimum kaç satır gerekir?",
+      answer: "En az 2 veri noktası gerekir.",
+    },
+    {
+      question: "R² ne işe yarar?",
+      answer: "Verinin doğrusal modele ne kadar iyi uyduğunu gösterir (0–1 arası).",
+    },
+    {
+      question: "Excel’de nasıl karşılığı var?",
+      answer: "LINEST / EĞİM / KESİŞİM ve ilgili istatistikler kullanılır.",
+    },
+  ];
 
   function handleHesapla() {
     const { x, y } = parseTwoColumns(input);
@@ -55,17 +77,20 @@ export default function BasitRegresyonPage() {
         title="Regresyon Hesaplama (Doğrusal)"
         description="Basit doğrusal regresyon: Y = a + b·X, eğim, kesişim ve R². Excel'den 2 sütun yapıştırın."
       />
+      <ToolJsonLd
+        name="Regresyon Hesaplama (Doğrusal)"
+        description="Basit doğrusal regresyon: Y = a + b·X, eğim, kesişim ve R². Excel'den 2 sütun yapıştırın."
+        path="/excel-araclari/basit-regresyon"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
       <div
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "X ve Y sütunlarını Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki sayı; Tab veya ; ile ayrılmış).",
-            "Hesapla butonuna tıklayın.",
-            "Y = a + b·X doğrusunun kesişim (a), eğim (b) ve R² görünür; Sonucu Kopyala ile alabilirsiniz.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <>
               <p className="text-sm text-gray-700 mb-2">

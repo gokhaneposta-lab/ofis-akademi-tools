@@ -7,6 +7,7 @@ import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 type Delimiter = "tab" | "comma" | "semicolon";
 
@@ -15,6 +16,28 @@ export default function TranspozPage() {
   const [result, setResult] = useState("");
   const [copied, setCopied] = useState(false);
   const [delimiter, setDelimiter] = useState<Delimiter>("tab");
+
+  const howToSteps = [
+    "Excel'den satırları veya sütunları kopyalayıp aşağıdaki kutuya yapıştırın (Tab ile ayrılmış olmalı).",
+    "Girdi ayırıcısını seçin: sekme, virgül veya noktalı virgül.",
+    "Döndür butonuna tıklayın.",
+    "Sonucu kopyalayıp Excel'e yapıştırın; satırlar sütun, sütunlar satır olacaktır.",
+  ];
+
+  const faq = [
+    {
+      question: "Hangi ayırıcılar çalışır?",
+      answer: "Sekme, virgül ve noktalı virgül.",
+    },
+    {
+      question: "Excel’e nasıl yapıştırırım?",
+      answer: "Sonucu kopyalayıp Excel’de hedef hücreye yapıştırın. Çıktı sekme ile döndüğü için tablolar kolay oluşur.",
+    },
+    {
+      question: "Formül alternatifi var mı?",
+      answer: "Evet. Excel alternatifi kısmında =TRANSPOSE(...) örneği var.",
+    },
+  ];
 
   function getSep(): string {
     if (delimiter === "tab") return "\t";
@@ -70,6 +93,13 @@ export default function TranspozPage() {
         title="Satır / Sütun Döndür (Transpoz)"
         description="Satırları sütunlara, sütunları satırlara dönüştürün. Excel'deki veriyi yapıştırıp transpoz edebilir, sonucu tekrar Excel'e yapıştırabilirsiniz."
       />
+      <ToolJsonLd
+        name="Satır / Sütun Döndür (Transpoz)"
+        description="Satırları sütunlara, sütunları satırlara dönüştürün. Excel'deki veriyi yapıştırıp transpoz edebilir, sonucu tekrar Excel'e yapıştırabilirsiniz."
+        path="/excel-araclari/transpoz"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
 
       <div
         className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
@@ -77,12 +107,7 @@ export default function TranspozPage() {
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "Excel'den satırları veya sütunları kopyalayıp aşağıdaki kutuya yapıştırın (Tab ile ayrılmış olmalı).",
-            "Girdi ayırıcısını seçin: sekme, virgül veya noktalı virgül.",
-            "Döndür butonuna tıklayın.",
-            "Sonucu kopyalayıp Excel'e yapıştırın; satırlar sütun, sütunlar satır olacaktır.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <div className="space-y-2 text-sm text-gray-700">
               <p>

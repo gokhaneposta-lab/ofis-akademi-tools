@@ -9,6 +9,7 @@ import ExcelFormulBlok from "@/components/ExcelFormulBlok";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import { THEME } from "@/lib/theme";
 import { parseNumbers, mean, std, variance } from "@/lib/istatistik";
+import ToolJsonLd from "@/components/ToolJsonLd";
 
 function mode(arr: number[]): number[] {
   if (arr.length === 0) return [];
@@ -29,6 +30,27 @@ export default function BetimselIstatistikPage() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState<Record<string, number | string> | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const howToSteps = [
+    "Sayıları virgül, boşluk veya satır sonu ile ayrılmış şekilde aşağıdaki kutuya yapıştırın (Excel'den sütun kopyalayabilirsiniz).",
+    "Hesapla butonuna tıklayın.",
+    "Ortalama, medyan, mod, standart sapma, varyans, min, max ve açıklık görünür; Sonucu Kopyala ile alabilirsiniz.",
+  ];
+
+  const faq = [
+    {
+      question: "Mod neyi gösterir?",
+      answer: "En sık tekrar eden değer(ler)i.",
+    },
+    {
+      question: "Standart sapma neyi anlatır?",
+      answer: "Verinin ortalamadan ne kadar yayıldığını gösterir.",
+    },
+    {
+      question: "Sonucu Excel’e nasıl taşırım?",
+      answer: "“Sonucu Kopyala” ile panoya alıp Ctrl+V yap.",
+    },
+  ];
 
   function handleHesapla() {
     const arr = parseNumbers(input);
@@ -77,17 +99,20 @@ export default function BetimselIstatistikPage() {
         title="Ortalama, Medyan, Standart Sapma Hesaplama"
         description="Betimsel istatistik: ortalama, medyan, mod, standart sapma, varyans, min, max. Sayı listesinden tek seferde. Excel'den yapıştırın."
       />
+      <ToolJsonLd
+        name="Ortalama, Medyan, Standart Sapma Hesaplama"
+        description="Betimsel istatistik: ortalama, medyan, mod, standart sapma, varyans, min, max. Sayı listesinden tek seferde. Excel'den yapıştırın."
+        path="/excel-araclari/betimsel-istatistik"
+        howToSteps={howToSteps}
+        faq={faq}
+      />
       <div
         className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
           showEnhancedSections={false}
-          steps={[
-            "Sayıları virgül, boşluk veya satır sonu ile ayrılmış şekilde aşağıdaki kutuya yapıştırın (Excel'den sütun kopyalayabilirsiniz).",
-            "Hesapla butonuna tıklayın.",
-            "Ortalama, medyan, mod, standart sapma, varyans, min, max ve açıklık görünür; Sonucu Kopyala ile alabilirsiniz.",
-          ]}
+          steps={howToSteps}
           excelAlternatif={
             <>
               <p className="text-sm text-gray-700 mb-2">

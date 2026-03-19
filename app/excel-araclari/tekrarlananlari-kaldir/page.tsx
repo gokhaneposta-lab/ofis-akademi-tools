@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -60,6 +61,7 @@ export default function TekrarlananlariKaldirPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel veya başka bir listeden satırları kopyalayıp aşağıdaki kutuya yapıştırın (her satırda bir değer).",
             "İsterseniz seçenekleri ayarlayın: baştaki/sondaki boşlukları temizle, büyük/küçük harf duyarlı.",
@@ -79,6 +81,22 @@ export default function TekrarlananlariKaldirPage() {
             </>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Aynı listede tekrar eden satırları tek seferde temizler. Müşteri, e-posta, telefon ve ID listelerini benzersiz hale getirerek rapor ve filtre hatalarını azaltır.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">ornek@mail.com ↵ ornek@mail.com ↵ farkli@mail.com</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">ornek@mail.com ↵ farkli@mail.com</p>
+            </div>
+          </div>
+        </section>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between flex-wrap">
           <div className="flex flex-col gap-2">
@@ -151,6 +169,25 @@ export default function TekrarlananlariKaldirPage() {
             />
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Büyük-küçük harf farkını dikkate alır mı?</span><br />İsterseniz alır. “Büyük/küçük harf duyarlı” seçeneğini açabilirsiniz.</p>
+            <p><span className="font-semibold text-gray-900">Boşluklardan kaynaklı tekrarları da temizler mi?</span><br />Evet. “Baştaki ve sondaki boşlukları temizle” seçeneği bu hataları azaltır.</p>
+            <p><span className="font-semibold text-gray-900">Sonucu Excel&apos;e aktarabilir miyim?</span><br />Evet. Kopyalayıp doğrudan ilgili sütuna yapıştırabilirsiniz.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için:{" "}
+            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
+              Temel Excel eğitimi
+            </Link>
+            {" · "}
+            <Link href="/blog/excel-yinelenenleri-kaldirma" className="underline" style={{ color: THEME.ribbon }}>
+              rehber yazısı
+            </Link>
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/tekrarlananlari-kaldir" />

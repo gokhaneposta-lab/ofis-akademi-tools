@@ -68,7 +68,25 @@ export default function AdSoyadAyirici() {
       />
 
       <div className="mx-auto mt-2 mb-6 max-w-3xl px-4 sm:px-6 flex flex-col gap-6">
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Tek sütunda duran ad-soyad listesini saniyeler içinde ayırır. Özellikle personel listesi, CRM aktarımı ve e-posta listesi düzenlemede vakit kazandırır.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">MELİHA ELVİN GÜZEL YILDIRIM</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">Ad: MELİHA ELVİN GÜZEL / Soyad: YILDIRIM</p>
+            </div>
+          </div>
+        </section>
+
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel veya listeden tam ad sütununu kopyalayıp aşağıdaki alana yapıştırın (her satırda bir ad).",
             "Ad + Soyad ayır veya Sadece Soyad modunu seçin; çıktıyı Tablo veya Excel (;) formatında alabilirsiniz.",
@@ -93,6 +111,25 @@ export default function AdSoyadAyirici() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Verilerim kaydediliyor mu?</span><br />Hayır. İşlem tarayıcı içinde yapılır, veriler sunucuya gönderilmez.</p>
+            <p><span className="font-semibold text-gray-900">Çok satırlı liste destekleniyor mu?</span><br />Evet. Her satıra bir kişi olacak şekilde toplu işlem yapabilirsiniz.</p>
+            <p><span className="font-semibold text-gray-900">Sonucu Excel&apos;e nasıl yapıştırırım?</span><br />“Sonucu Kopyala” ile alıp Excel&apos;de ilgili hücreye Ctrl+V yapmanız yeterli.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için:{" "}
+            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
+              Temel Excel eğitimi
+            </Link>
+            {" · "}
+            <Link href="/blog/excelde-ad-soyad-ayirma" className="underline" style={{ color: THEME.ribbon }}>
+              rehber yazısı
+            </Link>
+          </div>
+        </section>
       </div>
 
       {/* Mod / çıktı seçenekleri — veri giriş alanının üstünde */}

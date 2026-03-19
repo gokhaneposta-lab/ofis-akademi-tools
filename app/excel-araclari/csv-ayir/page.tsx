@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
@@ -123,6 +124,7 @@ export default function CsvAyirici() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "CSV metnini veya Excel'den kopyaladığınız hücreleri aşağıdaki kutuya yapıştırın.",
             "Ayırıcı otomatik algılanır; isterseniz virgül, noktalı virgül veya sekme seçin.",
@@ -139,6 +141,22 @@ export default function CsvAyirici() {
             </div>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Tek sütunda görünen CSV metnini doğru ayırıcıyla sütunlara böler. Satış, stok, müşteri ve dış sistemden gelen verileri Excel&apos;e hazırlarken hız kazandırır.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">Ali;25;İstanbul</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">Sütun 1: Ali · Sütun 2: 25 · Sütun 3: İstanbul</p>
+            </div>
+          </div>
+        </section>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium uppercase tracking-wide text-gray-600">
@@ -236,6 +254,25 @@ export default function CsvAyirici() {
             </div>
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Virgül mü noktalı virgül mü kullanmalıyım?</span><br />Araç “Otomatik Algıla” modunda çoğu dosyada doğru ayırıcıyı kendi bulur.</p>
+            <p><span className="font-semibold text-gray-900">Büyük listeleri işler mi?</span><br />Evet, çok satırlı verileri satır-satır tabloya bölebilirsiniz.</p>
+            <p><span className="font-semibold text-gray-900">Excel&apos;e uygun çıktı nasıl alınır?</span><br />“Sonuçları Kopyala (Excel)” butonu sekme ayracılı metin üretir, doğrudan sütunlara yapışır.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için:{" "}
+            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
+              Temel Excel eğitimi
+            </Link>
+            {" · "}
+            <Link href="/blog/csv-veriyi-sutunlara-ayirma" className="underline" style={{ color: THEME.ribbon }}>
+              rehber yazısı
+            </Link>
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/csv-ayir" />

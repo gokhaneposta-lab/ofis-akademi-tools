@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
@@ -101,6 +102,7 @@ export default function ListeBirlestirici() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Birleştirmek istediğiniz satırları (her satırda bir değer) aşağıdaki kutuya yapıştırın.",
             "Ayracı seçin: noktalı virgül, virgül, pipe veya satır sonu.",
@@ -120,6 +122,22 @@ export default function ListeBirlestirici() {
             </>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Alt alta satırları tek satırda birleştirir. Özellikle ID listesi hazırlama, SQL IN sorgusu üretme ve farklı kaynaklardan gelen verileri tek formatta toplamada çok kullanılır.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">12345 ↵ 23456 ↵ 34567</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">12345;23456;34567 veya IN (12345,23456,34567)</p>
+            </div>
+          </div>
+        </section>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Ayraç</span>
@@ -203,6 +221,25 @@ export default function ListeBirlestirici() {
             />
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">SQL IN formatı ne zaman kullanılmalı?</span><br />Veri tabanı sorgusunda `WHERE id IN (...)` kullanacaksanız bu modu açın.</p>
+            <p><span className="font-semibold text-gray-900">Özel ayraç verebilir miyim?</span><br />Evet. “Özel” seçeneğinde istediğiniz karakteri yazabilirsiniz (örn: `||`).</p>
+            <p><span className="font-semibold text-gray-900">Veriler kaydediliyor mu?</span><br />Hayır. İşlem tarayıcı içinde yapılır, liste saklanmaz.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için:{" "}
+            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
+              Orta seviye eğitim
+            </Link>
+            {" · "}
+            <Link href="/blog/excel-listeleri-birlestirme" className="underline" style={{ color: THEME.ribbon }}>
+              rehber yazısı
+            </Link>
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/liste-birlestir" />

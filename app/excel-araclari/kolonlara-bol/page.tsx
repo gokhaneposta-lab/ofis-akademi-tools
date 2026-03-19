@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -95,6 +96,7 @@ export default function KolonlaraBolPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Metni veya Excel'den kopyaladığınız hücreleri aşağıdaki kutuya yapıştırın.",
             "Ayırıcıyı seçin (otomatik, virgül, noktalı virgül veya sekme) ve Ayır butonuna tıklayın.",
@@ -111,6 +113,22 @@ export default function KolonlaraBolPage() {
             </div>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Tek hücrede duran karma metni ayırıcıya göre sütunlara böler. Dış sistemden gelen verileri Excel&apos;de kullanılabilir tabloya dönüştürmek için idealdir.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">Ali,Yılmaz,İstanbul</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">Sütun 1: Ali · Sütun 2: Yılmaz · Sütun 3: İstanbul</p>
+            </div>
+          </div>
+        </section>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Ayırıcı</span>
@@ -189,6 +207,25 @@ export default function KolonlaraBolPage() {
             </div>
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Hangi ayırıcıyı seçmeliyim?</span><br />Emin değilseniz “Otomatik” seçin. Araç çoğu metinde doğru ayırıcıyı bulur.</p>
+            <p><span className="font-semibold text-gray-900">Tab karakterli metinleri böler mi?</span><br />Evet. “Tab” seçeneğini seçerek ayırabilirsiniz.</p>
+            <p><span className="font-semibold text-gray-900">Excel&apos;e düzgün yapışır mı?</span><br />Evet. “Sonucu Kopyala (Excel)” butonu sekmeli format üretir.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için:{" "}
+            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
+              Temel Excel eğitimi
+            </Link>
+            {" · "}
+            <Link href="/blog/excelde-metni-kolonlara-bolme" className="underline" style={{ color: THEME.ribbon }}>
+              rehber yazısı
+            </Link>
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/kolonlara-bol" />

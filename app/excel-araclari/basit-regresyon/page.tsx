@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -59,6 +60,7 @@ export default function BasitRegresyonPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "X ve Y sütunlarını Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki sayı; Tab veya ; ile ayrılmış).",
             "Hesapla butonuna tıklayın.",
@@ -77,6 +79,60 @@ export default function BasitRegresyonPage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Excel’deki iki sütun değerinden (X ve Y) doğrusal regresyonu hesaplar. Böylece <span className="font-semibold">Y = a + b·X</span> şeklinde en iyi uyum doğrusunu (a, b) ve <span className="font-semibold">R²</span> değerini elde edersin.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> her satırda iki sayı (X ve Y) gir (örn. <span className="font-mono">1 10</span>, <span className="font-mono">2 20</span>).
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> kesişim <span className="font-mono">a</span>, eğim <span className="font-mono">b</span> ve <span className="font-mono">R²</span>.
+            </p>
+            <p className="text-xs text-gray-500">
+              R² 1’e yaklaştıkça, X arttıkça Y’nin doğrusal şekilde değiştiği daha güçlü görünür.
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Minimum kaç satır gerekir?</span>
+              <br />
+              En az <span className="font-semibold">2</span> veri noktası gerekir.
+            </p>
+            <p>
+              <span className="font-semibold">R² ne işe yarar?</span>
+              <br />
+              Verinin doğrusal modele ne kadar iyi uyduğunu gösterir (0–1 arası).
+            </p>
+            <p>
+              <span className="font-semibold">Excel’de nasıl karşılığı var?</span>
+              <br />
+              LINEST / EĞİM / KESİŞİM ve ilgili istatistikler kullanılır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla örnek için{" "}
+            <Link
+              href="/blog/excel-basit-regresyon-dogrusal"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              doğrusal regresyon rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">X ve Y değerleri (her satırda iki sayı — Tab veya ; ile)</label>
           <textarea

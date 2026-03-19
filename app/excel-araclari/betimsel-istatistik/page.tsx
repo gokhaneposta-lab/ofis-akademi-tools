@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -81,6 +82,7 @@ export default function BetimselIstatistikPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Sayıları virgül, boşluk veya satır sonu ile ayrılmış şekilde aşağıdaki kutuya yapıştırın (Excel'den sütun kopyalayabilirsiniz).",
             "Hesapla butonuna tıklayın.",
@@ -99,6 +101,58 @@ export default function BetimselIstatistikPage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Sayı listesinin özetini tek seferde çıkarır: <span className="font-semibold">ortalama</span>, <span className="font-semibold">medyan</span>, <span className="font-semibold">mod</span>, <span className="font-semibold">standart sapma</span>, <span className="font-semibold">varyans</span>, <span className="font-semibold">min</span>, <span className="font-semibold">max</span> ve açıklık.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> <span className="font-mono">10, 20, 30</span> (veya satır/boşlukla aynı format).
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> merkez ve yayılım özetleri + min/max değerleri tablosu.
+            </p>
+            <p className="text-xs text-gray-500">Sonucu kopyalayınca Excel veya rapora yapıştırabilirsin.</p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Mod neyi gösterir?</span>
+              <br />
+              En sık tekrar eden değer(ler)i.
+            </p>
+            <p>
+              <span className="font-semibold">Standart sapma neyi anlatır?</span>
+              <br />
+              Verinin ortalamadan ne kadar yayıldığını gösterir.
+            </p>
+            <p>
+              <span className="font-semibold">Sonucu Excel’e nasıl taşırım?</span>
+              <br />
+              “Sonucu Kopyala” ile panoya alıp Ctrl+V yap.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla detay için{" "}
+            <Link
+              href="/blog/excel-ortalama-medyan-standart-sapma"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              betimsel istatistik rehberine
+            </Link>{" "}
+            bakabilirsin.
+          </p>
+        </section>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (virgül, boşluk veya satır sonu ile ayrılmış)</label>
           <textarea

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -99,6 +100,7 @@ export default function ExcelSqlInsertPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel'den tabloyu kopyalayıp aşağıdaki alana yapıştırın (ilk satır sütun başlıkları olmalı). Sekme veya pipe (|) ile ayrılmış veri desteklenir.",
             "Tablo adını girin (varsayılan: tablo). Veritabanındaki hedef tablo adıyla değiştirin.",
@@ -106,6 +108,58 @@ export default function ExcelSqlInsertPage() {
             "Oluşan SQL INSERT komutlarını Kopyala ile alıp veritabanı istemcisinde çalıştırın.",
           ]}
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Excel’deki tabloyu, veritabanına veri eklemek için kullanılabilecek <span className="font-semibold">SQL INSERT</span komutlarına dönüştürür. Sütun başlıklarını kolon adı olarak kullanır.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> ilk satır kolon adları, alt satırlar veri (örn. <span className="font-mono">id | ad | soyad</span>).
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> her satır için <span className="font-mono">INSERT INTO ... VALUES (...);</span> formatında komut.
+            </p>
+            <p className="text-xs text-gray-500">Sonucu kopyalayıp SQL istemcisinde çalıştırabilirsin.</p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Tablo adı nasıl belirlenir?</span>
+              <br />
+              “Tablo adı” alanından; boş bırakırsan varsayılan <span className="font-mono">tablo</span>.
+            </p>
+            <p>
+              <span className="font-semibold">Metin değerleri tırnaklanır mı?</span>
+              <br />
+              Evet. Sayı gibi görünmeyen hücreler tırnak içinde üretilir.
+            </p>
+            <p>
+              <span className="font-semibold">Kaç satır INSERT çıkar?</span>
+              <br />
+              Girişteki veri satırı sayısı kadar INSERT satırı oluşur.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla örnek için{" "}
+            <Link
+              href="/blog/excel-sql-insert-donusturucu"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              SQL INSERT rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
 
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Tablo adı (SQL'de kullanılacak)</label>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -57,6 +58,7 @@ export default function ZScorePage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Sayıları Excel'den veya listeden kopyalayıp aşağıdaki kutuya yapıştırın.",
             "Hesapla butonuna tıklayın.",
@@ -75,6 +77,59 @@ export default function ZScorePage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Verideki her değerin ortalamaya göre kaç standart sapma uzaklıkta olduğunu hesaplar. Sonuç: <span className="font-semibold">z-skor</span>. Aykırı değer tespitinde kullanılır.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> <span className="font-mono">10, 12, 14, 15, 100</span>
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> her değer için z-skor; genelde ortalamadan çok uzak olan değerlerin |z| değeri daha büyüktür.
+            </p>
+            <p className="text-xs text-gray-500">|Z| &gt; 2 genelde “aykırı” kabul edilir.</p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">z-skor negatif mi olur?</span>
+              <br />
+              Evet. Negatif değer, ortalamanın altında olduğuna işaret eder.
+            </p>
+            <p>
+              <span className="font-semibold">Eşik değer var mı?</span>
+              <br />
+              Sık kullanılan eşik: <span className="font-semibold">|Z| &gt; 2</span>.
+            </p>
+            <p>
+              <span className="font-semibold">Excel’e nasıl aktarırım?</span>
+              <br />
+              “Tabloyu Kopyala” ile panoya alıp Excel’e yapıştır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla örnek için{" "}
+            <Link
+              href="/blog/excel-z-score-z-skor-hesaplama"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              z-skor rehberine
+            </Link>{" "}
+            bakabilirsin.
+          </p>
+        </section>
+
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel sütunundan yapıştırın)</label>
           <textarea

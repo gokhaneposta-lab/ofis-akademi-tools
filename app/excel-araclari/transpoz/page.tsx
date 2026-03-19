@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -75,6 +76,7 @@ export default function TranspozPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel'den satırları veya sütunları kopyalayıp aşağıdaki kutuya yapıştırın (Tab ile ayrılmış olmalı).",
             "Girdi ayırıcısını seçin: sekme, virgül veya noktalı virgül.",
@@ -92,6 +94,58 @@ export default function TranspozPage() {
             </div>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Veriyi satırdan sütuna (veya tam tersi) çevirir. Böylece rapor ve tabloların yönünü hızlıca değiştirip düzenleyebilirsiniz.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> Excel’den tabloyu kopyalayıp buraya yapıştır (satırlar ve sütunlar ayırıcıya göre ayrılır).
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> satırlar sütun, sütunlar satır olacak şekilde transpoze edilir (Excel’e uyumlu formatta döner).
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Hangi ayırıcılar çalışır?</span>
+              <br />
+              Sekme, virgül ve noktalı virgül.
+            </p>
+            <p>
+              <span className="font-semibold">Excel’e nasıl yapıştırırım?</span>
+              <br />
+              Sonucu kopyalayıp Excel’de hedef hücreye yapıştırın. Çıktı sekme ile döndüğü için tablolar kolay oluşur.
+            </p>
+            <p>
+              <span className="font-semibold">Formül alternatifi var mı?</span>
+              <br />
+              Evet. Excel alternatifi kısmında <span className="font-mono">=TRANSPOSE(...)</span> örneği var.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha detay için{" "}
+            <Link
+              href="/blog/excel-transpoz-satir-sutun-dondurme"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              transpoz rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
+
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Veri ayırıcı (girdi)</span>
           <div className="inline-flex rounded-lg border p-1 gap-1" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>

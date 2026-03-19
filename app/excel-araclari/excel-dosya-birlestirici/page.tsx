@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Link from "next/link";
 import * as XLSX from "xlsx";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
@@ -101,6 +102,7 @@ export default function ExcelDosyaBirlestiriciPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Aynı kolon yapısına sahip Excel dosyalarınızı (.xlsx, .xls) seçin (her dosyanın ilk satırı başlık olmalı).",
             "Birleştir ve İndir butonuna tıklayın.",
@@ -118,6 +120,57 @@ export default function ExcelDosyaBirlestiriciPage() {
             </div>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Aynı kolon yapısına sahip birden fazla Excel dosyasını tarayıcıda birleştirir. Hepsinin verilerini alt alta ekler ve tek bir <span className="font-semibold">Birlestirilmiş Excel</span> dosyası indirmenizi sağlar.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> <span className="font-mono">dosya-1.xlsx</span> + <span className="font-mono">dosya-2.xlsx</span> (aynı başlık/kalan kolonlar).
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> başlık tek kez kullanılarak satırlar alt alta birleşir ve <span className="font-mono">Birlestirilmis.xlsx</span> indir.
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Dosyalar aynı olmak zorunda mı?</span>
+              <br />
+              Evet. İlk satır başlıkları ve kolon yapısı benzer/aynı olmalıdır; aksi durumda birleştirme yanlış hizalanabilir.
+            </p>
+            <p>
+              <span className="font-semibold">Dosya adları ne oluyor?</span>
+              <br />
+              İndirme adı sabit: <span className="font-mono">Birlestirilmis.xlsx</span>.
+            </p>
+            <p>
+              <span className="font-semibold">Veriler sunucuya gider mi?</span>
+              <br />
+              Hayır. İşlem tarayıcı içinde yapılır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Power Query alternatifleri için{" "}
+            <Link
+              href="/blog/excel-dosya-birlestirme"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              dosya birleştirme rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
 
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Excel dosyaları (.xlsx, .xls)</label>

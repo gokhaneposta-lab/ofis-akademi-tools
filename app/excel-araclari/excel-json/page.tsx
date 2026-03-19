@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -96,6 +97,7 @@ export default function ExcelJsonPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel veya CSV'den tabloyu kopyalayıp aşağıdaki alana yapıştırın (ilk satır sütun başlıkları olmalı). Sekme, pipe (|), virgül veya noktalı virgül desteklenir.",
             "İsterseniz 'Girintili (okunaklı)' seçeneğini işaretleyin veya kaldırın.",
@@ -103,6 +105,58 @@ export default function ExcelJsonPage() {
             "Oluşan JSON'u Kopyala ile alıp API isteği veya kodunuzda kullanın.",
           ]}
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Excel veya CSV verisini JSON formatına çevirir. İlk satırı sütun başlığı kabul ederek her satırı bir JSON objesine dönüştürür; API veya entegrasyon işlerinde hız sağlar.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi (CSV/Excel):</span> <span className="font-mono">id\tnad</span> / <span className="font-mono">1\tAhmet</span>
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> her satır için JSON objesi; kopyalayıp kullanabilirsiniz.
+            </p>
+            <p className="text-xs text-gray-500">“Girintili” seçeneği JSON’un okunurluğunu artırır.</p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Ayırıcılar çalışır mı?</span>
+              <br />
+              Evet. Sekme, `|`, virgül ve noktalı virgül desteklenir.
+            </p>
+            <p>
+              <span className="font-semibold">İlk satır ne işe yarar?</span>
+              <br />
+              Sütun adları için kullanılır; JSON anahtarları buradan gelir.
+            </p>
+            <p>
+              <span className="font-semibold">Sonucu nasıl kullanırım?</span>
+              <br />
+              “Kopyala” ile JSON’u alıp API isteği veya koda yapıştır.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla örnek için{" "}
+            <Link
+              href="/blog/excel-json-donusturucu"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              Excel -> JSON rehberine
+            </Link>{" "}
+            bakabilirsin.
+          </p>
+        </section>
 
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Çıktı</label>

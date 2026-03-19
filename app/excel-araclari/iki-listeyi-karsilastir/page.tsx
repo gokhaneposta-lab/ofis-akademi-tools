@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -124,6 +125,7 @@ export default function IkiListeyiKarsilastirPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Liste A ve Liste B alanlarına karşılaştırmak istediğiniz satırları yapıştırın (her satırda bir kayıt). Excel'den tek sütun kopyalayabilirsiniz.",
             "İsterseniz 'Büyük/küçük harf duyarlı' seçeneğini işaretleyin.",
@@ -131,6 +133,57 @@ export default function IkiListeyiKarsilastirPage() {
             "Ortak kayıtlar, sadece A'da olanlar ve sadece B'de olanlar gösterilir. Sonucu Metin (virgülle) veya Excel (3 sütun) olarak kopyalayabilirsiniz.",
           ]}
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            İki farklı listeyi karşılaştırır ve üç sonucu çıkarır: <span className="font-semibold">ortak kayıtlar</span>, <span className="font-semibold">sadece A’da olanlar</span> ve <span className="font-semibold">sadece B’de olanlar</span>. Böylece fark analizi çok hızlanır.
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> Liste A: <span className="font-mono">Ahmet, Mehmet, Ayşe</span> · Liste B: <span className="font-mono">Mehmet, Ali, Ayşe</span>
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> ortak: <span className="font-mono">Mehmet, Ayşe</span>; sadece A: <span className="font-mono">Ahmet</span>; sadece B: <span className="font-mono">Ali</span>.
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Büyük/küçük harf duyarlı ne yapar?</span>
+              <br />
+              Açıkken “Ahmet” ile “ahmet” farklı kabul edilir.
+            </p>
+            <p>
+              <span className="font-semibold">Excel’e nasıl aktarırım?</span>
+              <br />
+              Kopyalama formatı olarak “Excel (3 sütun)” seçip Ctrl+V yap.
+            </p>
+            <p>
+              <span className="font-semibold">Tekrarlanan kayıtlar nasıl?</span>
+              <br />
+              Araç listeyi küme mantığıyla karşılaştırır; tekrarlar “tekil” düşünülür.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla yöntem için{" "}
+            <Link
+              href="/blog/iki-listeyi-karsilastirma-excel"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              iki liste karşılaştırma rehberini
+            </Link>{" "}
+            inceleyebilirsin.
+          </p>
+        </section>
 
         <div>
           <label className="inline-flex items-center gap-2 text-sm text-gray-700 mb-2">

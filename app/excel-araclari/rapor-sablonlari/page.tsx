@@ -76,12 +76,62 @@ export default function RaporSablonlariPage() {
 
       <div className="mx-4 mt-6 mb-10 max-w-3xl space-y-8">
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Aşağıdaki listeden istediğiniz şablonun yanındaki İndir butonuna tıklayın.",
             "Excel dosyası indirilir; kendi verinizi yazın veya örnek veriyi düzenleyin.",
             "Hazır formüller (TOPLA, ORTALAMA, EĞER vb.) zaten hücrelerde tanımlıdır.",
           ]}
         />
+
+        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-800">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-slate-700">
+            Haftalık satış, stok özeti ve performans raporları için hazır Excel şablonlarını indirmenizi sağlar. Şablonlarda formüller
+            ve özet alanları önceden yapılandırıldığı için sadece veriyi güncellemeniz yeterlidir.
+          </p>
+        </section>
+
+        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-800">Örnek girdi / çıktı</h2>
+          <ul className="mt-2 space-y-1 text-sm text-slate-700">
+            <li>
+              <span className="font-semibold">Girdi:</span> Şablondaki örnek tabloyu kendi satış/stok/perf verinizle değiştirin.
+            </li>
+            <li>
+              <span className="font-semibold">Çıktı:</span> Toplam, ortalama ve koşullu özet alanlar otomatik hesaplanır.
+            </li>
+          </ul>
+        </section>
+
+        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
+          <h2 className="text-base font-semibold text-slate-800">Sık sorulan sorular</h2>
+          <div className="mt-2 space-y-2 text-sm text-slate-700">
+            <p>
+              <span className="font-semibold">Formüller zaten var mı?</span>
+              <br />
+              Evet. Şablon hücrelerinde TOPLA, ORTALAMA, EĞER, EĞERSAY gibi fonksiyonlar hazırdır.
+            </p>
+            <p>
+              <span className="font-semibold">Excel’de Türkçe fonksiyon isimleri mi kullanılıyor?</span>
+              <br />
+              Dosya, Excel diline göre (Türkçe/İngilizce) fonksiyon adlarını uygun şekilde gösterecek şekilde tasarlanmıştır; mantık aynıdır.
+            </p>
+            <p>
+              <span className="font-semibold">Veri alanlarını nasıl güncellerim?</span>
+              <br />
+              Örnek tablodaki değerleri değiştirin; sonuçlar alt özetlerde otomatik yenilenir.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-slate-600">
+            Daha fazla rehber için{" "}
+            <Link href="/blog/excel-rapor-sablonlari" className="underline" style={{ color: THEME.ribbon }}>
+              rapor şablonları yazısına
+            </Link>{" "}
+            göz atabilirsiniz.
+          </p>
+        </section>
+
         {/* İndirilebilir şablonlar */}
         <section>
           <h2 className="text-base font-semibold text-slate-800 mb-3">

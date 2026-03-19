@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -65,6 +66,7 @@ export default function CeyrekYuzdelikPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Sayıları aşağıdaki kutuya yapıştırın (virgül veya satır sonu ile ayrılmış).",
             "İsterseniz özel yüzdelik dilimini girin (örn. 90 → %90).",
@@ -88,6 +90,57 @@ export default function CeyrekYuzdelikPage() {
             </>
           }
         />
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Veri setinin çeyreklerini ve yüzdelik dilimini hesaplar: minimum, <span className="font-semibold">Q1</span>, medyan (Q2), <span className="font-semibold">Q3</span>, maksimum ve özel <span className="font-semibold">% dilim</span> (örn. %90).
+          </p>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Girdi:</span> <span className="font-mono">10, 20, 30, ..., 100</span>
+            </p>
+            <p>
+              <span className="font-semibold">Çıktı:</span> Q1, medyan, Q3 ve maksimum + ayrıca seçtiğin yüzde dilimi.
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Yüzdelik (%90) ne demek?</span>
+              <br />
+              Değerlerin %90'ı bu sonuçtan küçük veya eşittir.
+            </p>
+            <p>
+              <span className="font-semibold">Q1/Q3 ne işe yarar?</span>
+              <br />
+              Dağılımın “orta” kısmını gösterir; kutu grafiği (box plot) için temel değerlerdir.
+            </p>
+            <p>
+              <span className="font-semibold">Excel’e nasıl aktarırım?</span>
+              <br />
+              “Sonucu Kopyala” ile panoya alıp Ctrl+V yap.
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-gray-600">
+            Daha fazla detay için{" "}
+            <Link
+              href="/blog/excel-ceyrek-quartile-yuzdelik"
+              className="underline"
+              style={{ color: THEME.ribbon }}
+            >
+              çeyrek/yüzdelik rehberine
+            </Link>{" "}
+            bakabilirsin.
+          </p>
+        </section>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel'den yapıştırabilirsiniz)</label>
           <textarea

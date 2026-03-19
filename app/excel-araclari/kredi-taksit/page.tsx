@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -69,6 +70,7 @@ export default function KrediTaksitPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Kredi tutarı (₺), yıllık faiz oranı (%) ve vade (ay) girin.",
             "Hesapla butonuna tıklayın.",
@@ -87,6 +89,22 @@ export default function KrediTaksitPage() {
             </>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Kredi taksitini ve toplam maliyeti anında hesaplar. Farklı banka tekliflerini karşılaştırırken gerçek geri ödeme yükünü net görmenize yardımcı olur.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">Kredi: 100.000 · Faiz: %24 · Vade: 36 ay</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">Aylık taksit + toplam geri ödeme + toplam faiz</p>
+            </div>
+          </div>
+        </section>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Kredi tutarı (₺)</label>
@@ -140,6 +158,26 @@ export default function KrediTaksitPage() {
             <textarea readOnly value={result} rows={10} className="w-full rounded border p-3 text-sm resize-y bg-gray-50 font-mono" style={{ borderColor: THEME.gridLine }} />
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Faiz oranı yıllık mı girilmeli?</span><br />Evet, yıllık faiz oranını girin; araç bunu aylık döneme çevirerek hesaplar.</p>
+            <p><span className="font-semibold text-gray-900">Vade ay dışında girilebilir mi?</span><br />Bu hesaplayıcı vadeyi ay bazında ister. Örneğin 5 yıl için 60 ay girmelisiniz.</p>
+            <p><span className="font-semibold text-gray-900">Toplam faiz nasıl hesaplanır?</span><br />Toplam geri ödeme ile anapara farkı olarak gösterilir.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
+              orta seviye eğitim
+            </Link>
+            {" "}ve{" "}
+            <Link href="/blog/excelde-kredi-taksit-hesaplama" className="underline" style={{ color: THEME.ribbon }}>
+              kredi taksit rehberi
+            </Link>
+            {" "}sayfasına bakın.
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/kredi-taksit" />

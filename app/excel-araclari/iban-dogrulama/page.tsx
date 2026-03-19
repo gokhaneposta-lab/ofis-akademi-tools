@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -50,6 +51,7 @@ export default function IbanDogrulamaPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Doğrulamak istediğiniz IBAN'ları aşağıdaki kutuya yapıştırın (her satıra bir IBAN; boşluk olmadan).",
             "Doğrula butonuna tıklayın.",
@@ -66,6 +68,22 @@ export default function IbanDogrulamaPage() {
             </div>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            IBAN listesini toplu olarak kontrol eder ve geçerli/geçersiz ayrımı yapar. Ödeme öncesi hatalı IBAN riskini azaltır ve operasyon sürecini hızlandırır.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">TR330006100519786457841326</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">TR330006100519786457841326 → Geçerli</p>
+            </div>
+          </div>
+        </section>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -98,6 +116,26 @@ export default function IbanDogrulamaPage() {
             <textarea readOnly value={result} rows={6} className="w-full rounded border p-3 text-sm resize-y bg-gray-50 font-mono" style={{ borderColor: THEME.gridLine }} />
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Boşluklu IBAN girebilir miyim?</span><br />Evet. Araç boşlukları otomatik temizler.</p>
+            <p><span className="font-semibold text-gray-900">Toplu IBAN kontrolü destekleniyor mu?</span><br />Evet. Her satıra bir IBAN yazarak toplu doğrulama yapabilirsiniz.</p>
+            <p><span className="font-semibold text-gray-900">Sonuçları nasıl aktarırım?</span><br />Sonucu kopyalayıp Excel&apos;e yapıştırabilirsiniz.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
+              orta seviye eğitim
+            </Link>
+            {" "}ve{" "}
+            <Link href="/blog/excelde-iban-dogrulama" className="underline" style={{ color: THEME.ribbon }}>
+              IBAN rehberi
+            </Link>
+            {" "}sayfasına bakın.
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/iban-dogrulama" />

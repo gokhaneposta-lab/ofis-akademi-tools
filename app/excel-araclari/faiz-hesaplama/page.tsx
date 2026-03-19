@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -70,6 +71,7 @@ export default function FaizHesaplamaPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Anapara (₺), yıllık faiz oranı (%) ve süreyi girin; süreyi yıl veya ay seçin.",
             "Hesapla butonuna tıklayın.",
@@ -93,6 +95,22 @@ export default function FaizHesaplamaPage() {
             </>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Basit ve bileşik faiz hesaplarını tek ekranda verir. Yatırım, teklif karşılaştırma ve finansal planlama sırasında doğru faiz etkisini hızlıca görmenizi sağlar.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">Anapara: 10.000 · Oran: %12 · Süre: 2 yıl</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">Basit faiz: 2.400 · Bileşik toplam: 12.544</p>
+            </div>
+          </div>
+        </section>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Anapara (₺)</label>
@@ -157,6 +175,26 @@ export default function FaizHesaplamaPage() {
             <textarea readOnly value={result} rows={12} className="w-full rounded border p-3 text-sm resize-y bg-gray-50 font-mono" style={{ borderColor: THEME.gridLine }} />
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Ay seçince hesaplama nasıl yapılır?</span><br />Araç ay değerini otomatik olarak yıla çevirip faiz hesabını buna göre yapar.</p>
+            <p><span className="font-semibold text-gray-900">Basit ve bileşik faiz farkı nedir?</span><br />Basit faizde faiz sadece anaparaya işler, bileşik faizde biriken faiz de faiz üretir.</p>
+            <p><span className="font-semibold text-gray-900">Sonucu rapora alabilir miyim?</span><br />Evet. Çıktıyı kopyalayıp Excel raporunuza yapıştırabilirsiniz.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
+              orta seviye eğitim
+            </Link>
+            {" "}ve{" "}
+            <Link href="/blog/excelde-faiz-hesaplama" className="underline" style={{ color: THEME.ribbon }}>
+              faiz rehberi
+            </Link>
+            {" "}sayfasına bakın.
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/faiz-hesaplama" />

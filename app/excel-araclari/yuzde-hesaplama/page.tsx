@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "../../../components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import NasilKullanilir from "@/components/NasilKullanilir";
@@ -65,6 +66,7 @@ export default function YuzdeHesaplamaPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Hesaplama türünü seçin: X'in Y%'si kaç? veya A, B'nin yüzde kaçı?",
             "İki değeri girin (virgül veya nokta ondalık ayracı).",
@@ -88,6 +90,22 @@ export default function YuzdeHesaplamaPage() {
             </>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            Yüzde hesaplarını hızlı ve hatasız yapar. KDV, indirim, komisyon, kar marjı ve oran karşılaştırmalarında günlük ofis işini hızlandırır.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">X = 1.000, Y = 18</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">1.000 sayısının %18&apos;i = 180,00</p>
+            </div>
+          </div>
+        </section>
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Hesaplama türü</span>
           <div className="inline-flex rounded-lg border p-1 gap-1" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
@@ -155,6 +173,26 @@ export default function YuzdeHesaplamaPage() {
             <div className="text-sm font-medium text-gray-800">{result}</div>
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Virgül ile sayı girebilir miyim?</span><br />Evet. Araç virgül veya nokta ile ondalık sayı girişini destekler.</p>
+            <p><span className="font-semibold text-gray-900">A, B&apos;nin yüzde kaçı hesabı ne zaman kullanılır?</span><br />Bir değerin toplam içindeki payını bulmak istediğinizde bu modu kullanın.</p>
+            <p><span className="font-semibold text-gray-900">Sonucu Excel&apos;e taşıyabilir miyim?</span><br />Evet. “Sonucu Kopyala” ile metni doğrudan Excel&apos;e yapıştırabilirsiniz.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
+              temel eğitim
+            </Link>
+            {" "}ve{" "}
+            <Link href="/blog/excelde-yuzde-hesaplama" className="underline" style={{ color: THEME.ribbon }}>
+              yüzde rehberi
+            </Link>
+            {" "}sayfasına göz atın.
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/yuzde-hesaplama" />

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
@@ -170,6 +171,7 @@ export default function TarihFarkiPage() {
         style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
       >
         <NasilKullanilir
+          showEnhancedSections={false}
           steps={[
             "Excel'de başlama ve bitiş tarihlerinin olduğu 2 sütunu kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki tarih; Tab veya noktalı virgül ile ayrılmış).",
             "Hesapla butonuna tıklayın.",
@@ -193,6 +195,22 @@ export default function TarihFarkiPage() {
             </>
           }
         />
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
+          <p className="mt-2 text-sm text-gray-700">
+            İki tarih arasındaki farkı yıl/ay/gün ve toplam gün olarak verir. Vade kontrolü, sözleşme süresi ve yaş hesaplama gibi işlemlerde hızlı ve güvenilir sonuç sağlar.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
+              <p className="text-gray-700">01.01.2020 ↵ 01.10.2022</p>
+            </div>
+            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
+              <p className="text-gray-700">2 yıl, 9 ay, 0 gün · Toplam 1004 gün</p>
+            </div>
+          </div>
+        </section>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">
             Başlama ve Bitiş tarihleri (Excel'den 2 sütun kopyalayıp yapıştırın)
@@ -257,6 +275,26 @@ export default function TarihFarkiPage() {
             </table>
           </div>
         )}
+
+        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
+          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
+          <div className="mt-3 space-y-3 text-sm text-gray-700">
+            <p><span className="font-semibold text-gray-900">Hangi tarih formatlarını kabul eder?</span><br />`DD.MM.YYYY`, `DD/MM/YYYY`, `YYYY-MM-DD` ve Excel&apos;den yapıştırılan tab ayrımlı tarihleri destekler.</p>
+            <p><span className="font-semibold text-gray-900">Yaş hesabı için kullanılabilir mi?</span><br />Evet. Doğum tarihi ve bugünün tarihini girerek yaş farkını görebilirsiniz.</p>
+            <p><span className="font-semibold text-gray-900">Toplu satır desteği var mı?</span><br />Evet. Birden fazla satırı aynı anda hesaplayıp tablo halinde sonuç alabilirsiniz.</p>
+          </div>
+          <div className="mt-3 text-xs text-gray-600">
+            Devam etmek için{" "}
+            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
+              orta seviye eğitim
+            </Link>
+            {" "}ve{" "}
+            <Link href="/blog/excelde-tarih-farki-vade-gun-hesaplama" className="underline" style={{ color: THEME.ribbon }}>
+              tarih farkı rehberi
+            </Link>
+            {" "}sayfasına bakın.
+          </div>
+        </section>
 
         <div className="mt-6">
           <BenzerExcelAraclari currentHref="/excel-araclari/tarih-farki" />

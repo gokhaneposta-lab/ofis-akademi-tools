@@ -137,7 +137,7 @@ export default function Home() {
                 Ücretsiz Öğrenmeye Başla
               </a>
               <a
-                href="#topics"
+                href="/egitimler"
                 className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
               >
                 Eğitim içeriklerini gör

@@ -61,7 +61,7 @@ export default function EgitimlerPage() {
         </p>
 
         {/* 1 — Eğitim seviyeleri */}
-        <section className="mb-10">
+        <section id="egitim-seviyeleri" className="mb-10">
           <div className="flex items-start gap-3 mb-4">
             <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: THEME.ribbon }}>
               1

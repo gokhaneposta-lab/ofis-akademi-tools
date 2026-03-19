@@ -186,7 +186,9 @@ export default function BlogIndexClient({ category }: { category?: BlogCategoryS
 
         <section>
           <div className="mb-4 flex items-end justify-between gap-4">
-            <h2 className="text-lg font-semibold text-gray-900">{category ? "Bu Kategorideki Yazılar" : "Tüm Yazılar"}</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              {category ? "Bu Kategorideki Yazılar" : "Tüm Excel rehberleri — pratik çözümler ve ücretsiz araçlarla"}
+            </h2>
             <p className="text-sm text-gray-600">{filtered.length} yazı</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

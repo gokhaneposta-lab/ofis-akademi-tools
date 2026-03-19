@@ -1137,15 +1137,20 @@ export default function TrainingLevelPage({
       ]);
       // Yatay A4 oranı: 297×210 mm → 1122 px genişlik (96 dpi). Yakalama genişliğini buna sabitle.
       const a4LandscapeW = 1122;
+      const PDF_RENDER_SCALE = 1.5;
+      // DOM ölçümleri "CSS px" ile; canvas dilimleri "render px" ile hesaplanıyor.
+      const pageWidthMm = 297;
+      const pageHeightMm = 210;
+      const LINE_HEIGHT_PX = 24;
+      const pageHeightPxLayout = Math.floor(Math.floor((pageHeightMm / pageWidthMm) * a4LandscapeW) / LINE_HEIGHT_PX) * LINE_HEIGHT_PX;
+      const pageHeightPx = Math.max(1, Math.round(pageHeightPxLayout * PDF_RENDER_SCALE));
       const canvas = await h2c(el, {
-        scale: 1.5,
+        scale: PDF_RENDER_SCALE,
         useCORS: true,
         allowTaint: true,
         logging: false,
         backgroundColor: "#ffffff",
-        height: h,
         width: Math.max(w, a4LandscapeW),
-        windowHeight: h,
         windowWidth: Math.max(w, a4LandscapeW),
         onclone: (clonedDoc, clonedEl) => {
           clonedEl.style.width = `${a4LandscapeW}px`;
@@ -1191,18 +1196,131 @@ export default function TrainingLevelPage({
             svg.setAttribute("height", "24");
             if (!svg.getAttribute("stroke") || svg.getAttribute("stroke") === "currentColor") svg.setAttribute("stroke", "#374151");
           });
+
+          // Görseller sayfa sınırında bölünmesin: taşanı bir sonraki sayfadan başlat.
+          // Not: Çok yüksek görsel (bir sayfadan büyük) yine bölünebilir.
+          const container = clonedEl as HTMLElement;
+          const imgs = Array.from(container.querySelectorAll("img")) as HTMLImageElement[];
+
+          const getTop = (node: HTMLElement) => {
+            const r = node.getBoundingClientRect();
+            const c = container.getBoundingClientRect();
+            return r.top - c.top + container.scrollTop;
+          };
+
+          const addSpacerBefore = (target: HTMLElement, spacerH: number) => {
+            const spacer = clonedDoc.createElement("div");
+            spacer.setAttribute("data-pdf-spacer", "1");
+            spacer.style.height = `${spacerH}px`;
+            spacer.style.width = "100%";
+            spacer.style.display = "block";
+            spacer.style.background = "transparent";
+            target.parentElement?.insertBefore(spacer, target);
+          };
+
+          const pushToNextPageIfSplits = (node: HTMLElement) => {
+            const h = node.offsetHeight || node.getBoundingClientRect().height;
+            if (!h || h >= pageHeightPxLayout) return false;
+            const top = getTop(node);
+            if (top < 0) return false;
+            const pageEnd = (Math.floor(top / pageHeightPxLayout) + 1) * pageHeightPxLayout;
+            const bottom = top + h;
+            const overflow = bottom - pageEnd;
+            if (overflow <= 8) return false;
+            const push = Math.min(pageHeightPxLayout, Math.max(0, pageEnd - top));
+            if (push <= 0) return false;
+            addSpacerBefore(node, push);
+            return true;
+          };
+
+          // Birkaç tur düzeltme: spacer ekledikçe konumlar değişiyor.
+          for (let pass = 0; pass < 4; pass++) {
+            let changed = false;
+            for (const img of imgs) {
+              if (pushToNextPageIfSplits(img)) changed = true;
+            }
+            if (!changed) break;
+          }
+
+          // Başlık/metin blokları ikiye bölünmesin.
+          // - Eğitim "konuları": her bir kart (rounded-lg) tek parça kalsın (sığdığı sürece).
+          // - Grup başlığı + grup resmi aynı sayfada kalsın (sığdığı sürece).
+          const keepBlocks = [
+            ...Array.from(container.querySelectorAll("article > div.px-4.py-2")) as HTMLElement[],
+            ...Array.from(container.querySelectorAll("article > div.px-4.pt-3")) as HTMLElement[],
+            ...Array.from(container.querySelectorAll("article div.rounded-lg.border.p-3")) as HTMLElement[],
+          ];
+          // DOM sırasına yakın (üstten alta)
+          keepBlocks.sort((a, b) => getTop(a) - getTop(b));
+
+          for (let pass = 0; pass < 6; pass++) {
+            let changed = false;
+            for (const block of keepBlocks) {
+              // Grup başlığı + grup görseli: başlığı kontrol ederken aynı sayfada kalacak şekilde görseli de hesaba kat.
+              if (block.matches("article > div.px-4.py-2")) {
+                const article = block.closest("article") as HTMLElement | null;
+                const imgWrap = article?.querySelector(":scope > div.px-4.pt-3") as HTMLElement | null;
+                if (imgWrap) {
+                  const top = getTop(block);
+                  const bottom = getTop(imgWrap) + (imgWrap.offsetHeight || imgWrap.getBoundingClientRect().height);
+                  const h = bottom - top;
+                  if (h > 0 && h < pageHeightPxLayout) {
+                    const pageEnd = (Math.floor(top / pageHeightPxLayout) + 1) * pageHeightPxLayout;
+                    if (bottom - pageEnd > 8) {
+                      const push = Math.min(pageHeightPxLayout, Math.max(0, pageEnd - top));
+                      if (push > 0) {
+                        addSpacerBefore(block, push);
+                        changed = true;
+                        continue;
+                      }
+                    }
+                  }
+                }
+              }
+
+              if (pushToNextPageIfSplits(block)) changed = true;
+            }
+            if (!changed) break;
+          }
         },
       });
+
+      const getTrimmedHeightPx = (src: HTMLCanvasElement) => {
+        const ctx = src.getContext("2d", { willReadFrequently: true });
+        if (!ctx) return src.height;
+
+        const { width, height } = src;
+        // Beyaz arka plan varsayımıyla alttaki boşluğu kırp.
+        // Performans için tüm pikselleri değil, örneklenmiş sütunları tarıyoruz.
+        const stepX = 12;
+        const stepY = 4;
+        const threshold = 12; // 0-255, beyazdan sapma toleransı
+
+        const sampleXs: number[] = [];
+        for (let x = 0; x < width; x += stepX) sampleXs.push(x);
+        if (sampleXs[sampleXs.length - 1] !== width - 1) sampleXs.push(width - 1);
+
+        for (let y = height - 1; y >= 0; y -= stepY) {
+          // 1 satırlık şeridi alıp seçili x noktalarını kontrol et
+          const row = ctx.getImageData(0, y, width, 1).data;
+          for (const x of sampleXs) {
+            const idx = x * 4;
+            const r = row[idx];
+            const g = row[idx + 1];
+            const b = row[idx + 2];
+            const a = row[idx + 3];
+            // Tam beyaz olmayan (veya şeffaf olmayan) piksel → içerik var
+            if (a > 0 && (Math.abs(255 - r) > threshold || Math.abs(255 - g) > threshold || Math.abs(255 - b) > threshold)) {
+              return Math.min(height, y + stepY + 2);
+            }
+          }
+        }
+        return 1;
+      };
+
       const pdf = new JsPDF("l", "mm", "a4"); // yatay A4 (297×210 mm)
-      const pageWidthMm = 297;
-      const pageHeightMm = 210;
       const imgW = canvas.width;
-      const imgH = canvas.height;
-      // Ham sayfa yüksekliği (px)
-      const rawPageHeightPx = Math.floor((pageHeightMm / pageWidthMm) * imgW);
-      // Harflerin ortadan kesilmemesi için dilimi satır hizasına yuvarla (scale 2'de ~24–48px satır yüksekliği)
-      const LINE_HEIGHT_PX = 24;
-      const pageHeightPx = Math.floor(rawPageHeightPx / LINE_HEIGHT_PX) * LINE_HEIGHT_PX;
+      const imgH = Math.min(canvas.height, Math.max(1, getTrimmedHeightPx(canvas)));
       const totalPages = Math.ceil(imgH / pageHeightPx);
       for (let i = 0; i < totalPages; i++) {
         if (i > 0) pdf.addPage([297, 210], "l");
@@ -1276,6 +1394,18 @@ export default function TrainingLevelPage({
       />
 
       <main className="mx-auto max-w-6xl flex flex-col px-4 py-6 sm:px-6 lg:px-8 pb-10 min-h-screen">
+        <div className="mb-4">
+          <Link
+            href="/egitimler#egitim-seviyeleri"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-700 hover:underline"
+            style={{ color: THEME.ribbon }}
+          >
+            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current text-[10px] leading-none">
+              1
+            </span>
+            <span>Tüm Eğitim Seviyeleri</span>
+          </Link>
+        </div>
         {/* Yatay A4 oranında içerik alanı (297×210) */}
         <div ref={pdfContentRef} className="space-y-4 mx-auto w-full max-w-[1122px] print:max-w-none pb-24">
         <div

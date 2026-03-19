@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SiteTopBar from "@/components/SiteTopBar";
+import BrandJsonLd from "@/components/BrandJsonLd";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
 
@@ -17,8 +18,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: "Ofis Akademi — Excel & Veri Analizi",
-  description: "Excel ve veri analizi ile ofis hayatını kolaylaştır. Eğitimler ve ücretsiz Excel araçları.",
+  title: {
+    default: "Ofis Akademi — Excel & Veri Analizi",
+    template: "%s | Ofis Akademi",
+  },
+  description:
+    "Ofis Akademi ile Excel ve veri analizini adim adim ogren. Ucretsiz Excel araclari, blog rehberleri ve egitim seviyeleri.",
+  keywords: [
+    "ofis akademi",
+    "excel egitimi",
+    "excel veri analizi",
+    "ucretsiz excel araclari",
+    "excel rehberleri",
+  ],
+  applicationName: "Ofis Akademi",
+  category: "education",
   alternates: {
     canonical: "/",
   },
@@ -27,13 +41,20 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     siteName: "Ofis Akademi",
     title: "Ofis Akademi — Excel & Veri Analizi",
-    description: "Excel ve veri analizi ile ofis hayatını kolaylaştır. Eğitimler ve ücretsiz Excel araçları.",
+    description:
+      "Ofis Akademi ile Excel ve veri analizini adim adim ogren. Ucretsiz Excel araclari, blog rehberleri ve egitim seviyeleri.",
     url: BASE_URL,
   },
   twitter: {
     card: "summary_large_image",
     title: "Ofis Akademi — Excel & Veri Analizi",
-    description: "Excel ve veri analizi ile ofis hayatını kolaylaştır. Eğitimler ve ücretsiz Excel araçları.",
+    description:
+      "Ofis Akademi ile Excel ve veri analizini adim adim ogren. Ucretsiz Excel araclari, blog rehberleri ve egitim seviyeleri.",
+  },
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
   robots: {
     index: true,
@@ -59,6 +80,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
         <SiteTopBar />
+        <BrandJsonLd baseUrl={BASE_URL} />
         {children}
       </body>
     </html>

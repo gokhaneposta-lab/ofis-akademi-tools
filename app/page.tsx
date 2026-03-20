@@ -98,7 +98,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#e9f5f1] text-slate-900 relative overflow-hidden">
+    <div className="relative min-h-screen max-w-[100vw] overflow-x-hidden bg-[#e9f5f1] text-slate-900">
       {/* Excel hücre grid arka plan */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.12]"
@@ -110,7 +110,7 @@ export default function Home() {
           backgroundSize: "min(2rem, 3vw) min(2rem, 3vw)",
         }}
       />
-      <main className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-10 sm:px-8 lg:px-12">
+      <main className="relative mx-auto flex min-h-screen w-full min-w-0 max-w-6xl flex-col px-4 py-10 sm:px-8 lg:px-12">
         {/* Hero */}
         <section className="grid flex-1 gap-10 py-8 sm:py-14 lg:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)] lg:items-center">
           <div className="space-y-8">
@@ -119,7 +119,7 @@ export default function Home() {
             </span>
 
             <div className="space-y-4">
-              <h1 className="text-balance text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+              <h1 className="text-balance text-3xl font-semibold leading-tight tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 Excel&apos;i <span className="bg-gradient-to-r from-emerald-300 via-cyan-300 to-sky-400 bg-clip-text text-transparent">Gerçekten Öğren</span>
               </h1>
               <p className="max-w-xl text-balance text-base leading-relaxed text-slate-800 sm:text-lg">

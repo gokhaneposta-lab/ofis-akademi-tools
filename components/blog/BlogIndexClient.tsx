@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import PageRibbon from "@/components/PageRibbon";
 import {
   BLOG_POSTS,
   BLOG_CATEGORIES,
@@ -14,7 +13,8 @@ import {
   type BlogCategorySlug,
   type BlogPost,
 } from "@/lib/blog-posts";
-import { THEME } from "@/lib/theme";
+
+const ACCENT = "#217346";
 
 const POPULAR_SLUGS = new Set([
   "excelde-ad-soyad-ayirma",
@@ -37,36 +37,32 @@ function BlogCard({ post, compact = false }: { post: BlogPost; compact?: boolean
     <Link
       href={`/blog/${post.slug}`}
       className={[
-        "group block rounded-2xl border bg-white/70 p-5 shadow-sm transition",
-        "hover:-translate-y-0.5 hover:shadow-md",
+        "group block rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-sm transition-all duration-200",
+        "hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-300",
         compact ? "" : "h-full",
       ].join(" ")}
-      style={{ borderColor: THEME.gridLine }}
     >
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <span
-          className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
-          style={{ background: "#e9f5f1", color: THEME.ribbon }}
-        >
+      <div className="mb-2.5 flex items-center justify-between gap-3">
+        <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
           {category}
         </span>
-        <span className="text-[11px] text-gray-500">
-          {reading} dk okuma • 5 sn çözüm
+        <span className="text-[11px] text-gray-400 flex-shrink-0">
+          {reading} dk okuma
         </span>
       </div>
 
-      <h2 className={["font-semibold text-gray-900", compact ? "text-base" : "text-lg"].join(" ")}>
+      <h2 className={["font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors leading-snug", compact ? "text-[15px]" : "text-base sm:text-lg"].join(" ")}>
         {post.title}
       </h2>
 
-      <p className="mt-2 text-sm text-gray-600 line-clamp-2">{post.description}</p>
-      <p className="mt-2 text-sm font-medium text-gray-800">{benefit}</p>
+      <p className="mt-1.5 text-[13px] text-gray-500 line-clamp-2 leading-relaxed">{post.description}</p>
+      <p className="mt-1.5 text-[13px] font-medium text-gray-700">{benefit}</p>
 
-      <div className="mt-4 flex items-center justify-between gap-3">
-        <span className="text-xs text-gray-500">
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <span className="text-[11px] text-gray-400">
           {new Date(post.date).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })}
         </span>
-        <span className="text-xs font-medium" style={{ color: THEME.ribbon }}>
+        <span className="text-[12px] font-medium text-emerald-600">
           Devamını oku →
         </span>
       </div>
@@ -80,13 +76,11 @@ function CategoryTabs({ active }: { active?: BlogCategorySlug }) {
       <Link
         href="/blog"
         className={[
-          "rounded-full border px-3 py-1.5 text-sm font-semibold transition",
-          !active ? "text-white" : "text-gray-700 hover:bg-white/70",
+          "rounded-full border px-3 py-1.5 text-[13px] font-semibold transition-colors",
+          !active
+            ? "border-emerald-600 bg-emerald-700 text-white"
+            : "border-gray-200 bg-white text-gray-600 hover:border-emerald-300 hover:text-emerald-700",
         ].join(" ")}
-        style={{
-          borderColor: THEME.gridLine,
-          background: !active ? THEME.ribbon : "transparent",
-        }}
       >
         Tümü
       </Link>
@@ -97,13 +91,11 @@ function CategoryTabs({ active }: { active?: BlogCategorySlug }) {
             key={c.slug}
             href={`/blog/kategori/${c.slug}`}
             className={[
-              "rounded-full border px-3 py-1.5 text-sm font-semibold transition",
-              isActive ? "text-white" : "text-gray-700 hover:bg-white/70",
+              "rounded-full border px-3 py-1.5 text-[13px] font-semibold transition-colors",
+              isActive
+                ? "border-emerald-600 bg-emerald-700 text-white"
+                : "border-gray-200 bg-white text-gray-600 hover:border-emerald-300 hover:text-emerald-700",
             ].join(" ")}
-            style={{
-              borderColor: THEME.gridLine,
-              background: isActive ? THEME.ribbon : "transparent",
-            }}
           >
             {c.label}
           </Link>
@@ -134,49 +126,58 @@ export default function BlogIndexClient({ category }: { category?: BlogCategoryS
   }, [q, baseList]);
 
   const catObj = category ? getCategoryBySlug(category) : undefined;
-  const ribbonTitle = category ? `Excel Blog — ${catObj?.label ?? "Kategori"}` : "Excel Blog & Rehberler";
-  const ribbonDesc = category
-    ? catObj?.description || "Seçtiğiniz kategoriye ait Excel rehberleri."
-    : "Excel ipuçları, pratik çözümler ve ücretsiz araçlarla işlerinizi hızlandırın.";
 
   return (
     <>
-      <PageRibbon title={ribbonTitle} description={ribbonDesc} />
+      {/* Header */}
+      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3 sm:px-6">
+          <Link
+            href="/"
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition hover:bg-gray-200"
+            aria-label="Ana Sayfa"
+          >
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </Link>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg font-bold text-gray-900 truncate">
+              {category ? `Blog — ${catObj?.label ?? "Kategori"}` : "Excel Blog & Rehberler"}
+            </h1>
+          </div>
+          <span className="flex-shrink-0 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+            {filtered.length} yazı
+          </span>
+        </div>
+      </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
+        {/* Category tabs */}
         <div className="mb-5">
           <CategoryTabs active={category} />
         </div>
 
-        <div className="mb-8 grid gap-4 lg:grid-cols-[1fr,360px] lg:items-end">
-          <div>
-            <p className="text-sm text-gray-700">
-              Bu rehberler, en sık yapılan Excel işlemlerini hem formülle hem de <strong>tek tıkla ücretsiz araç</strong> ile çözmenize yardımcı olur.
-            </p>
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-2">
-              Yazılarda ara (başlık, açıklama, araç)
-            </label>
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Örn: ad soyad, CSV, IBAN, tarih farkı..."
-              className="w-full rounded-xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-2"
-              style={{ borderColor: THEME.gridLine, boxShadow: "none" }}
-            />
-          </div>
+        {/* Search */}
+        <div className="mb-6">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Yazılarda ara: ad soyad, CSV, IBAN, tarih farkı..."
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-[14px] outline-none transition-all duration-200 focus:border-emerald-400 focus:shadow-[0_0_0_4px_rgba(16,185,129,0.10)]"
+          />
         </div>
 
+        {/* Popular */}
         {!category && (
-          <section className="mb-10">
-            <div className="mb-4 flex items-end justify-between gap-4">
-              <h2 className="text-lg font-semibold text-gray-900">En Popüler Excel Rehberleri</h2>
-              <Link href="/excel-araclari" className="text-sm font-medium hover:underline" style={{ color: THEME.ribbon }}>
-                Excel araçlarını keşfet →
+          <section className="mb-8">
+            <div className="mb-3 flex items-end justify-between gap-4">
+              <h2 className="text-base font-bold text-gray-900">En Popüler Rehberler</h2>
+              <Link href="/excel-araclari" className="text-[13px] font-medium text-emerald-600 hover:underline">
+                Araçları keşfet →
               </Link>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {popular.map((p) => (
                 <BlogCard key={p.slug} post={p} />
               ))}
@@ -184,34 +185,34 @@ export default function BlogIndexClient({ category }: { category?: BlogCategoryS
           </section>
         )}
 
+        {/* All posts */}
         <section>
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {category ? "Bu Kategorideki Yazılar" : "Tüm Excel rehberleri — pratik çözümler ve ücretsiz araçlarla"}
-            </h2>
-            <p className="text-sm text-gray-600">{filtered.length} yazı</p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <h2 className="mb-3 text-base font-bold text-gray-900">
+            {category ? "Bu Kategorideki Yazılar" : "Tüm Yazılar"}
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
             {filtered.map((p) => (
               <BlogCard key={p.slug} compact post={p} />
             ))}
           </div>
         </section>
 
-        <div className="mt-10 rounded-2xl border bg-white/70 p-6 text-center" style={{ borderColor: THEME.gridLine }}>
-          <p className="text-sm font-medium text-gray-800 mb-4">Excel araçlarıyla işleri saniyelere indirin.</p>
+        {/* CTA */}
+        <div className="mt-8 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-5 text-center">
+          <p className="text-sm font-medium text-gray-800 mb-3">Excel araçlarıyla işleri saniyelere indirin.</p>
           <Link
             href="/excel-araclari"
-            className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
+            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+            style={{ background: ACCENT }}
           >
             Excel araçlarını keşfet
           </Link>
         </div>
       </main>
 
-      <div className="text-center text-xs text-gray-500 pb-6">Ofis Akademi · Excel & Veri Analizi</div>
+      <footer className="pb-6 pt-4 text-center text-xs text-gray-400">
+        Ofis Akademi · Excel & Veri Analizi
+      </footer>
     </>
   );
 }
-

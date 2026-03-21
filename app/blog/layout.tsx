@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { THEME } from "@/lib/theme";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
 
@@ -23,7 +22,7 @@ export default function BlogLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
       {children}
     </div>
   );

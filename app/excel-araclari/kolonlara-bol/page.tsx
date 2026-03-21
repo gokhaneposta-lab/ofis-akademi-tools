@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 type SeparatorMode = "auto" | "comma" | "semicolon" | "tab";
 
@@ -85,118 +85,161 @@ export default function KolonlaraBolPage() {
     return "Otomatik";
   }
 
+  const SEP_MODES = ["auto", "comma", "semicolon", "tab"] as const;
+
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Metni Kolonlara Böl"
-        description="Metni virgül, noktalı virgül veya sekme ile kolonlara ayırın. Excel Metni Sütunlara Dönüştür alternatifi."
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-4xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Metni veya Excel'den kopyaladığınız hücreleri aşağıdaki kutuya yapıştırın.",
-            "Ayırıcıyı seçin (otomatik, virgül, noktalı virgül veya sekme) ve Ayır butonuna tıklayın.",
-            "Sonucu Kopyala ile tabloyu Excel'e yapıştırın.",
-          ]}
-          excelAlternatif={
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                Excel&apos;de metni kolonlara bölmek için <strong>Veri</strong> sekmesinden <strong>Metni Sütunlara Dönüştür</strong> sihirbazını kullanın. Bu özellik virgül, noktalı virgül veya sekme ile ayrılmış metni otomatik algılayıp sütunlara dağıtır.
-              </p>
-              <p>
-                Adımlar: Veriyi seçin → Veri → Metni Sütunlara Dönüştür → Sınırlandırılmış seçin → Ayırıcı olarak virgül veya noktalı virgül işaretleyin → Son. Sabit genişlikle bölmek isterseniz ilgili adımda sütun çizgilerini kendiniz ayarlayabilirsiniz.
-              </p>
-            </div>
-          }
-        />
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Tek hücrede duran karma metni ayırıcıya göre sütunlara böler. Dış sistemden gelen verileri Excel&apos;de kullanılabilir tabloya dönüştürmek için idealdir.
+    <ToolLayout
+      title="Metni Kolonlara Böl"
+      description="Metni virgül, noktalı virgül veya sekme ile kolonlara ayırın."
+      path="/excel-araclari/kolonlara-bol"
+      keywords={[
+        "metni kolonlara böl",
+        "Excel metin ayırma",
+        "virgül ayırıcı",
+        "Excel araçları",
+      ]}
+      howToSteps={[
+        "Metni kutuya yapıştırın.",
+        "Ayırıcıyı seçin ve Ayır butonuna tıklayın.",
+        "Sonucu kopyalayın.",
+      ]}
+      faq={[
+        {
+          question: "Hangi ayırıcıyı seçmeliyim?",
+          answer: "Otomatik seçin, araç doğru ayırıcıyı bulur.",
+        },
+        {
+          question: "Tab metinleri böler mi?",
+          answer: "Evet, Tab seçeneğiyle.",
+        },
+        {
+          question: "Excel'e yapışır mı?",
+          answer: "Evet, sekmeli format üretir.",
+        },
+      ]}
+      aboutContent={
+        <>
+          <p className="text-gray-600">
+            Tek hücrede duran karma metni ayırıcıya göre sütunlara böler. Dış sistemden gelen verileri
+            Excel&apos;de kullanılabilir tabloya dönüştürmek için uygundur.
           </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
-              <p className="text-gray-700">Ali,Yılmaz,İstanbul</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-gray-200 bg-gray-50/90 p-3 text-sm text-gray-800">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Örnek girdi</p>
+              <p className="font-mono text-[13px] text-gray-700">Ali,Yılmaz,İstanbul</p>
             </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
-              <p className="text-gray-700">Sütun 1: Ali · Sütun 2: Yılmaz · Sütun 3: İstanbul</p>
-            </div>
-          </div>
-        </section>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Ayırıcı</span>
-            <div className="inline-flex rounded-lg border p-1 gap-1 w-full sm:w-auto" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-              {(["auto", "comma", "semicolon", "tab"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setSeparatorMode(mode)}
-                  className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${separatorMode === mode ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
-                  style={separatorMode === mode ? { background: THEME.ribbon } : undefined}
-                >
-                  {mode === "auto" ? "Otomatik" : mode === "comma" ? "Virgül ," : mode === "semicolon" ? "Noktalı ;" : "Tab"}
-                </button>
-              ))}
+            <div className="rounded-xl border border-gray-200 bg-gray-50/90 p-3 text-sm text-gray-800">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Örnek çıktı</p>
+              <p className="text-[13px] text-gray-700">
+                Sütun 1: Ali · Sütun 2: Yılmaz · Sütun 3: İstanbul
+              </p>
             </div>
           </div>
-          {separatorMode === "auto" && detectedSeparator && (
-            <div className="text-xs text-gray-700 rounded-lg px-3 py-2 border" style={{ background: "#f0f7f4", borderColor: THEME.ribbon }}>
-              Algılanan: <span className="font-semibold">{getSeparatorLabel(detectedSeparator)}</span>
-            </div>
-          )}
-        </div>
-
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={8}
-          placeholder="Örn: Ad,Soyad,Şehir&#10;Ali,Yılmaz,İstanbul&#10;Ayşe,Kaya,Ankara"
-          className="w-full rounded-lg border p-4 text-sm resize-y placeholder:text-gray-400 bg-white"
-          style={{ borderColor: THEME.gridLine }}
-        />
-
-        <div className="flex flex-col gap-3 sm:flex-row items-stretch">
-          <button
-            onClick={handleSplit}
-            className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
+        </>
+      }
+      relatedLinks={
+        <>
+          <Link href="/egitimler/temel" className="font-medium underline decoration-gray-300 underline-offset-2 transition hover:decoration-current" style={{ color: ACCENT }}>
+            Temel Excel eğitimi
+          </Link>
+          <Link
+            href="/blog/excelde-metni-kolonlara-bolme"
+            className="font-medium underline decoration-gray-300 underline-offset-2 transition hover:decoration-current"
+            style={{ color: ACCENT }}
           >
+            Rehber yazısı
+          </Link>
+        </>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0 flex-1">
+              <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+                Ayırıcı
+              </span>
+              <div className="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-100/90 p-1">
+                {SEP_MODES.map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setSeparatorMode(mode)}
+                    className={`min-h-[2.25rem] flex-1 rounded-lg px-2.5 py-2 text-center text-xs font-semibold transition sm:min-h-0 sm:flex-none sm:px-3 sm:text-sm ${
+                      separatorMode === mode
+                        ? "text-white shadow-sm"
+                        : "text-gray-600 hover:bg-white/80 hover:text-gray-900"
+                    }`}
+                    style={separatorMode === mode ? { background: ACCENT } : undefined}
+                  >
+                    {mode === "auto"
+                      ? "Otomatik"
+                      : mode === "comma"
+                        ? "Virgül ,"
+                        : mode === "semicolon"
+                          ? "Noktalı ;"
+                          : "Tab"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {separatorMode === "auto" && detectedSeparator && (
+              <div
+                className="shrink-0 rounded-xl border px-3 py-2 text-xs text-gray-700"
+                style={{ borderColor: `${ACCENT}40`, background: "#f0f7f4" }}
+              >
+                Algılanan:{" "}
+                <span className="font-semibold text-gray-900">{getSeparatorLabel(detectedSeparator)}</span>
+              </div>
+            )}
+          </div>
+
+          <label htmlFor="kolonlara-bol-input" className="mt-4 block text-[13px] font-semibold text-gray-700">
+            Metni yapıştırın
+          </label>
+          <div className="mt-2">
+            <InputTextarea
+              id="kolonlara-bol-input"
+              value={input}
+              onChange={setInput}
+              rows={8}
+              placeholder={"Örn: Ad,Soyad,Şehir\nAli,Yılmaz,İstanbul\nAyşe,Kaya,Ankara"}
+            />
+          </div>
+
+          <PrimaryButton className="mt-3" onClick={handleSplit}>
             Kolonlara Ayır
-          </button>
-          <CopyButton onClick={handleCopy} disabled={rows.length === 0} copied={copyStatus === "success"} label="Sonucu Kopyala (Excel)" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
 
         {rows.length > 0 && (
-          <div className="mt-3 space-y-2">
-            {copyStatus === "success" && (
-              <div className="text-xs text-gray-700 rounded-lg px-3 py-2 inline-block border" style={{ background: "#f0f7f4", borderColor: THEME.ribbon }}>
-                Panoya kopyalandı. Excel&apos;de Ctrl+V ile yapıştırın.
-              </div>
-            )}
-            {copyStatus === "error" && (
-              <div className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2 inline-block">Panoya kopyalanamadı.</div>
-            )}
-            <div className="overflow-x-auto rounded-lg border shadow-inner" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <table className="w-full text-left min-w-[270px] border-collapse">
+          <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[270px] border-collapse text-left">
                 <thead>
-                  <tr className="text-xs uppercase tracking-wider font-semibold border-b text-gray-700" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
+                  <tr
+                    className="border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-700"
+                    style={{ background: "#f4faf6" }}
+                  >
                     {Array.from({ length: maxCols }).map((_, i) => (
-                      <th key={i} className="py-3 px-4">Sütun {i + 1}</th>
+                      <th key={i} className="whitespace-nowrap px-3 py-3 sm:px-4">
+                        Sütun {i + 1}
+                      </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((row, ri) => (
-                    <tr key={ri} className="border-b text-gray-900" style={{ borderColor: THEME.gridLine, background: ri % 2 === 0 ? THEME.sheetBg : THEME.headerBg }}>
+                    <tr
+                      key={ri}
+                      className="border-b border-gray-100 text-gray-900 last:border-b-0"
+                      style={{ background: ri % 2 === 0 ? "#fff" : "#fafafa" }}
+                    >
                       {Array.from({ length: maxCols }).map((_, ci) => (
-                        <td key={ci} className="py-3 px-4 text-sm whitespace-pre border-r last:border-r-0" style={{ borderColor: THEME.gridLine }}>
+                        <td
+                          key={ci}
+                          className="border-r border-gray-100 px-3 py-2.5 text-sm whitespace-pre last:border-r-0 sm:px-4"
+                        >
                           {row[ci] ?? ""}
                         </td>
                       ))}
@@ -205,33 +248,29 @@ export default function KolonlaraBolPage() {
                 </tbody>
               </table>
             </div>
+
+            <div className="border-t border-gray-200 bg-gray-50/90 px-4 py-3 sm:px-5">
+              {copyStatus === "success" && (
+                <p className="mb-2 text-xs text-emerald-800">
+                  Panoya kopyalandı. Excel&apos;de Ctrl+V ile yapıştırın.
+                </p>
+              )}
+              {copyStatus === "error" && (
+                <p className="mb-2 text-xs text-red-700">Panoya kopyalanamadı. Tarayıcı iznini kontrol edin.</p>
+              )}
+              <button
+                type="button"
+                onClick={handleCopy}
+                disabled={rows.length === 0}
+                className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-bold text-gray-800 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ outlineColor: ACCENT }}
+              >
+                {copyStatus === "success" ? "Kopyalandı" : "Sonucu Kopyala (Excel)"}
+              </button>
+            </div>
           </div>
         )}
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Hangi ayırıcıyı seçmeliyim?</span><br />Emin değilseniz “Otomatik” seçin. Araç çoğu metinde doğru ayırıcıyı bulur.</p>
-            <p><span className="font-semibold text-gray-900">Tab karakterli metinleri böler mi?</span><br />Evet. “Tab” seçeneğini seçerek ayırabilirsiniz.</p>
-            <p><span className="font-semibold text-gray-900">Excel&apos;e düzgün yapışır mı?</span><br />Evet. “Sonucu Kopyala (Excel)” butonu sekmeli format üretir.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için:{" "}
-            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
-              Temel Excel eğitimi
-            </Link>
-            {" · "}
-            <Link href="/blog/excelde-metni-kolonlara-bolme" className="underline" style={{ color: THEME.ribbon }}>
-              rehber yazısı
-            </Link>
-          </div>
-        </section>
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/kolonlara-bol" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

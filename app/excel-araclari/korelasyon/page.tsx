@@ -2,18 +2,23 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
 import { parseTwoColumns, pearson, mean, std } from "@/lib/istatistik";
-import ToolJsonLd from "@/components/ToolJsonLd";
+
+const ACCENT = "#217346";
 
 export default function KorelasyonPage() {
   const [input, setInput] = useState("");
-  const [result, setResult] = useState<{ r: number; n: number; ortalamaX: number; ortalamaY: number; stdX: number; stdY: number } | null>(null);
+  const [result, setResult] = useState<{
+    r: number;
+    n: number;
+    ortalamaX: number;
+    ortalamaY: number;
+    stdX: number;
+    stdY: number;
+  } | null>(null);
   const [copied, setCopied] = useState(false);
 
   const howToSteps = [
@@ -79,155 +84,160 @@ export default function KorelasyonPage() {
     }
   }
 
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        X ve Y iki değişkeni arasındaki ilişkinin gücünü ölçer. Sonuç olarak{" "}
+        <span className="font-semibold">Pearson korelasyon katsayısı</span> olan{" "}
+        <span className="font-semibold">r</span> değerini verir.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="font-mono text-gray-700">
+            1 10, 2 20, 3 30
+          </p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">
+            Doğrusal artış varsa <span className="font-semibold">r ≈ +1</span>
+          </p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Korelasyon Hesaplama (Pearson)"
-        description="İki değişken (X ve Y) arasındaki Pearson korelasyon katsayısı r hesaplama. Excel'den 2 sütun yapıştırın."
-      />
-      <ToolJsonLd
-        name="Korelasyon Hesaplama (Pearson)"
-        description="İki değişken (X ve Y) arasındaki Pearson korelasyon katsayısı r hesaplama. Excel'den 2 sütun yapıştırın."
-        path="/excel-araclari/korelasyon"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de iki değişken (X ve Y) arasındaki Pearson korelasyon katsayısını KOREL fonksiyonu ile hesaplayabilirsiniz.
-              </p>
-              <ExcelFormulBlok
-                baslik="Pearson korelasyon katsayısı için:"
-                formül="=KOREL(A:A;B:B)"
-                aciklama="KOREL (İngilizce: CORREL) iki eşit uzunluktaki aralığı alır ve -1 ile +1 arasında korelasyon katsayısı döner. +1'e yakın pozitif, -1'e yakın negatif ilişki; 0'a yakın zayıf ilişki anlamına gelir. A:A X değerleri, B:B Y değerleri; satır sayıları eşit olmalı."
-              />
-            </>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            X ve Y iki değişkeni arasındaki ilişkinin gücünü ölçer. Sonuç olarak <span className="font-semibold">Pearson korelasyon katsayısı</span> olan <span className="font-semibold">r</span> değerini verir.
-          </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi:</span> <span className="font-mono">1 10</span>, <span className="font-mono">2 20</span>, <span className="font-mono">3 30</span>
-            </p>
-            <p>
-              <span className="font-semibold">Çıktı:</span> Doğrusal artış varsa <span className="font-semibold">r ≈ +1</span> görürsün.
-            </p>
-          </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold text-gray-900">r hangi aralıkta olur?</span>
-              <br />
-              Genelde <span className="font-semibold">-1</span> ile <span className="font-semibold">+1</span> arasında.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">r 0’a yakınsa?</span>
-              <br />
-              Doğrusal ilişki zayıftır.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Excel’e nasıl aktarırım?</span>
-              <br />
-              “Sonucu Kopyala” ile panoya al.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha fazla yorum için{" "}
-            <Link
-              href="/blog/excel-korelasyon-pearson-hesaplama"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              korelasyon rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">X ve Y değerleri (her satırda iki sayı — Tab veya noktalı virgül ile)</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={"1\t10\n2\t20\n3\t18\n4\t25\n5\t30"}
-            rows={8}
-            className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-            style={{ borderColor: THEME.gridLine }}
-          />
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            onClick={handleHesapla}
-            className="inline-flex min-w-[140px] justify-center rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
+    <ToolLayout
+      title="Korelasyon Hesaplama (Pearson)"
+      description="İki değişken (X ve Y) arasındaki Pearson korelasyon katsayısı r hesaplama. Excel'den 2 sütun yapıştırın."
+      path="/excel-araclari/korelasyon"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <Link
+          href="/blog/excel-korelasyon-pearson-hesaplama"
+          className="font-medium underline underline-offset-2"
+          style={{ color: ACCENT }}
+        >
+          Excel’de Pearson korelasyon hesaplama
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label
+            htmlFor="korelasyon-input"
+            className="block text-sm font-semibold text-gray-900"
           >
+            X ve Y değerleri
+          </label>
+          <p className="mt-0.5 text-xs text-gray-400">Her satırda iki sayı</p>
+          <div className="mt-1.5">
+            <InputTextarea
+              id="korelasyon-input"
+              value={input}
+              onChange={setInput}
+              rows={8}
+              minHeight="12rem"
+              className="resize-y font-mono"
+              placeholder={"1\t10\n2\t20\n3\t18\n4\t25\n5\t30"}
+            />
+          </div>
+          <PrimaryButton className="mt-3" onClick={handleHesapla}>
             Hesapla
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!result} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
+
         {result && (
-          <div className="space-y-2">
-            <div className="rounded-lg border p-4 bg-white" style={{ borderColor: THEME.ribbon }}>
-              <div className="text-2xl font-bold tabular-nums" style={{ color: THEME.ribbon }}>
+          <>
+            <div className="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/60 px-4 py-4 text-center">
+              <p
+                className="text-3xl font-bold tabular-nums"
+                style={{ color: ACCENT }}
+              >
                 r = {result.r.toFixed(4)}
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                r yakın +1: pozitif ilişki; yakın -1: negatif ilişki; 0'a yakın: zayıf ilişki.
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                r yakın +1: pozitif ilişki; yakın -1: negatif ilişki; 0&apos;a
+                yakın: zayıf ilişki.
               </p>
             </div>
-            <div className="overflow-hidden rounded-lg border bg-white" style={{ borderColor: THEME.gridLine }}>
+
+            <div className="mt-3 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
               <table className="w-full text-sm">
                 <tbody>
-                  <tr className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">Çift sayısı (n)</td>
-                    <td className="px-3 py-2 text-right">{result.n}</td>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-4 py-2.5 font-medium text-gray-700">
+                      Çift sayısı (n)
+                    </td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">
+                      {result.n}
+                    </td>
                   </tr>
-                  <tr className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">X ortalaması</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{result.ortalamaX.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-4 py-2.5 font-medium text-gray-700">
+                      X ortalaması
+                    </td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">
+                      {result.ortalamaX.toLocaleString("tr-TR", {
+                        maximumFractionDigits: 4,
+                      })}
+                    </td>
                   </tr>
-                  <tr className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">Y ortalaması</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{result.ortalamaY.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-4 py-2.5 font-medium text-gray-700">
+                      Y ortalaması
+                    </td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">
+                      {result.ortalamaY.toLocaleString("tr-TR", {
+                        maximumFractionDigits: 4,
+                      })}
+                    </td>
                   </tr>
-                  <tr className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">X standart sapma</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{result.stdX.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-4 py-2.5 font-medium text-gray-700">
+                      X standart sapma
+                    </td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">
+                      {result.stdX.toLocaleString("tr-TR", {
+                        maximumFractionDigits: 4,
+                      })}
+                    </td>
                   </tr>
-                  <tr style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">Y standart sapma</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{result.stdY.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
+                  <tr>
+                    <td className="px-4 py-2.5 font-medium text-gray-700">
+                      Y standart sapma
+                    </td>
+                    <td className="px-4 py-2.5 text-right tabular-nums">
+                      {result.stdY.toLocaleString("tr-TR", {
+                        maximumFractionDigits: 4,
+                      })}
+                    </td>
                   </tr>
                 </tbody>
               </table>
+              <div className="flex justify-stretch border-t border-gray-200 px-4 py-3 sm:justify-end">
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  disabled={!result}
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                  style={
+                    copied
+                      ? { borderColor: ACCENT, color: ACCENT }
+                      : undefined
+                  }
+                >
+                  {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
+                </button>
+              </div>
             </div>
-          </div>
+          </>
         )}
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/korelasyon" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

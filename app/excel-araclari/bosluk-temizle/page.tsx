@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+
+const ACCENT = "#217346";
 
 function trimLikeExcel(text: string): string {
   return text
@@ -21,8 +19,11 @@ export default function BoslukTemizlePage() {
   const [copied, setCopied] = useState(false);
 
   const result = trimLikeExcel(input);
+  const lineCount =
+    input.length === 0 ? 0 : input.split(/\r?\n/).length;
+  const showResult = Boolean(input.trim());
 
-  async function handleCopy() {
+  const handleCopy = useCallback(async () => {
     if (!result) return;
     try {
       await navigator.clipboard.writeText(result);
@@ -31,115 +32,116 @@ export default function BoslukTemizlePage() {
     } catch (e) {
       console.error(e);
     }
-  }
+  }, [result]);
+
+  const howToSteps = [
+    "Excel veya başka bir kaynaktan metni kopyalayıp aşağıdaki kutuya yapıştırın.",
+    "Metin otomatik temizlenir: her satırın başı/sonu ve ardışık boşluklar tek boşluğa indirilir.",
+    "Sonucu kopyalayıp tekrar Excel'e yapıştırın.",
+  ];
+
+  const faq = [
+    {
+      question: "TRIM ne yapar?",
+      answer:
+        "Metnin başı/sonu boşluklarını siler ve kelimeler arası ardışık boşlukları tekler.",
+    },
+    {
+      question: "Excel formülleriyle aynı mı?",
+      answer: "Mantık olarak benzer; araç toplu işlem yapmayı kolaylaştırır.",
+    },
+    {
+      question: "Hangi durumlarda şart?",
+      answer:
+        "DÜŞEYARA/XLOOKUP, EĞER ve filtreleme öncesi “eşleşmiyor” sorunlarında.",
+    },
+  ];
+
+  const aboutContent = (
+    <p className="text-sm text-gray-700">
+      Metinlerdeki baştaki/sondaki boşlukları temizleyip kelimeler arasındaki
+      birden fazla boşluğu tek boşluğa indirir. Böylece eşleştirme, arama ve
+      sıralamada oluşan “görünmez hata”ları azaltır.
+    </p>
+  );
 
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Boşluk Temizle"
-        description="Excel başındaki ve sondaki boşlukları siler; metin içi çoklu boşlukları tek boşluğa indirir. Excel TRIM mantığı."
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Excel veya başka bir kaynaktan metni kopyalayıp aşağıdaki kutuya yapıştırın.",
-            "Metin otomatik temizlenir: her satırın başı/sonu ve ardışık boşluklar tek boşluğa indirilir.",
-            "Sonucu kopyalayıp tekrar Excel'e yapıştırın.",
-          ]}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de tek hücredeki baştaki ve sondaki boşlukları, ayrıca metin içindeki ardışık boşlukları tek boşluğa indirmek için aşağıdaki formülü kullanabilirsiniz.
-              </p>
-              <ExcelFormulBlok
-                baslik="Tek hücre için:"
-                formül="=TRIM(A1)"
-                aciklama="TRIM (Türkçe: TEMİZLE) fonksiyonu metnin başındaki ve sonundaki boşlukları siler; kelimeler arasındaki birden fazla boşluğu da tek boşluğa indirir. A1 yerine kendi hücre adresinizi yazın. Tüm sütun için B1'e =TRIM(A1) yazıp aşağı çoğaltabilirsiniz."
-              />
-            </>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Metinlerdeki baştaki/sondaki boşlukları temizleyip kelimeler arasındaki birden fazla boşluğu tek boşluğa indirir. Böylece eşleştirme, arama ve sıralamada oluşan “görünmez hata”ları azaltır.
-          </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p><span className="font-semibold">Girdi:</span> <span className="font-mono">  Ayşe   Kaya  </span></p>
-            <p><span className="font-semibold">Çıktı:</span> <span className="font-mono">Ayşe Kaya</span></p>
-          </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold text-gray-900">TRIM ne yapar?</span>
-              <br />
-              Metnin başı/sonu boşluklarını siler ve kelimeler arası ardışık boşlukları tekler.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Excel formülleriyle aynı mı?</span>
-              <br />
-              Mantık olarak benzer; araç toplu işlem yapmayı kolaylaştırır.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Hangi durumlarda şart?</span>
-              <br />
-              DÜŞEYARA/XLOOKUP, EĞER ve filtreleme öncesi “eşleşmiyor” sorunlarında.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha fazla örnek için{" "}
-            <Link href="/blog/excelde-bosluk-temizleme" className="underline" style={{ color: THEME.ribbon }}>
-              boşluk temizleme rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Metin (yapıştırın)</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="  Başta ve sonda boşluklu   metin   buraya..."
-            rows={8}
-            className="w-full rounded-lg border p-3 text-sm bg-white resize-y"
-            style={{ borderColor: THEME.gridLine }}
-          />
-        </div>
-
-        {input.trim() && (
-          <>
-            <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Temizlenmiş metin</label>
-              <textarea
-                readOnly
-                value={result}
-                rows={8}
-                className="w-full rounded-lg border p-3 text-sm bg-gray-50 resize-y"
-                style={{ borderColor: THEME.ribbon }}
-              />
+    <ToolLayout
+      title="Boşluk Temizle"
+      description="Excel başındaki ve sondaki boşlukları siler; metin içi çoklu boşlukları tek boşluğa indirir. Excel TRIM mantığı."
+      path="/excel-araclari/bosluk-temizle"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <span className="text-gray-600">
+          Daha fazla örnek için{" "}
+          <Link
+            href="/blog/excelde-bosluk-temizleme"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            boşluk temizleme rehberini
+          </Link>{" "}
+          inceleyebilirsin.
+        </span>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-2 pt-1 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm font-semibold text-gray-900">
+                Metni yapıştırın
+              </span>
+              <span
+                className="inline-flex w-fit shrink-0 items-center rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium tabular-nums text-gray-600"
+                aria-live="polite"
+              >
+                {lineCount} satır
+              </span>
             </div>
-            <CopyButton onClick={handleCopy} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
-          </>
-        )}
 
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/bosluk-temizle" />
+            <InputTextarea
+              value={input}
+              onChange={setInput}
+              placeholder="  Başta ve sonda boşluklu   metin   buraya..."
+              rows={8}
+              minHeight="12rem"
+            />
+
+            {showResult && (
+              <div className="flex flex-col gap-3 border-t border-gray-100 pt-4">
+                <span className="text-sm font-semibold text-gray-900">
+                  Temizlenmiş metin
+                </span>
+                <textarea
+                  readOnly
+                  value={result}
+                  rows={8}
+                  className="w-full resize-y rounded-xl border-2 border-emerald-400/90 bg-white px-4 py-3.5 text-[15px] leading-relaxed text-gray-900 shadow-[0_0_0_1px_rgba(16,185,129,0.12)] focus:outline-none"
+                  style={{ minHeight: "12rem" }}
+                />
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    disabled={!result}
+                    className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                    style={
+                      copied
+                        ? { borderColor: ACCENT, color: ACCENT }
+                        : undefined
+                    }
+                  >
+                    {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

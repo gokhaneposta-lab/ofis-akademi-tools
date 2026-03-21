@@ -2,14 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "../../../components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
-import ToolJsonLd from "@/components/ToolJsonLd";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 type Delimiter = "tab" | "comma" | "semicolon";
+
+const DELIMITER_LABELS: Record<Delimiter, string> = {
+  tab: "Sekme",
+  comma: "Virgül",
+  semicolon: "Noktalı virgül",
+};
 
 export default function TranspozPage() {
   const [input, setInput] = useState("");
@@ -87,165 +92,120 @@ export default function TranspozPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Satır / Sütun Döndür (Transpoz)"
-        description="Satırları sütunlara, sütunları satırlara dönüştürün. Excel'deki veriyi yapıştırıp transpoz edebilir, sonucu tekrar Excel'e yapıştırabilirsiniz."
-      />
-      <ToolJsonLd
-        name="Satır / Sütun Döndür (Transpoz)"
-        description="Satırları sütunlara, sütunları satırlara dönüştürün. Excel'deki veriyi yapıştırıp transpoz edebilir, sonucu tekrar Excel'e yapıştırabilirsiniz."
-        path="/excel-araclari/transpoz"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
-
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-          excelAlternatif={
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                Excel&apos;de satırları sütunlara, sütunları satırlara çevirmek (transpoz) için veriyi kopyalayıp hedefe <strong>Yapıştır</strong> → <strong>Özel Yapıştır</strong> (veya Ctrl+Alt+V) → <strong>Devrik</strong> kutusunu işaretleyip Tamam deyin.
-              </p>
-              <p>
-                Formülle yapmak isterseniz <code className="bg-gray-100 px-1 rounded text-xs">=TRANSPOSE(A1:C5)</code> kullanabilirsiniz: aralığı seçip formülü girin ve Ctrl+Shift+Enter ile dizi formülü olarak onaylayın. Devrik tablo dinamik olarak güncellenir.
-              </p>
-            </div>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Veriyi satırdan sütuna (veya tam tersi) çevirir. Böylece rapor ve tabloların yönünü hızlıca değiştirip düzenleyebilirsiniz.
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Excel’den kopyaladığınız tabloyu satır ve sütun ekseninde çevirir: üstteki
+        satırlar yan yana sütunlara, sütunlar alt alta satırlara dönüşür. Rapor
+        düzeni veya pivot öncesi veriyi hızlıca yeniden yönlendirmek için
+        kullanılır; işlem tarayıcıda kalır.
+      </p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek</p>
+          <p className="text-gray-700">
+            İki satır × üç sütunluk bir blok yapıştırdığınızda, çıktı üç satır × iki
+            sütun olur; hücreler sekme ile ayrılır ve Excel’e doğrudan yapıştırılabilir.
           </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi:</span> Excel’den tabloyu kopyalayıp buraya yapıştır (satırlar ve sütunlar ayırıcıya göre ayrılır).
-            </p>
-            <p>
-              <span className="font-semibold">Çıktı:</span> satırlar sütun, sütunlar satır olacak şekilde transpoze edilir (Excel’e uyumlu formatta döner).
-            </p>
-          </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Hangi ayırıcılar çalışır?</span>
-              <br />
-              Sekme, virgül ve noktalı virgül.
-            </p>
-            <p>
-              <span className="font-semibold">Excel’e nasıl yapıştırırım?</span>
-              <br />
-              Sonucu kopyalayıp Excel’de hedef hücreye yapıştırın. Çıktı sekme ile döndüğü için tablolar kolay oluşur.
-            </p>
-            <p>
-              <span className="font-semibold">Formül alternatifi var mı?</span>
-              <br />
-              Evet. Excel alternatifi kısmında <span className="font-mono">=TRANSPOSE(...)</span> örneği var.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha detay için{" "}
-            <Link
-              href="/blog/excel-transpoz-satir-sutun-dondurme"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              transpoz rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Veri ayırıcı (girdi)</span>
-          <div className="inline-flex rounded-lg border p-1 gap-1" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-            <button
-              type="button"
-              onClick={() => setDelimiter("tab")}
-              className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${delimiter === "tab" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
-              style={delimiter === "tab" ? { background: THEME.ribbon } : undefined}
-            >
-              Sekme (Excel yapıştır)
-            </button>
-            <button
-              type="button"
-              onClick={() => setDelimiter("comma")}
-              className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${delimiter === "comma" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
-              style={delimiter === "comma" ? { background: THEME.ribbon } : undefined}
-            >
-              Virgül
-            </button>
-            <button
-              type="button"
-              onClick={() => setDelimiter("semicolon")}
-              className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${delimiter === "semicolon" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
-              style={delimiter === "semicolon" ? { background: THEME.ribbon } : undefined}
-            >
-              Noktalı virgül
-            </button>
-          </div>
-          <p className="text-xs text-gray-500">Sonuç her zaman sekme ile (Excel'e yapıştırmaya uygun) verilir.</p>
         </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">İpucu</p>
+          <p className="text-gray-700">
+            Excel’de aynı işlem için Özel Yapıştır → Devrik veya{" "}
+            <span className="font-mono">=TRANSPOSE(A1:C5)</span> kullanılabilir; bu
+            araç metin tabanlı hızlı dönüşüm sunar.
+          </p>
+        </div>
+      </div>
+    </>
+  );
 
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={8}
-          placeholder="Excel'den kopyaladığınız veriyi buraya yapıştırın (satırlar ve sütunlar ayırıcıya göre bölünecek)...&#10;İsim	Departman	Puan&#10;Ali	Satış	85&#10;Ayşe	Pazarlama	92"
-          className="w-full rounded-lg border p-4 text-sm resize-y placeholder:text-gray-400 bg-white"
-          style={{ borderColor: THEME.gridLine }}
-        />
+  return (
+    <ToolLayout
+      title="Satır / Sütun Döndür (Transpoz)"
+      description="Satırları sütunlara, sütunları satırlara dönüştürün."
+      path="/excel-araclari/transpoz"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <Link
+          href="/blog/excel-transpoz-satir-sutun-dondurme"
+          className="font-medium underline underline-offset-2"
+          style={{ color: ACCENT }}
+        >
+          Transpoz rehberi
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <div className="relative mb-4 flex rounded-2xl bg-gray-200/70 p-1" translate="no">
+            {(Object.keys(DELIMITER_LABELS) as Delimiter[]).map((d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => setDelimiter(d)}
+                className={`relative z-10 flex-1 rounded-xl py-2.5 text-center text-xs font-semibold transition sm:text-sm ${
+                  delimiter === d
+                    ? "text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+                style={delimiter === d ? { background: ACCENT } : undefined}
+              >
+                {DELIMITER_LABELS[d]}
+              </button>
+            ))}
+          </div>
+          <p className="mb-3 text-xs text-gray-400">
+            Sonuç her zaman sekme ile verilir.
+          </p>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            onClick={handleTranspose}
-            className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
-          >
-            Döndür (Transpoz)
-          </button>
-          <CopyButton
-            onClick={handleCopy}
-            disabled={!result}
-            copied={copied}
-            label="Sonucu Kopyala (Excel)"
-            copiedLabel="Kopyalandı"
+          <label className="mb-2 block text-sm font-semibold text-gray-900">
+            Veriyi yapıştırın
+          </label>
+          <InputTextarea
+            value={input}
+            onChange={setInput}
+            rows={8}
+            minHeight="12rem"
+            className="resize-y"
+            placeholder={
+              "Excel'den kopyaladığınız veriyi buraya yapıştırın (satırlar ve sütunlar ayırıcıya göre bölünecek)...\nİsim\tDepartman\tPuan\nAli\tSatış\t85\nAyşe\tPazarlama\t92"
+            }
           />
+          <PrimaryButton className="mt-3" onClick={handleTranspose}>
+            Döndür (Transpoz)
+          </PrimaryButton>
         </div>
 
         {result && (
-          <div className="rounded-lg border p-4 bg-white" style={{ borderColor: THEME.ribbon }}>
-            <div className="text-xs font-semibold text-gray-700 mb-2">Döndürülmüş veri (Excel'e yapıştırabilirsiniz):</div>
+          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/50 px-4 py-4 shadow-md sm:px-5">
+            <label className="mb-2 block text-sm font-semibold text-gray-900">
+              Döndürülmüş veri
+            </label>
             <textarea
               readOnly
               value={result}
               rows={6}
-              className="w-full rounded border p-3 text-sm resize-y bg-gray-50 font-mono"
-              style={{ borderColor: THEME.gridLine }}
+              className="w-full resize-y rounded-xl border border-emerald-200/80 bg-white px-4 py-3 font-mono text-sm leading-relaxed text-gray-900 shadow-[0_0_0_1px_rgba(16,185,129,0.08)] focus:outline-none"
             />
+            <div className="mt-3 flex justify-end">
+              <button
+                type="button"
+                onClick={handleCopy}
+                disabled={!result}
+                className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                style={
+                  copied ? { borderColor: ACCENT, color: ACCENT } : undefined
+                }
+              >
+                {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
+              </button>
+            </div>
           </div>
         )}
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/transpoz" />
-        </div>
-        <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

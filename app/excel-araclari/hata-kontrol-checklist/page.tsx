@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
-import ToolJsonLd from "@/components/ToolJsonLd";
+import ToolLayout from "@/components/ToolLayout";
+
+const ACCENT = "#217346";
 
 const STORAGE_KEY = "ofis-akademi-hata-kontrol-checklist";
 
@@ -161,6 +159,22 @@ export default function HataKontrolChecklistPage() {
     },
   ];
 
+  const aboutContent = (
+    <>
+      <p className="text-sm leading-relaxed text-gray-700">
+        Dosya tesliminden önce en sık görülen hataları hızlıca gözden geçirmek için kullanılır. Boş hücre, tekrar, yanlış veri tipi/format ve bağlantı-güvenlik gibi konuları tek bir checklist’te toplar.
+      </p>
+      <div className="mt-4 rounded-2xl border border-gray-200 bg-gray-50/90 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Örnek kullanım</p>
+        <ol className="mt-2 list-inside list-decimal space-y-2 text-sm text-gray-700">
+          <li>Formüllerde hata (#YOK, #DEĞER!, #BAŞV! gibi) var mı kontrol et.</li>
+          <li>Tarih/sayı metin karışımı gibi veri tipi sorunlarını işaretle.</li>
+          <li>Dış bağlantılar/kırık linkler gibi teslim öncesi riskleri gözden geçir.</li>
+        </ol>
+      </div>
+    </>
+  );
+
   useEffect(() => {
     setMounted(true);
     const saved = loadChecked();
@@ -184,168 +198,127 @@ export default function HataKontrolChecklistPage() {
   const done = Object.values(checked).filter(Boolean).length;
 
   return (
-    <div
-      className="min-h-screen bg-[#e2e8ec]"
-      style={{ fontFamily: THEME.font }}
+    <ToolLayout
+      title="Hata Kontrol Checklist'i"
+      description="Dosya teslim etmeden önce formül, bağlantı ve hücre güvenliği kontrollerini adım adım işaretle."
+      path="/excel-araclari/hata-kontrol-checklist"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <span className="text-sm text-gray-600">
+          Daha detaylı rehber:{" "}
+          <Link
+            href="/blog/excel-hata-kontrol-checklist"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            hata kontrol checklist yazısı
+          </Link>
+        </span>
+      }
     >
-      <PageRibbon
-        title="Hata Kontrol Checklist'i"
-        description="Dosya teslim etmeden önce formül, bağlantı ve hücre güvenliği kontrollerini adım adım işaretle."
-      >
-        <Link
-          href="/excel-araclari"
-          className="ml-auto text-sm font-medium text-white/90 hover:text-white underline"
-        >
-          ← Excel Araçları
-        </Link>
-      </PageRibbon>
-      <ToolJsonLd
-        name="Hata Kontrol Checklist'i"
-        description="Dosya teslim etmeden önce formül, bağlantı ve hücre güvenliği kontrollerini adım adım işaretle."
-        path="/excel-araclari/hata-kontrol-checklist"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
-
-      <div className="mx-4 mt-6 mb-10 max-w-3xl space-y-8">
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-        />
-
-        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-800">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-slate-700">
-            Dosya tesliminden önce en sık görülen hataları hızlıca gözden geçirmek için kullanılır. Boş hücre, tekrar, yanlış veri tipi/format ve bağlantı-güvenlik gibi konuları tek bir checklist’te toplar.
-          </p>
-        </section>
-
-        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-800">Örnek kullanım</h2>
-          <ul className="mt-2 space-y-1 text-sm text-slate-700">
-            <li>1) Formüllerde hata (#YOK, #DEĞER!, #BAŞV! gibi) var mı kontrol et.</li>
-            <li>2) Tarih/sayı metin karışımı gibi veri tipi sorunlarını işaretle.</li>
-            <li>3) Dış bağlantılar/kırık linkler gibi teslim öncesi riskleri gözden geçir.</li>
-          </ul>
-        </section>
-
-        <section className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-800">Sık sorulan sorular</h2>
-          <div className="mt-2 space-y-2 text-sm text-slate-700">
-            <p>
-              <span className="font-semibold">İşaretler kaydediliyor mu?</span>
-              <br />
-              Evet, yalnızca bu cihaz/tarayıcıda ilerleme kaydedilir.
-            </p>
-            <p>
-              <span className="font-semibold">Excel yolu ne işe yarar?</span>
-              <br />
-              Her madde için nereden kontrol edeceğini kısaca gösterir.
-            </p>
-            <p>
-              <span className="font-semibold">Her dosyada şart mı?</span>
-              <br />
-              Özellikle rapor ve büyük veri içeren dosyalarda hata riskini azaltır.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-slate-600">
-            Daha detaylı rehber için{" "}
-            <Link
-              href="/blog/excel-hata-kontrol-checklist"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              hata kontrol checklist yazısına
-            </Link>{" "}
-            bakabilirsiniz.
-          </p>
-        </section>
-
-        {/* İlerleme */}
-        <div className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
+      <div className="mx-auto max-w-3xl space-y-6 px-4 pb-4 pt-2 sm:px-6 sm:space-y-8 sm:pb-6 sm:pt-4">
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm ring-1 ring-black/[0.04] sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-700">
-              <span className="font-semibold text-slate-900">{done}</span> / {total} madde tamamlandı
+            <p className="text-sm text-gray-700">
+              <span className="font-semibold tabular-nums text-gray-900">{done}</span>
+              <span className="text-gray-500"> / {total} madde tamamlandı</span>
             </p>
             <button
               type="button"
               onClick={clearAll}
-              className="text-xs font-medium text-slate-500 underline hover:text-slate-700"
+              className="text-xs font-medium text-gray-500 underline-offset-2 hover:text-gray-800 hover:underline"
             >
               Tümünü temizle
             </button>
           </div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-200">
+          <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
             <div
-              className="h-full rounded-full transition-all duration-300"
+              className="h-full rounded-full transition-all duration-300 ease-out"
               style={{
                 width: total ? `${(done / total) * 100}%` : "0%",
-                background: THEME.ribbon,
+                backgroundColor: ACCENT,
               }}
             />
           </div>
         </div>
 
-        {/* Bölümler */}
         {sections.map((section) => (
-          <section
-            key={section.title}
-            className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm"
-          >
-            <h2 className="text-base font-semibold text-slate-800 mb-3">
-              {section.title}
-            </h2>
+          <section key={section.title} className="space-y-3 sm:space-y-4">
+            <h2 className="text-sm font-semibold tracking-tight text-gray-900 sm:text-base">{section.title}</h2>
             <ul className="space-y-3">
-              {section.items.map((item) => (
-                <li key={item.id} className="flex flex-col gap-1">
-                  <label className="flex cursor-pointer items-start gap-3 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={checked[item.id] ?? false}
-                      onChange={() => toggle(item.id)}
-                      className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <span className={checked[item.id] ? "text-slate-500 line-through" : "text-slate-800"}>
-                      {item.label}
-                    </span>
-                  </label>
-                  {(item.tip || item.excelYol) && (
-                    <div className="ml-7 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                      {item.tip}
-                      {item.excelYol && (
-                        <span className="mt-1 block text-slate-500">
-                          Excel: {item.excelYol}
-                        </span>
-                      )}
+              {section.items.map((item) => {
+                const isDone = checked[item.id] ?? false;
+                return (
+                  <li key={item.id}>
+                    <div
+                      className={[
+                        "rounded-2xl border p-4 shadow-sm transition-colors sm:p-5",
+                        isDone
+                          ? "border-emerald-200/90 bg-emerald-50/50 ring-1 ring-emerald-100"
+                          : "border-gray-200 bg-white ring-1 ring-black/[0.04]",
+                      ].join(" ")}
+                    >
+                      <label className="flex cursor-pointer gap-3 sm:gap-4">
+                        <input
+                          type="checkbox"
+                          checked={isDone}
+                          onChange={() => toggle(item.id)}
+                          className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 text-emerald-600 accent-emerald-600 focus:ring-2 focus:ring-emerald-500/30 focus:ring-offset-0"
+                        />
+                        <div className="min-w-0 flex-1 space-y-2">
+                          <span
+                            className={
+                              isDone
+                                ? "block text-sm font-medium leading-snug text-gray-400 line-through decoration-gray-300"
+                                : "block text-sm font-medium leading-snug text-gray-900"
+                            }
+                          >
+                            {item.label}
+                          </span>
+                          {(item.tip || item.excelYol) && (
+                            <div className="space-y-1.5 text-xs leading-relaxed text-gray-600 sm:text-sm">
+                              {item.tip && <p>{item.tip}</p>}
+                              {item.excelYol && (
+                                <p className="rounded-lg bg-gray-100/90 px-2.5 py-1.5 text-gray-600">
+                                  <span className="font-medium text-gray-500">Excel: </span>
+                                  {item.excelYol}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </label>
                     </div>
-                  )}
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ))}
 
-        {/* Yaygın tuzaklar özet */}
-        <section className="rounded-xl border border-amber-200 bg-amber-50/80 p-4 shadow-sm">
-          <h2 className="text-base font-semibold text-amber-900 mb-2">
-            Yaygın tuzaklar · Kısa çözümler
-          </h2>
-          <ul className="space-y-1.5 text-sm text-amber-800">
-            <li>· <strong>#YOK</strong> → DÜŞEYARA/YATAYARA eşleşmedi; EĞERHATA ile “-” veya metin ver.</li>
-            <li>· <strong>#DEĞER!</strong> → Metin ile sayı karıştı; SAYIYAÇEVİR veya doğru veri tipi kullan.</li>
-            <li>· <strong>#BAŞV!</strong> → Sütun/satır silindi; formülü düzelt veya sabit aralık kullan ($).</li>
-            <li>· <strong>Dış bağlantı uyarısı</strong> → Veri → Bağlantıları Düzenle → Kaldır veya yolu güncelle.</li>
-            <li>· <strong>Yanlış toplam</strong> → Gizli satırlar dahil; Görünüm → Gizli satırları göster/kaldır veya ALT+= ile TOPLA kontrol et.</li>
+        <section className="rounded-2xl border border-amber-200/90 bg-amber-50/90 p-4 shadow-sm ring-1 ring-amber-100/80 sm:p-5">
+          <h2 className="text-sm font-semibold text-amber-950 sm:text-base">Yaygın tuzaklar · Kısa çözümler</h2>
+          <ul className="mt-3 space-y-2 text-sm leading-relaxed text-amber-900/90">
+            <li>
+              <strong className="font-semibold text-amber-950">#YOK</strong> → DÜŞEYARA/YATAYARA eşleşmedi; EĞERHATA ile “-” veya metin ver.
+            </li>
+            <li>
+              <strong className="font-semibold text-amber-950">#DEĞER!</strong> → Metin ile sayı karıştı; SAYIYAÇEVİR veya doğru veri tipi kullan.
+            </li>
+            <li>
+              <strong className="font-semibold text-amber-950">#BAŞV!</strong> → Sütun/satır silindi; formülü düzelt veya sabit aralık kullan ($).
+            </li>
+            <li>
+              <strong className="font-semibold text-amber-950">Dış bağlantı uyarısı</strong> → Veri → Bağlantıları Düzenle → Kaldır veya yolu güncelle.
+            </li>
+            <li>
+              <strong className="font-semibold text-amber-950">Yanlış toplam</strong> → Gizli satırlar dahil; Görünüm → Gizli satırları göster/kaldır veya ALT+= ile TOPLA kontrol et.
+            </li>
           </ul>
         </section>
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/hata-kontrol-checklist" />
-        </div>
-        <div className="pt-4 text-center text-xs text-slate-500">
-          Ofis Akademi · Excel & Veri Analizi
-        </div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

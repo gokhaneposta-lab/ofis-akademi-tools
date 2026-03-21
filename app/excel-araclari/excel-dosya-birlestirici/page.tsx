@@ -3,11 +3,10 @@
 import React, { useState, useRef } from "react";
 import Link from "next/link";
 import * as XLSX from "xlsx";
-import PageRibbon from "@/components/PageRibbon";
-import JsonLdTool from "@/components/JsonLd";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 /** Her dosyanın ilk sayfasından satırları alıp alt alta ekler; ilk dosyanın ilk satırı başlık olarak kullanılır */
 function sheetToRows(sheet: XLSX.WorkSheet): unknown[][] {
@@ -18,6 +17,7 @@ export default function ExcelDosyaBirlestiriciPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -25,6 +25,34 @@ export default function ExcelDosyaBirlestiriciPage() {
     setFiles(list);
     setStatus("idle");
     setErrorMsg("");
+  }
+
+  function onDrop(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    const list = e.dataTransfer.files ? Array.from(e.dataTransfer.files) : [];
+    setFiles(list);
+    setStatus("idle");
+    setErrorMsg("");
+  }
+
+  function onDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "copy";
+  }
+
+  function onDragEnter(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  }
+
+  function onDragLeave(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.currentTarget === e.target) setDragActive(false);
   }
 
   async function handleMerge() {
@@ -84,139 +112,163 @@ export default function ExcelDosyaBirlestiriciPage() {
     if (inputRef.current) inputRef.current.value = "";
   }
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <JsonLdTool
-        name="Excel Dosya Birleştirici — Ücretsiz Excel Birleştirme Aracı"
-        description="Excel dosyaları birleştir: aynı kolon yapısına sahip dosyaları alt alta ekleyerek tek Excel çıktısı oluşturur. Ücretsiz, tarayıcıda çalışır."
-        path="/excel-araclari/excel-dosya-birlestirici"
-        keywords={["excel dosyaları birleştir", "alt alta ekle", "tek excel yap", "aynı kolon yapısı excel"]}
-      />
-      <PageRibbon
-        title="Excel Dosya Birleştirici"
-        description="Birden fazla Excel dosyasını tek dosyada birleştirir. Aynı kolon yapısına sahip dosyaları alt alta ekleyerek tek Excel çıktısı oluşturur."
-      />
-
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Aynı kolon yapısına sahip Excel dosyalarınızı (.xlsx, .xls) seçin (her dosyanın ilk satırı başlık olmalı).",
-            "Birleştir ve İndir butonuna tıklayın.",
-            "Tüm dosyaların verileri alt alta eklenerek tek bir sayfada birleştirilir; ilk dosyanın başlık satırı kullanılır, diğer dosyaların başlıkları atlanır. 'Birlestirilmis.xlsx' indirilir.",
-            "Veriler yalnızca tarayıcınızda işlenir, sunucuya gönderilmez.",
-          ]}
-          excelAlternatif={
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                Excel&apos;de aynı kolon yapısına sahip dosyaları alt alta birleştirmek için <strong>Power Query</strong> kullanabilirsiniz: <strong>Veri</strong> → <strong>Verileri Al ve Dönüştür</strong> → <strong>Dosyadan</strong> → <strong>Klasörden</strong> ile klasördeki dosyaları seçip &quot;Birleştir ve Yükle&quot; ile tek tabloda toplayabilirsiniz.
-              </p>
-              <p>
-                Bu araç da aynı işlemi tarayıcıda yapar: aynı yapıdaki Excel dosyalarını alt alta ekleyerek tek Excel çıktısı oluşturur.
-              </p>
-            </div>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Aynı kolon yapısına sahip birden fazla Excel dosyasını tarayıcıda birleştirir. Hepsinin verilerini alt alta ekler ve tek bir <span className="font-semibold">Birlestirilmiş Excel</span> dosyası indirmenizi sağlar.
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Aynı kolon yapısına sahip birden fazla Excel dosyasını tarayıcıda birleştirir. Hepsinin verilerini alt alta ekler ve tek bir{" "}
+        <span className="font-semibold">Birlestirilmiş Excel</span> dosyası indirmenizi sağlar.
+      </p>
+      <div className="mt-4 space-y-2 text-sm text-gray-700">
+        <p>
+          Excel&apos;de aynı kolon yapısına sahip dosyaları alt alta birleştirmek için <strong>Power Query</strong> kullanabilirsiniz: <strong>Veri</strong> → <strong>Verileri Al ve Dönüştür</strong> → <strong>Dosyadan</strong> → <strong>Klasörden</strong> ile klasördeki dosyaları seçip &quot;Birleştir ve Yükle&quot; ile tek tabloda toplayabilirsiniz.
+        </p>
+        <p>Bu araç da aynı işlemi tarayıcıda yapar: aynı yapıdaki Excel dosyalarını alt alta ekleyerek tek Excel çıktısı oluşturur.</p>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="text-gray-700">
+            <span className="font-mono">dosya-1.xlsx</span> + <span className="font-mono">dosya-2.xlsx</span> (aynı başlık/kalan kolonlar).
           </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi:</span> <span className="font-mono">dosya-1.xlsx</span> + <span className="font-mono">dosya-2.xlsx</span> (aynı başlık/kalan kolonlar).
-            </p>
-            <p>
-              <span className="font-semibold">Çıktı:</span> başlık tek kez kullanılarak satırlar alt alta birleşir ve <span className="font-mono">Birlestirilmis.xlsx</span> indir.
-            </p>
-          </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Dosyalar aynı olmak zorunda mı?</span>
-              <br />
-              Evet. İlk satır başlıkları ve kolon yapısı benzer/aynı olmalıdır; aksi durumda birleştirme yanlış hizalanabilir.
-            </p>
-            <p>
-              <span className="font-semibold">Dosya adları ne oluyor?</span>
-              <br />
-              İndirme adı sabit: <span className="font-mono">Birlestirilmis.xlsx</span>.
-            </p>
-            <p>
-              <span className="font-semibold">Veriler sunucuya gider mi?</span>
-              <br />
-              Hayır. İşlem tarayıcı içinde yapılır.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Power Query alternatifleri için{" "}
-            <Link
-              href="/blog/excel-dosya-birlestirme"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              dosya birleştirme rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Excel dosyaları (.xlsx, .xls)</label>
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".xlsx,.xls"
-            multiple
-            onChange={onFileChange}
-            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:cursor-pointer"
-          />
-          {files.length > 0 && (
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span className="text-sm text-gray-600">{files.length} dosya seçildi</span>
-              <button
-                type="button"
-                onClick={clearFiles}
-                className="text-xs text-gray-500 underline hover:text-gray-700"
-              >
-                Temizle
-              </button>
-            </div>
-          )}
         </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">
+            Başlık tek kez kullanılarak satırlar alt alta birleşir ve <span className="font-mono">Birlestirilmis.xlsx</span> indirilir.
+          </p>
+        </div>
+      </div>
+    </>
+  );
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
+  return (
+    <ToolLayout
+      title="Excel Dosya Birleştirici"
+      description="Birden fazla Excel dosyasını tek dosyada birleştirir. Aynı kolon yapısına sahip dosyaları alt alta ekleyerek tek Excel çıktısı oluşturur."
+      path="/excel-araclari/excel-dosya-birlestirici"
+      howToSteps={[
+        "Aynı kolon yapısına sahip Excel dosyalarınızı (.xlsx, .xls) seçin (her dosyanın ilk satırı başlık olmalı).",
+        "Birleştir ve İndir butonuna tıklayın.",
+        "Tüm dosyaların verileri alt alta eklenerek tek bir sayfada birleştirilir; ilk dosyanın başlık satırı kullanılır, diğer dosyaların başlıkları atlanır. 'Birlestirilmis.xlsx' indirilir.",
+        "Veriler yalnızca tarayıcınızda işlenir, sunucuya gönderilmez.",
+      ]}
+      faq={[
+        {
+          question: "Dosyalar aynı olmak zorunda mı?",
+          answer:
+            "Evet. İlk satır başlıkları ve kolon yapısı benzer/aynı olmalıdır; aksi durumda birleştirme yanlış hizalanabilir.",
+        },
+        {
+          question: "Dosya adları ne oluyor?",
+          answer: "İndirme adı sabit: Birlestirilmis.xlsx.",
+        },
+        {
+          question: "Veriler sunucuya gider mi?",
+          answer: "Hayır. İşlem tarayıcı içinde yapılır.",
+        },
+      ]}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <span className="text-gray-600">
+          Power Query alternatifleri için{" "}
+          <Link
+            href="/blog/excel-dosya-birlestirme"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            dosya birleştirme rehberini
+          </Link>{" "}
+          inceleyebilirsiniz.
+        </span>
+      }
+      keywords={["excel dosyaları birleştir", "alt alta ekle", "tek excel yap", "aynı kolon yapısı excel"]}
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-2 pt-1 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <div>
+            <label htmlFor="excel-merge-files" className="block text-sm font-semibold text-gray-900">
+              Excel dosyaları (.xlsx, .xls)
+            </label>
+            <p className="mt-0.5 text-xs text-gray-500">Birden fazla dosya seçebilir veya sürükleyip bırakabilirsiniz.</p>
+
+            <div
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  inputRef.current?.click();
+                }
+              }}
+              onClick={() => inputRef.current?.click()}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              onDragEnter={onDragEnter}
+              onDragLeave={onDragLeave}
+              className={`mt-3 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-4 py-8 text-center transition-colors sm:py-10 ${
+                dragActive ? "bg-emerald-50/60" : "bg-gray-50/50 hover:bg-gray-50"
+              }`}
+              style={{
+                borderColor: dragActive ? ACCENT : "#e5e7eb",
+              }}
+            >
+              <input
+                id="excel-merge-files"
+                ref={inputRef}
+                type="file"
+                accept=".xlsx,.xls"
+                multiple
+                onChange={onFileChange}
+                className="sr-only"
+                aria-label="Excel dosyaları seç"
+              />
+              <svg
+                className="mb-3 h-10 w-10 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                />
+              </svg>
+              <p className="text-sm font-medium text-gray-800">Dosyaları buraya sürükleyin</p>
+              <p className="mt-1 text-xs text-gray-500">veya tıklayarak seçin</p>
+            </div>
+
+            {files.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="text-sm text-gray-600">{files.length} dosya seçildi</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearFiles();
+                  }}
+                  className="text-xs font-medium text-gray-500 underline underline-offset-2 transition hover:text-gray-800"
+                >
+                  Temizle
+                </button>
+              </div>
+            )}
+          </div>
+
+          <PrimaryButton
+            className="mt-4 sm:mt-5"
             onClick={handleMerge}
             disabled={files.length === 0 || status === "loading"}
-            className="px-4 py-2 text-sm font-semibold rounded text-white hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: THEME.ribbon }}
           >
             {status === "loading" ? "Birleştiriliyor…" : "Birleştir ve İndir"}
-          </button>
+          </PrimaryButton>
+
+          {errorMsg && <p className="mt-3 text-sm text-red-600">{errorMsg}</p>}
+          {status === "done" && <p className="mt-3 text-sm text-emerald-700">Birleştirilmiş dosya indirildi.</p>}
         </div>
-
-        {errorMsg && (
-          <p className="text-sm text-red-600">{errorMsg}</p>
-        )}
-        {status === "done" && (
-          <p className="text-sm text-green-700">Birleştirilmiş dosya indirildi.</p>
-        )}
       </div>
-
-      <BenzerExcelAraclari currentHref="/excel-araclari/excel-dosya-birlestirici" />
-    </div>
+    </ToolLayout>
   );
 }

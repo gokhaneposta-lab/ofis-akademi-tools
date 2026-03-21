@@ -2,14 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
 import { parseTwoColumns, linearRegression } from "@/lib/istatistik";
-import ToolJsonLd from "@/components/ToolJsonLd";
+
+const ACCENT = "#217346";
 
 export default function BasitRegresyonPage() {
   const [input, setInput] = useState("");
@@ -71,149 +69,125 @@ export default function BasitRegresyonPage() {
     }
   }
 
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Excel’deki iki sütun değerinden (X ve Y) doğrusal regresyonu hesaplar. Böylece{" "}
+        <span className="font-semibold">Y = a + b·X</span> şeklinde en iyi uyum doğrusunu (a, b) ve{" "}
+        <span className="font-semibold">R²</span> değerini elde edersin.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="text-gray-700">
+            Her satırda iki sayı: <span className="font-mono">1 10</span>, <span className="font-mono">2 20</span> …
+          </p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">
+            Kesişim <span className="font-mono">a</span>, eğim <span className="font-mono">b</span> ve{" "}
+            <span className="font-mono">R²</span>.
+          </p>
+        </div>
+      </div>
+      <p className="mt-3 text-xs text-gray-500">
+        R² 1’e yaklaştıkça, X arttıkça Y’nin doğrusal şekilde değiştiği daha güçlü görünür.
+      </p>
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Regresyon Hesaplama (Doğrusal)"
-        description="Basit doğrusal regresyon: Y = a + b·X, eğim, kesişim ve R². Excel'den 2 sütun yapıştırın."
-      />
-      <ToolJsonLd
-        name="Regresyon Hesaplama (Doğrusal)"
-        description="Basit doğrusal regresyon: Y = a + b·X, eğim, kesişim ve R². Excel'den 2 sütun yapıştırın."
-        path="/excel-araclari/basit-regresyon"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de basit doğrusal regresyon Y = a + b·X için eğim (b) ve kesişim (a) fonksiyonlarla hesaplanır.
-              </p>
-              <ExcelFormulBlok
-                baslik="Eğim (b) ve kesişim (a) için:"
-                formül="=EĞİM(Y_aralığı;X_aralığı)"
-                aciklama="EĞİM (SLOPE) doğrunun eğimini, KESİŞİM (INTERCEPT) y eksenini kestiği noktayı verir. Örnek: Y değerleri B1:B20, X değerleri A1:A20 ise =EĞİM(B1:B20;A1:A20) ve =KESİŞİM(B1:B20;A1:A20). R² için =PEARSON(A:A;B:A)^2 veya DOĞRUSAL (LINEST) ile daha detaylı çıktı alabilirsiniz."
-              />
-            </>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Excel’deki iki sütun değerinden (X ve Y) doğrusal regresyonu hesaplar. Böylece <span className="font-semibold">Y = a + b·X</span> şeklinde en iyi uyum doğrusunu (a, b) ve <span className="font-semibold">R²</span> değerini elde edersin.
-          </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi:</span> her satırda iki sayı (X ve Y) gir (örn. <span className="font-mono">1 10</span>, <span className="font-mono">2 20</span>).
-            </p>
-            <p>
-              <span className="font-semibold">Çıktı:</span> kesişim <span className="font-mono">a</span>, eğim <span className="font-mono">b</span> ve <span className="font-mono">R²</span>.
-            </p>
-            <p className="text-xs text-gray-500">
-              R² 1’e yaklaştıkça, X arttıkça Y’nin doğrusal şekilde değiştiği daha güçlü görünür.
-            </p>
+    <ToolLayout
+      title="Regresyon Hesaplama (Doğrusal)"
+      description="Y = a + b·X, eğim, kesişim ve R² hesaplama."
+      path="/excel-araclari/basit-regresyon"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <Link
+          href="/blog/excel-basit-regresyon-dogrusal"
+          className="font-medium underline underline-offset-2"
+          style={{ color: ACCENT }}
+        >
+          Doğrusal regresyon rehberi
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label htmlFor="basit-regresyon-input" className="block text-sm font-semibold text-gray-900">
+            X ve Y değerleri
+          </label>
+          <p className="mt-0.5 text-xs text-gray-400">Her satırda iki sayı (Tab veya ; ile)</p>
+          <div className="mt-1.5">
+            <InputTextarea
+              id="basit-regresyon-input"
+              value={input}
+              onChange={setInput}
+              placeholder={"1\t10\n2\t20\n3\t22\n4\t28\n5\t35"}
+              rows={8}
+              minHeight="12rem"
+              className="resize-y font-mono"
+            />
           </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Minimum kaç satır gerekir?</span>
-              <br />
-              En az <span className="font-semibold">2</span> veri noktası gerekir.
-            </p>
-            <p>
-              <span className="font-semibold">R² ne işe yarar?</span>
-              <br />
-              Verinin doğrusal modele ne kadar iyi uyduğunu gösterir (0–1 arası).
-            </p>
-            <p>
-              <span className="font-semibold">Excel’de nasıl karşılığı var?</span>
-              <br />
-              LINEST / EĞİM / KESİŞİM ve ilgili istatistikler kullanılır.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha fazla örnek için{" "}
-            <Link
-              href="/blog/excel-basit-regresyon-dogrusal"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              doğrusal regresyon rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">X ve Y değerleri (her satırda iki sayı — Tab veya ; ile)</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={"1\t10\n2\t20\n3\t22\n4\t28\n5\t35"}
-            rows={8}
-            className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-            style={{ borderColor: THEME.gridLine }}
-          />
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            onClick={handleHesapla}
-            className="inline-flex min-w-[140px] justify-center rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
-          >
+          <PrimaryButton className="mt-3" onClick={handleHesapla}>
             Hesapla
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!result} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
+
         {result && (
-          <div className="space-y-3">
-            <div className="rounded-lg border p-4 bg-white font-mono text-sm" style={{ borderColor: THEME.ribbon }}>
-              <strong>Y = {result.a.toFixed(4)} + {result.b.toFixed(4)} · X</strong>
+          <>
+            <div className="mt-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/60 px-4 py-4">
+              <p className="text-lg font-bold font-mono">
+                Y = {result.a.toFixed(4)} + {result.b.toFixed(4)} · X
+              </p>
             </div>
-            <div className="overflow-hidden rounded-lg border bg-white" style={{ borderColor: THEME.gridLine }}>
+
+            <div className="mt-3 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
               <table className="w-full text-sm">
                 <tbody>
-                  <tr className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">Kesişim (a)</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{result.a.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-4 py-3 font-medium text-gray-700">Kesişim (a)</td>
+                    <td className="px-4 py-3 text-right tabular-nums">
+                      {result.a.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}
+                    </td>
                   </tr>
-                  <tr className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">Eğim (b)</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{result.b.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-4 py-3 font-medium text-gray-700">Eğim (b)</td>
+                    <td className="px-4 py-3 text-right tabular-nums">
+                      {result.b.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}
+                    </td>
                   </tr>
-                  <tr className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">R² (belirleme katsayısı)</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{result.r2.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
+                  <tr className="border-b border-gray-200">
+                    <td className="px-4 py-3 font-medium text-gray-700">R² (belirleme katsayısı)</td>
+                    <td className="px-4 py-3 text-right tabular-nums">
+                      {result.r2.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}
+                    </td>
                   </tr>
-                  <tr style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">Çift sayısı (n)</td>
-                    <td className="px-3 py-2 text-right">{result.n}</td>
+                  <tr>
+                    <td className="px-4 py-3 font-medium text-gray-700">Çift sayısı (n)</td>
+                    <td className="px-4 py-3 text-right">{result.n}</td>
                   </tr>
                 </tbody>
               </table>
+              <div className="border-t border-gray-200 px-4 py-3">
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  disabled={!result}
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                  style={copied ? { borderColor: ACCENT, color: ACCENT } : undefined}
+                >
+                  {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
+                </button>
+              </div>
             </div>
-            <p className="text-xs text-gray-500">R² 0–1 arası; 1'e yakın = doğrusal ilişki güçlü.</p>
-          </div>
+            <p className="mt-2 text-xs text-gray-500">R² 0–1 arası; 1&apos;e yakın = doğrusal ilişki güçlü.</p>
+          </>
         )}
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/basit-regresyon" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

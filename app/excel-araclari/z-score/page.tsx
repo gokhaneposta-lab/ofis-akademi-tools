@@ -2,13 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
 import { parseNumbers, mean, std } from "@/lib/istatistik";
+
+const ACCENT = "#217346";
 
 export default function ZScorePage() {
   const [input, setInput] = useState("");
@@ -48,141 +47,112 @@ export default function ZScorePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Z Skor (Z-Score) Hesaplama"
-        description="Z skor hesaplama: her değerin ortalamadan kaç standart sapma uzakta olduğu. Aykırı değer tespiti için."
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Sayıları Excel'den veya listeden kopyalayıp aşağıdaki kutuya yapıştırın.",
-            "Hesapla butonuna tıklayın.",
-            "Her değerin z-skoru tabloda görünür; |z| > 2 genelde aykırı kabul edilir. Tabloyu Kopyala ile Excel'e yapıştırabilirsiniz.",
-          ]}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de z skor (z-score), bir değerin ortalamadan kaç standart sapma uzakta olduğunu gösterir. Aykırı değer tespiti ve standartlaştırma için kullanılır.
-              </p>
-              <ExcelFormulBlok
-                baslik="Tek hücrenin z skoru için:"
-                formül="=(A1-ORTALAMA(A:A))/STDSAPMA.S(A:A)"
-                aciklama="Ortalama (ORTALAMA / AVERAGE) veri setinin ortalamasıdır; STDSAPMA.S (STDEV.S) örnek standart sapmasıdır. Formül: (değer - ortalama) / standart sapma. Sonuç genelde -3 ile +3 arasındadır; 2'den büyük veya -2'den küçük değerler aykırı sayılabilir."
-              />
-            </>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Verideki her değerin ortalamaya göre kaç standart sapma uzaklıkta olduğunu hesaplar. Sonuç: <span className="font-semibold">z-skor</span>. Aykırı değer tespitinde kullanılır.
+    <ToolLayout
+      title="Z Skor (Z-Score) Hesaplama"
+      description="Her değerin ortalamadan kaç standart sapma uzakta olduğunu hesaplayın."
+      path="/excel-araclari/z-score"
+      howToSteps={["Sayıları kutuya yapıştırın.", "Hesapla butonuna tıklayın.", "Her değerin z-skoru tabloda görünür."]}
+      faq={[
+        { question: "z-skor negatif olur mu?", answer: "Evet, ortalamanın altında olduğuna işaret eder." },
+        { question: "Eşik değer var mı?", answer: "|Z| > 2 sık kullanılan eşiktir." },
+        { question: "Excel'e nasıl aktarırım?", answer: "Tabloyu Kopyala ile yapıştırın." },
+      ]}
+      aboutContent={
+        <>
+          <p className="mb-4 text-sm text-gray-700">
+            Verideki her değerin ortalamaya göre kaç standart sapma uzaklıkta olduğunu hesaplar; sonuç{" "}
+            <span className="font-semibold">z-skor</span> olarak gösterilir. Aykırı değer tespitinde kullanılır.
           </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi:</span> <span className="font-mono">10, 12, 14, 15, 100</span>
-            </p>
-            <p>
-              <span className="font-semibold">Çıktı:</span> her değer için z-skor; genelde ortalamadan çok uzak olan değerlerin |z| değeri daha büyüktür.
-            </p>
-            <p className="text-xs text-gray-500">|Z| &gt; 2 genelde “aykırı” kabul edilir.</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+              <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+              <p className="font-mono text-gray-700">10, 12, 14, 15, 100</p>
+            </div>
+            <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+              <p className="mb-1 font-semibold text-gray-800">Çıktı</p>
+              <p className="text-gray-700">Her değer için z-skor; |z| &gt; 2 olan satırlar vurgulanır.</p>
+            </div>
           </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">z-skor negatif mi olur?</span>
-              <br />
-              Evet. Negatif değer, ortalamanın altında olduğuna işaret eder.
-            </p>
-            <p>
-              <span className="font-semibold">Eşik değer var mı?</span>
-              <br />
-              Sık kullanılan eşik: <span className="font-semibold">|Z| &gt; 2</span>.
-            </p>
-            <p>
-              <span className="font-semibold">Excel’e nasıl aktarırım?</span>
-              <br />
-              “Tabloyu Kopyala” ile panoya alıp Excel’e yapıştır.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha fazla örnek için{" "}
-            <Link
-              href="/blog/excel-z-score-z-skor-hesaplama"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              z-skor rehberine
-            </Link>{" "}
-            bakabilirsin.
-          </p>
-        </section>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel sütunundan yapıştırın)</label>
-          <textarea
+        </>
+      }
+      relatedLinks={
+        <Link href="/blog/excel-z-score-z-skor-hesaplama" className="underline underline-offset-2" style={{ color: ACCENT }}>
+          Excel&apos;de z-skor rehberi
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-8 pt-2 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label className="mb-0.5 block text-sm font-medium text-gray-800">Sayıları yapıştırın</label>
+          <p className="mt-0.5 text-xs text-gray-400">Z = (değer − ortalama) / standart sapma</p>
+          <InputTextarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
             placeholder="10, 12, 14, 15, 100"
             rows={6}
-            className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-            style={{ borderColor: THEME.gridLine }}
+            minHeight="10rem"
+            className="!resize-y border-gray-200 bg-white font-mono"
           />
-          <p className="text-xs text-gray-500 mt-1">Z = (değer − ortalama) / standart sapma. |Z| &gt; 2 genelde aykırı kabul edilir.</p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            onClick={handleHesapla}
-            className="inline-flex min-w-[140px] justify-center rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
-          >
+          <PrimaryButton className="mt-3" onClick={handleHesapla}>
             Hesapla
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!result} copied={copied} label="Tabloyu Kopyala" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
+
         {result && (
           <>
-            <div className="flex flex-wrap gap-4 text-sm">
-              <span className="font-medium">Ortalama: <span className="tabular-nums">{result.ort.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</span></span>
-              <span className="font-medium">Standart sapma: <span className="tabular-nums">{result.std.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</span></span>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-center shadow-md">
+                <div className="text-2xl font-bold tabular-nums sm:text-3xl" style={{ color: ACCENT }}>
+                  {result.ort.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}
+                </div>
+                <div className="mt-1 text-xs text-gray-500">Ortalama</div>
+              </div>
+              <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-center shadow-md">
+                <div className="text-2xl font-bold tabular-nums sm:text-3xl" style={{ color: ACCENT }}>
+                  {result.std.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}
+                </div>
+                <div className="mt-1 text-xs text-gray-500">Std Sapma</div>
+              </div>
             </div>
-            <div className="overflow-x-auto max-h-64 overflow-y-auto rounded-lg border bg-white" style={{ borderColor: THEME.gridLine }}>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-                    <th className="border-b border-r px-3 py-2 text-left font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Değer</th>
-                    <th className="border-b px-3 py-2 text-right font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Z-Skor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.values.map((v, i) => (
-                    <tr key={i} className="border-b last:border-b-0" style={{ borderColor: THEME.gridLine }}>
-                      <td className="border-r px-3 py-1.5 tabular-nums" style={{ borderColor: THEME.gridLine }}>{v}</td>
-                      <td className="px-3 py-1.5 text-right tabular-nums">{result.zScores[i].toFixed(4)}</td>
+
+            <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
+              <div className="max-h-64 overflow-y-auto">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 z-10 bg-gray-50">
+                    <tr>
+                      <th className="border-b border-gray-200 px-4 py-2.5 text-left font-semibold text-gray-700">Değer</th>
+                      <th className="border-b border-gray-200 px-4 py-2.5 text-right font-semibold text-gray-700">Z-Skor</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {result.values.map((v, i) => {
+                      const z = result.zScores[i];
+                      const outlier = Math.abs(z) > 2;
+                      return (
+                        <tr key={i} className={`border-b border-gray-100 last:border-b-0 ${outlier ? "bg-red-50" : ""}`}>
+                          <td className="px-4 py-2 tabular-nums text-gray-900">{v}</td>
+                          <td className="px-4 py-2 text-right tabular-nums text-gray-900">{z.toFixed(4)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex justify-end border-t border-gray-200 px-4 py-3">
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  disabled={!result}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition enabled:hover:border-gray-300 enabled:hover:bg-gray-50 enabled:active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+                  style={result ? { color: ACCENT } : undefined}
+                >
+                  {copied ? "Kopyalandı" : "Tabloyu Kopyala"}
+                </button>
+              </div>
             </div>
           </>
         )}
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/z-score" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

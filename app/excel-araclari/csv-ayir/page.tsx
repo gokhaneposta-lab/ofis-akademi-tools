@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "../../../components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import JsonLdTool from "@/components/JsonLd";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 type SeparatorMode = "auto" | "comma" | "semicolon" | "tab";
 
@@ -106,132 +105,143 @@ export default function CsvAyirici() {
     return "Otomatik";
   }
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <JsonLdTool
-        name="CSV Ayırıcı — Ücretsiz Excel Aracı"
-        description="CSV metnini satır ve sütunlara ayırın. Virgül, noktalı virgül veya tab ayırıcıyı otomatik algılar. Ücretsiz, tarayıcıda çalışır."
-        path="/excel-araclari/csv-ayir"
-        keywords={["csv ayırma", "CSV sütunlara ayır", "Excel CSV", "veri ayırma", "Excel araçları"]}
-      />
-      <PageRibbon
-        title="CSV Ayırıcı"
-        description="CSV metnini satır ve sütunlara ayırın. Ayırıcıyı otomatik algılar veya elle seçebilirsiniz."
-      />
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Tek sütunda görünen CSV metnini doğru ayırıcıyla sütunlara böler. Satış,
+        stok, müşteri ve dış sistemden gelen verileri Excel&apos;e hazırlarken
+        hız kazandırır.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="text-gray-700">Ali;25;İstanbul</p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">Sütun 1: Ali · Sütun 2: 25 · Sütun 3: İstanbul</p>
+        </div>
+      </div>
+    </>
+  );
 
-      <div
-        className="mx-auto mt-2 mb-6 max-w-4xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "CSV metnini veya Excel'den kopyaladığınız hücreleri aşağıdaki kutuya yapıştırın.",
-            "Ayırıcı otomatik algılanır; isterseniz virgül, noktalı virgül veya sekme seçin.",
-            "Tablo göründükten sonra Sonucu Kopyala ile alıp Excel'e yapıştırın.",
-          ]}
-          excelAlternatif={
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                Excel&apos;de CSV verisini sütunlara ayırmak için <strong>Veri</strong> sekmesinden <strong>Metni Sütunlara Dönüştür</strong> sihirbazını kullanın. CSV dosyasını Excel&apos;de açtığınızda tüm veri tek sütunda görünür; bu sihirbaz virgül veya noktalı virgül gibi ayırıcıya göre veriyi sütunlara böler.
-              </p>
-              <p>
-                Adımlar: Veriyi seçin (veya tek sütunu seçin) → Veri → Metni Sütunlara Dönüştür → Sınırlandırılmış → Ayırıcıyı virgül veya noktalı virgül olarak seçin → Son. Türkçe Excel&apos;de ondalık ayırıcı virgül ise CSV ayırıcısı genelde noktalı virgül olur.
-              </p>
-            </div>
-          }
-        />
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Tek sütunda görünen CSV metnini doğru ayırıcıyla sütunlara böler. Satış, stok, müşteri ve dış sistemden gelen verileri Excel&apos;e hazırlarken hız kazandırır.
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
-              <p className="text-gray-700">Ali;25;İstanbul</p>
-            </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
-              <p className="text-gray-700">Sütun 1: Ali · Sütun 2: 25 · Sütun 3: İstanbul</p>
-            </div>
-          </div>
-        </section>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium uppercase tracking-wide text-gray-600">
-              Ayırıcı
-            </span>
-            <div className="inline-flex rounded-lg border p-1 gap-1 w-full sm:w-auto" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-              {(["auto", "comma", "semicolon", "tab"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setSeparatorMode(mode)}
-                  className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${
-                    separatorMode === mode
-                      ? "text-white"
-                      : "text-gray-700 hover:bg-gray-200"
-                  }`}
-                  style={separatorMode === mode ? { background: THEME.ribbon } : undefined}
-                >
-                  {mode === "auto" ? "Otomatik Algıla" : mode === "comma" ? "Virgül ," : mode === "semicolon" ? "Noktalı Virgül ;" : "Tab"}
-                </button>
-              ))}
-            </div>
+  return (
+    <ToolLayout
+      title="CSV Ayırıcı"
+      description="CSV metnini satır ve sütunlara ayırın."
+      path="/excel-araclari/csv-ayir"
+      keywords={["csv ayırma", "CSV sütunlara ayır", "Excel CSV"]}
+      howToSteps={[
+        "CSV metnini kutuya yapıştırın.",
+        "Ayırıcı otomatik algılanır veya elle seçin.",
+        "Tablo göründükten sonra kopyalayın.",
+      ]}
+      faq={[
+        {
+          question: "Virgül mü noktalı virgül mü?",
+          answer: "Otomatik Algıla modunda araç doğru ayırıcıyı bulur.",
+        },
+        {
+          question: "Büyük listeleri işler mi?",
+          answer: "Evet, çok satırlı verileri bölebilirsiniz.",
+        },
+        {
+          question: "Excel'e uygun çıktı?",
+          answer: "Kopyala butonu sekmeli format üretir.",
+        },
+      ]}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <>
+          <Link
+            href="/egitimler/temel"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            Temel Excel eğitimi
+          </Link>
+          <span className="text-gray-400" aria-hidden>
+            ·
+          </span>
+          <Link
+            href="/blog/csv-veriyi-sutunlara-ayirma"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            CSV veriyi sütunlara ayırma
+          </Link>
+        </>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <div
+            className="relative mb-4 flex rounded-2xl bg-gray-200/70 p-1"
+            translate="no"
+          >
+            {(
+              [
+                { mode: "auto" as const, label: "Otomatik" },
+                { mode: "comma" as const, label: "Virgül" },
+                { mode: "semicolon" as const, label: "Noktalı ;" },
+                { mode: "tab" as const, label: "Tab" },
+              ] as const
+            ).map(({ mode, label }) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setSeparatorMode(mode)}
+                className={`relative flex-1 rounded-xl px-2 py-2.5 text-center text-xs font-semibold transition sm:text-sm ${
+                  separatorMode === mode
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
           {separatorMode === "auto" && detectedSeparator && (
-            <div className="text-xs text-gray-700 rounded-lg px-3 py-2 border" style={{ background: "#f0f7f4", borderColor: THEME.ribbon }}>
-              Algılanan ayırıcı: <span className="font-semibold">{getSeparatorLabel(detectedSeparator)}</span>
+            <div className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
+              Algılanan:{" "}
+              <strong>{getSeparatorLabel(detectedSeparator)}</strong>
             </div>
           )}
-        </div>
 
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={8}
-          placeholder={`Örn:\nAli;25;İstanbul\nAyşe;30;Ankara\n\nveya\n\nAli,25,İstanbul\nAyşe,30,Ankara`}
-          className="w-full rounded-lg border p-4 text-sm resize-y transition placeholder:text-gray-400 bg-white"
-          style={{ borderColor: THEME.gridLine }}
-        />
-
-        <div className="flex flex-col gap-3 sm:flex-row items-stretch">
-          <button
-            onClick={handleSplit}
-            className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
+          <label
+            htmlFor="csv-ayir-input"
+            className="mb-2 block text-sm font-semibold text-gray-900"
           >
-            Ayır
-          </button>
-          <CopyButton
-            onClick={handleCopyResults}
-            disabled={rows.length === 0}
-            copied={copyStatus === "success"}
-            label="Sonuçları Kopyala (Excel)"
-            copiedLabel="Kopyalandı"
+            CSV verisini yapıştırın
+          </label>
+          <InputTextarea
+            id="csv-ayir-input"
+            value={input}
+            onChange={setInput}
+            rows={8}
+            minHeight="12rem"
+            className="resize-y font-mono text-[14px]"
+            placeholder={`Örn:\nAli;25;İstanbul\nAyşe;30;Ankara\n\nveya\n\nAli,25,İstanbul\nAyşe,30,Ankara`}
           />
+          <PrimaryButton className="mt-3" onClick={handleSplit}>
+            Ayır
+          </PrimaryButton>
         </div>
 
         {rows.length > 0 && (
-          <div className="mt-3 space-y-2">
-            {copyStatus === "success" && (
-              <div className="text-xs text-gray-700 rounded-lg px-3 py-2 inline-block border" style={{ background: "#f0f7f4", borderColor: THEME.ribbon }}>
-                Sonuçlar Excel için panoya kopyalandı. Ctrl+V ile yapıştırabilirsiniz.
-              </div>
-            )}
-            {copyStatus === "error" && (
-              <div className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2 inline-block">
-                Panoya kopyalama sırasında bir hata oluştu. Tarayıcı izinlerini kontrol edin.
-              </div>
-            )}
-            <div className="overflow-x-auto rounded-lg border shadow-inner" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <table className="w-full text-left min-w-[270px] border-collapse">
+          <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[280px] border-collapse text-left text-sm">
                 <thead>
-                  <tr className="text-xs uppercase tracking-wider font-semibold border-b text-gray-700" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
+                  <tr className="border-b border-gray-100 bg-gray-50">
                     {Array.from({ length: maxCols }).map((_, i) => (
-                      <th key={i} className="py-3 px-4">Sütun {i + 1}</th>
+                      <th
+                        key={i}
+                        className="whitespace-nowrap px-3 py-3 text-xs font-semibold uppercase tracking-wide text-gray-600 sm:px-4"
+                      >
+                        Sütun {i + 1}
+                      </th>
                     ))}
                   </tr>
                 </thead>
@@ -239,11 +249,15 @@ export default function CsvAyirici() {
                   {rows.map((row, rowIndex) => (
                     <tr
                       key={rowIndex}
-                      className="border-b text-gray-900"
-                      style={{ borderColor: THEME.gridLine, background: rowIndex % 2 === 0 ? THEME.sheetBg : THEME.headerBg }}
+                      className={`border-b border-gray-100 text-gray-900 ${
+                        rowIndex % 2 === 1 ? "bg-gray-50/50" : "bg-white"
+                      }`}
                     >
                       {Array.from({ length: maxCols }).map((_, colIndex) => (
-                        <td key={colIndex} className="py-3 px-4 text-sm whitespace-pre border-r last:border-r-0" style={{ borderColor: THEME.gridLine }}>
+                        <td
+                          key={colIndex}
+                          className="border-r border-gray-100 px-3 py-2.5 text-sm whitespace-pre last:border-r-0 sm:px-4"
+                        >
                           {row[colIndex] ?? ""}
                         </td>
                       ))}
@@ -252,34 +266,34 @@ export default function CsvAyirici() {
                 </tbody>
               </table>
             </div>
+            <div className="flex flex-col gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-h-[1.25rem] flex-1 text-xs">
+                {copyStatus === "success" && (
+                  <span className="text-emerald-800">
+                    Sonuçlar Excel için panoya kopyalandı. Ctrl+V ile
+                    yapıştırabilirsiniz.
+                  </span>
+                )}
+                {copyStatus === "error" && (
+                  <span className="text-red-700">
+                    Panoya kopyalama sırasında bir hata oluştu. Tarayıcı
+                    izinlerini kontrol edin.
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyResults}
+                disabled={rows.length === 0}
+                className="inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ background: ACCENT }}
+              >
+                {copyStatus === "success" ? "Kopyalandı" : "Kopyala"}
+              </button>
+            </div>
           </div>
         )}
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Virgül mü noktalı virgül mü kullanmalıyım?</span><br />Araç “Otomatik Algıla” modunda çoğu dosyada doğru ayırıcıyı kendi bulur.</p>
-            <p><span className="font-semibold text-gray-900">Büyük listeleri işler mi?</span><br />Evet, çok satırlı verileri satır-satır tabloya bölebilirsiniz.</p>
-            <p><span className="font-semibold text-gray-900">Excel&apos;e uygun çıktı nasıl alınır?</span><br />“Sonuçları Kopyala (Excel)” butonu sekme ayracılı metin üretir, doğrudan sütunlara yapışır.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için:{" "}
-            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
-              Temel Excel eğitimi
-            </Link>
-            {" · "}
-            <Link href="/blog/csv-veriyi-sutunlara-ayirma" className="underline" style={{ color: THEME.ribbon }}>
-              rehber yazısı
-            </Link>
-          </div>
-        </section>
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/csv-ayir" />
-        </div>
-        <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel &amp; Veri Analizi</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }
-

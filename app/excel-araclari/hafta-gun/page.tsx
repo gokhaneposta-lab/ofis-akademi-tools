@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 const GUN_ADLARI = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
 
@@ -99,147 +98,106 @@ export default function HaftaGunPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Hafta Numarası & Gün Adı"
-        description="Tarih listesinden ISO hafta numarası ve gün adını (Pazartesi, Salı…) hesaplayın. Excel'den yapıştırın."
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Tarih sütununu Excel'den kopyalayıp aşağıdaki kutuya yapıştırın (her satıra bir tarih; DD.MM.YYYY veya YYYY-MM-DD).",
-            "Hesapla butonuna tıklayın.",
-            "Tabloda hafta numarası (ISO) ve gün adı görünür; Sonucu Kopyala ile Excel'e yapıştırın.",
-          ]}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de tarihten ISO hafta numarası ve gün adı almak için aşağıdaki formülleri kullanabilirsiniz. A1 tarih hücresidir.
-              </p>
-              <ExcelFormulBlok
-                baslik="Hafta numarası (ISO 8601) için:"
-                formül="=ISOHAFTASAY(A1)"
-                aciklama="ISOHAFTASAY (İngilizce: ISOWEEKNUM) fonksiyonu tarihin yıl içindeki ISO hafta numarasını verir; hafta Pazartesi başlar. Raporlama ve planlama için sık kullanılır."
-              />
-              <ExcelFormulBlok
-                baslik="Gün adı (Pazartesi = 1) için:"
-                formül="=HAFTANINGÜNÜ(A1;2)"
-                aciklama="HAFTANINGÜNÜ (WEEKDAY) ikinci parametre 2 ise Pazartesi 1, Pazar 7 olur. Sonucu sayı yerine metin göstermek için özel sayı biçimi 'gggg' kullanın veya CHOOSE ile =SEÇ(HAFTANINGÜNÜ(A1;2);'Pazartesi';'Salı';...) yazabilirsiniz."
-              />
-            </>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
+    <ToolLayout
+      title="Hafta Numarası & Gün Adı"
+      description="Tarih listesinden ISO hafta numarası ve gün adını hesaplayın."
+      path="/excel-araclari/hafta-gun"
+      howToSteps={[
+        "Tarih sütununu kutuya yapıştırın (DD.MM.YYYY veya YYYY-MM-DD).",
+        "Hesapla butonuna tıklayın.",
+        "Tabloda hafta numarası ve gün adı görünür.",
+      ]}
+      faq={[
+        { question: "Hafta numarası ISO mu?", answer: "Evet, ISO 8601 Pazartesi hafta başı." },
+        { question: "Hangi formatlar çalışır?", answer: "DD.MM.YYYY ve YYYY-MM-DD." },
+        { question: "Excel'e nasıl aktarırım?", answer: "Tabloyu Kopyala ile yapıştırın." },
+      ]}
+      aboutContent={
+        <>
+          <p className="mb-4 text-sm text-gray-700">
             Tarihlerden ISO hafta numarasını ve gün adını toplu olarak hesaplar. Planlama, raporlama ve haftalık analizlerde işinizi hızlandırır.
           </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Girdi</p>
-              <p className="text-gray-700"><span className="font-mono">2025-03-01</span></p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+              <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+              <p className="font-mono text-gray-700">2025-03-01</p>
             </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Çıktı</p>
-              <p className="text-gray-700">Hafta: <span className="font-mono">9</span> · Gün: <span className="font-mono">Cumartesi</span></p>
+            <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+              <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+              <p className="text-gray-700">
+                Hafta: <span className="font-mono">9</span> · Gün: <span className="font-mono">Cumartesi</span>
+              </p>
             </div>
           </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold text-gray-900">Hafta numarası ISO mu?</span>
-              <br />
-              Evet. ISO 8601 (Pazartesi hafta başı) mantığıyla hesaplar.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Hangi formatlar çalışır?</span>
-              <br />
-              <span className="font-mono">DD.MM.YYYY</span> ve <span className="font-mono">YYYY-MM-DD</span>.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Excel’e nasıl aktarırım?</span>
-              <br />
-              “Tabloyu Kopyala” ile Excel’e yapıştır.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Detaylı açıklama için{" "}
-            <Link href="/blog/excelde-hafta-numarasi-ve-gun-adi" className="underline" style={{ color: THEME.ribbon }}>
-              hafta numarası rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Tarihler (her satıra bir tarih — DD.MM.YYYY veya YYYY-MM-DD)</label>
-          <textarea
+        </>
+      }
+      relatedLinks={
+        <Link href="/blog/excelde-hafta-numarasi-ve-gun-adi" className="underline underline-offset-2" style={{ color: ACCENT }}>
+          Excel&apos;de hafta numarası ve gün adı
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label className="mb-0 block text-sm font-medium text-gray-800">Tarihleri yapıştırın</label>
+          <p className="mt-0.5 text-xs text-gray-400">ISO 8601 · Pazartesi hafta başı</p>
+          <InputTextarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="01.01.2024\n15.03.2024\n2024-12-25"
+            onChange={setInput}
+            placeholder={"01.01.2024\n15.03.2024\n2024-12-25"}
             rows={8}
-            className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-            style={{ borderColor: THEME.gridLine }}
+            minHeight="12rem"
+            className="!resize-y border-gray-200 bg-white font-mono text-sm"
           />
-          <p className="text-xs text-gray-500 mt-1">Hafta numarası ISO 8601 (Pazartesi hafta başı).</p>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            onClick={handleHesapla}
-            className="inline-flex min-w-[140px] justify-center rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
-          >
+          <PrimaryButton className="mt-3" onClick={handleHesapla}>
             Hesapla
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!rows.length} copied={copied} label="Tabloyu Kopyala" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
 
         {rows.length > 0 && (
-          <div className="overflow-x-auto rounded-lg border bg-white" style={{ borderColor: THEME.gridLine }}>
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-                  <th className="border-b border-r px-3 py-2 text-left font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Tarih</th>
-                  <th className="border-b border-r px-3 py-2 text-center font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Hafta No</th>
-                  <th className="border-b px-3 py-2 text-left font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Gün</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i} className="border-b last:border-b-0" style={{ borderColor: THEME.gridLine }}>
-                    <td className="border-r px-3 py-2 font-mono" style={{ borderColor: THEME.gridLine }}>{r.raw}</td>
-                    {r.error ? (
-                      <td colSpan={2} className="px-3 py-2 text-amber-700 text-xs">{r.error}</td>
-                    ) : (
-                      <>
-                        <td className="border-r px-3 py-2 text-center tabular-nums" style={{ borderColor: THEME.gridLine }}>{r.weekNo}</td>
-                        <td className="px-3 py-2">{r.dayName}</td>
-                      </>
-                    )}
+          <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[280px] text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="border-b border-gray-200 px-3 py-2.5 text-left font-semibold text-gray-800">Tarih</th>
+                    <th className="border-b border-gray-200 px-3 py-2.5 text-center font-semibold text-gray-800">Hafta No</th>
+                    <th className="border-b border-gray-200 px-3 py-2.5 text-left font-semibold text-gray-800">Gün</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map((r, i) => (
+                    <tr key={i} className="border-b border-gray-100 last:border-b-0">
+                      <td className="px-3 py-2.5 font-mono text-gray-900">{r.raw}</td>
+                      {r.error ? (
+                        <td colSpan={2} className="px-3 py-2.5 text-xs text-amber-700">
+                          {r.error}
+                        </td>
+                      ) : (
+                        <>
+                          <td className="px-3 py-2.5 text-center tabular-nums text-gray-900">{r.weekNo}</td>
+                          <td className="px-3 py-2.5 text-gray-900">{r.dayName}</td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex justify-end border-t border-gray-100 px-4 py-3">
+              <button
+                type="button"
+                onClick={handleCopy}
+                disabled={!rows.length}
+                className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition enabled:hover:border-gray-300 enabled:hover:bg-gray-50 enabled:active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                style={rows.length ? { color: ACCENT } : undefined}
+              >
+                {copied ? "Kopyalandı" : "Tabloyu Kopyala"}
+              </button>
+            </div>
           </div>
         )}
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/hafta-gun" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · Tarih araçları</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

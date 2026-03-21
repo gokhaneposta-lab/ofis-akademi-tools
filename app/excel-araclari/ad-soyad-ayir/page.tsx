@@ -1,379 +1,299 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
-import PageRibbon from "@/components/PageRibbon";
 import JsonLdTool from "@/components/JsonLd";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
+import ToolJsonLd from "@/components/ToolJsonLd";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import PrimaryButton from "@/components/PrimaryButton";
+import InputTextarea from "@/components/InputTextarea";
+import ResultCard, { ResultRow, ResultField } from "@/components/ResultCard";
+import Accordion from "@/components/Accordion";
+
+const ACCENT = "#217346";
+const ACCENT_LIGHT = "#e6f4ec";
+
+const HOW_TO_STEPS = [
+  "Ad soyad listesini alana yapıştırın (her satıra bir kişi).",
+  "\"Ad + Soyad\" veya \"Sadece Soyad\" modunu seçin.",
+  "Ayır butonuna tıklayın.",
+  "Sonucu kopyalayıp Excel'e yapıştırın.",
+];
+
+const FAQ = [
+  { question: "Verilerim kaydediliyor mu?", answer: "Hayır. İşlem tarayıcı içinde yapılır, veriler sunucuya gönderilmez." },
+  { question: "Çok satırlı liste destekleniyor mu?", answer: "Evet. Her satıra bir kişi olacak şekilde toplu işlem yapabilirsiniz." },
+  { question: "Sonucu Excel'e nasıl yapıştırırım?", answer: "\"Sonucu Kopyala\" ile alıp Excel'de ilgili hücreye Ctrl+V yapmanız yeterli." },
+];
+
+const MODES = [
+  { key: "split" as const, label: "Ad + Soyad" },
+  { key: "surnameOnly" as const, label: "Sadece Soyad" },
+];
 
 export default function AdSoyadAyirici() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState<{ firstName: string; lastName: string }[]>([]);
-  const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"split" | "surnameOnly">("split");
-  const [outputFormat, setOutputFormat] = useState<"table" | "excel">("table");
+  const [showResult, setShowResult] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
 
-  function splitNames() {
-    const lines = input
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
+  const splitNames = useCallback(() => {
+    setLoading(true);
+    setShowResult(false);
+    setTimeout(() => {
+      const lines = input
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean);
 
-    const output = lines.map((line) => {
-      const parts = line.split(/\s+/).filter(Boolean);
-      if (parts.length === 0) return { firstName: "", lastName: "" };
-      return {
-        firstName: parts.slice(0, -1).join(" "),
-        lastName: parts[parts.length - 1],
-      };
-    });
+      const output = lines.map((line) => {
+        const parts = line.split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return { firstName: "", lastName: "" };
+        return {
+          firstName: parts.slice(0, -1).join(" "),
+          lastName: parts[parts.length - 1],
+        };
+      });
 
-    setResult(output);
-    setCopied(false);
-  }
+      setResult(output);
+      setLoading(false);
+    }, 400);
+  }, [input]);
 
-  function handleCopy() {
+  useEffect(() => {
+    if (result.length > 0 && !loading) {
+      requestAnimationFrame(() => setShowResult(true));
+      const t = setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 120);
+      return () => clearTimeout(t);
+    }
+  }, [result, loading]);
+
+  const handleCopy = useCallback(() => {
     if (!result.length) return;
-    let text = "";
+    let text: string;
     if (mode === "split") {
-      if (outputFormat === "excel") {
-        text = "Ad;Soyad\n" + result.map((row) => `${row.firstName};${row.lastName}`).join("\n");
-      } else {
-        text = "Ad\tSoyad\n" + result.map((row) => `${row.firstName}\t${row.lastName}`).join("\n");
-      }
+      text = "Ad\tSoyad\n" + result.map((r) => `${r.firstName}\t${r.lastName}`).join("\n");
     } else {
-      text = result.map((row) => row.lastName || row.firstName).filter(Boolean).join("\n");
+      text = result.map((r) => r.lastName || r.firstName).filter(Boolean).join("\n");
     }
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1300);
-  }
+  }, [result, mode]);
 
-  const inputLines = input ? input.split("\n").filter((l) => l.trim()).length : 0;
-  const rowCount = Math.max(7, Math.min(inputLines || 7, 20));
+  const hasResult = result.length > 0;
+  const lineCount = input ? input.split("\n").filter((l) => l.trim()).length : 0;
+  const activeIdx = MODES.findIndex((m) => m.key === mode);
 
   return (
-    <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
+    <div className="min-h-screen bg-gray-50">
       <JsonLdTool
         name="Ad Soyad Ayırıcı — Ücretsiz Excel Aracı"
-        description="Tam ad listesini ad ve soyad olarak ayırın; Excel'e yapıştırıp tablo veya noktalı virgül formatında kopyalayın. Ücretsiz, tarayıcıda çalışır."
+        description="Tam ad listesini ad ve soyad olarak ayırın; Excel'e yapıştırıp tablo veya noktalı virgül formatında kopyalayın."
         path="/excel-araclari/ad-soyad-ayir"
-        keywords={["excel ad soyad ayırma", "ad soyad ayırıcı", "isim soyisim ayırma", "Excel araçları"]}
+        keywords={["excel ad soyad ayırma", "ad soyad ayırıcı", "isim soyisim ayırma"]}
       />
-      <PageRibbon
-        title="Ad Soyad Ayırıcı"
+      <ToolJsonLd
+        name="Ad Soyad Ayırıcı"
         description="Tam ad listesini ad ve soyad olarak ayırın; tablo veya Excel formatında kopyalayın."
+        path="/excel-araclari/ad-soyad-ayir"
+        howToSteps={HOW_TO_STEPS}
+        faq={FAQ}
       />
 
-      <div className="mx-auto mt-2 mb-6 max-w-3xl px-4 sm:px-6 flex flex-col gap-6">
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Tek sütunda duran ad-soyad listesini saniyeler içinde ayırır. Özellikle personel listesi, CRM aktarımı ve e-posta listesi düzenlemede vakit kazandırır.
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
-              <p className="text-gray-700">MELİHA ELVİN GÜZEL YILDIRIM</p>
-            </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
-              <p className="text-gray-700">Ad: MELİHA ELVİN GÜZEL / Soyad: YILDIRIM</p>
-            </div>
-          </div>
-        </section>
-
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Excel veya listeden tam ad sütununu kopyalayıp aşağıdaki alana yapıştırın (her satırda bir ad).",
-            "Ad + Soyad ayır veya Sadece Soyad modunu seçin; çıktıyı Tablo veya Excel (;) formatında alabilirsiniz.",
-            "Ayır butonuna tıklayın.",
-            "Sonucu Kopyala ile alıp Excel'e yapıştırın.",
-          ]}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de ad soyad ayırmak için <strong>Veri</strong> &gt; <strong>Metni Sütunlara Dönüştür</strong> sihirbazını kullanabilirsiniz. Formülle yapmak isterseniz aşağıdaki örnekler A1&apos;de tam ad olduğunu varsayar.
-              </p>
-              <ExcelFormulBlok
-                baslik="Adı almak için:"
-                formül='=SOL(A1;BUL(" ";A1)-1)'
-                aciklama="SOL fonksiyonu metnin sol tarafını alır. BUL fonksiyonu boşluğun yerini bulur. Böylece ilk boşluğa kadar olan kısım (ad) ayrılır."
-              />
-              <ExcelFormulBlok
-                baslik="Soyadı almak için:"
-                formül='=SAĞ(A1;UZUNLUK(A1)-BUL(" ";A1))'
-                aciklama="SAĞ fonksiyonu metnin sağ tarafını alır. UZUNLUK metnin toplam karakter sayısını verir, BUL boşluğun konumunu bulur. Böylece boşluktan sonraki kısım (soyad) alınır."
-              />
-            </>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Verilerim kaydediliyor mu?</span><br />Hayır. İşlem tarayıcı içinde yapılır, veriler sunucuya gönderilmez.</p>
-            <p><span className="font-semibold text-gray-900">Çok satırlı liste destekleniyor mu?</span><br />Evet. Her satıra bir kişi olacak şekilde toplu işlem yapabilirsiniz.</p>
-            <p><span className="font-semibold text-gray-900">Sonucu Excel&apos;e nasıl yapıştırırım?</span><br />“Sonucu Kopyala” ile alıp Excel&apos;de ilgili hücreye Ctrl+V yapmanız yeterli.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için:{" "}
-            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
-              Temel Excel eğitimi
-            </Link>
-            {" · "}
-            <Link href="/blog/excelde-ad-soyad-ayirma" className="underline" style={{ color: THEME.ribbon }}>
-              rehber yazısı
-            </Link>
-          </div>
-        </section>
-      </div>
-
-      {/* Mod / çıktı seçenekleri — veri giriş alanının üstünde */}
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 mb-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between flex-wrap">
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium uppercase tracking-wide text-gray-600">Mod &amp; çıktı</span>
-            <div className="inline-flex rounded-lg border p-1 gap-1 flex-wrap" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-              <button
-                type="button"
-                onClick={() => setMode("split")}
-                className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${mode === "split" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
-                style={mode === "split" ? { background: THEME.ribbon } : undefined}
-              >
-                Ad + Soyad Ayır
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("surnameOnly")}
-                className={`whitespace-nowrap rounded px-3.5 py-1.5 text-xs sm:text-sm font-medium transition ${mode === "surnameOnly" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
-                style={mode === "surnameOnly" ? { background: THEME.ribbon } : undefined}
-              >
-                Sadece Soyad
-              </button>
-              {mode === "split" && (
-                <>
-                  <span className="self-center text-gray-400 mx-0.5">|</span>
-                  <button
-                    type="button"
-                    onClick={() => setOutputFormat("table")}
-                    className={`whitespace-nowrap rounded px-3 py-1.5 text-xs font-medium transition ${outputFormat === "table" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
-                    style={outputFormat === "table" ? { background: THEME.ribbon } : undefined}
-                  >
-                    Tablo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setOutputFormat("excel")}
-                    className={`whitespace-nowrap rounded px-3 py-1.5 text-xs font-medium transition ${outputFormat === "excel" ? "text-white" : "text-gray-700 hover:bg-gray-200"}`}
-                    style={outputFormat === "excel" ? { background: THEME.ribbon } : undefined}
-                  >
-                    Excel (;)
-                  </button>
-                </>
-              )}
-            </div>
+      {/* Header */}
+      <header className="sticky top-0 z-20 border-b border-gray-200/80 bg-white/80 backdrop-blur-lg">
+        <div className="mx-auto flex max-w-lg items-center gap-3 px-4 py-3">
+          <Link
+            href="/excel-araclari"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-600 transition-all hover:bg-gray-200 active:scale-90"
+            aria-label="Geri"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </Link>
+          <div className="min-w-0">
+            <h1 className="truncate text-base font-bold text-gray-900">Ad Soyad Ayır</h1>
+            <p className="truncate text-xs text-gray-500">Tam adı ad ve soyad olarak ayırır</p>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Formül çubuğu alanı */}
-      <div
-        className="flex items-center gap-2 px-4 py-1.5 border-b text-sm"
-        style={{ background: THEME.formulaBarBg, borderColor: THEME.gridLine }}
-      >
-        <span
-          className="w-12 flex-shrink-0 text-center py-1 text-gray-600 font-medium"
-          style={{ background: THEME.headerBg, border: `1px solid ${THEME.gridLine}` }}
-        >
-          A1
-        </span>
-        <span className="text-gray-500">|</span>
-        <span className="text-gray-500 text-xs">Tam ad listesi (her satıra bir kişi)</span>
-      </div>
+      {/* Main content */}
+      <main className="mx-auto flex max-w-lg flex-col px-4 pb-10 pt-5 sm:px-5">
 
-      {/* Sayfa alanı - Excel sheet görünümü */}
-      <div className="mx-4 mt-0 mb-4 overflow-hidden rounded-b shadow-lg border border-t-0" style={{ borderColor: THEME.gridLine, background: "#fafafa" }}>
-        {/* Sütun harfleri + köşe */}
-        <div className="flex" style={{ background: THEME.cornerBg, borderBottom: `1px solid ${THEME.gridLine}` }}>
+        {/* Segmented control */}
+        <div className="relative flex rounded-2xl bg-gray-200/70 p-1" translate="no">
           <div
-            className="w-10 flex-shrink-0 border-r flex items-center justify-center text-xs font-semibold text-gray-600"
-            style={{ borderColor: THEME.gridLine, minHeight: 24 }}
+            className="absolute top-1 bottom-1 rounded-xl shadow-sm transition-all duration-300 ease-out"
+            style={{
+              background: ACCENT,
+              width: `calc(${100 / MODES.length}% - 4px)`,
+              left: `calc(${(100 / MODES.length) * activeIdx}% + 2px)`,
+            }}
           />
-          <div
-            className="flex-1 flex border-l"
-            style={{ borderColor: THEME.gridLine }}
+          <button
+            type="button"
+            onClick={() => setMode("split")}
+            className={`relative z-10 flex-1 whitespace-nowrap rounded-xl py-2.5 text-center text-sm font-bold transition-colors duration-200 ${
+              mode === "split" ? "text-white" : "text-gray-500 hover:text-gray-700"
+            }`}
           >
-            <div className="w-full text-center text-xs font-semibold text-gray-600 py-0.5" style={{ borderBottom: `1px solid ${THEME.gridLine}` }}>
-              A
-            </div>
-          </div>
+            Ad + Soyad
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("surnameOnly")}
+            className={`relative z-10 flex-1 whitespace-nowrap rounded-xl py-2.5 text-center text-sm font-bold transition-colors duration-200 ${
+              mode === "surnameOnly" ? "text-white" : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Sadece Soyad
+          </button>
         </div>
 
-        {/* Satırlar: satır numarası + giriş alanı */}
-        <div className="flex" style={{ borderBottom: `1px solid ${THEME.gridLine}` }}>
+        {/* Input → Button → Result: connected flow */}
+        <div className="mt-4 flex flex-col">
+          {/* Input card */}
           <div
-            className="w-10 flex flex-col flex-shrink-0"
-            style={{ background: THEME.headerBg, borderRight: `1px solid ${THEME.gridLine}` }}
+            className={`border border-gray-200 bg-white px-4 pb-4 pt-4 shadow-md transition-[border-radius] duration-300 sm:px-5 ${
+              hasResult && showResult ? "rounded-t-2xl rounded-b-none border-b-0" : "rounded-2xl"
+            }`}
           >
-            {Array.from({ length: rowCount }, (_, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-center text-xs text-gray-600 border-b"
-                style={{ borderColor: THEME.gridLine, minHeight: 28 }}
-              >
-                {i + 1}
-              </div>
-            ))}
-          </div>
-          <div className="flex-1 min-w-0" style={{ background: THEME.sheetBg }}>
-            <textarea
+            <label className="mb-2.5 flex items-center justify-between">
+              <span className="text-[13px] font-semibold text-gray-700">Ad soyad listesini girin</span>
+              {lineCount > 0 && (
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] tabular-nums font-medium text-gray-500">
+                  {lineCount} satır
+                </span>
+              )}
+            </label>
+            <InputTextarea
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              rows={rowCount}
-              placeholder={"Örn:\nMELİHA ELVİN GÜZEL YILDIRIM\nAHMET MEHMET DEMİR"}
-              className="w-full resize-none border-0 p-2 text-sm outline-none placeholder:text-gray-400"
-              style={{
-                background: THEME.sheetBg,
-                minHeight: rowCount * 28,
-                fontFamily: "inherit",
-                lineHeight: "28px",
-                borderLeft: `1px solid ${THEME.gridLine}`,
-              }}
+              onChange={setInput}
+              placeholder={"Ad soyad listesini yapıştırın\n(her satır bir kişi)\n\nÖrn:\nMELİHA ELVİN GÜZEL YILDIRIM\nAHMET MEHMET DEMİR\nAYŞE KAYA"}
             />
+
+            {/* Button */}
+            <PrimaryButton
+              onClick={splitNames}
+              disabled={!input.trim() || loading}
+              className="mt-3"
+            >
+              {loading ? (
+                <>
+                  <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  Ayrılıyor...
+                </>
+              ) : (
+                "Ayır"
+              )}
+            </PrimaryButton>
           </div>
+
+          {/* Result card */}
+          <ResultCard
+            ref={resultRef}
+            visible={hasResult && showResult}
+            count={result.length}
+            onCopy={handleCopy}
+          >
+            {result.map((row, i) => (
+              <ResultRow key={i} index={i} total={result.length} animate={showResult}>
+                {mode === "split" ? (
+                  <div className="space-y-2">
+                    <ResultField label="Ad" value={row.firstName} />
+                    <ResultField label="Soyad" value={row.lastName} variant="accent" />
+                  </div>
+                ) : (
+                  <p className="truncate text-[15px] font-bold" style={{ color: ACCENT }}>
+                    {row.lastName || row.firstName || "—"}
+                  </p>
+                )}
+              </ResultRow>
+            ))}
+          </ResultCard>
         </div>
 
-        {/* Sonuç bölümü - Excel tablosu */}
-        {result.length > 0 && (
-          <>
-            <div className="flex" style={{ background: THEME.cornerBg, borderBottom: `1px solid ${THEME.gridLine}` }}>
-              <div
-                className="w-10 flex-shrink-0 border-r flex items-center justify-center text-xs font-semibold text-gray-600"
-                style={{ borderColor: THEME.gridLine, minHeight: 26 }}
-              />
-              <div className="flex-1 flex">
-                <div className="flex-1 border-r text-center text-xs font-semibold py-1.5 text-gray-700" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-                  A — Ad
-                </div>
-                <div className="flex-1 text-center text-xs font-semibold py-1.5 text-gray-700" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-                  B — Soyad
-                </div>
+        {/* Collapsible info sections */}
+        <div className="mt-6 flex flex-col gap-3">
+          <Accordion title="Nasıl kullanılır?">
+            <ol className="list-inside list-decimal space-y-2 text-gray-700">
+              {HOW_TO_STEPS.map((step, i) => (
+                <li key={i}>{step}</li>
+              ))}
+            </ol>
+          </Accordion>
+
+          <Accordion title="Bu araç ne işe yarar?">
+            <p>
+              Tek sütunda duran ad-soyad listesini saniyeler içinde ayırır.
+              Özellikle personel listesi, CRM aktarımı ve e-posta listesi
+              düzenlemede vakit kazandırır.
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <div className="rounded-lg bg-gray-50 p-3">
+                <p className="mb-1 text-[11px] font-semibold text-gray-500">Örnek girdi</p>
+                <p className="text-xs text-gray-800">MELİHA ELVİN GÜZEL YILDIRIM</p>
+              </div>
+              <div className="rounded-lg p-3" style={{ background: ACCENT_LIGHT }}>
+                <p className="mb-1 text-[11px] font-semibold text-gray-500">Örnek çıktı</p>
+                <p className="text-xs text-gray-800">
+                  Ad: MELİHA ELVİN GÜZEL<br />Soyad: YILDIRIM
+                </p>
               </div>
             </div>
-            {mode === "split" && (outputFormat === "table" || outputFormat === "excel") && (
-              <div className="flex">
-                <div
-                  className="w-10 flex flex-col flex-shrink-0"
-                  style={{ background: THEME.headerBg, borderRight: `1px solid ${THEME.gridLine}` }}
-                >
-                  {result.map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-center text-xs text-gray-600 border-b"
-                      style={{ borderColor: THEME.gridLine, minHeight: 28 }}
-                    >
-                      {i + 1}
-                    </div>
-                  ))}
-                </div>
-                <div className="flex-1 flex flex-col">
-                  {result.map((row, i) => (
-                    <div
-                      key={i}
-                      className="flex border-b"
-                      style={{ borderColor: THEME.gridLine }}
-                    >
-                      <div
-                        className="flex-1 px-2 py-1.5 text-sm border-r"
-                        style={{ borderColor: THEME.gridLine, minHeight: 28 }}
-                      >
-                        {row.firstName}
-                      </div>
-                      <div
-                        className="flex-1 px-2 py-1.5 text-sm font-medium"
-                        style={{ minHeight: 28, color: "#217346" }}
-                      >
-                        {row.lastName}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {mode === "split" && outputFormat === "excel" && (
-              <div className="px-2 py-2 text-xs text-gray-500 border-t" style={{ borderColor: THEME.gridLine, background: THEME.formulaBarBg }}>
-                Excel&apos;e yapıştır: Ad;Soyad (noktalı virgül ayraçlı)
-              </div>
-            )}
-            {mode === "surnameOnly" && (
-              <div className="flex">
-                <div
-                  className="w-10 flex flex-col flex-shrink-0"
-                  style={{ background: THEME.headerBg, borderRight: `1px solid ${THEME.gridLine}` }}
-                >
-                  {result.map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-center text-xs text-gray-600 border-b"
-                      style={{ borderColor: THEME.gridLine, minHeight: 28 }}
-                    >
-                      {i + 1}
-                    </div>
-                  ))}
-                </div>
-                <div className="flex-1 flex flex-col">
-                  {result.map((row, i) => {
-                    const surname = row.lastName || row.firstName;
-                    return (
-                      <div
-                        key={i}
-                        className="px-2 py-1.5 text-sm border-b font-medium"
-                        style={{ borderColor: THEME.gridLine, minHeight: 28, color: "#217346" }}
-                      >
-                        {surname}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+          </Accordion>
 
-      {/* Veri giriş alanının altında: Ayır + Sonucu Kopyala */}
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 mt-3 flex flex-col gap-3 sm:flex-row items-stretch sm:items-center">
-        <button
-          type="button"
-          onClick={splitNames}
-          className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-          style={{ background: THEME.ribbon }}
-        >
-          Ayır
-        </button>
-        <button
-          type="button"
-          onClick={handleCopy}
-          disabled={!result.length}
-          className={`inline-flex min-w-[180px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-medium transition ${
-            copied ? "bg-green-600 text-white" : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-          }`}
-        >
-          {copied ? "✓ Kopyalandı" : "Sonucu Kopyala (Excel)"}
-        </button>
-      </div>
+          <Accordion title="Sık sorulan sorular">
+            <div className="space-y-4">
+              {FAQ.map((f, i) => (
+                <div key={i}>
+                  <p className="font-semibold text-gray-900">{f.question}</p>
+                  <p className="mt-0.5 text-gray-600">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs">
+              <Link href="/egitimler/temel" className="underline" style={{ color: ACCENT }}>
+                Temel Excel eğitimi
+              </Link>
+              <span className="text-gray-300">·</span>
+              <Link href="/blog/excelde-ad-soyad-ayirma" className="underline" style={{ color: ACCENT }}>
+                Rehber yazısı
+              </Link>
+            </div>
+          </Accordion>
+        </div>
 
-      {/* Alt bilgi */}
-      <div className="mx-auto mt-6 max-w-3xl px-4">
-        <BenzerExcelAraclari currentHref="/excel-araclari/ad-soyad-ayir" />
-      </div>
-      <div className="text-center text-xs text-gray-500 pb-4">
-        {"Ofis Akademi · Excel & Veri Analizi"}
-      </div>
+        {/* Similar tools */}
+        <div className="mt-6">
+          <BenzerExcelAraclari currentHref="/excel-araclari/ad-soyad-ayir" />
+        </div>
+
+        <p className="mt-4 text-center text-xs text-gray-400">
+          Ofis Akademi · Excel & Veri Analizi
+        </p>
+      </main>
+
+      <style jsx global>{`
+        @keyframes staggerFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }

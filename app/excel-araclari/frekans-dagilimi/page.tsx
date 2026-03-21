@@ -2,14 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
 import { parseNumbers } from "@/lib/istatistik";
-import ToolJsonLd from "@/components/ToolJsonLd";
+
+const ACCENT = "#217346";
 
 type Bin = { label: string; min: number; max: number; count: number };
 
@@ -63,6 +61,34 @@ export default function FrekansDagilimiPage() {
     },
   ];
 
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Sayıları belirli aralıklara (sınıf aralıkları) böler ve her aralığın kaç kez geçtiğini (frekans) hesaplar. Histogram ve veri dağılımı analizi için temel tablodur.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="font-mono text-gray-700">5, 12, 18, 22, 25, 33, 38, 42, 55</p>
+          <p className="mt-2 text-gray-600">
+            Sınıf genişliği: <span className="font-mono font-semibold text-gray-800">10</span>
+          </p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Frekans tablosu (özet)</p>
+          <ul className="space-y-0.5 text-gray-700">
+            <li>0 – 10 → 1</li>
+            <li>10 – 20 → 2</li>
+            <li>20 – 30 → 2</li>
+            <li>30 – 40 → 2</li>
+            <li>40 – 50 → 1</li>
+            <li>50 – 60 → 1</li>
+          </ul>
+        </div>
+      </div>
+    </>
+  );
+
   function handleHesapla() {
     const arr = parseNumbers(input);
     const bw = parseFloat(binWidthStr.replace(",", "."));
@@ -94,152 +120,106 @@ export default function FrekansDagilimiPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Frekans Dağılımı Hesaplama"
-        description="Sayıları sınıf aralıklarına bölerek frekans tablosu oluşturma. Histogram verisi, frekans dağılımı hesaplama."
-      />
-      <ToolJsonLd
-        name="Frekans Dağılımı Hesaplama"
-        description="Sayıları sınıf aralıklarına bölerek frekans tablosu oluşturma. Histogram verisi, frekans dağılımı hesaplama."
-        path="/excel-araclari/frekans-dagilimi"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de sayıları sınıf aralıklarına göre saymak (frekans dağılımı) için FREKANS fonksiyonu veya Veri Analizi histogramı kullanılır.
-              </p>
-              <ExcelFormulBlok
-                baslik="Frekans dağılımı (sınıf sayıları) için:"
-                formül="=FREKANS(veri_aralığı;sınıf_sınırları)"
-                aciklama="FREKANS (FREQUENCY) iki parametre alır: sayıların bulunduğu aralık (örn. A1:A100) ve sınıf üst sınırları (örn. 10, 20, 30...). Sonuç bir dizi olarak döner; sınıf_sınırları kadar hücre seçip formülü Ctrl+Shift+Enter ile dizi formülü olarak girmeniz gerekir. Histogram grafiği için Veri → Veri Analizi → Histogram da kullanılabilir."
-              />
-            </>
-          }
-        />
+    <ToolLayout
+      title="Frekans Dağılımı Hesaplama"
+      description="Sayıları sınıf aralıklarına bölerek frekans tablosu oluşturma. Histogram verisi, frekans dağılımı hesaplama."
+      path="/excel-araclari/frekans-dagilimi"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <Link
+          href="/blog/excel-frekans-dagilimi-hesaplama"
+          className="font-medium underline underline-offset-2"
+          style={{ color: ACCENT }}
+        >
+          Excel frekans dağılımı hesaplama rehberi
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label
+            htmlFor="frekans-dagilimi-input"
+            className="block text-sm font-semibold text-gray-900"
+          >
+            Sayıları yapıştırın
+          </label>
+          <div className="mt-1.5">
+            <InputTextarea
+              id="frekans-dagilimi-input"
+              value={input}
+              onChange={setInput}
+              rows={6}
+              minHeight="10rem"
+              className="font-mono resize-y"
+              placeholder="5, 12, 18, 22, 25, 33, 38, 42, 55"
+            />
+          </div>
 
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Sayıları belirli aralıklara (sınıf aralıkları) böler ve her aralığın kaç kez geçtiğini (frekans) hesaplar. Histogram/veri dağılımı için temel tablodur.
-          </p>
-        </section>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <span className="text-sm text-gray-600">Sınıf genişliği:</span>
+            <input
+              type="text"
+              value={binWidthStr}
+              onChange={(e) => setBinWidthStr(e.target.value)}
+              inputMode="decimal"
+              className="h-10 w-20 rounded-xl border border-gray-200 bg-gray-50/80 px-3 text-sm text-gray-900 tabular-nums focus:border-emerald-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-400/15"
+            />
+          </div>
 
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi:</span> <span className="font-mono">5, 12, 18, 22, 25, 33, 38, 42, 55</span>
-            </p>
-            <p>
-              <span className="font-semibold">Sınıf genişliği:</span> <span className="font-mono">10</span>
-            </p>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-2">Frekans tablosu (özet)</p>
-              <p className="text-gray-700">0 – 10 → 1</p>
-              <p className="text-gray-700">10 – 20 → 2</p>
-              <p className="text-gray-700">20 – 30 → 2</p>
-              <p className="text-gray-700">30 – 40 → 2</p>
-              <p className="text-gray-700">40 – 50 → 1</p>
-              <p className="text-gray-700">50 – 60 → 1</p>
+          <PrimaryButton className="mt-3" onClick={handleHesapla}>
+            Hesapla
+          </PrimaryButton>
+        </div>
+
+        {bins.length > 0 && (
+          <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[280px] text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 bg-gray-50/90">
+                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-gray-600">
+                      Aralık
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wide text-gray-600">
+                      Frekans
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bins.map((b, i) => (
+                    <tr
+                      key={i}
+                      className="border-b border-gray-100 last:border-b-0 odd:bg-white even:bg-gray-50/50"
+                    >
+                      <td className="px-4 py-2.5 text-gray-900">{b.label}</td>
+                      <td className="px-4 py-2.5 text-right tabular-nums text-gray-900">{b.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="border-t border-gray-200 px-4 py-3">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  disabled={!bins.length}
+                  className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  style={
+                    copied
+                      ? { borderColor: ACCENT, color: ACCENT }
+                      : undefined
+                  }
+                >
+                  {copied ? "Kopyalandı ✓" : "Tabloyu Kopyala"}
+                </button>
+              </div>
             </div>
           </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold text-gray-900">Sınıf genişliği neyi belirler?</span>
-              <br />
-              Aralıkların büyüklüğünü (örn. 10 → 0–10, 10–20, 20–30...).
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Excel’de nasıl karşılığı var?</span>
-              <br />
-              FREKANS dizi formülü veya Veri Analizi histogram.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Excel’e nasıl aktarırım?</span>
-              <br />
-              Tabloyu “Tabloyu Kopyala” ile panoya alıp Excel’e yapıştır.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Detay için{" "}
-            <Link href="/blog/excel-frekans-dagilimi-hesaplama" className="underline" style={{ color: THEME.ribbon }}>
-              frekans dağılımı rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel'den yapıştırın)</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="5, 12, 18, 22, 25, 33, 38, 42, 55"
-            rows={6}
-            className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-            style={{ borderColor: THEME.gridLine }}
-          />
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <label className="text-sm text-gray-600">Sınıf genişliği (aralık):</label>
-          <input
-            type="text"
-            value={binWidthStr}
-            onChange={(e) => setBinWidthStr(e.target.value)}
-            className="w-24 rounded border px-2 py-1.5 text-sm"
-            style={{ borderColor: THEME.gridLine }}
-          />
-          <span className="text-xs text-gray-500">Örn. 10 → 0–10, 10–20, 20–30 ...</span>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            onClick={handleHesapla}
-            className="inline-flex min-w-[140px] justify-center rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
-          >
-            Hesapla
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!bins.length} copied={copied} label="Tabloyu Kopyala" copiedLabel="Kopyalandı" />
-        </div>
-        {bins.length > 0 && (
-          <div className="overflow-x-auto rounded-lg border bg-white" style={{ borderColor: THEME.gridLine }}>
-            <table className="w-full text-sm">
-              <thead>
-                <tr style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-                  <th className="border-b border-r px-3 py-2 text-left font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Aralık</th>
-                  <th className="border-b px-3 py-2 text-right font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Frekans</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bins.map((b, i) => (
-                  <tr key={i} className="border-b last:border-b-0" style={{ borderColor: THEME.gridLine }}>
-                    <td className="border-r px-3 py-2" style={{ borderColor: THEME.gridLine }}>{b.label}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{b.count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         )}
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/frekans-dagilimi" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

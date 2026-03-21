@@ -2,13 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import JsonLdTool from "@/components/JsonLd";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 /** DD.MM.YYYY, DD/MM/YYYY, YYYY-MM-DD, Excel serial vb. */
 function parseDate(s: string): Date | null {
@@ -153,154 +151,141 @@ export default function TarihFarkiPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <JsonLdTool
-        name="Tarih Farkı (Vade / Gün / Yaş) — Ücretsiz Excel Aracı"
-        description="İki tarih arası vade, gün veya yaş hesaplama. Yıl, ay, gün ve toplam gün. Doğum tarihinden bugüne yaş hesaplama. Excel'den çok satır yapıştırın. Ücretsiz."
-        path="/excel-araclari/tarih-farki"
-        keywords={["tarih farkı hesaplama", "vade hesaplama", "iki tarih arası gün", "Excel tarih farkı", "yıl ay gün farkı", "Excel araçları"]}
-      />
-      <PageRibbon
-        title="Tarih Farkı (Vade / Gün / Yaş)"
-        description="İki tarih arası Yıl, Ay, Gün ve toplam gün hesaplar. Vade farkı veya yaş hesaplama (doğum tarihi → bugün) için kullanın. Excel'den çok satır yapıştırabilirsiniz."
-      />
-
-      <div
-        className="mx-auto mt-2 mb-6 max-w-4xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Excel'de başlama ve bitiş tarihlerinin olduğu 2 sütunu kopyalayıp aşağıdaki kutuya yapıştırın (her satırda iki tarih; Tab veya noktalı virgül ile ayrılmış).",
-            "Hesapla butonuna tıklayın.",
-            "Tabloda Yıl, Ay, Gün ve Toplam Gün görünür; Sonucu Kopyala ile Excel'e yapıştırın.",
-          ]}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de iki tarih arasındaki farkı gün, yıl veya ay olarak hesaplamak için aşağıdaki yöntemleri kullanabilirsiniz. A2 başlangıç, B2 bitiş tarihi olsun.
-              </p>
-              <ExcelFormulBlok
-                baslik="İki tarih arası gün sayısı için:"
-                formül="=B2-A2"
-                aciklama="Tarih hücreleri Excel&apos;de sayı olarak saklanır; iki tarihi çıkardığınızda aradaki gün sayısı elde edilir. Vade farkı veya yaş hesaplama (doğum tarihi ile bugün) için sık kullanılır."
-              />
-              <ExcelFormulBlok
-                baslik="Yıl, ay ve gün ayrı ayrı (Excel 365):"
-                formül="=TARİHFARKI(A2;B2;'Y')"
-                aciklama="TARİHFARKI (DATEDIF) üçüncü parametrede 'Y' (yıl), 'YM' (ay farkı), 'MD' (gün farkı) alabilir. Tam yaş veya vade için yıl ve kalan ay/gün ayrı hesaplanabilir. Eski sürümlerde =DATEDIF(A2;B2;'Y') kullanın."
-              />
-            </>
-          }
-        />
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            İki tarih arasındaki farkı yıl/ay/gün ve toplam gün olarak verir. Vade kontrolü, sözleşme süresi ve yaş hesaplama gibi işlemlerde hızlı ve güvenilir sonuç sağlar.
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
-              <p className="text-gray-700">01.01.2020 ↵ 01.10.2022</p>
-            </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
-              <p className="text-gray-700">2 yıl, 9 ay, 0 gün · Toplam 1004 gün</p>
-            </div>
-          </div>
-        </section>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
-            Başlama ve Bitiş tarihleri (Excel'den 2 sütun kopyalayıp yapıştırın)
-          </label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={"01.01.2020\t01.10.2022\n15.03.2019\t20.05.2021"}
-            rows={8}
-            className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-            style={{ borderColor: THEME.gridLine }}
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Her satırda iki değer: Başlama tarihi ve Bitiş tarihi. Sütun ayırıcı: Tab veya noktalı virgül. Örnek: 01.01.2020 — 01.10.2022 → 2 Yıl, 9 Ay, 0 Gün
-          </p>
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        İki tarih arasındaki farkı yıl/ay/gün ve toplam gün olarak verir. Vade kontrolü, sözleşme süresi ve yaş hesaplama gibi işlemlerde hızlı ve güvenilir sonuç sağlar.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="text-gray-700">01.01.2020 ↵ 01.10.2022</p>
         </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">2 yıl, 9 ay, 0 gün · Toplam 1004 gün</p>
+        </div>
+      </div>
+    </>
+  );
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            onClick={handleHesapla}
-            className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
+  return (
+    <ToolLayout
+      title="Tarih Farkı (Vade / Gün / Yaş)"
+      description="İki tarih arası Yıl, Ay, Gün ve toplam gün."
+      path="/excel-araclari/tarih-farki"
+      keywords={["tarih farkı hesaplama", "vade hesaplama", "iki tarih arası gün", "Excel tarih farkı", "yıl ay gün farkı", "Excel araçları"]}
+      howToSteps={[
+        "Başlama ve bitiş tarihlerini yapıştırın.",
+        "Hesapla butonuna tıklayın.",
+        "Yıl, Ay, Gün ve Toplam Gün görünür.",
+      ]}
+      faq={[
+        { question: "Hangi tarih formatları?", answer: "DD.MM.YYYY, DD/MM/YYYY, YYYY-MM-DD" },
+        { question: "Yaş hesabı?", answer: "Doğum tarihi ve bugünü girerek hesaplayabilirsiniz." },
+        { question: "Toplu satır?", answer: "Birden fazla satırı aynı anda hesaplayabilirsiniz." },
+      ]}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <span className="text-gray-600">
+          <Link
+            href="/egitimler/orta"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
           >
+            Orta seviye eğitim
+          </Link>
+          {" · "}
+          <Link
+            href="/blog/excelde-tarih-farki-vade-gun-hesaplama"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            Tarih farkı rehberi
+          </Link>
+        </span>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label htmlFor="tarih-farki-input" className="block text-sm font-semibold text-gray-900">
+            Başlama ve Bitiş tarihleri
+          </label>
+          <p className="mt-0.5 text-xs text-gray-400">Her satırda iki tarih (Tab veya ; ile)</p>
+          <div className="mt-1.5">
+            <InputTextarea
+              id="tarih-farki-input"
+              value={input}
+              onChange={setInput}
+              rows={8}
+              minHeight="12rem"
+              className="font-mono resize-y"
+              placeholder={"01.01.2020\t01.10.2022\n15.03.2019\t20.05.2021"}
+            />
+          </div>
+          <PrimaryButton className="mt-3" onClick={handleHesapla}>
             Hesapla
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!rows.length} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
 
         {rows.length > 0 && (
-          <div className="overflow-x-auto rounded-lg border bg-white" style={{ borderColor: THEME.gridLine }}>
-            <table className="w-full min-w-[600px] text-sm">
-              <thead>
-                <tr style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
-                  <th className="border-b border-r px-3 py-2 text-left font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Başlama Tarihi</th>
-                  <th className="border-b border-r px-3 py-2 text-left font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Bitiş Tarihi</th>
-                  <th className="border-b border-r px-3 py-2 text-center font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Yıl</th>
-                  <th className="border-b border-r px-3 py-2 text-center font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Ay</th>
-                  <th className="border-b border-r px-3 py-2 text-center font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Gün</th>
-                  <th className="border-b px-3 py-2 text-right font-semibold text-gray-700" style={{ borderColor: THEME.gridLine }}>Toplam Gün</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r, i) => (
-                  <tr key={i} className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="border-r px-3 py-2 font-mono text-gray-800" style={{ borderColor: THEME.gridLine }}>{r.baslamaStr || "—"}</td>
-                    <td className="border-r px-3 py-2 font-mono text-gray-800" style={{ borderColor: THEME.gridLine }}>{r.bitisStr || "—"}</td>
-                    {r.error ? (
-                      <td colSpan={4} className="px-3 py-2 text-amber-700 text-xs">{r.error}</td>
-                    ) : r.diff ? (
-                      <>
-                        <td className="border-r px-3 py-2 text-center font-medium" style={{ borderColor: THEME.gridLine }}>{r.diff.yil}</td>
-                        <td className="border-r px-3 py-2 text-center font-medium" style={{ borderColor: THEME.gridLine }}>{r.diff.ay}</td>
-                        <td className="border-r px-3 py-2 text-center font-medium" style={{ borderColor: THEME.gridLine }}>{r.diff.gun}</td>
-                        <td className="px-3 py-2 text-right font-medium tabular-nums" style={{ borderColor: THEME.gridLine }}>{r.diff.toplamGun >= 0 ? r.diff.toplamGun.toLocaleString("tr-TR") : "—"}</td>
-                      </>
-                    ) : (
-                      <td colSpan={4} className="px-3 py-2 text-gray-400">—</td>
-                    )}
+          <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">
+                    <th className="whitespace-nowrap px-3 py-3 sm:px-4">Başlama</th>
+                    <th className="whitespace-nowrap px-3 py-3 sm:px-4">Bitiş</th>
+                    <th className="whitespace-nowrap px-3 py-3 text-center sm:px-4">Yıl</th>
+                    <th className="whitespace-nowrap px-3 py-3 text-center sm:px-4">Ay</th>
+                    <th className="whitespace-nowrap px-3 py-3 text-center sm:px-4">Gün</th>
+                    <th className="whitespace-nowrap px-3 py-3 text-right sm:px-4">Toplam</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map((r, i) => (
+                    <tr key={i} className="border-b border-gray-100 last:border-b-0">
+                      <td className="px-3 py-2.5 font-mono text-gray-800 sm:px-4">{r.baslamaStr || "—"}</td>
+                      <td className="px-3 py-2.5 font-mono text-gray-800 sm:px-4">{r.bitisStr || "—"}</td>
+                      {r.error ? (
+                        <td colSpan={4} className="px-3 py-2.5 text-xs font-medium text-amber-700 sm:px-4">
+                          {r.error}
+                        </td>
+                      ) : r.diff ? (
+                        <>
+                          <td className="px-3 py-2.5 text-center font-medium text-gray-900 sm:px-4">{r.diff.yil}</td>
+                          <td className="px-3 py-2.5 text-center font-medium text-gray-900 sm:px-4">{r.diff.ay}</td>
+                          <td className="px-3 py-2.5 text-center font-medium text-gray-900 sm:px-4">{r.diff.gun}</td>
+                          <td className="px-3 py-2.5 text-right font-medium tabular-nums text-gray-900 sm:px-4">
+                            {r.diff.toplamGun >= 0 ? r.diff.toplamGun.toLocaleString("tr-TR") : "—"}
+                          </td>
+                        </>
+                      ) : (
+                        <td colSpan={4} className="px-3 py-2.5 text-gray-400 sm:px-4">
+                          —
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="border-t border-gray-200 px-4 py-3">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  disabled={!rows.length}
+                  className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  style={copied ? { borderColor: ACCENT, color: ACCENT } : undefined}
+                >
+                  {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Hangi tarih formatlarını kabul eder?</span><br />`DD.MM.YYYY`, `DD/MM/YYYY`, `YYYY-MM-DD` ve Excel&apos;den yapıştırılan tab ayrımlı tarihleri destekler.</p>
-            <p><span className="font-semibold text-gray-900">Yaş hesabı için kullanılabilir mi?</span><br />Evet. Doğum tarihi ve bugünün tarihini girerek yaş farkını görebilirsiniz.</p>
-            <p><span className="font-semibold text-gray-900">Toplu satır desteği var mı?</span><br />Evet. Birden fazla satırı aynı anda hesaplayıp tablo halinde sonuç alabilirsiniz.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için{" "}
-            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
-              orta seviye eğitim
-            </Link>
-            {" "}ve{" "}
-            <Link href="/blog/excelde-tarih-farki-vade-gun-hesaplama" className="underline" style={{ color: THEME.ribbon }}>
-              tarih farkı rehberi
-            </Link>
-            {" "}sayfasına bakın.
-          </div>
-        </section>
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/tarih-farki" />
-        </div>
-        <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

@@ -2,14 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
 import { parseNumbers, percentile, quartile } from "@/lib/istatistik";
-import ToolJsonLd from "@/components/ToolJsonLd";
+
+const ACCENT = "#217346";
 
 export default function CeyrekYuzdelikPage() {
   const [input, setInput] = useState("");
@@ -77,151 +75,116 @@ export default function CeyrekYuzdelikPage() {
     }
   }
 
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Veri setinin çeyreklerini ve yüzdelik dilimini hesaplar: minimum, <span className="font-semibold">Q1</span>, medyan
+        (Q2), <span className="font-semibold">Q3</span>, maksimum ve özel <span className="font-semibold">% dilim</span>{" "}
+        (örn. %90).
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="font-mono text-gray-700">10, 20, 30, ..., 100</p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">Q1, medyan, Q3 ve maksimum + seçtiğiniz yüzde dilimi.</p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Çeyrek (Quartile) ve Yüzdelik Hesaplama"
-        description="Quartile ve percentile hesaplama: minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90)."
-      />
-      <ToolJsonLd
-        name="Çeyrek (Quartile) ve Yüzdelik Hesaplama"
-        description="Quartile ve percentile hesaplama: minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90)."
-        path="/excel-araclari/ceyrek-yuzdelik"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de çeyrek (quartile) ve yüzdelik (percentile) hesaplamak için ÇEYREK ve YÜZDELİK fonksiyonlarını kullanabilirsiniz.
-              </p>
-              <ExcelFormulBlok
-                baslik="Çeyrek değerleri (Q1, medyan, Q3) için:"
-                formül="=ÇEYREK(A:A;1)"
-                aciklama="ÇEYREK (QUARTILE) ikinci parametrede 0 (min), 1 (Q1), 2 (medyan), 3 (Q3), 4 (max) alır. Kutu grafiği (box plot) için Q1 ve Q3 sık kullanılır. Veri aralığı A:A veya A1:A100 olabilir."
-              />
-              <ExcelFormulBlok
-                baslik="Belirli yüzdelik dilim için (örn. %90):"
-                formül="=YÜZDELİK(A:A;0,9)"
-                aciklama="YÜZDELİK (PERCENTILE) ikinci parametrede 0 ile 1 arası ondalık alır; 0,9 = %90. yüzdelik dilim. Yani değerlerin %90'ı bu sonuçtan küçük veya eşittir. Excel 2010+ için YÜZDELİK.ÇEYREKLİ veya PERCENTILE.INC kullanılabilir."
-              />
-            </>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Veri setinin çeyreklerini ve yüzdelik dilimini hesaplar: minimum, <span className="font-semibold">Q1</span>, medyan (Q2), <span className="font-semibold">Q3</span>, maksimum ve özel <span className="font-semibold">% dilim</span> (örn. %90).
-          </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi:</span> <span className="font-mono">10, 20, 30, ..., 100</span>
-            </p>
-            <p>
-              <span className="font-semibold">Çıktı:</span> Q1, medyan, Q3 ve maksimum + ayrıca seçtiğin yüzde dilimi.
-            </p>
+    <ToolLayout
+      title="Çeyrek (Quartile) ve Yüzdelik Hesaplama"
+      description="Quartile ve percentile hesaplama: minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90)."
+      path="/excel-araclari/ceyrek-yuzdelik"
+      keywords={["çeyrek hesaplama", "quartile", "yüzdelik", "percentile", "Q1 Q3"]}
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <Link
+          href="/blog/excel-ceyrek-quartile-yuzdelik"
+          className="font-medium underline underline-offset-2"
+          style={{ color: ACCENT }}
+        >
+          Çeyrek ve yüzdelik rehberi
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-2 pt-1 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label htmlFor="ceyrek-yuzdelik-input" className="block text-sm font-semibold text-gray-900">
+            Sayıları yapıştırın
+          </label>
+          <div className="mt-1.5">
+            <InputTextarea
+              id="ceyrek-yuzdelik-input"
+              value={input}
+              onChange={setInput}
+              rows={6}
+              minHeight="10rem"
+              className="font-mono resize-y"
+              placeholder="10, 20, 30, 40, 50, 60, 70, 80, 90, 100"
+            />
           </div>
-        </section>
 
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Yüzdelik (%90) ne demek?</span>
-              <br />
-              Değerlerin %90'ı bu sonuçtan küçük veya eşittir.
-            </p>
-            <p>
-              <span className="font-semibold">Q1/Q3 ne işe yarar?</span>
-              <br />
-              Dağılımın “orta” kısmını gösterir; kutu grafiği (box plot) için temel değerlerdir.
-            </p>
-            <p>
-              <span className="font-semibold">Excel’e nasıl aktarırım?</span>
-              <br />
-              “Sonucu Kopyala” ile panoya alıp Ctrl+V yap.
-            </p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <span className="text-sm text-gray-600">Özel yüzdelik (%):</span>
+            <input
+              type="text"
+              value={customYuzde}
+              onChange={(e) => setCustomYuzde(e.target.value)}
+              className="h-10 w-16 rounded-xl border border-gray-200 bg-gray-50/80 px-2.5 text-center text-sm text-gray-900 tabular-nums focus:border-emerald-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-400/15"
+              aria-label="Özel yüzdelik yüzdesi"
+            />
           </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha fazla detay için{" "}
-            <Link
-              href="/blog/excel-ceyrek-quartile-yuzdelik"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              çeyrek/yüzdelik rehberine
-            </Link>{" "}
-            bakabilirsin.
-          </p>
-        </section>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Sayılar (Excel'den yapıştırabilirsiniz)</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="10, 20, 30, 40, 50, 60, 70, 80, 90, 100"
-            rows={6}
-            className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-            style={{ borderColor: THEME.gridLine }}
-          />
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <label className="text-sm text-gray-600">Özel yüzdelik dilimi (%):</label>
-          <input
-            type="text"
-            value={customYuzde}
-            onChange={(e) => setCustomYuzde(e.target.value)}
-            className="w-16 rounded border px-2 py-1.5 text-sm"
-            style={{ borderColor: THEME.gridLine }}
-          />
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            onClick={handleHesapla}
-            className="inline-flex min-w-[140px] justify-center rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
-          >
+
+          <PrimaryButton className="mt-3" onClick={handleHesapla}>
             Hesapla
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!result} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
+
         {result && (
-          <div className="overflow-hidden rounded-lg border bg-white" style={{ borderColor: THEME.gridLine }}>
-            <table className="w-full text-sm">
-              <tbody>
-                {Object.entries(result).map(([key, val]) => (
-                  <tr key={key} className="border-b" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">{key}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{val.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
-                  </tr>
-                ))}
-                {customValue !== null && (
-                  <tr className="border-b-0" style={{ borderColor: THEME.gridLine }}>
-                    <td className="px-3 py-2 font-medium text-gray-700">Yüzdelik %{customYuzde}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{customValue.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[280px] text-sm">
+                <tbody>
+                  {Object.entries(result).map(([key, val]) => (
+                    <tr key={key} className="border-b border-gray-100 last:border-b-0">
+                      <td className="px-4 py-2.5 font-medium text-gray-700">{key}</td>
+                      <td className="px-4 py-2.5 text-right tabular-nums text-gray-900">
+                        {val.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}
+                      </td>
+                    </tr>
+                  ))}
+                  {customValue !== null && (
+                    <tr className="border-t border-gray-200 bg-gray-50/60">
+                      <td className="px-4 py-2.5 font-medium text-gray-700">Yüzdelik %{customYuzde}</td>
+                      <td className="px-4 py-2.5 text-right tabular-nums text-gray-900">
+                        {customValue.toLocaleString("tr-TR", { maximumFractionDigits: 4 })}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="border-t border-gray-200 px-4 py-3">
+              <button
+                type="button"
+                onClick={handleCopy}
+                disabled={!result}
+                className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                style={copied ? { borderColor: ACCENT, color: ACCENT } : undefined}
+              >
+                {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
+              </button>
+            </div>
           </div>
         )}
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/ceyrek-yuzdelik" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · İstatistik araçları</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

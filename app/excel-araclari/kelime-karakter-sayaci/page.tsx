@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+
+const ACCENT = "#217346";
 
 function countWords(text: string): number {
   const t = text.trim();
@@ -33,7 +31,7 @@ export default function KelimeKarakterSayaciPage() {
 
   const copyText = `Kelime sayısı\t${stats.words}\nKarakter (boşluklu)\t${stats.withSpaces}\nKarakter (boşluksuz)\t${stats.withoutSpaces}`;
 
-  async function handleCopy() {
+  const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(copyText);
       setCopied(true);
@@ -41,129 +39,104 @@ export default function KelimeKarakterSayaciPage() {
     } catch (e) {
       console.error(e);
     }
-  }
+  }, [copyText]);
 
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Kelime & Karakter Sayacı"
-        description="Metindeki kelime sayısını ve karakter sayısını (boşluklu / boşluksuz) hesaplayın. Excel veya metin yapıştırın."
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-2xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Metni veya Excel'den kopyaladığınız hücreleri aşağıdaki kutuya yapıştırın.",
-            "Kelime sayısı ve karakter sayıları (boşluklu / boşluksuz) anında hesaplanır.",
-            "İsterseniz Sonucu Kopyala ile özeti panoya alıp rapora yapıştırın.",
-          ]}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de karakter ve kelime sayısını formülle alabilirsiniz. A1 metnin bulunduğu hücredir.
+    <ToolLayout
+      title="Kelime & Karakter Sayacı"
+      description="Metindeki kelime ve karakter sayısını hesaplayın."
+      path="/excel-araclari/kelime-karakter-sayaci"
+      howToSteps={[
+        "Metni kutuya yapıştırın.",
+        "Kelime ve karakter sayıları anında hesaplanır.",
+        "Sonucu Kopyala ile özeti alabilirsiniz.",
+      ]}
+      faq={[
+        {
+          question: "Boşluklu vs boşluksuz farkı nedir?",
+          answer: "Boşluklu karakter sayımı boşlukları dahil eder; boşluksuz hariç tutar.",
+        },
+        {
+          question: "Excel'de nasıl yaparım?",
+          answer: "UZUNLUK (LEN) fonksiyonu ile karakter sayısı alınır.",
+        },
+        {
+          question: "Kopyalama ne işe yarar?",
+          answer: "Kelime ve karakter sayısını tablo formatında panoya alır.",
+        },
+      ]}
+      aboutContent={
+        <>
+          <p className="mb-4 text-sm text-gray-700">
+            Metin içindeki kelime sayısını ve karakter sayısını (boşluklu/boşluksuz) hızlıca hesaplar. Excel veya
+            metinden toplu şekilde çalışır.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+              <p className="mb-1 font-semibold text-gray-800">Girdi</p>
+              <p className="text-gray-700">
+                <span className="font-mono">Merhaba Excel</span>
               </p>
-              <ExcelFormulBlok
-                baslik="Karakter sayısı için:"
-                formül="=UZUNLUK(A1)"
-                aciklama="UZUNLUK (İngilizce: LEN) fonksiyonu metindeki toplam karakter sayısını verir; boşluklar dahildir. Boşluksuz karakter sayısı için =UZUNLUK(DEĞİŞTİR(A1;&quot; &quot;;&quot;&quot;)) kullanabilirsiniz."
-              />
-              <ExcelFormulBlok
-                baslik="Kelime sayısı için (boşlukla ayrılmış kelimeler):"
-                formül='=UZUNLUK(TRIM(A1))-UZUNLUK(DEĞİŞTİR(TRIM(A1);" ";""))+1'
-                aciklama="Bu formül boşluk sayısına dayanır: TEMİZLE ile baş/son boşluk alınır, DEĞİŞTİR ile tüm boşluklar silinir; iki uzunluk farkı + 1 yaklaşık kelime sayısını verir. İngilizce Excel&apos;de TRIM → LEN, DEĞİŞTİR → SUBSTITUTE."
-              />
-            </>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Metin içindeki kelime sayısını ve karakter sayısını (boşluklu/boşluksuz) hızlıca hesaplar. Excel veya metinden toplu şekilde çalışır.
-          </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Girdi</p>
-              <p className="text-gray-700"><span className="font-mono">Merhaba Excel</span></p>
             </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Çıktı</p>
-              <p className="text-gray-700">Kelime/karakter sayıları kutularda anında görünür; “kopyala” ile rapora aktarabilirsin.</p>
+            <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+              <p className="mb-1 font-semibold text-gray-800">Çıktı</p>
+              <p className="text-gray-700">
+                Kelime ve karakter sayıları anında görünür; kopyala ile rapora aktarabilirsiniz.
+              </p>
             </div>
           </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold text-gray-900">Boşluklu vs boşluksuz farkı nedir?</span>
-              <br />
-              Boşluklu karakter sayımı boşlukları da dahil eder; boşluksuz hariç tutar.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Excel’de nasıl yaparım?</span>
-              <br />
-              Bu araç çıktıyı saniyeler içinde üretir; Excel formülleriyle de benzer mantık kurulabilir.
-            </p>
-            <p>
-              <span className="font-semibold text-gray-900">Kopyalama ne işe yarar?</span>
-              <br />
-              Kelime ve karakter sayısını tablo formatında panoya alır.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha fazla örnek için{" "}
-            <Link href="/blog/excelde-kelime-ve-karakter-sayisi" className="underline" style={{ color: THEME.ribbon }}>
-              kelime/karakter sayacı rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Metin (yapıştırın veya yazın)</label>
-          <textarea
+        </>
+      }
+      relatedLinks={
+        <Link href="/blog/excelde-kelime-ve-karakter-sayisi" className="underline underline-offset-2" style={{ color: ACCENT }}>
+          Excel&apos;de kelime ve karakter sayısı
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-8 pt-2 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label className="mb-2 block text-sm font-medium text-gray-800">Metni yapıştırın</label>
+          <InputTextarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
             placeholder="Buraya metin yapıştırın. Kelime ve karakter sayıları anında güncellenir."
             rows={8}
-            className="w-full rounded-lg border p-3 text-sm bg-white resize-y"
-            style={{ borderColor: THEME.gridLine }}
+            minHeight="12rem"
+            className="!resize-y border-gray-200 bg-white"
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="rounded-lg border p-4 text-center bg-white" style={{ borderColor: THEME.gridLine }}>
-            <div className="text-2xl font-bold tabular-nums" style={{ color: THEME.ribbon }}>{stats.words}</div>
-            <div className="text-xs font-medium text-gray-600 mt-1">Kelime</div>
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+          <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 text-center shadow-md sm:px-5">
+            <div className="text-3xl font-bold tabular-nums" style={{ color: ACCENT }}>
+              {stats.words}
+            </div>
+            <div className="mt-1 text-xs text-gray-500">Kelime</div>
           </div>
-          <div className="rounded-lg border p-4 text-center bg-white" style={{ borderColor: THEME.gridLine }}>
-            <div className="text-2xl font-bold tabular-nums" style={{ color: THEME.ribbon }}>{stats.withSpaces}</div>
-            <div className="text-xs font-medium text-gray-600 mt-1">Karakter (boşluklu)</div>
+          <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 text-center shadow-md sm:px-5">
+            <div className="text-3xl font-bold tabular-nums" style={{ color: ACCENT }}>
+              {stats.withSpaces}
+            </div>
+            <div className="mt-1 text-xs text-gray-500">Karakter (boşluklu)</div>
           </div>
-          <div className="rounded-lg border p-4 text-center bg-white" style={{ borderColor: THEME.gridLine }}>
-            <div className="text-2xl font-bold tabular-nums" style={{ color: THEME.ribbon }}>{stats.withoutSpaces}</div>
-            <div className="text-xs font-medium text-gray-600 mt-1">Karakter (boşluksuz)</div>
+          <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 text-center shadow-md sm:px-5">
+            <div className="text-3xl font-bold tabular-nums" style={{ color: ACCENT }}>
+              {stats.withoutSpaces}
+            </div>
+            <div className="mt-1 text-xs text-gray-500">Karakter (boşluksuz)</div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <CopyButton onClick={handleCopy} disabled={!input.trim()} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
-        </div>
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/kelime-karakter-sayaci" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · Metin araçları</div>
+        <button
+          type="button"
+          onClick={handleCopy}
+          disabled={!input.trim()}
+          className="mt-4 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3.5 text-sm font-semibold shadow-md transition enabled:hover:border-gray-300 enabled:hover:bg-gray-50 enabled:active:scale-[0.99] disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-60"
+          style={input.trim() ? { color: ACCENT } : undefined}
+        >
+          {copied ? "Kopyalandı" : "Sonucu Kopyala"}
+        </button>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

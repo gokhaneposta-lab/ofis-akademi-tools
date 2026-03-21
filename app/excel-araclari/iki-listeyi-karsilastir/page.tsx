@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import PageRibbon from "@/components/PageRibbon";
-import JsonLdTool from "@/components/JsonLd";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 function parseLines(text: string, caseSensitive: boolean): Set<string> {
   const lines = text
@@ -107,190 +107,234 @@ export default function IkiListeyiKarsilastirPage() {
     }
   }
 
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        İki farklı listeyi karşılaştırır ve üç sonucu çıkarır:{" "}
+        <span className="font-semibold text-gray-900">ortak kayıtlar</span>,{" "}
+        <span className="font-semibold text-gray-900">sadece A&apos;da olanlar</span> ve{" "}
+        <span className="font-semibold text-gray-900">sadece B&apos;de olanlar</span>. Fark analizi ve eşleştirme işleri hızlanır.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="text-gray-700">
+            Liste A: <span className="font-mono">Ahmet, Mehmet, Ayşe</span>
+            <br />
+            Liste B: <span className="font-mono">Mehmet, Ali, Ayşe</span>
+          </p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">
+            Ortak: <span className="font-mono">Mehmet, Ayşe</span>
+            <br />
+            Sadece A: <span className="font-mono">Ahmet</span> · Sadece B:{" "}
+            <span className="font-mono">Ali</span>
+          </p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <JsonLdTool
-        name="İki Listeyi Karşılaştır — Ücretsiz Liste Karşılaştırma Aracı"
-        description="İki listeyi karşılaştırır ve ortak veya farklı kayıtları bulur. Ücretsiz, tarayıcıda çalışır."
-        path="/excel-araclari/iki-listeyi-karsilastir"
-        keywords={["iki listeyi karşılaştır", "liste karşılaştırma", "ortak kayıt", "farklı kayıt", "excel liste"]}
-      />
-      <PageRibbon
-        title="İki Listeyi Karşılaştır"
-        description="İki listeyi karşılaştırır ve ortak veya farklı kayıtları bulur."
-      />
-
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Liste A ve Liste B alanlarına karşılaştırmak istediğiniz satırları yapıştırın (her satırda bir kayıt). Excel'den tek sütun kopyalayabilirsiniz.",
-            "İsterseniz 'Büyük/küçük harf duyarlı' seçeneğini işaretleyin.",
-            "Karşılaştır butonuna tıklayın.",
-            "Ortak kayıtlar, sadece A'da olanlar ve sadece B'de olanlar gösterilir. Sonucu Metin (virgülle) veya Excel (3 sütun) olarak kopyalayabilirsiniz.",
-          ]}
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            İki farklı listeyi karşılaştırır ve üç sonucu çıkarır: <span className="font-semibold">ortak kayıtlar</span>, <span className="font-semibold">sadece A’da olanlar</span> ve <span className="font-semibold">sadece B’de olanlar</span>. Böylece fark analizi çok hızlanır.
-          </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi:</span> Liste A: <span className="font-mono">Ahmet, Mehmet, Ayşe</span> · Liste B: <span className="font-mono">Mehmet, Ali, Ayşe</span>
-            </p>
-            <p>
-              <span className="font-semibold">Çıktı:</span> ortak: <span className="font-mono">Mehmet, Ayşe</span>; sadece A: <span className="font-mono">Ahmet</span>; sadece B: <span className="font-mono">Ali</span>.
-            </p>
-          </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Büyük/küçük harf duyarlı ne yapar?</span>
-              <br />
-              Açıkken “Ahmet” ile “ahmet” farklı kabul edilir.
-            </p>
-            <p>
-              <span className="font-semibold">Excel’e nasıl aktarırım?</span>
-              <br />
-              Kopyalama formatı olarak “Excel (3 sütun)” seçip Ctrl+V yap.
-            </p>
-            <p>
-              <span className="font-semibold">Tekrarlanan kayıtlar nasıl?</span>
-              <br />
-              Araç listeyi küme mantığıyla karşılaştırır; tekrarlar “tekil” düşünülür.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha fazla yöntem için{" "}
-            <Link
-              href="/blog/iki-listeyi-karsilastirma-excel"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              iki liste karşılaştırma rehberini
-            </Link>{" "}
-            inceleyebilirsin.
-          </p>
-        </section>
-
-        <div>
-          <label className="inline-flex items-center gap-2 text-sm text-gray-700 mb-2">
+    <ToolLayout
+      title="İki Listeyi Karşılaştır"
+      description="İki listeyi karşılaştırır, ortak ve farklı kayıtları bulur."
+      path="/excel-araclari/iki-listeyi-karsilastir"
+      keywords={["iki listeyi karşılaştır", "liste karşılaştırma", "ortak kayıt", "farklı kayıt", "excel liste"]}
+      howToSteps={[
+        "Liste A ve B'yi yapıştırın.",
+        "Karşılaştır butonuna tıklayın.",
+        "Ortak ve farklı kayıtları görün.",
+      ]}
+      faq={[
+        {
+          question: "Büyük/küçük harf duyarlı?",
+          answer: "Açıkken 'Ahmet' ile 'ahmet' farklı kabul edilir.",
+        },
+        {
+          question: "Excel'e nasıl aktarırım?",
+          answer: "Excel (3 sütun) formatıyla kopyalayın.",
+        },
+        {
+          question: "Tekrarlanan kayıtlar?",
+          answer: "Küme mantığıyla karşılaştırılır.",
+        },
+      ]}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <Link
+          href="/blog/iki-listeyi-karsilastirma-excel"
+          className="font-medium underline underline-offset-2"
+          style={{ color: ACCENT }}
+        >
+          İki listeyi karşılaştırma (Excel)
+        </Link>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label className="flex cursor-pointer items-start gap-2.5 text-sm text-gray-800">
             <input
               type="checkbox"
               checked={caseSensitive}
               onChange={(e) => setCaseSensitive(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-400"
-              style={{ accentColor: THEME.ribbon }}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+              style={{ accentColor: ACCENT }}
             />
-            Büyük/küçük harf duyarlı
+            <span className="font-medium">Büyük/küçük harf duyarlı</span>
           </label>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Liste A (her satırda bir kayıt)</label>
-            <textarea
-              value={listA}
-              onChange={(e) => setListA(e.target.value)}
-              placeholder="Ahmet\nMehmet\nAyşe"
-              rows={8}
-              className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-              style={{ borderColor: THEME.gridLine }}
-            />
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="iki-liste-a"
+                className="mb-1.5 block text-sm font-semibold text-gray-900"
+              >
+                Liste A
+              </label>
+              <InputTextarea
+                id="iki-liste-a"
+                value={listA}
+                onChange={setListA}
+                rows={8}
+                minHeight="12rem"
+                className="resize-y font-mono text-sm"
+                placeholder={"Ahmet\nMehmet\nAyşe"}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="iki-liste-b"
+                className="mb-1.5 block text-sm font-semibold text-gray-900"
+              >
+                Liste B
+              </label>
+              <InputTextarea
+                id="iki-liste-b"
+                value={listB}
+                onChange={setListB}
+                rows={8}
+                minHeight="12rem"
+                className="resize-y font-mono text-sm"
+                placeholder={"Mehmet\nAli\nAyşe"}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Liste B (her satırda bir kayıt)</label>
-            <textarea
-              value={listB}
-              onChange={(e) => setListB(e.target.value)}
-              placeholder="Mehmet\nAli\nAyşe"
-              rows={8}
-              className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={handleCompare}
-            className="px-4 py-2 text-sm font-semibold rounded text-white hover:opacity-90 transition"
-            style={{ background: THEME.ribbon }}
-          >
+          <PrimaryButton className="mt-3" onClick={handleCompare}>
             Karşılaştır
-          </button>
-          {result && (
-            <>
-              <span className="text-xs text-gray-500">Kopyala formatı:</span>
-              <div className="inline-flex rounded-lg border p-1 gap-0.5" style={{ borderColor: THEME.gridLine, background: THEME.headerBg }}>
+          </PrimaryButton>
+        </div>
+
+        {result && (
+          <>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <div className="inline-flex flex-wrap gap-1 rounded-2xl bg-gray-200/70 p-1">
                 <button
                   type="button"
                   onClick={() => setCopyFormat("text")}
-                  className={`rounded px-3 py-1.5 text-xs font-medium transition ${copyFormat === "text" ? "text-white" : "text-gray-600 hover:bg-gray-200"}`}
-                  style={copyFormat === "text" ? { background: THEME.ribbon } : undefined}
+                  className={`rounded-xl px-3 py-2 text-xs font-semibold transition sm:text-sm ${
+                    copyFormat === "text"
+                      ? "text-white shadow-sm"
+                      : "text-gray-600 hover:bg-white/60"
+                  }`}
+                  style={copyFormat === "text" ? { background: ACCENT } : undefined}
                 >
-                  Metin (virgülle)
+                  Metin
                 </button>
                 <button
                   type="button"
                   onClick={() => setCopyFormat("excel")}
-                  className={`rounded px-3 py-1.5 text-xs font-medium transition ${copyFormat === "excel" ? "text-white" : "text-gray-600 hover:bg-gray-200"}`}
-                  style={copyFormat === "excel" ? { background: THEME.ribbon } : undefined}
+                  className={`rounded-xl px-3 py-2 text-xs font-semibold transition sm:text-sm ${
+                    copyFormat === "excel"
+                      ? "text-white shadow-sm"
+                      : "text-gray-600 hover:bg-white/60"
+                  }`}
+                  style={copyFormat === "excel" ? { background: ACCENT } : undefined}
                 >
-                  Excel (3 sütun)
+                  Excel
                 </button>
               </div>
               <button
                 type="button"
                 onClick={handleCopy}
-                className={`px-4 py-2 text-sm font-medium rounded transition flex items-center gap-2 ${
-                  copied ? "bg-green-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                className={`inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] ${
+                  copied
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                    : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
                 }`}
+                style={copied ? { borderColor: ACCENT, color: ACCENT } : undefined}
               >
-                {copied ? "✓ Kopyalandı" : "Sonucu Kopyala"}
+                {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
               </button>
-            </>
-          )}
-        </div>
+            </div>
 
-        {result && (
-          <div className="rounded-lg border p-4 space-y-3 bg-white" style={{ borderColor: THEME.gridLine }}>
-            <div>
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Ortak kayıtlar</span>
-              <p className="mt-1 text-sm text-gray-800">
-                {result.ortak.length ? result.ortak.join(", ") : "—"}
-              </p>
+            <div className="mt-3 space-y-3">
+              <div className="overflow-hidden rounded-2xl border border-gray-200 border-l-4 border-l-emerald-500 bg-white shadow-md">
+                <div className="flex items-baseline justify-between gap-2 border-b border-gray-100 px-4 py-3 sm:px-5">
+                  <h2 className="text-sm font-bold text-gray-900">Ortak kayıtlar</h2>
+                  <span className="tabular-nums text-sm font-semibold text-gray-500">
+                    {result.ortak.length}
+                  </span>
+                </div>
+                <ul className="max-h-48 overflow-y-auto px-4 py-3 font-mono text-sm text-gray-800 sm:px-5">
+                  {result.ortak.length ? (
+                    result.ortak.map((item) => (
+                      <li key={item} className="border-b border-gray-50 py-1 last:border-0">
+                        {item}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-400">—</li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-gray-200 border-l-4 border-l-blue-500 bg-white shadow-md">
+                <div className="flex items-baseline justify-between gap-2 border-b border-gray-100 px-4 py-3 sm:px-5">
+                  <h2 className="text-sm font-bold text-gray-900">Sadece A&apos;da</h2>
+                  <span className="tabular-nums text-sm font-semibold text-gray-500">
+                    {result.onlyA.length}
+                  </span>
+                </div>
+                <ul className="max-h-48 overflow-y-auto px-4 py-3 font-mono text-sm text-gray-800 sm:px-5">
+                  {result.onlyA.length ? (
+                    result.onlyA.map((item) => (
+                      <li key={item} className="border-b border-gray-50 py-1 last:border-0">
+                        {item}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-400">—</li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-gray-200 border-l-4 border-l-amber-500 bg-white shadow-md">
+                <div className="flex items-baseline justify-between gap-2 border-b border-gray-100 px-4 py-3 sm:px-5">
+                  <h2 className="text-sm font-bold text-gray-900">Sadece B&apos;de</h2>
+                  <span className="tabular-nums text-sm font-semibold text-gray-500">
+                    {result.onlyB.length}
+                  </span>
+                </div>
+                <ul className="max-h-48 overflow-y-auto px-4 py-3 font-mono text-sm text-gray-800 sm:px-5">
+                  {result.onlyB.length ? (
+                    result.onlyB.map((item) => (
+                      <li key={item} className="border-b border-gray-50 py-1 last:border-0">
+                        {item}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-400">—</li>
+                  )}
+                </ul>
+              </div>
             </div>
-            <div>
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sadece A'da</span>
-              <p className="mt-1 text-sm text-gray-800">
-                {result.onlyA.length ? result.onlyA.join(", ") : "—"}
-              </p>
-            </div>
-            <div>
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sadece B'de</span>
-              <p className="mt-1 text-sm text-gray-800">
-                {result.onlyB.length ? result.onlyB.join(", ") : "—"}
-              </p>
-            </div>
-          </div>
+          </>
         )}
       </div>
-
-      <BenzerExcelAraclari currentHref="/excel-araclari/iki-listeyi-karsilastir" />
-    </div>
+    </ToolLayout>
   );
 }

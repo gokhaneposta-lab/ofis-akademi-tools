@@ -2,12 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
-import ToolJsonLd from "@/components/ToolJsonLd";
+import ToolLayout from "@/components/ToolLayout";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 export default function DuseyaraOlusturucuPage() {
   const [aranan, setAranan] = useState("A2");
@@ -50,143 +48,144 @@ export default function DuseyaraOlusturucuPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="DÜŞEYARA Formül Oluşturucu"
-        description="Aranan değer, arama tablosu ve sütun numarasından DÜŞEYARA (VLOOKUP) formülü oluşturur. Tam veya yaklaşık eşleşme seçebilirsiniz."
-      />
-      <ToolJsonLd
-        name="DÜŞEYARA Formül Oluşturucu"
-        description="Aranan değer, arama tablosu ve sütun numarasından DÜŞEYARA (VLOOKUP) formülü oluşturur. Tam veya yaklaşık eşleşme seçebilirsiniz."
-        path="/excel-araclari/duseyara-olusturucu"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-          excelAlternatif={
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                Excel&apos;de DÜŞEYARA (VLOOKUP) dört parametre alır: <strong>aranan_değer</strong> (ne arayacağınız), <strong>tablo</strong> (arama yapılacak aralık, örn. E2:F100), <strong>sütun_sayısı</strong> (tablonun kaçıncı sütunundan değer döndürüleceği), <strong>0</strong> (tam eşleşme) veya <strong>1</strong> (yaklaşık eşleşme).
-              </p>
-              <p>
-                Arama her zaman tablonun en sol sütununda yapılır. Tam eşleşme için son parametreyi 0 veya YANLIŞ yazın; listelerde sık kullanılır. Bu araç sizin için doğru formülü oluşturur; kopyalayıp Excel&apos;e yapıştırabilirsiniz.
-              </p>
-            </div>
-          }
-        />
+  const inputClass =
+    "w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm transition-all focus:border-emerald-400 focus:bg-white focus:shadow-[0_0_0_4px_rgba(16,185,129,0.10)] focus:outline-none";
 
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            DÜŞEYARA ile tabloda aradığın değeri bulup aynı tablodaki başka bir sütundan sonucu getirmen için formülü otomatik üretir. Tam veya yaklaşık eşleşme seçerek listelerde doğru sonuç alırsın.
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        DÜŞEYARA ile tabloda aradığın değeri bulup aynı tablodaki başka bir sütundan sonucu getirmen için formülü otomatik üretir. Tam veya yaklaşık eşleşme seçerek listelerde doğru sonuç alırsın.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="text-gray-700">
+            Aranan: <span className="font-mono">A2</span> · Tablo: <span className="font-mono">Sheet2!A:B</span> · Sütun:{" "}
+            <span className="font-mono">2</span>
           </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
-              <p className="text-gray-700">
-                Aranan: <span className="font-mono">A2</span> · Tablo: <span className="font-mono">Sheet2!A:B</span> · Sütun: <span className="font-mono">2</span>
-              </p>
-            </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
-              <p className="text-gray-700">
-                <span className="font-mono">=DÜŞEYARA(A2;Sheet2!A:B;2;0)</span>
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Tam eşleşme ne zaman?</span><br />Listede aradığın değer aynen geçiyorsa <strong>0</strong> seç.</p>
-            <p><span className="font-semibold text-gray-900">Yaklaşık eşleşme ne zaman?</span><br />Değerler sıralıysa ve aradığın aralığa en yakın sonucu istiyorsan <strong>1</strong> seç.</p>
-            <p><span className="font-semibold text-gray-900">Excel’e nasıl yapıştırırım?</span><br />Oluşan formülü kopyalayıp ilgili hücreye Ctrl+V yap.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için{" "}
-            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
-              DÜŞEYARA eğitimi
-            </Link>{" "}
-            ve{" "}
-            <Link href="/blog/excel-duseyara-formul-olusturma" className="underline" style={{ color: THEME.ribbon }}>
-              rehber yazısı
-            </Link>{" "}
-            sayfasına bak.
-          </div>
-        </section>
-
-        <div className="grid gap-4 sm:grid-cols-1">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Aranan değer (hücre veya değer)</label>
-            <input
-              type="text"
-              value={aranan}
-              onChange={(e) => setAranan(e.target.value)}
-              placeholder="A2"
-              className="w-full rounded-lg border p-2.5 text-sm bg-white"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Arama tablosu</label>
-            <input
-              type="text"
-              value={tablo}
-              onChange={(e) => setTablo(e.target.value)}
-              placeholder="Sheet2!A:B"
-              className="w-full rounded-lg border p-2.5 text-sm bg-white"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Dönecek sütun numarası</label>
-            <input
-              type="text"
-              value={sutun}
-              onChange={(e) => setSutun(e.target.value)}
-              placeholder="2"
-              className="w-full rounded-lg border p-2.5 text-sm max-w-[120px]"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
-          <div>
-            <span className="block text-xs font-medium text-gray-600 mb-2">Eşleşme türü</span>
-            <label className="inline-flex items-center gap-2 cursor-pointer">
-              <input type="radio" checked={tamEslesme} onChange={() => setTamEslesme(true)} className="rounded-full" />
-              <span className="text-sm">Tam eşleşme (0)</span>
-            </label>
-            <label className="inline-flex items-center gap-2 cursor-pointer ml-4">
-              <input type="radio" checked={!tamEslesme} onChange={() => setTamEslesme(false)} className="rounded-full" />
-              <span className="text-sm">Yaklaşık eşleşme (1)</span>
-            </label>
-          </div>
         </div>
-
-        <div className="rounded-lg border p-4 bg-white" style={{ borderColor: THEME.ribbon }}>
-          <div className="text-xs font-semibold text-gray-700 mb-2">Oluşan formül</div>
-          <code className="block p-3 rounded bg-gray-100 text-sm break-all font-mono">{formula}</code>
-          <ul className="mt-3 text-xs text-gray-600 space-y-1">
-            <li><strong>{aranan.trim() || "A2"}</strong> → aranan değer</li>
-            <li><strong>{tablo.trim() || "Sheet2!A:B"}</strong> → tablo</li>
-            <li><strong>{Math.max(1, sutunNum)}</strong> → dönecek sütun</li>
-            <li><strong>{tamEslesme ? "0" : "1"}</strong> → {tamEslesme ? "tam eşleşme" : "yaklaşık eşleşme"}</li>
-          </ul>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">
+            <span className="font-mono">=DÜŞEYARA(A2;Sheet2!A:B;2;0)</span>
+          </p>
         </div>
-        <CopyButton onClick={handleCopy} copied={copied} label="Formülü Kopyala" copiedLabel="Kopyalandı" />
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/duseyara-olusturucu" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · Mantık & Formül</div>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <ToolLayout
+      title="DÜŞEYARA Formül Oluşturucu"
+      description="Aranan değer, arama tablosu ve sütun numarasından DÜŞEYARA (VLOOKUP) formülü oluşturur. Tam veya yaklaşık eşleşme seçebilirsiniz."
+      path="/excel-araclari/duseyara-olusturucu"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <span className="text-gray-600">
+          <Link
+            href="/egitimler/orta"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            DÜŞEYARA eğitimi
+          </Link>
+          {" · "}
+          <Link
+            href="/blog/excel-duseyara-formul-olusturma"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            rehber yazısı
+          </Link>
+        </span>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-2 pt-1 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-5 shadow-md sm:px-6 sm:py-6">
+          <div className="flex flex-col gap-5">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Aranan değer (hücre veya değer)</label>
+              <input
+                type="text"
+                value={aranan}
+                onChange={(e) => setAranan(e.target.value)}
+                placeholder="A2"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Arama tablosu</label>
+              <input
+                type="text"
+                value={tablo}
+                onChange={(e) => setTablo(e.target.value)}
+                placeholder="Sheet2!A:B"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Dönecek sütun numarası</label>
+              <input
+                type="text"
+                value={sutun}
+                onChange={(e) => setSutun(e.target.value)}
+                placeholder="2"
+                className={`max-w-[140px] ${inputClass}`}
+              />
+            </div>
+            <div>
+              <span className="mb-2 block text-xs font-medium text-gray-600">Eşleşme türü</span>
+              <div className="flex flex-col gap-2 sm:flex-row sm:gap-6">
+                <label className="inline-flex cursor-pointer items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={tamEslesme}
+                    onChange={() => setTamEslesme(true)}
+                    className="h-4 w-4 border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span className="text-sm text-gray-800">Tam eşleşme (0)</span>
+                </label>
+                <label className="inline-flex cursor-pointer items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={!tamEslesme}
+                    onChange={() => setTamEslesme(false)}
+                    className="h-4 w-4 border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span className="text-sm text-gray-800">Yaklaşık eşleşme (1)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-emerald-200/90 bg-emerald-50/70 p-4 shadow-sm sm:p-5">
+            <div className="text-xs font-semibold uppercase tracking-wide text-emerald-900/80">Oluşan formül</div>
+            <code className="mt-2 block break-all rounded-xl bg-white/90 px-3 py-3 font-mono text-sm text-emerald-950 shadow-inner">
+              {formula}
+            </code>
+            <ul className="mt-3 space-y-1 text-xs text-emerald-900/75">
+              <li>
+                <strong>{aranan.trim() || "A2"}</strong> → aranan değer
+              </li>
+              <li>
+                <strong>{tablo.trim() || "Sheet2!A:B"}</strong> → tablo
+              </li>
+              <li>
+                <strong>{Math.max(1, sutunNum)}</strong> → dönecek sütun
+              </li>
+              <li>
+                <strong>{tamEslesme ? "0" : "1"}</strong> → {tamEslesme ? "tam eşleşme" : "yaklaşık eşleşme"}
+              </li>
+            </ul>
+          </div>
+
+          <div className="mt-5">
+            <PrimaryButton onClick={handleCopy}>{copied ? "Kopyalandı" : "Formülü Kopyala"}</PrimaryButton>
+          </div>
+        </div>
+      </div>
+    </ToolLayout>
   );
 }

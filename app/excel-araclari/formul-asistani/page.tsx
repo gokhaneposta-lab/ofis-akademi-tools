@@ -2,11 +2,9 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+
+const ACCENT = "#217346";
 
 type Suggestion = { tr: string; en: string; aciklama: string };
 
@@ -42,128 +40,121 @@ function findSuggestions(query: string): Suggestion[] {
 
 export default function FormulAsistaniPage() {
   const [query, setQuery] = useState("");
-  const [copied, setCopied] = useState(false);
 
   const suggestions = useMemo(() => findSuggestions(query), [query]);
-  const first = suggestions[0];
-  const copyText = first ? `Türkçe: ${first.tr}\nİngilizce: ${first.en}\n${first.aciklama}` : "";
 
-  async function handleCopy() {
-    if (!copyText) return;
-    try {
-      await navigator.clipboard.writeText(copyText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1300);
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  const howToSteps = [
+    "Arama kutusuna Excel'de yapmak istediğinizi yazın (örn. iki kolonu birleştir, toplam al, koşula göre değer ver).",
+    "Altta önerilen fonksiyonlar (Türkçe / İngilizce) ve kısa açıklama görünür.",
+    "İlgili Excel oluşturucu araçlarına veya eğitim sayfalarına geçebilirsiniz.",
+  ];
+
+  const faq = [
+    {
+      question: "Öneriler neye göre?",
+      answer: "En çok kullanılan fonksiyonları ve anahtar kelime eşleşmelerini kullanır.",
+    },
+    {
+      question: "Eşleşme çıkmazsa ne yapmalıyım?",
+      answer: "Farklı kelimeler deneyin (örn. birleştir, topla, eğer, düşeyara).",
+    },
+    {
+      question: "Formül oluşturucuya bağlanıyor mu?",
+      answer: "Evet. Benzer araçlar üzerinden ilgili oluşturucu sayfalarına geçebilirsiniz.",
+    },
+  ];
+
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Excel’de ne yapmak istediğini yazdığında (doğal dil) sana uygun fonksiyon adlarını ve kısa açıklamalarını önerir. Türkçe ve İngilizce karşılıklarıyla hızlı arama yapmanı sağlar.
+      </p>
+      <p className="mt-3 text-sm text-gray-700">
+        Excel’de fonksiyon bulmak için <strong className="font-semibold text-gray-900">Ekle → İşlev</strong> veya formül çubuğundaki{" "}
+        <strong className="font-semibold text-gray-900">fx</strong> butonunu kullanabilirsiniz; kategori ve isimle arama yapılır. Bu araç, “iki sütunu birleştir” veya “tarihten ay çıkar” gibi doğal dil ifadelerinizi Türkçe ve İngilizce Excel fonksiyon adlarına yaklaştırır.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek arama</p>
+          <p className="text-gray-700">“iki kolonu birleştir”</p>
+          <p className="mt-2 text-gray-700">“tarih farkı”</p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Neler önerir?</p>
+          <p className="text-gray-700">
+            Örn. <span className="font-mono text-[13px]">BİRLEŞTİR (CONCAT)</span> ve{" "}
+            <span className="font-mono text-[13px]">TARİHFARKI / GÜN360 (DATEDIF)</span>
+          </p>
+        </div>
+      </div>
+    </>
+  );
 
   return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Excel Formül Asistanı"
-        description="Excel'de ne yapmak istediğinizi yazın; size uygun fonksiyonu önerir. Türkçe ve İngilizce karşılıkları ile kısa açıklama."
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Arama kutusuna Excel'de yapmak istediğinizi yazın (örn. iki kolonu birleştir, toplam al, koşula göre değer ver).",
-            "Altta önerilen fonksiyonlar (Türkçe / İngilizce) ve kısa açıklama görünür.",
-            "İsterseniz sonucu kopyalayıp not alabilir veya ilgili formül oluşturucu aracımıza gidebilirsiniz.",
-          ]}
-          excelAlternatif={
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                Excel&apos;de fonksiyon bulmak için <strong>Ekle → İşlev</strong> veya formül çubuğundaki <strong>fx</strong> butonunu kullanabilirsiniz; kategori ve isimle arama yapılır.
-              </p>
-              <p>
-                Bu araç, &quot;iki sütunu birleştir&quot; veya &quot;tarihten ay çıkar&quot; gibi doğal dil ifadelerinizi Türkçe ve İngilizce Excel fonksiyon adlarına çevirir. Hangi fonksiyonun ne işe yaradığını hatırlamıyorsanız buradan hızlıca ulaşabilirsiniz.
-              </p>
-            </div>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Excel’de ne yapmak istediğini yazdığında (doğal dil) sana uygun fonksiyon adlarını ve kısa açıklamalarını önerir. Türkçe ve İngilizce karşılıklarıyla hızlı arama yapmanı sağlar.
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek arama</p>
-              <p className="text-gray-700">“iki kolonu birleştir”</p>
-              <p className="text-gray-700 mt-2">“tarih farkı”</p>
-            </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Neler önerir?</p>
-              <p className="text-gray-700">Örn. <span className="font-mono">BİRLEŞTİR (CONCAT)</span> ve <span className="font-mono">TARİHFARKI / GÜN360 (DATEDIF)</span></p>
+    <ToolLayout
+      title="Excel Formül Asistanı"
+      description="Excel'de ne yapmak istediğinizi yazın; size uygun fonksiyonu önerir. Türkçe ve İngilizce karşılıkları ile kısa açıklama."
+      path="/excel-araclari/formul-asistani"
+      keywords={["excel formül asistanı", "excel fonksiyon öner", "excel türkçe ingilizce fonksiyon"]}
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <span className="text-gray-600">
+          Devam etmek için{" "}
+          <Link href="/excel-araclari/formul-asistani" className="font-medium underline underline-offset-2" style={{ color: ACCENT }}>
+            formül asistanı
+          </Link>{" "}
+          ve{" "}
+          <Link href="/egitimler/orta" className="font-medium underline underline-offset-2" style={{ color: ACCENT }}>
+            eğitim seviyelerine
+          </Link>{" "}
+          göz atın.
+        </span>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-2 pt-1 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-3">
+            <label htmlFor="formul-arama" className="text-sm font-semibold text-gray-900">
+              Excel&apos;de ne yapmak istiyorsunuz?
+            </label>
+            <div style={{ ["--accent" as string]: ACCENT }}>
+              <input
+                id="formul-arama"
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Örn: iki kolonu birleştir"
+                autoComplete="off"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3.5 text-[15px] text-gray-900 placeholder:text-gray-400/60 transition-all duration-200 focus:border-[color:var(--accent)] focus:bg-white focus:shadow-[0_0_0_4px_rgba(33,115,70,0.12)] focus:outline-none"
+              />
             </div>
           </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Öneriler neye göre?</span><br />En çok kullanılan fonksiyonları ve anahtar kelime eşleşmelerini kullanır.</p>
-            <p><span className="font-semibold text-gray-900">Kopyalama ne işe yarar?</span><br />Kısayol gibi: önerilen fonksiyon adlarını ve açıklamayı tek seferde notlarına yapıştırabilirsin.</p>
-            <p><span className="font-semibold text-gray-900">Formül oluşturucuya bağlanıyor mu?</span><br />Evet. Benzer araçlar üzerinden ilgili oluşturucu sayfalarına geçebilirsin.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için{" "}
-            <Link href="/excel-araclari/formul-asistani" className="underline" style={{ color: THEME.ribbon }}>
-              formül asistanı
-            </Link>{" "}
-            ve{" "}
-            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
-              eğitim seviyelerine
-            </Link>{" "}
-            göz at.
-          </div>
-        </section>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Excel'de ne yapmak istiyorsunuz?</label>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Örn: iki kolonu birleştir"
-            className="w-full rounded-lg border p-3 text-sm bg-white"
-            style={{ borderColor: THEME.gridLine }}
-          />
         </div>
 
-        {query.trim() && (
-          <div className="rounded-lg border p-4 bg-white space-y-4" style={{ borderColor: THEME.ribbon }}>
-            <div className="text-xs font-semibold text-gray-700">Önerilen fonksiyon(lar)</div>
+        {query.trim() ? (
+          <div className="mt-4 flex flex-col gap-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Önerilen fonksiyon(lar)</p>
             {suggestions.map((s, i) => (
-              <div key={i} className="border-l-2 pl-3 space-y-1" style={{ borderColor: THEME.ribbon }}>
-                <div className="flex flex-wrap items-baseline gap-2">
-                  <span className="font-semibold text-gray-900">{s.tr}</span>
-                  <span className="text-gray-500 text-sm">({s.en})</span>
+              <article
+                key={i}
+                className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5"
+              >
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span className="text-base font-semibold text-gray-900">{s.tr}</span>
+                  <span className="text-sm text-gray-500">({s.en})</span>
                 </div>
-                <p className="text-sm text-gray-600">{s.aciklama}</p>
-              </div>
+                <p className="mt-2 text-sm leading-relaxed text-gray-600">{s.aciklama}</p>
+              </article>
             ))}
-            <div className="pt-2">
-              <CopyButton onClick={handleCopy} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
-            </div>
           </div>
+        ) : (
+          <p className="mt-4 text-sm text-gray-500">
+            Örnek aramalar: iki kolonu birleştir, toplam al, düşey ara, koşula göre, boşluk temizle, tarih farkı
+          </p>
         )}
-
-        {!query.trim() && (
-          <p className="text-sm text-gray-500">Örnek aramalar: iki kolonu birleştir, toplam al, düşey ara, koşula göre, boşluk temizle, tarih farkı</p>
-        )}
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/formul-asistani" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · Mantık & Formül</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

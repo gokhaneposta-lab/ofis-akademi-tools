@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import CopyButton from "../../../components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import ExcelFormulBlok from "@/components/ExcelFormulBlok";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 export default function KrediTaksitPage() {
   const [anapara, setAnapara] = useState("");
@@ -58,132 +56,182 @@ export default function KrediTaksitPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Kredi Taksit Hesaplama"
-        description="Kredi tutarı, yıllık faiz oranı ve vadeye göre aylık taksit tutarını hesaplayın. Toplam geri ödeme ve toplam faizi görün."
-      />
+  const resultRows = useMemo(() => {
+    if (!result) return [];
+    return result
+      .split("\n")
+      .filter((line) => line.trim().length > 0)
+      .map((line) => {
+        const tab = line.indexOf("\t");
+        if (tab === -1) return { label: line, value: "" };
+        return { label: line.slice(0, tab), value: line.slice(tab + 1) };
+      });
+  }, [result]);
 
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Kredi tutarı (₺), yıllık faiz oranı (%) ve vade (ay) girin.",
-            "Hesapla butonuna tıklayın.",
-            "Aylık taksit, toplam geri ödeme ve toplam faiz görünür; Sonucu Kopyala ile alabilirsiniz.",
-          ]}
-          excelAlternatif={
-            <>
-              <p className="text-sm text-gray-700 mb-2">
-                Excel&apos;de sabit taksitli kredi için aylık ödeme tutarını DEVRESEL_ÖDEME (PMT) fonksiyonu ile hesaplayabilirsiniz.
-              </p>
-              <ExcelFormulBlok
-                baslik="Aylık taksit tutarı için:"
-                formül="=DEVRESEL_ÖDEME(yıllık_faiz/12;vade_ay;-kredi_tutarı)"
-                aciklama="DEVRESEL_ÖDEME (İngilizce: PMT) üç ana parametre alır: dönemlik faiz oranı (yıllık oranı 12'ye bölün), toplam taksit sayısı (vade ay), kredi tutarı (negatif yazılır -pv). Sonuç aylık eşit taksit tutarıdır. Toplam geri ödeme = taksit × vade; toplam faiz = toplam geri ödeme - kredi tutarı."
-              />
-            </>
-          }
-        />
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Kredi taksitini ve toplam maliyeti anında hesaplar. Farklı banka tekliflerini karşılaştırırken gerçek geri ödeme yükünü net görmenize yardımcı olur.
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
-              <p className="text-gray-700">Kredi: 100.000 · Faiz: %24 · Vade: 36 ay</p>
-            </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
-              <p className="text-gray-700">Aylık taksit + toplam geri ödeme + toplam faiz</p>
-            </div>
-          </div>
-        </section>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Kredi tutarı (₺)</label>
-            <input
-              type="text"
-              value={anapara}
-              onChange={(e) => setAnapara(e.target.value)}
-              placeholder="100000"
-              className="w-full rounded-lg border p-3 text-sm bg-white"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Yıllık faiz oranı (%)</label>
-            <input
-              type="text"
-              value={yillikFaiz}
-              onChange={(e) => setYillikFaiz(e.target.value)}
-              placeholder="24"
-              className="w-full rounded-lg border p-3 text-sm bg-white"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Vade (ay)</label>
-            <input
-              type="text"
-              value={vadeAy}
-              onChange={(e) => setVadeAy(e.target.value)}
-              placeholder="36"
-              className="w-full rounded-lg border p-3 text-sm bg-white"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Kredi taksitini ve toplam maliyeti anında hesaplar. Farklı banka tekliflerini karşılaştırırken gerçek geri ödeme yükünü net görmenize yardımcı olur.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="text-gray-700">Kredi: 100.000 · Faiz: %24 · Vade: 36 ay</p>
         </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">Aylık taksit + toplam geri ödeme + toplam faiz</p>
+        </div>
+      </div>
+    </>
+  );
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            onClick={handleHesapla}
-            className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
+  return (
+    <ToolLayout
+      title="Kredi Taksit Hesaplama"
+      description="Kredi tutarı, yıllık faiz oranı ve vadeye göre aylık taksit tutarını hesaplayın. Toplam geri ödeme ve toplam faizi görün."
+      path="/excel-araclari/kredi-taksit"
+      keywords={["kredi taksit", "pmt", "devresel ödeme", "aylık taksit hesaplama"]}
+      howToSteps={[
+        "Kredi tutarı (₺), yıllık faiz oranı (%) ve vade (ay) girin.",
+        "Hesapla butonuna tıklayın.",
+        "Aylık taksit, toplam geri ödeme ve toplam faiz görünür; Sonucu kopyala ile panoya alabilirsiniz.",
+      ]}
+      faq={[
+        {
+          question: "Faiz oranı yıllık mı girilmeli?",
+          answer: "Evet, yıllık faiz oranını girin; araç bunu aylık döneme çevirerek hesaplar.",
+        },
+        {
+          question: "Vade ay dışında girilebilir mi?",
+          answer: "Bu hesaplayıcı vadeyi ay bazında ister. Örneğin 5 yıl için 60 ay girmelisiniz.",
+        },
+        {
+          question: "Toplam faiz nasıl hesaplanır?",
+          answer: "Toplam geri ödeme ile anapara farkı olarak gösterilir.",
+        },
+      ]}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <span className="text-gray-600">
+          <Link
+            href="/egitimler/orta"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
           >
+            Orta seviye eğitim
+          </Link>
+          {" · "}
+          <Link
+            href="/blog/excelde-kredi-taksit-hesaplama"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            Kredi taksit rehberi
+          </Link>
+        </span>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-2 pt-1 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Girdiler
+          </p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">
+                Kredi tutarı (₺)
+              </label>
+              <input
+                type="text"
+                value={anapara}
+                onChange={(e) => setAnapara(e.target.value)}
+                placeholder="100000"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-400/15"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">
+                Yıllık faiz oranı (%)
+              </label>
+              <input
+                type="text"
+                value={yillikFaiz}
+                onChange={(e) => setYillikFaiz(e.target.value)}
+                placeholder="24"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-400/15"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Vade (ay)</label>
+              <input
+                type="text"
+                value={vadeAy}
+                onChange={(e) => setVadeAy(e.target.value)}
+                placeholder="36"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-400/15"
+              />
+            </div>
+          </div>
+
+          <PrimaryButton className="mt-4" onClick={handleHesapla}>
             Hesapla
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!result} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
 
         {result && (
-          <div className="rounded-lg border p-4 bg-white" style={{ borderColor: THEME.ribbon }}>
-            <div className="text-xs font-semibold text-gray-700 mb-2">Sonuç:</div>
-            <textarea readOnly value={result} rows={10} className="w-full rounded border p-3 text-sm resize-y bg-gray-50 font-mono" style={{ borderColor: THEME.gridLine }} />
+          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/50 px-4 py-4 shadow-md sm:px-5">
+            <h2 className="text-sm font-semibold text-gray-900">Sonuç</h2>
+
+            <div className="mt-3 overflow-x-auto rounded-xl border border-emerald-200/80 bg-white shadow-sm">
+              <table className="w-full min-w-[280px] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-emerald-100 bg-emerald-50/80">
+                    <th className="px-3 py-2.5 font-semibold text-gray-800 sm:px-4">Kalem</th>
+                    <th className="px-3 py-2.5 font-semibold text-gray-800 sm:px-4">Değer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {resultRows.map((row, i) => (
+                    <tr
+                      key={`${row.label}-${i}`}
+                      className={i % 2 === 0 ? "bg-white" : "bg-emerald-50/30"}
+                    >
+                      <td className="px-3 py-2.5 text-gray-700 sm:px-4">{row.label}</td>
+                      <td className="px-3 py-2.5 font-medium tabular-nums text-gray-900 sm:px-4">
+                        {row.value}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <label htmlFor="kredi-taksit-result" className="mt-4 block text-xs font-semibold text-gray-600">
+              Excel için sekmeyle ayrılmış metin
+            </label>
+            <textarea
+              id="kredi-taksit-result"
+              readOnly
+              value={result}
+              rows={10}
+              className="mt-1.5 w-full resize-y rounded-xl border border-emerald-200/80 bg-white px-3 py-3 font-mono text-sm text-gray-900 shadow-sm focus:outline-none"
+            />
+
+            <div className="mt-3 flex justify-end">
+              <button
+                type="button"
+                onClick={handleCopy}
+                disabled={!result}
+                className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                style={copied ? { borderColor: ACCENT, color: ACCENT } : undefined}
+              >
+                {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
+              </button>
+            </div>
           </div>
         )}
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Faiz oranı yıllık mı girilmeli?</span><br />Evet, yıllık faiz oranını girin; araç bunu aylık döneme çevirerek hesaplar.</p>
-            <p><span className="font-semibold text-gray-900">Vade ay dışında girilebilir mi?</span><br />Bu hesaplayıcı vadeyi ay bazında ister. Örneğin 5 yıl için 60 ay girmelisiniz.</p>
-            <p><span className="font-semibold text-gray-900">Toplam faiz nasıl hesaplanır?</span><br />Toplam geri ödeme ile anapara farkı olarak gösterilir.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için{" "}
-            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
-              orta seviye eğitim
-            </Link>
-            {" "}ve{" "}
-            <Link href="/blog/excelde-kredi-taksit-hesaplama" className="underline" style={{ color: THEME.ribbon }}>
-              kredi taksit rehberi
-            </Link>
-            {" "}sayfasına bakın.
-          </div>
-        </section>
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/kredi-taksit" />
-        </div>
-        <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

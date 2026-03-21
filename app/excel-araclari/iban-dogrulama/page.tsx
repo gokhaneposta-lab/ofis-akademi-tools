@@ -2,46 +2,31 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "../../../components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
 import { validateIBAN } from "@/lib/iban";
-import ToolJsonLd from "@/components/ToolJsonLd";
+
+const ACCENT = "#217346";
 
 export default function IbanDogrulamaPage() {
   const [input, setInput] = useState("");
   const [result, setResult] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const howToSteps = [
-    "Doğrulamak istediğiniz IBAN'ları aşağıdaki kutuya yapıştırın (her satıra bir IBAN; boşluk olmadan).",
-    "Doğrula butonuna tıklayın.",
-    "Geçerli / Geçersiz sonucunu görün; geçerli IBAN'ları kopyalayıp kullanabilirsiniz.",
-  ];
-
-  const faq = [
-    {
-      question: "Boşluklu IBAN girebilir miyim?",
-      answer: "Evet. Araç boşlukları otomatik temizler.",
-    },
-    {
-      question: "Toplu IBAN kontrolü destekleniyor mu?",
-      answer: "Evet. Her satıra bir IBAN yazarak toplu doğrulama yapabilirsiniz.",
-    },
-    {
-      question: "Sonuçları nasıl aktarırım?",
-      answer: "Sonucu kopyalayıp Excel'e yapıştırabilirsiniz.",
-    },
-  ];
-
   function handleValidate() {
-    const lines = input.split(/\r?\n/).map((l) => l.trim().replace(/\s/g, "")).filter(Boolean);
+    const lines = input
+      .split(/\r?\n/)
+      .map((l) => l.trim().replace(/\s/g, ""))
+      .filter(Boolean);
     const output: string[] = [];
     for (const line of lines) {
       const { valid, message } = validateIBAN(line);
-      output.push(valid ? `${line}\tGeçerli` : `${line}\tGeçersiz${message ? " — " + message : ""}`);
+      output.push(
+        valid
+          ? `${line}\tGeçerli`
+          : `${line}\tGeçersiz${message ? " — " + message : ""}`,
+      );
     }
     setResult(output.join("\n"));
     setCopied(false);
@@ -58,115 +43,205 @@ export default function IbanDogrulamaPage() {
     }
   }
 
-  const validCount = result ? result.split("\n").filter((l) => l.includes("\tGeçerli")).length : 0;
+  const validCount = result
+    ? result.split("\n").filter((l) => l.includes("\tGeçerli")).length
+    : 0;
   const totalCount = result ? result.split("\n").filter(Boolean).length : 0;
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="IBAN Doğrulama"
-        description="IBAN numaralarını doğrulayın. Türkiye ve uluslararası IBAN formatı (MOD-97) desteklenir. Her satıra bir IBAN yazın veya yapıştırın."
-      />
-      <ToolJsonLd
-        name="IBAN Doğrulama"
-        description="IBAN numaralarını doğrulayın. Türkiye ve uluslararası IBAN formatı (MOD-97) desteklenir. Her satıra bir IBAN yazın veya yapıştırın."
-        path="/excel-araclari/iban-dogrulama"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
+  const howToSteps = [
+    "IBAN'ları kutuya yapıştırın (her satıra bir IBAN).",
+    "Doğrula butonuna tıklayın.",
+    "Geçerli/Geçersiz sonucunu görün.",
+  ];
 
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-7"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-          excelAlternatif={
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                Excel&apos;de IBAN doğrulama için hazır bir fonksiyon yoktur. IBAN, MOD 97 algoritması ile kontrol edilir: sayısal değer 97&apos;ye bölünür, kalan 1 olmalıdır.
-              </p>
-              <p>
-                Bu kontrolü Excel&apos;de uzun formül zinciri veya VBA makrosu ile yapabilirsiniz; çoğu kullanıcı için banka sistemleri ve bu gibi çevrimiçi araçlar daha pratiktir. Bu araç TR ve uluslararası IBAN&apos;ları anında doğrular.
-              </p>
-            </div>
-          }
-        />
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            IBAN listesini toplu olarak kontrol eder ve geçerli/geçersiz ayrımı yapar. Ödeme öncesi hatalı IBAN riskini azaltır ve operasyon sürecini hızlandırır.
+  const faq = [
+    {
+      question: "Boşluklu IBAN girebilir miyim?",
+      answer: "Evet, boşluklar otomatik temizlenir.",
+    },
+    {
+      question: "Toplu IBAN kontrolü?",
+      answer: "Her satıra bir IBAN yazarak toplu doğrulama yapabilirsiniz.",
+    },
+    {
+      question: "Sonuçları nasıl aktarırım?",
+      answer: "Sonucu kopyalayıp Excel'e yapıştırın.",
+    },
+  ];
+
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        IBAN listesini toplu olarak doğrular; geçerli ve geçersiz kayıtları
+        ayırır. TR ve uluslararası IBAN formatı (MOD-97) desteklenir. Ödeme
+        öncesi hatalı IBAN riskini azaltır ve operasyon sürecini hızlandırır.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="font-mono text-gray-700 break-all">
+            TR33 0006 1005 1978 6457 8413 26
           </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
-              <p className="text-gray-700">TR330006100519786457841326</p>
-            </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
-              <p className="text-gray-700">TR330006100519786457841326 → Geçerli</p>
-            </div>
-          </div>
-        </section>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={6}
-          placeholder="Her satıra bir IBAN yazın veya yapıştırın...&#10;TR33 0006 1005 1978 6457 8413 26&#10;TR12 0004 6002 1588 8000 0132 95"
-          className="w-full rounded-lg border p-4 text-sm resize-y placeholder:text-gray-400 bg-white font-mono"
-          style={{ borderColor: THEME.gridLine }}
-        />
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="font-mono text-gray-700 break-all">
+            TR330006100519786457841326 → Geçerli
+          </p>
+        </div>
+      </div>
+    </>
+  );
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            onClick={handleValidate}
-            className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded px-6 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ background: THEME.ribbon }}
+  return (
+    <ToolLayout
+      title="IBAN Doğrulama"
+      description="IBAN numaralarını doğrulayın. TR ve uluslararası IBAN desteklenir."
+      path="/excel-araclari/iban-dogrulama"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <>
+          <Link
+            href="/egitimler/orta"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
           >
+            Orta seviye eğitim
+          </Link>
+          <span className="text-gray-400" aria-hidden>
+            ·
+          </span>
+          <Link
+            href="/blog/excelde-iban-dogrulama"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            Excel&apos;de IBAN doğrulama
+          </Link>
+        </>
+      }
+    >
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <label
+            htmlFor="iban-input"
+            className="mb-2 block text-sm font-semibold text-gray-900"
+          >
+            IBAN&apos;ları yapıştırın
+          </label>
+          <InputTextarea
+            id="iban-input"
+            value={input}
+            onChange={setInput}
+            rows={6}
+            minHeight="10rem"
+            className="font-mono"
+            placeholder={
+              "Her satıra bir IBAN yazın veya yapıştırın...\n" +
+              "TR33 0006 1005 1978 6457 8413 26\n" +
+              "TR12 0004 6002 1588 8000 0132 95"
+            }
+          />
+          <PrimaryButton className="mt-3" onClick={handleValidate}>
             Doğrula
-          </button>
-          <CopyButton onClick={handleCopy} disabled={!result} copied={copied} label="Sonucu Kopyala" copiedLabel="Kopyalandı" />
+          </PrimaryButton>
         </div>
 
         {totalCount > 0 && (
-          <p className="text-xs text-gray-600">
-            <strong>{validCount}</strong> / {totalCount} IBAN geçerli
-          </p>
+          <div className="mt-3">
+            <p className="text-sm text-gray-700">
+              <strong className="tabular-nums text-gray-900">{validCount}</strong>{" "}
+              / {totalCount} geçerli
+            </p>
+          </div>
         )}
 
         {result && (
-          <div className="rounded-lg border p-4 bg-white" style={{ borderColor: THEME.ribbon }}>
-            <div className="text-xs font-semibold text-gray-700 mb-2">Sonuç (IBAN — Durum):</div>
-            <textarea readOnly value={result} rows={6} className="w-full rounded border p-3 text-sm resize-y bg-gray-50 font-mono" style={{ borderColor: THEME.gridLine }} />
+          <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-md">
+            <div className="divide-y divide-gray-100">
+              {result
+                .split("\n")
+                .filter(Boolean)
+                .map((line, i) => {
+                  const tabIdx = line.indexOf("\t");
+                  const iban =
+                    tabIdx >= 0 ? line.slice(0, tabIdx) : line;
+                  const afterTab =
+                    tabIdx >= 0 ? line.slice(tabIdx + 1) : "";
+                  const isValid = afterTab.startsWith("Geçerli");
+                  return (
+                    <div
+                      key={`${i}-${iban.slice(0, 12)}`}
+                      className="flex items-start gap-3 px-4 py-3 sm:items-center"
+                    >
+                      <span
+                        className="mt-0.5 shrink-0 sm:mt-0"
+                        aria-hidden
+                      >
+                        {isValid ? (
+                          <svg
+                            className="h-5 w-5 text-emerald-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="h-5 w-5 text-red-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                      <p className="min-w-0 flex-1 break-all font-mono text-sm text-gray-900">
+                        {iban}
+                      </p>
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          isValid
+                            ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200/80"
+                            : "bg-red-50 text-red-800 ring-1 ring-red-200/80"
+                        }`}
+                      >
+                        {isValid ? "Geçerli" : "Geçersiz"}
+                      </span>
+                    </div>
+                  );
+                })}
+            </div>
+            <div className="flex justify-end border-t border-gray-100 px-4 py-3">
+              <button
+                type="button"
+                onClick={handleCopy}
+                disabled={!result}
+                className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                style={
+                  copied ? { borderColor: ACCENT, color: ACCENT } : undefined
+                }
+              >
+                {copied ? "Kopyalandı ✓" : "Sonucu kopyala"}
+              </button>
+            </div>
           </div>
         )}
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Boşluklu IBAN girebilir miyim?</span><br />Evet. Araç boşlukları otomatik temizler.</p>
-            <p><span className="font-semibold text-gray-900">Toplu IBAN kontrolü destekleniyor mu?</span><br />Evet. Her satıra bir IBAN yazarak toplu doğrulama yapabilirsiniz.</p>
-            <p><span className="font-semibold text-gray-900">Sonuçları nasıl aktarırım?</span><br />Sonucu kopyalayıp Excel&apos;e yapıştırabilirsiniz.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için{" "}
-            <Link href="/egitimler/orta" className="underline" style={{ color: THEME.ribbon }}>
-              orta seviye eğitim
-            </Link>
-            {" "}ve{" "}
-            <Link href="/blog/excelde-iban-dogrulama" className="underline" style={{ color: THEME.ribbon }}>
-              IBAN rehberi
-            </Link>
-            {" "}sayfasına bakın.
-          </div>
-        </section>
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/iban-dogrulama" />
-        </div>
-        <div className="text-xs text-gray-500 mt-1">Ofis Akademi · Excel & Veri Analizi</div>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

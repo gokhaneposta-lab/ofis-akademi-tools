@@ -2,12 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import CopyButton from "@/components/CopyButton";
-import PageRibbon from "@/components/PageRibbon";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
-import ToolJsonLd from "@/components/ToolJsonLd";
+import ToolLayout from "@/components/ToolLayout";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 function escapeForFormula(s: string): string {
   const t = s.trim();
@@ -55,121 +53,122 @@ export default function EgerOlusturucuPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="EĞER Formül Oluşturucu"
-        description="Koşul, doğruysa ve yanlışsa değerlerinden EĞER (IF) formülü oluşturur. Kopyalayıp Excel'e yapıştırın."
-      />
-      <ToolJsonLd
-        name="EĞER Formül Oluşturucu"
-        description="Koşul, doğruysa ve yanlışsa değerlerinden EĞER (IF) formülü oluşturur. Kopyalayıp Excel'e yapıştırın."
-        path="/excel-araclari/eger-olusturucu"
-        howToSteps={howToSteps}
-        faq={faq}
-      />
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={howToSteps}
-          excelAlternatif={
-            <div className="space-y-2 text-sm text-gray-700">
-              <p>
-                Excel&apos;de EĞER (IF) fonksiyonu üç parametre alır: <strong>koşul</strong> (mantıksal ifade, örn. A1&gt;10), <strong>doğruysa</strong> (koşul doğru olduğunda dönecek değer), <strong>yanlışsa</strong> (koşul yanlış olduğunda dönecek değer). Metinler çift tırnak içinde yazılır.
-              </p>
-              <p>
-                Örnek: =EĞER(B2&gt;=50;&quot;Geçti&quot;;&quot;Kaldı&quot;). Koşulda karşılaştırma operatörleri (&gt;, &lt;, =, &lt;&gt;, &gt;=, &lt;=) ve AND/OR (VE/VEYA) kullanılabilir. Bu araç sizin için EĞER formülünü adım adım oluşturur.
-              </p>
-            </div>
-          }
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Koşul doğruysa “doğruysa”, değilse “yanlışsa” değerini kullanarak EĞER (IF) formülünü otomatik oluşturur. Not, geçti/kaldı, kontrol ve sınıflandırma senaryolarında hız sağlar.
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Koşul doğruysa “doğruysa”, değilse “yanlışsa” değerini kullanarak EĞER (IF) formülünü otomatik oluşturur. Not, geçti/kaldı, kontrol ve sınıflandırma senaryolarında hız sağlar.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="text-gray-700">
+            Koşul: <span className="font-mono">A1&gt;50</span> · Doğruysa: Geçti · Yanlışsa: Kaldı
           </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek girdi</p>
-              <p className="text-gray-700">Koşul: <span className="font-mono">A1&gt;50</span> · Doğruysa: Geçti · Yanlışsa: Kaldı</p>
-            </div>
-            <div className="rounded-lg border p-3 text-xs" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
-              <p className="font-semibold text-gray-800 mb-1">Örnek çıktı</p>
-              <p className="text-gray-700"><span className="font-mono">=EĞER(A1&gt;50;&quot;Geçti&quot;;&quot;Kaldı&quot;)</span></p>
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-3 text-sm text-gray-700">
-            <p><span className="font-semibold text-gray-900">Metinleri tırnak içine almalı mıyım?</span><br />Evet. Araç doğru formatta ekler. Örn. &quot;Geçti&quot; gibi.</p>
-            <p><span className="font-semibold text-gray-900">Koşulda AND/OR var mı?</span><br />Evet. Koşul ifaden içinde VE/VEYA kullanabilirsin (örn. A1&gt;50 VE B1&gt;80).</p>
-            <p><span className="font-semibold text-gray-900">Sonuç olarak sayı mı dönebilir?</span><br />Evet. “Doğruysa/Yanlışsa” alanlarına sayı yazabilirsin.</p>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            Devam etmek için{" "}
-            <Link href="/egitimler/temel" className="underline" style={{ color: THEME.ribbon }}>
-              Temel EĞER eğitimi
-            </Link>{" "}
-            ve{" "}
-            <Link href="/blog/excel-eger-formul-olusturma" className="underline" style={{ color: THEME.ribbon }}>
-              rehber yazısı
-            </Link>{" "}
-            sayfasına bak.
-          </div>
-        </section>
-        <div className="grid gap-4">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Koşul</label>
-            <input
-              type="text"
-              value={kosul}
-              onChange={(e) => setKosul(e.target.value)}
-              placeholder="A1>50"
-              className="w-full rounded-lg border p-2.5 text-sm bg-white"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Doğruysa (koşul sağlanırsa)</label>
-            <input
-              type="text"
-              value={dogruysa}
-              onChange={(e) => setDogruysa(e.target.value)}
-              placeholder="Geçti"
-              className="w-full rounded-lg border p-2.5 text-sm bg-white"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Yanlışsa (koşul sağlanmazsa)</label>
-            <input
-              type="text"
-              value={yanlissa}
-              onChange={(e) => setYanlissa(e.target.value)}
-              placeholder="Kaldı"
-              className="w-full rounded-lg border p-2.5 text-sm bg-white"
-              style={{ borderColor: THEME.gridLine }}
-            />
-          </div>
         </div>
-
-        <div className="rounded-lg border p-4 bg-white" style={{ borderColor: THEME.ribbon }}>
-          <div className="text-xs font-semibold text-gray-700 mb-2">Oluşan formül</div>
-          <code className="block p-3 rounded bg-gray-100 text-sm break-all font-mono">{formula}</code>
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">
+            <span className="font-mono">=EĞER(A1&gt;50;&quot;Geçti&quot;;&quot;Kaldı&quot;)</span>
+          </p>
         </div>
-        <CopyButton onClick={handleCopy} copied={copied} label="Formülü Kopyala" copiedLabel="Kopyalandı" />
-
-        <div className="mt-6">
-          <BenzerExcelAraclari currentHref="/excel-araclari/eger-olusturucu" />
-        </div>
-        <div className="text-xs text-gray-500">Ofis Akademi · Mantık & Formül</div>
       </div>
-    </div>
+      <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs text-gray-700">
+        <p className="font-semibold text-gray-800">Excel&apos;de EĞER (IF)</p>
+        <p className="mt-2">
+          Üç parametre alır: <strong>koşul</strong> (mantıksal ifade, örn. A1&gt;10), <strong>doğruysa</strong> (koşul doğru olduğunda dönecek değer), <strong>yanlışsa</strong> (koşul yanlış olduğunda dönecek değer). Metinler çift tırnak içinde yazılır.
+        </p>
+        <p className="mt-2">
+          Örnek: =EĞER(B2&gt;=50;&quot;Geçti&quot;;&quot;Kaldı&quot;). Koşulda karşılaştırma operatörleri (&gt;, &lt;, =, &lt;&gt;, &gt;=, &lt;=) ve AND/OR (VE/VEYA) kullanılabilir. Bu araç sizin için EĞER formülünü adım adım oluşturur.
+        </p>
+      </div>
+    </>
+  );
+
+  const relatedLinks = (
+    <span className="text-gray-600">
+      Devam etmek için{" "}
+      <Link
+        href="/egitimler/temel"
+        className="font-medium underline underline-offset-2"
+        style={{ color: ACCENT }}
+      >
+        Temel EĞER eğitimi
+      </Link>
+      {" · "}
+      <Link
+        href="/blog/excel-eger-formul-olusturma"
+        className="font-medium underline underline-offset-2"
+        style={{ color: ACCENT }}
+      >
+        rehber yazısı
+      </Link>
+      {" "}
+      sayfasına bak.
+    </span>
+  );
+
+  return (
+    <ToolLayout
+      title="EĞER Formül Oluşturucu"
+      description="Koşul, doğruysa ve yanlışsa değerlerinden EĞER (IF) formülü oluşturur. Kopyalayıp Excel'e yapıştırın."
+      path="/excel-araclari/eger-olusturucu"
+      howToSteps={howToSteps}
+      faq={faq}
+      aboutContent={aboutContent}
+      relatedLinks={relatedLinks}
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-2 pt-1 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-5 shadow-md sm:px-6 sm:py-6">
+          <div className="grid gap-4">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Koşul</label>
+              <input
+                type="text"
+                value={kosul}
+                onChange={(e) => setKosul(e.target.value)}
+                placeholder="A1>50"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">
+                Doğruysa (koşul sağlanırsa)
+              </label>
+              <input
+                type="text"
+                value={dogruysa}
+                onChange={(e) => setDogruysa(e.target.value)}
+                placeholder="Geçti"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">
+                Yanlışsa (koşul sağlanmazsa)
+              </label>
+              <input
+                type="text"
+                value={yanlissa}
+                onChange={(e) => setYanlissa(e.target.value)}
+                placeholder="Kaldı"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-400 focus:bg-white focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50/50 px-4 py-4 shadow-sm sm:px-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-900/80">
+              Oluşan formül
+            </p>
+            <code className="mt-2 block break-all font-mono text-sm text-gray-900">{formula}</code>
+            <div className="mt-4">
+              <PrimaryButton onClick={handleCopy}>
+                {copied ? "Kopyalandı ✓" : "Formülü kopyala"}
+              </PrimaryButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ToolLayout>
   );
 }

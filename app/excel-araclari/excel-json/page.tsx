@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import PageRibbon from "@/components/PageRibbon";
-import JsonLdTool from "@/components/JsonLd";
-import NasilKullanilir from "@/components/NasilKullanilir";
-import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
-import { THEME } from "@/lib/theme";
+import ToolLayout from "@/components/ToolLayout";
+import InputTextarea from "@/components/InputTextarea";
+import PrimaryButton from "@/components/PrimaryButton";
+
+const ACCENT = "#217346";
 
 function detectSeparator(line: string): string {
   if (line.includes("\t")) return "\t";
@@ -79,146 +79,148 @@ export default function ExcelJsonPage() {
 
   const objCount = result ? (result.match(/\{\s*"/g)?.length ?? 0) : 0;
 
-  return (
-    <div className="min-h-screen bg-[#e2e8ec] px-3 py-6 sm:px-4 sm:py-8" style={{ fontFamily: THEME.font }}>
-      <JsonLdTool
-        name="Excel → JSON Dönüştürücü — Ücretsiz Veri Aracı"
-        description="Excel veya CSV verisini JSON formatına çevirir. API ve yazılım geliştirme için kullanılır. Ücretsiz, tarayıcıda çalışır."
-        path="/excel-araclari/excel-json"
-        keywords={["excel to json", "csv to json", "excel json dönüştürücü", "tablo json"]}
-      />
-      <PageRibbon
-        title="Excel → JSON Dönüştürücü"
-        description="Excel veya CSV verisini JSON formatına çevirir. API ve yazılım geliştirme için kullanılır."
-      />
-
-      <div
-        className="mx-auto mt-2 mb-6 max-w-3xl overflow-hidden rounded-b shadow-lg border border-t-0 p-6 sm:p-8 flex flex-col gap-6"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <NasilKullanilir
-          showEnhancedSections={false}
-          steps={[
-            "Excel veya CSV'den tabloyu kopyalayıp aşağıdaki alana yapıştırın (ilk satır sütun başlıkları olmalı). Sekme, pipe (|), virgül veya noktalı virgül desteklenir.",
-            "İsterseniz 'Girintili (okunaklı)' seçeneğini işaretleyin veya kaldırın.",
-            "Dönüştür butonuna tıklayın.",
-            "Oluşan JSON'u Kopyala ile alıp API isteği veya kodunuzda kullanın.",
-          ]}
-        />
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Bu araç ne işe yarar?</h2>
-          <p className="mt-2 text-sm text-gray-700">
-            Excel veya CSV verisini JSON formatına çevirir. İlk satırı sütun başlığı kabul ederek her satırı bir JSON objesine dönüştürür; API veya entegrasyon işlerinde hız sağlar.
+  const aboutContent = (
+    <>
+      <p className="text-sm text-gray-700">
+        Excel veya CSV verisini JSON formatına çevirir. İlk satırı sütun başlığı kabul ederek her satırı bir JSON objesine dönüştürür; API veya entegrasyon işlerinde hız sağlar.
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek girdi (CSV/Excel)</p>
+          <p className="font-mono text-gray-700">
+            <span className="font-mono">{"id\\tnad"}</span> /{" "}
+            <span className="font-mono">{"1\\tAhmet"}</span>
           </p>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Örnek girdi / çıktı</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Girdi (CSV/Excel):</span> <span className="font-mono">id\tnad</span> / <span className="font-mono">1\tAhmet</span>
-            </p>
-            <p>
-              <span className="font-semibold">Çıktı:</span> her satır için JSON objesi; kopyalayıp kullanabilirsiniz.
-            </p>
-            <p className="text-xs text-gray-500">“Girintili” seçeneği JSON’un okunurluğunu artırır.</p>
-          </div>
-        </section>
-
-        <section className="rounded-xl border bg-white p-4 sm:p-5" style={{ borderColor: THEME.gridLine }}>
-          <h2 className="text-sm font-semibold text-gray-900">Sık sorulan sorular</h2>
-          <div className="mt-3 space-y-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Ayırıcılar çalışır mı?</span>
-              <br />
-              Evet. Sekme, `|`, virgül ve noktalı virgül desteklenir.
-            </p>
-            <p>
-              <span className="font-semibold">İlk satır ne işe yarar?</span>
-              <br />
-              Sütun adları için kullanılır; JSON anahtarları buradan gelir.
-            </p>
-            <p>
-              <span className="font-semibold">Sonucu nasıl kullanırım?</span>
-              <br />
-              “Kopyala” ile JSON’u alıp API isteği veya koda yapıştır.
-            </p>
-          </div>
-          <p className="mt-3 text-xs text-gray-600">
-            Daha fazla örnek için{" "}
-            <Link
-              href="/blog/excel-json-donusturucu"
-              className="underline"
-              style={{ color: THEME.ribbon }}
-            >
-              Excel'den JSON rehberine
-            </Link>{" "}
-            bakabilirsin.
-          </p>
-        </section>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Çıktı</label>
-          <label className="inline-flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              checked={pretty}
-              onChange={(e) => setPretty(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-400"
-              style={{ accentColor: THEME.ribbon }}
-            />
-            Girintili (okunaklı)
-          </label>
         </div>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Excel / CSV verisi (ilk satır = sütun adları, sekme veya | ile ayrılmış)</label>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={"id\tad\n1\tAhmet\n2\tMehmet"}
-            rows={10}
-            className="w-full rounded-lg border p-3 text-sm bg-white font-mono resize-y"
-            style={{ borderColor: THEME.gridLine }}
-          />
+        <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
+          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="text-gray-700">Her satır için bir JSON objesi; kopyalayıp kullanabilirsiniz.</p>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={handleConvert}
-            className="px-4 py-2 text-sm font-semibold rounded text-white hover:opacity-90 transition"
-            style={{ background: THEME.ribbon }}
-          >
-            Dönüştür
-          </button>
-          <button
-            type="button"
-            onClick={handleCopy}
-            disabled={!result}
-            className={`px-4 py-2 text-sm font-medium rounded transition flex items-center gap-2 ${
-              copied ? "bg-green-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            }`}
-          >
-            {copied ? "✓ Kopyalandı" : "Kopyala"}
-          </button>
-          {objCount > 0 && (
-            <span className="text-xs text-gray-500">{objCount} nesne</span>
-          )}
-        </div>
-
-        {result ? (
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">JSON çıktısı</label>
-            <pre className="rounded-lg border p-4 text-xs sm:text-sm bg-gray-50 overflow-x-auto whitespace-pre-wrap font-mono text-gray-800 max-h-80 overflow-y-auto" style={{ borderColor: THEME.gridLine }}>
-              {result}
-            </pre>
-          </div>
-        ) : null}
       </div>
+      <p className="mt-3 text-xs text-gray-500">
+        “Girintili” seçeneği JSON’un okunurluğunu artırır.
+      </p>
+    </>
+  );
 
-      <BenzerExcelAraclari currentHref="/excel-araclari/excel-json" />
-    </div>
+  return (
+    <ToolLayout
+      title="Excel → JSON Dönüştürücü"
+      description="Excel veya CSV verisini JSON formatına çevirir. API ve yazılım geliştirme için kullanılır."
+      path="/excel-araclari/excel-json"
+      howToSteps={[
+        "Excel veya CSV'den tabloyu kopyalayıp aşağıdaki alana yapıştırın (ilk satır sütun başlıkları olmalı). Sekme, pipe (|), virgül veya noktalı virgül desteklenir.",
+        "İsterseniz 'Girintili (okunaklı)' seçeneğini işaretleyin veya kaldırın.",
+        "Dönüştür butonuna tıklayın.",
+        "Oluşan JSON'u Kopyala ile alıp API isteği veya kodunuzda kullanın.",
+      ]}
+      faq={[
+        {
+          question: "Ayırıcılar çalışır mı?",
+          answer: "Evet. Sekme, |, virgül ve noktalı virgül desteklenir.",
+        },
+        {
+          question: "İlk satır ne işe yarar?",
+          answer: "Sütun adları için kullanılır; JSON anahtarları buradan gelir.",
+        },
+        {
+          question: "Sonucu nasıl kullanırım?",
+          answer: "“Kopyala” ile JSON'u alıp API isteği veya koda yapıştırın.",
+        },
+      ]}
+      aboutContent={aboutContent}
+      relatedLinks={
+        <span className="text-gray-600">
+          <Link
+            href="/blog/excel-json-donusturucu"
+            className="font-medium underline underline-offset-2"
+            style={{ color: ACCENT }}
+          >
+            Excel&apos;den JSON rehberi
+          </Link>
+        </span>
+      }
+      keywords={["excel to json", "csv to json", "excel json dönüştürücü", "tablo json"]}
+    >
+      <div className="mx-auto max-w-3xl px-4 pb-2 pt-1 sm:px-6">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-4 shadow-md sm:px-5">
+          <div className="mb-3">
+            <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Çıktı
+            </span>
+            <label className="mt-2 flex cursor-pointer items-start gap-2.5 text-sm text-gray-800">
+              <input
+                type="checkbox"
+                checked={pretty}
+                onChange={(e) => setPretty(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                style={{ accentColor: ACCENT }}
+              />
+              <span className="font-medium">Girintili (okunaklı)</span>
+            </label>
+          </div>
+
+          <label
+            htmlFor="excel-json-input"
+            className="block text-sm font-semibold text-gray-900"
+          >
+            Excel / CSV verisi (ilk satır = sütun adları, sekme veya | ile ayrılmış)
+          </label>
+          <div className="mt-1.5">
+            <InputTextarea
+              id="excel-json-input"
+              value={input}
+              onChange={setInput}
+              rows={10}
+              minHeight="12rem"
+              className="resize-y font-mono text-sm"
+              placeholder={"id\tad\n1\tAhmet\n2\tMehmet"}
+            />
+          </div>
+
+          <PrimaryButton className="mt-3" onClick={handleConvert}>
+            Dönüştür
+          </PrimaryButton>
+
+          {objCount > 0 && (
+            <p className="mt-2 text-xs font-medium tabular-nums text-gray-600">
+              {objCount} nesne
+            </p>
+          )}
+
+          {result ? (
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/50 px-4 py-4 shadow-md sm:px-5">
+              <label
+                htmlFor="excel-json-output"
+                className="block text-sm font-semibold text-gray-900"
+              >
+                JSON çıktısı
+              </label>
+              <pre
+                id="excel-json-output"
+                className="mt-2 max-h-80 overflow-x-auto overflow-y-auto whitespace-pre-wrap rounded-xl border border-emerald-200/80 bg-white p-3 font-mono text-xs text-gray-900 shadow-sm sm:text-sm"
+              >
+                {result}
+              </pre>
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  disabled={!result}
+                  className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                  style={
+                    copied
+                      ? { borderColor: ACCENT, color: ACCENT }
+                      : undefined
+                  }
+                >
+                  {copied ? "Kopyalandı ✓" : "Kopyala"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </ToolLayout>
   );
 }

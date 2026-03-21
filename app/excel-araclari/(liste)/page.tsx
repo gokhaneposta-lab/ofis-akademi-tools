@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import PageRibbon from "@/components/PageRibbon";
-import { THEME } from "@/lib/theme";
+
+const ACCENT = "#217346";
 
 type Tool = {
   name: string;
@@ -81,6 +81,34 @@ const hizliAraclar: Tool[] = [
     name: "Excel Dosya Birleştirici",
     href: "/excel-araclari/excel-dosya-birlestirici",
     description: "Birden fazla Excel dosyasını tek dosyada birleştirir. Aynı kolon yapısına sahip dosyaları alt alta ekleyerek tek Excel çıktısı oluşturur.",
+  },
+];
+
+const mantikFormulAraclar: Tool[] = [
+  {
+    name: "Excel Formül Asistanı",
+    href: "/excel-araclari/formul-asistani",
+    description: "Yapmak istediğinizi yazın (örn. iki kolonu birleştir); size uygun Excel fonksiyonunu önerir (Türkçe / İngilizce).",
+  },
+  {
+    name: "DÜŞEYARA Formül Oluşturucu",
+    href: "/excel-araclari/duseyara-olusturucu",
+    description: "Aranan değer, tablo ve sütun numarasından DÜŞEYARA formülü üretir. Kopyalayıp Excel'e yapıştırın.",
+  },
+  {
+    name: "EĞER Formül Oluşturucu",
+    href: "/excel-araclari/eger-olusturucu",
+    description: "Koşul, doğruysa ve yanlışsa değerlerinden EĞER formülü oluşturur.",
+  },
+  {
+    name: "İç içe EĞER Oluşturucu",
+    href: "/excel-araclari/ic-ice-eger-olusturucu",
+    description: "Birden fazla koşul–sonuç satırından iç içe EĞER formülü üretir (not aralığı, kademe vb.).",
+  },
+  {
+    name: "Excel Formül Açıklayıcı",
+    href: "/excel-araclari/formul-aciklayici",
+    description: "Yapıştırdığınız Excel formülünü Türkçe olarak adım adım açıklar.",
   },
 ];
 
@@ -168,192 +196,145 @@ const databaseAraclar: Tool[] = [
   },
 ];
 
-const mantikFormulAraclar: Tool[] = [
-  {
-    name: "Excel Formül Asistanı",
-    href: "/excel-araclari/formul-asistani",
-    description: "Yapmak istediğinizi yazın (örn. iki kolonu birleştir); size uygun Excel fonksiyonunu önerir (Türkçe / İngilizce).",
-  },
-  {
-    name: "DÜŞEYARA Formül Oluşturucu",
-    href: "/excel-araclari/duseyara-olusturucu",
-    description: "Aranan değer, tablo ve sütun numarasından DÜŞEYARA formülü üretir. Kopyalayıp Excel'e yapıştırın.",
-  },
-  {
-    name: "EĞER Formül Oluşturucu",
-    href: "/excel-araclari/eger-olusturucu",
-    description: "Koşul, doğruysa ve yanlışsa değerlerinden EĞER formülü oluşturur.",
-  },
-  {
-    name: "İç içe EĞER Oluşturucu",
-    href: "/excel-araclari/ic-ice-eger-olusturucu",
-    description: "Birden fazla koşul–sonuç satırından iç içe EĞER formülü üretir (not aralığı, kademe vb.).",
-  },
-  {
-    name: "Excel Formül Açıklayıcı",
-    href: "/excel-araclari/formul-aciklayici",
-    description: "Yapıştırdığınız Excel formülünü Türkçe olarak adım adım açıklar.",
-  },
-];
-
-const SECTIONS: { id: string; title: string; subtitle: string; tools: Tool[] }[] = [
+const SECTIONS: { id: string; title: string; subtitle: string; icon: string; tools: Tool[] }[] = [
   {
     id: "hizli",
-    title: "Hızlı işlem",
+    title: "Hızlı İşlem",
     subtitle: "Anında kullan: metin, veri, tarih ve sayı araçları",
+    icon: "⚡",
     tools: hizliAraclar,
   },
   {
     id: "mantik",
     title: "Mantık & Formül",
     subtitle: "DÜŞEYARA, EĞER formül oluşturucu ve formül açıklayıcı — eğitimde kullanın",
+    icon: "🧮",
     tools: mantikFormulAraclar,
   },
   {
     id: "finans",
-    title: "Finans & bankacılık",
+    title: "Finans & Bankacılık",
     subtitle: "IBAN, faiz, kredi taksit, yüzde, vade hesaplamaları",
+    icon: "💰",
     tools: finansAraclar,
   },
   {
     id: "istatistik",
     title: "Excel Veri Analizi Araçları",
-    subtitle: "İstatistik araçları: çeyrek hesaplama, yüzdelik hesaplama, z skor, korelasyon hesaplama, regresyon",
+    subtitle: "İstatistik araçları: çeyrek, yüzdelik, z skor, korelasyon, regresyon",
+    icon: "📊",
     tools: istatistikAraclar,
   },
   {
     id: "database",
-    title: "Database & Veri Dönüştürme Araçları",
-    subtitle: "Excel ile veritabanı arasında veri taşıma ve dönüştürme: SQL INSERT, aktarım",
+    title: "Database & Veri Dönüştürme",
+    subtitle: "Excel ile veritabanı arasında veri taşıma ve dönüştürme",
+    icon: "🗄️",
     tools: databaseAraclar,
   },
 ];
 
-function ToolTable({
-  tools,
-  title,
-  subtitle,
-}: {
-  tools: Tool[];
-  title: string;
-  subtitle?: string;
-}) {
+function ToolCard({ tool }: { tool: Tool }) {
   return (
-    <div>
-      {title ? <h2 className="mb-1 text-base font-bold text-gray-800">{title}</h2> : null}
-      {subtitle ? <p className="mb-3 text-xs text-gray-500">{subtitle}</p> : null}
-      <div
-        className="overflow-hidden rounded-b shadow-lg border border-t-0"
-        style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-      >
-        <div
-          className="flex border-b"
-          style={{ background: THEME.cornerBg, borderColor: THEME.gridLine }}
-        >
-          <div
-            className="w-12 flex-shrink-0 border-r flex items-center justify-center text-xs font-semibold text-gray-600 py-2"
-            style={{ borderColor: THEME.gridLine }}
-          />
-          <div
-            className="flex-1 border-r px-3 py-2 text-xs font-semibold text-gray-700"
-            style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}
-          >
-            A — Araç
-          </div>
-          <div
-            className="flex-[2] border-r px-3 py-2 text-xs font-semibold text-gray-700"
-            style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}
-          >
-            B — Açıklama
-          </div>
-          <div
-            className="w-28 flex-shrink-0 px-3 py-2 text-xs font-semibold text-gray-700 text-center"
-            style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}
-          >
-            İşlem
-          </div>
-        </div>
-        {tools.map((tool, i) => (
-          <div
-            key={tool.href}
-            className="flex border-b group hover:bg-[#f0f7f4] transition-colors last:border-b-0"
-            style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}
-          >
-            <div
-              className="w-12 flex-shrink-0 border-r flex items-center justify-center text-xs text-gray-500 py-3"
-              style={{ borderColor: THEME.gridLine, background: THEME.headerBg }}
-            >
-              {i + 1}
-            </div>
-            <div
-              className="flex-1 border-r px-3 py-3 text-sm font-medium text-gray-900"
-              style={{ borderColor: THEME.gridLine }}
-            >
-              {tool.name}
-            </div>
-            <div
-              className="flex-[2] border-r px-3 py-3 text-sm text-gray-600"
-              style={{ borderColor: THEME.gridLine }}
-            >
-              {tool.description}
-            </div>
-            <div
-              className="w-28 flex-shrink-0 flex items-center justify-center p-2"
-              style={{ borderColor: THEME.gridLine }}
-            >
-              <Link
-                href={tool.href}
-                className="inline-flex items-center justify-center rounded px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-90"
-                style={{ background: THEME.ribbon }}
-              >
-                Aç
-              </Link>
-            </div>
-          </div>
-        ))}
+    <Link
+      href={tool.href}
+      className="group flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
+    >
+      <div className="flex-1 min-w-0">
+        <h3 className="text-[15px] font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors leading-snug">
+          {tool.name}
+        </h3>
+        <p className="mt-1 text-[13px] leading-relaxed text-gray-500">
+          {tool.description}
+        </p>
       </div>
-    </div>
+      <span className="mt-0.5 flex-shrink-0 text-gray-300 group-hover:text-emerald-500 transition-colors">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </span>
+    </Link>
   );
 }
 
 export default function ToolsHub() {
+  const totalTools = SECTIONS.reduce((sum, s) => sum + s.tools.length, 0);
+
   return (
-    <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title="Excel Araçları"
-        description="Beş ana başlıkta: hızlı işlem, mantık & formül, finans & bankacılık, istatistik, database & veri dönüştürme."
-      />
-
-      <div className="mx-4 mt-2 mb-6 max-w-5xl">
-        <p className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm leading-relaxed text-slate-700">
-          Ücretsiz Excel araçları: hızlı işlem (ad soyad ayırma, CSV kolonlara ayırma, liste birleştirme, sayıyı yazıya çevirme, boşluk temizleme, büyük/küçük harf, tarih farkı, tarih format dönüştürme, Excel dosya birleştirme); mantık & formül (formül asistanı, DÜŞEYARA ve EĞER oluşturucu, formül açıklayıcı); finans (IBAN doğrulama, faiz, kredi taksit, yüzde); istatistik (betimsel istatistik, çeyrek-yüzdelik, korelasyon, z skor, regresyon); database & veri dönüştürme (Excel → SQL INSERT, Excel → JSON, iki listeyi karşılaştır, e-posta temizleme, telefon formatlama). Tarayıcıda çalışır, kurulum gerekmez. Ofis Akademi.
-        </p>
-        {SECTIONS.map((section, index) => (
-          <section
-            key={section.id}
-            className="mb-10 rounded-xl border bg-white p-5 sm:p-6 shadow-sm"
-            style={{ borderColor: THEME.gridLine }}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
+      {/* Header */}
+      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3 sm:px-6">
+          <Link
+            href="/"
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition hover:bg-gray-200"
+            aria-label="Ana Sayfa"
           >
-            <div className="flex items-start gap-3 mb-4">
-            <span
-              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-              style={{ background: THEME.ribbon }}
-            >
-              {index + 1}
-            </span>
-            <div>
-              <h2 className="text-base font-bold text-gray-800">{section.title}</h2>
-              <p className="text-xs text-gray-500 mt-0.5">{section.subtitle}</p>
-            </div>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </Link>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg font-bold text-gray-900 truncate">Excel Araçları</h1>
           </div>
-          <ToolTable tools={section.tools} title="" subtitle="" />
-          </section>
-        ))}
-      </div>
+          <span
+            className="flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+            style={{ background: ACCENT }}
+          >
+            {totalTools} araç
+          </span>
+        </div>
+      </header>
 
-      <div className="text-center text-xs text-gray-500 pb-4">
-        {"Ofis Akademi · Excel & Veri Analizi"}
-      </div>
+      <main className="mx-auto max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
+        {/* SEO description */}
+        <p className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-[13px] leading-relaxed text-slate-600">
+          Ücretsiz Excel araçları: hızlı işlem (ad soyad ayırma, CSV kolonlara ayırma, liste birleştirme, sayıyı yazıya çevirme, boşluk temizleme, büyük/küçük harf, tarih farkı, tarih format dönüştürme, Excel dosya birleştirme); mantık & formül (formül asistanı, DÜŞEYARA ve EĞER oluşturucu, formül açıklayıcı); finans (IBAN doğrulama, faiz, kredi taksit, yüzde); istatistik (betimsel istatistik, çeyrek-yüzdelik, korelasyon, z skor, regresyon); database & veri dönüştürme (Excel → SQL INSERT, Excel → JSON, iki listeyi karşılaştır, e-posta temizleme, telefon formatlama). Tarayıcıda çalışır, kurulum gerekmez.
+        </p>
+
+        {/* Quick nav */}
+        <div className="mb-6 flex flex-wrap gap-2">
+          {SECTIONS.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+            >
+              {section.icon} {section.title}
+            </a>
+          ))}
+        </div>
+
+        {/* Sections */}
+        <div className="space-y-8">
+          {SECTIONS.map((section, index) => (
+            <section key={section.id} id={section.id}>
+              <div className="mb-3 flex items-center gap-3">
+                <span
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm"
+                  style={{ background: ACCENT }}
+                >
+                  {index + 1}
+                </span>
+                <div className="min-w-0">
+                  <h2 className="text-base font-bold text-gray-900">{section.title}</h2>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{section.subtitle}</p>
+                </div>
+              </div>
+
+              <div className="grid gap-2.5 sm:grid-cols-2">
+                {section.tools.map((tool) => (
+                  <ToolCard key={tool.href} tool={tool} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </main>
+
+      <footer className="pb-6 pt-4 text-center text-xs text-gray-400">
+        Ofis Akademi · Excel & Veri Analizi
+      </footer>
     </div>
   );
 }

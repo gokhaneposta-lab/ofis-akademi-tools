@@ -2,10 +2,8 @@
 
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import PageRibbon from "@/components/PageRibbon";
 import ExcelPracticeGrid from "@/components/ExcelPracticeGrid";
 import type { PracticeGridDef } from "@/components/ExcelPracticeGrid";
-import { THEME } from "@/lib/theme";
 import { buildLevelWorkbook, downloadWorkbook, type SheetFromTable } from "@/lib/egitimExcelExport";
 
 /** PDF'de html2canvas'ın yakalayabilmesi için SVG'lere açık width/height ve stroke veriliyor */
@@ -1366,16 +1364,20 @@ export default function TrainingLevelPage({
 
   if (!config) {
     return (
-      <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
-        <PageRibbon title="Eğitim bulunamadı" description="Bu seviye adresi geçerli değil." />
-        <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-          <div
-            className="rounded-b shadow-lg border border-t-0 p-6"
-            style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-          >
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
+        <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+          <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3 sm:px-6">
+            <Link href="/egitimler" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition hover:bg-gray-200" aria-label="Eğitimler">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </Link>
+            <h1 className="text-lg font-bold text-gray-900">Eğitim bulunamadı</h1>
+          </div>
+        </header>
+        <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <p className="text-sm text-gray-600">
               Lütfen adres çubuğundaki seviyeyi kontrol edin veya{" "}
-              <Link href="/#topics" className="font-medium underline" style={{ color: THEME.ribbon }}>
+              <Link href="/egitimler" className="font-medium text-emerald-700 underline">
                 Excel eğitim içerikleri
               </Link>{" "}
               bölümünden tekrar seçim yapın.
@@ -1387,72 +1389,78 @@ export default function TrainingLevelPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#e2e8ec]" style={{ fontFamily: THEME.font }}>
-      <PageRibbon
-        title={config.title}
-        description={config.description}
-      />
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
+      {/* Header */}
+      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3 sm:px-6">
+          <Link href="/egitimler" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition hover:bg-gray-200" aria-label="Eğitimler">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          </Link>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg font-bold text-gray-900 truncate">{config.title}</h1>
+            <p className="text-xs text-gray-500 truncate">{config.label}</p>
+          </div>
+        </div>
+      </header>
 
-      <main className="mx-auto max-w-6xl flex flex-col px-4 py-6 sm:px-6 lg:px-8 pb-10 min-h-screen">
+      <main className="mx-auto max-w-6xl flex flex-col px-4 py-5 sm:px-6 lg:px-8 pb-10 min-h-screen">
+        {/* Description card */}
+        <p className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-[13px] leading-relaxed text-slate-600">
+          {config.description}
+        </p>
         <div className="mb-4">
           <Link
-            href="/egitimler#egitim-seviyeleri"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-700 hover:underline"
-            style={{ color: THEME.ribbon }}
+            href="/egitimler"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:underline"
           >
-            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current text-[10px] leading-none">
-              1
-            </span>
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
             <span>Tüm Eğitim Seviyeleri</span>
           </Link>
         </div>
         {/* Yatay A4 oranında içerik alanı (297×210) */}
         <div ref={pdfContentRef} className="space-y-4 mx-auto w-full max-w-[1122px] print:max-w-none pb-24">
-        <div
-          className="rounded-b shadow-lg border border-t-0 overflow-hidden"
-          style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
-        >
-          <div className="grid gap-0 text-sm grid-cols-[1fr_1fr]">
-            <div className="p-3 border-b sm:border-b-0 sm:border-r" style={{ borderColor: THEME.gridLine, background: THEME.headerBg }}>
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-600">Kimler için?</h2>
-              <p className="mt-1 text-gray-800 text-xs">{config.target}</p>
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="grid gap-0 text-sm grid-cols-1 sm:grid-cols-2">
+            <div className="p-4 border-b sm:border-b-0 sm:border-r border-gray-200 bg-gray-50">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500">Kimler için?</h2>
+              <p className="mt-1 text-gray-800 text-[13px]">{config.target}</p>
             </div>
-            <div className="p-3" style={{ background: THEME.sheetBg, borderColor: THEME.gridLine }}>
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-600">Odak</h2>
-              <ul className="mt-1 space-y-0.5 text-gray-700 text-xs">
+            <div className="p-4 bg-white">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500">Odak</h2>
+              <ul className="mt-1 space-y-1 text-gray-700 text-[13px]">
                 {config.focus.map((item) => (
-                  <li key={item} className="flex gap-1.5">
-                    <span className="mt-[4px] h-1 w-1 flex-shrink-0 rounded-full bg-[#217346]" />
+                  <li key={item} className="flex gap-2">
+                    <span className="mt-[6px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
-          <div className="px-4 py-2 border-t flex flex-wrap items-center gap-2" style={{ borderColor: THEME.gridLine, background: "#f0f4f8" }}>
-            <span className="text-xs text-gray-600">Bu seviyedeki tüm uygulama örneklerini tek Excel dosyasında indir:</span>
+          <div className="px-4 py-3 border-t border-gray-200 bg-gray-50/80 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-gray-600 w-full sm:w-auto">Bu seviyedeki tüm uygulama örneklerini indir:</span>
             <button
               type="button"
               onClick={handleDownloadExcel}
-              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
-              style={{ background: THEME.ribbon }}
+              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
+              style={{ background: "#217346" }}
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.576a1 1 0 01.707.293l3.854 3.854a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              {config.label} – Örnek Excel İndir
+              Excel İndir
             </button>
             <button
               type="button"
               onClick={handleDownloadPdf}
               disabled={pdfLoading}
-              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60"
               style={{ background: "#c53030" }}
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-              {pdfLoading ? "PDF hazırlanıyor…" : "PDF olarak indir"}
+              {pdfLoading ? "Hazırlanıyor…" : "PDF İndir"}
             </button>
             {pdfFallback && (
               <a
@@ -1464,9 +1472,9 @@ export default function TrainingLevelPage({
                     setPdfFallback(null);
                   }, 500);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-green-700 bg-green-100 hover:bg-green-200 transition"
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 transition"
               >
-                PDF hazır — indirmek için tıklayın
+                PDF hazır — tıklayın
               </a>
             )}
           </div>
@@ -1476,20 +1484,18 @@ export default function TrainingLevelPage({
           {config.functionGroups.map((group) => (
             <article
               key={group.title}
-              className="rounded-b shadow border border-t-0"
-              style={{ borderColor: THEME.gridLine, background: "#fafafa" }}
+              className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden"
             >
-              <div className="px-4 py-2 border-b" style={{ background: THEME.headerBg, borderColor: THEME.gridLine }}>
+              <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
                 <h2 className="text-sm font-semibold text-gray-800 sm:text-base">{group.title}</h2>
-                <p className="mt-0.5 text-xs text-gray-600 sm:text-sm">{group.description}</p>
+                <p className="mt-0.5 text-xs text-gray-500 sm:text-sm">{group.description}</p>
               </div>
               {"image" in group && group.image && (
                 <div className="px-4 pt-3">
                   <img
                     src={group.image}
                     alt=""
-                    className="max-w-[640px] w-full rounded border shadow-sm object-cover"
-                    style={{ borderColor: THEME.gridLine }}
+                    className="max-w-[640px] w-full rounded-xl border border-gray-200 shadow-sm object-cover"
                   />
                 </div>
               )}
@@ -1497,11 +1503,10 @@ export default function TrainingLevelPage({
                 {(group.functions as unknown as FunctionDef[]).map((fn) => (
                   <div
                     key={fn.name}
-                    className="rounded-lg border p-3 space-y-2"
-                    style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}
+                    className="rounded-xl border border-gray-200 bg-gray-50/50 p-3 space-y-2"
                   >
                     <span className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: THEME.ribbon }}>
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
                         {fn.name}
                       </span>
                       {fn.name.includes("Ctrl+T") && (
@@ -1514,7 +1519,7 @@ export default function TrainingLevelPage({
                     {fn.syntax && (
                       <div className="mt-2">
                         <p className="text-[10px] font-semibold uppercase text-gray-500 mb-0.5">Yazım (sözdizimi)</p>
-                        <code className="block text-xs bg-white border rounded px-2 py-1.5 break-all" style={{ borderColor: THEME.gridLine }}>
+                        <code className="block text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5 break-all">
                           {fn.syntax}
                         </code>
                       </div>
@@ -1547,8 +1552,8 @@ export default function TrainingLevelPage({
                     <ExcelPracticeGrid def={def} />
                   </div>
                 );
-              })() : levelKey === "ileri" && (group.title === "PivotTable ve Özetleme" || group.title === "Dinamik Dizi & Gelişmiş Fonksiyonlar") ? (
-                <div className="px-4 pb-4 py-3 rounded border text-sm text-gray-600" style={{ borderColor: THEME.gridLine, background: THEME.sheetBg }}>
+              })(              ) : levelKey === "ileri" && (group.title === "PivotTable ve Özetleme" || group.title === "Dinamik Dizi & Gelişmiş Fonksiyonlar") ? (
+                <div className="px-4 pb-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-600 bg-white">
                   <p className="font-medium text-gray-700">Uygulama</p>
                   <p className="mt-1">
                     Bu gruptaki araçlar için örnek veri, sayfa başındaki <strong>Örnek Excel İndir</strong> butonuyla indirdiğiniz dosyada yer alır: PivotTable için &quot;PivotTable Ornek Veri&quot;, FİLTRE/SIRALA/BENZERSİZ için &quot;Filtre Siralar Benzersiz&quot; sayfasını kullanabilirsiniz.

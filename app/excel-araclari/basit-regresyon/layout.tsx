@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Regresyon Hesaplama (Doğrusal) | Excel İstatistik Aracı",
   description:
     "Basit doğrusal regresyon: eğim, kesişim ve R². Y = a + b·X hesaplama. Ücretsiz regresyon hesaplama aracı. Ofis Akademi.",
+  alternates: { canonical: "https://ofisakademi.com/excel-araclari/basit-regresyon" },
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -33,9 +33,7 @@ export const metadata: Metadata = {
   ],
   applicationName: "Ofis Akademi",
   category: "education",
-  alternates: {
-    canonical: "/",
-  },
+  alternates: {},
   openGraph: {
     type: "website",
     locale: "tr_TR",

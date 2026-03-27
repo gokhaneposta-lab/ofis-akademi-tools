@@ -425,7 +425,20 @@ export default function TrainingLevelPage({
                       {fn.name.includes("Ctrl+T") && <ShortcutIcon type="table" className="h-3.5 w-3.5 opacity-70" />}
                       {fn.syntax?.includes("Ctrl+X") && <ShortcutIcon type="cut" className="h-3.5 w-3.5 opacity-70" />}
                     </span>
-                    <p className="text-xs text-gray-700">{fn.use}</p>
+                    <p className="text-xs text-gray-700 leading-relaxed">{fn.use}</p>
+                    {fn.details && (
+                      <p className="text-xs text-gray-600 leading-relaxed">{fn.details}</p>
+                    )}
+                    {fn.steps && fn.steps.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-[10px] font-semibold uppercase text-gray-500 mb-1">Adım adım</p>
+                        <ol className="space-y-1 text-xs text-gray-700 list-decimal list-inside">
+                          {fn.steps.map((step, i) => (
+                            <li key={i} className="leading-relaxed">{step}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
                     {fn.syntax && (
                       <div className="mt-2">
                         <p className="text-[10px] font-semibold uppercase text-gray-500 mb-0.5">Yazım (sözdizimi)</p>
@@ -438,6 +451,16 @@ export default function TrainingLevelPage({
                         <ul className="space-y-0.5 text-xs text-gray-700">
                           {fn.params.map((p) => (
                             <li key={p.name}><span className="font-medium text-gray-800">{p.name}:</span> {p.description}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {fn.tips && fn.tips.length > 0 && (
+                      <div className="mt-2 rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-2">
+                        <p className="text-[10px] font-semibold uppercase text-amber-700 mb-1">İpucu / Dikkat</p>
+                        <ul className="space-y-0.5 text-xs text-amber-900">
+                          {fn.tips.map((tip, i) => (
+                            <li key={i} className="flex gap-1.5 leading-relaxed"><span className="mt-0.5 flex-shrink-0">💡</span><span>{tip}</span></li>
                           ))}
                         </ul>
                       </div>

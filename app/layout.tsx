@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import SiteTopBar from "@/components/SiteTopBar";
 import BrandJsonLd from "@/components/BrandJsonLd";
@@ -87,6 +88,7 @@ export default function RootLayout({
         <SiteTopBar />
         <BrandJsonLd baseUrl={BASE_URL} />
         {children}
+        <Analytics />
       </body>
     </html>
   );

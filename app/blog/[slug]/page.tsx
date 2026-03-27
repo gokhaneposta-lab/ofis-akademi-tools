@@ -111,14 +111,14 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="mb-6 rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[14px] font-semibold text-gray-900">
-              Bu işlemi 5 saniyede yapmak ister misiniz?
+              {post.toolHref ? "Bu işlemi 5 saniyede yapmak ister misiniz?" : "Bu konuyu adım adım öğrenmek ister misiniz?"}
             </p>
             <Link
-              href={post.toolHref}
+              href={post.toolHref || post.guideHref || "/egitimler"}
               className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 shadow-sm"
               style={{ background: ACCENT }}
             >
-              Aracı kullan
+              {post.toolHref ? "Aracı kullan" : "Eğitime başla"}
             </Link>
           </div>
           <p className="mt-2 text-[13px] text-gray-600">
@@ -146,24 +146,26 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Mid CTA */}
         <div className="my-8 rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-5 text-center">
           <p className="text-[14px] font-semibold text-gray-900 mb-1">
-            En hızlı çözüm: ücretsiz aracımızı kullanın
+            {post.toolHref ? "En hızlı çözüm: ücretsiz aracımızı kullanın" : "Bu konuyu uygulamalı öğrenin"}
           </p>
           <p className="text-[13px] text-gray-600 mb-4">
-            Listeyi yapıştırın, tek tıkla sonucu alın ve Excel'e yapıştırın.
+            {post.toolHref
+              ? "Listeyi yapıştırın, tek tıkla sonucu alın ve Excel'e yapıştırın."
+              : "Adım adım eğitim içerikleriyle Excel becerilerinizi geliştirin."}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
-              href={post.toolHref}
+              href={post.toolHref || post.guideHref || "/egitimler"}
               className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white transition hover:opacity-90 shadow-sm"
               style={{ background: ACCENT }}
             >
-              {post.toolName} aracını aç
+              {post.toolHref ? `${post.toolName} aracını aç` : `${post.guideName || "Eğitime"} başla`}
             </Link>
             <Link
-              href="/excel-araclari"
+              href={post.toolHref ? "/excel-araclari" : "/egitimler"}
               className="text-[13px] font-medium text-emerald-600 hover:underline"
             >
-              Tüm Excel araçları →
+              {post.toolHref ? "Tüm Excel araçları →" : "Tüm eğitimler →"}
             </Link>
           </div>
         </div>
@@ -178,14 +180,16 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Bottom CTA */}
         <div className="mt-8 rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-5 text-center">
           <p className="text-[14px] font-medium text-gray-800 mb-3">
-            Bu işlemi saniyeler içinde yapmak için ücretsiz aracımızı deneyin:
+            {post.toolHref
+              ? "Bu işlemi saniyeler içinde yapmak için ücretsiz aracımızı deneyin:"
+              : "Bu konuyu adım adım öğrenmek için eğitimimize göz atın:"}
           </p>
           <Link
-            href={post.toolHref}
+            href={post.toolHref || post.guideHref || "/egitimler"}
             className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white transition hover:opacity-90 shadow-sm"
             style={{ background: ACCENT }}
           >
-            {post.toolName} aracına git
+            {post.toolHref ? `${post.toolName} aracına git` : `${post.guideName || "Eğitime"} git`}
           </Link>
         </div>
 
@@ -197,9 +201,15 @@ export default async function BlogPostPage({ params }: Props) {
           <Link href="/excel-araclari" className="text-[13px] font-medium text-emerald-600 hover:underline">
             Excel Araçları
           </Link>
-          <Link href={post.toolHref} className="text-[13px] font-medium text-emerald-600 hover:underline">
-            {post.toolName}
-          </Link>
+          {post.toolHref ? (
+            <Link href={post.toolHref} className="text-[13px] font-medium text-emerald-600 hover:underline">
+              {post.toolName}
+            </Link>
+          ) : post.guideHref ? (
+            <Link href={post.guideHref} className="text-[13px] font-medium text-emerald-600 hover:underline">
+              {post.guideName}
+            </Link>
+          ) : null}
         </div>
 
         {/* Related posts */}

@@ -13,8 +13,11 @@ export type BlogPost = {
   title: string;
   description: string;
   date: string;
-  toolHref: string;
-  toolName: string;
+  toolHref?: string;
+  toolName?: string;
+  /** For posts without a tool: link to a related education/guide page. */
+  guideHref?: string;
+  guideName?: string;
   content: ContentBlock[];
 };
 
@@ -48,14 +51,26 @@ export function getCategoryBySlug(slug: string): (typeof BLOG_CATEGORIES)[number
 }
 
 export function categorizePost(post: Pick<BlogPost, "slug" | "toolHref" | "toolName" | "title">): BlogCategorySlug {
-  const s = `${post.slug} ${post.title} ${post.toolHref} ${post.toolName}`.toLowerCase();
+  const s = `${post.slug} ${post.title} ${post.toolHref ?? ""} ${post.toolName ?? ""}`.toLowerCase();
   if (s.includes("kredi") || s.includes("faiz") || s.includes("yuzde") || s.includes("yüzde")) return "finans";
   if (s.includes("iban") || s.includes("telefon") || s.includes("email") || s.includes("e-posta")) return "dogrulama";
   if (s.includes("json") || s.includes("sql") || s.includes("csv")) return "donusturme";
-  if (s.includes("regresyon") || s.includes("korelasyon") || s.includes("z-score") || s.includes("istatistik") || s.includes("frekans"))
+  if (
+    s.includes("regresyon") || s.includes("korelasyon") || s.includes("z-score") ||
+    s.includes("istatistik") || s.includes("frekans") || s.includes("pivot") ||
+    s.includes("grafik") || s.includes("dashboard")
+  )
     return "veri-analizi";
-  if (s.includes("formul") || s.includes("düşeyara") || s.includes("duseyara") || s.includes("eger")) return "formuller";
-  if (s.includes("sablon") || s.includes("checklist") || s.includes("kart")) return "kaynaklar";
+  if (
+    s.includes("formul") || s.includes("düşeyara") || s.includes("duseyara") ||
+    s.includes("eger") || s.includes("xlookup") || s.includes("çaprazara") || s.includes("caprazara")
+  )
+    return "formuller";
+  if (
+    s.includes("sablon") || s.includes("checklist") || s.includes("kart") ||
+    s.includes("baslangic") || s.includes("başlangıç") || s.includes("nasil-kullanilir")
+  )
+    return "kaynaklar";
   return "metin";
 }
 
@@ -64,7 +79,7 @@ export function getCategoryLabelForPost(post: Pick<BlogPost, "slug" | "toolHref"
   return getCategoryBySlug(cat)?.label || "Excel";
 }
 
-export function getBenefitLine(post: Pick<BlogPost, "title" | "toolName" | "slug">): string {
+export function getBenefitLine(post: Pick<BlogPost, "title" | "toolName" | "slug" | "guideName">): string {
   const t = post.title.toLowerCase();
   if (t.includes("1000") || t.includes("saniy")) return "1000 satırı saniyeler içinde çözün.";
   if (t.includes("tek tık") || t.includes("tek tıkla")) return "Tek tıkla sonucu alıp Excel'e yapıştırın.";
@@ -73,7 +88,9 @@ export function getBenefitLine(post: Pick<BlogPost, "title" | "toolName" | "slug
   if (post.slug.includes("csv")) return "CSV'yi tek tıkla sütunlara ayırın.";
   if (post.slug.includes("tarih-farki")) return "Tarih farkını toplu hesaplayın.";
   if (post.slug.includes("iki-liste")) return "Ortak ve farklı kayıtları anında bulun.";
-  return `${post.toolName} ile 5 saniyede çözün.`;
+  if (post.guideName) return `${post.guideName} ile adım adım öğrenin.`;
+  if (post.toolName) return `${post.toolName} ile 5 saniyede çözün.`;
+  return "Adım adım rehberimizle hemen öğrenin.";
 }
 
 export function getPostPlainText(post: BlogPost): string {

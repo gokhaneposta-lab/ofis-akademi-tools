@@ -1,7 +1,12 @@
 "use client";
-
+import ToolLayout from "@/components/ToolLayout";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+const SEPARATORS = [
+  { key: ";", label: ";" },
+  { key: ",", label: "," },
+  { key: "space", label: "Boşluk" }
+];
 
 /** Gösterge panelinde dönüşümlü gösterilecek Excel formülleri */
 const DASHBOARD_FORMULAS = [
@@ -77,6 +82,7 @@ export default function Home() {
   const [aboneEmail, setAboneEmail] = useState("");
   const [aboneStatus, setAboneStatus] = useState<AboneStatus>("idle");
   const [aboneError, setAboneError] = useState("");
+  const [separator, setSeparator] = useState(";");
 
   // Formülü periyodik değiştir
   useEffect(() => {
@@ -98,6 +104,14 @@ export default function Home() {
   }, []);
 
   return (
+    <ToolLayout
+  title="Ad Soyad Ayır"
+  description="Tam adı ad ve soyad olarak ayırır"
+  path="/excel-araclari/ad-soyad-ayir"
+  howToSteps={[]}
+  faq={[]}
+  aboutContent={null}
+    >
     <div className="relative min-h-screen max-w-[100vw] overflow-x-hidden bg-[#e9f5f1] text-slate-900">
       {/* Excel hücre grid arka plan */}
       <div
@@ -153,6 +167,12 @@ export default function Home() {
                 className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
               >
                 Blog
+              </a>
+              <a
+                href="/formul-kutuphanesi"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
+              >
+                Formül Kütüphanesi
               </a>
             </div>
 
@@ -498,5 +518,6 @@ export default function Home() {
         </footer>
       </main>
     </div>
+    </ToolLayout>
   );
 }

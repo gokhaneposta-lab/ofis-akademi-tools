@@ -1,5 +1,4 @@
 "use client";
-import ToolLayout from "@/components/ToolLayout";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 const SEPARATORS = [
@@ -104,14 +103,6 @@ export default function Home() {
   }, []);
 
   return (
-    <ToolLayout
-  title="Ad Soyad Ayır"
-  description="Tam adı ad ve soyad olarak ayırır"
-  path="/excel-araclari/ad-soyad-ayir"
-  howToSteps={[]}
-  faq={[]}
-  aboutContent={null}
-    >
     <div className="relative min-h-screen max-w-[100vw] overflow-x-hidden bg-[#e9f5f1] text-slate-900">
       {/* Excel hücre grid arka plan */}
       <div
@@ -518,6 +509,5 @@ export default function Home() {
         </footer>
       </main>
     </div>
-    </ToolLayout>
   );
 }

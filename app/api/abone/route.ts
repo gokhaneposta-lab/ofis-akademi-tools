@@ -55,6 +55,28 @@ export async function POST(request: Request) {
       );
     }
 
+    /** Kişiyi Resend Audience (Contacts) listesine ekler — panelde Audience → Contacts. */
+    try {
+      const { error: contactError } = await resend.contacts.create({
+        email,
+        unsubscribed: false,
+      });
+      if (contactError) {
+        const raw = JSON.stringify(contactError).toLowerCase();
+        const isDuplicate =
+          raw.includes("duplicate") ||
+          raw.includes("already") ||
+          raw.includes("exist");
+        if (isDuplicate) {
+          console.info("Resend: contact zaten kayıtlı", email);
+        } else {
+          console.error("Resend contacts.create:", contactError);
+        }
+      }
+    } catch (contactErr) {
+      console.error("Resend contacts.create exception:", contactErr);
+    }
+
     return NextResponse.json({ success: true, id: data?.id });
   } catch (err) {
     console.error("Abone API error:", err);

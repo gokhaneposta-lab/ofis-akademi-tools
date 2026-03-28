@@ -179,9 +179,6 @@ export default function EgitimlerPage() {
         </section>
       </main>
 
-      <footer className="pb-6 pt-4 text-center text-xs text-gray-400">
-        Ofis Akademi · Excel & Veri Analizi
-      </footer>
     </div>
   );
 }

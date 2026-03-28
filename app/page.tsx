@@ -505,14 +505,6 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="border-t border-slate-300 py-6 text-sm text-slate-600">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <span>© {new Date().getFullYear()} Ofis Akademi</span>
-            <span className="text-slate-700">
-              Excel & veri analizi ile ofis hayatını kolaylaştır.
-            </span>
-          </div>
-        </footer>
       </main>
     </div>
   );

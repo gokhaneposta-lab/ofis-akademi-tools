@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import SiteTopBar from "@/components/SiteTopBar";
+import SiteFooter from "@/components/SiteFooter";
 import BrandJsonLd from "@/components/BrandJsonLd";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
@@ -88,6 +89,7 @@ export default function RootLayout({
         <SiteTopBar />
         <BrandJsonLd baseUrl={BASE_URL} />
         {children}
+        <SiteFooter />
         <Analytics />
       </body>
     </html>

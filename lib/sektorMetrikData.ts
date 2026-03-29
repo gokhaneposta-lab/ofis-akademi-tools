@@ -389,6 +389,308 @@ Adet bazlı veya prim bazlı hesaplanabilir. Adet bazlı müşteri sadakatini, p
     relatedSlugs: ["hasar-prim-orani", "kazanilmis-prim"],
     calculatorType: "yenileme-orani",
   },
+
+  /* ═══════════════════════════════════════════
+     FİNANSAL ORANLAR (LİKİDİT & KÂRLILIK & YAPI)
+     ═══════════════════════════════════════════ */
+  {
+    slug: "cari-oran",
+    name: "Cari Oran",
+    nameEn: "Current Ratio",
+    category: "finansal-oranlar",
+    icon: "📐",
+    summary:
+      "Dönen varlıkların kısa vadeli yükümlülüklere oranıdır. Şirketin kısa vadeli borçlarını ödeme gücünü ölçer.",
+    whatIs: `Cari oran (Current Ratio), bilançodaki dönen varlıkların kısa vadeli yükümlülüklere bölünmesiyle bulunur.
+
+**Formül:** Cari Oran = Dönen Varlıklar ÷ Kısa Vadeli Yükümlülükler
+
+Sonuç genellikle **oransal** ifade edilir (örn. 1,8 — yani her 1 TL kısa borç için 1,8 TL dönen varlık). Bazı kaynaklarda yüzde olarak da gösterilir; önemli olan kullandığınız tanımı tutarlı tutmanızdır.`,
+    whyImportant: `Bankalar, tedarikçiler ve yönetim kurulu likiditeyi izler. Cari oran düşükse nakit sıkışması riski yüksektir; çok yüksekse ise varlıkların verimsiz kullanıldığı (fazla stok, tahsilatta gecikme) şüphesi doğabilir.
+
+Excel’de bilanço satırlarını düzenli güncellerseniz cari oranı otomatik raporlayabilirsiniz.`,
+    formulas: [
+      {
+        label: "Cari oran",
+        formula: "Cari Oran = Dönen Varlıklar / Kısa Vadeli Yükümlülükler",
+        explanation: "Bilanço tarihi ve konsolidasyon kapsamı net olmalıdır.",
+      },
+    ],
+    steps: [
+      "Bilançodan dönen varlıklar toplamını alın.",
+      "Aynı bilançodan kısa vadeli yükümlülükler toplamını alın.",
+      "Dönen varlıkları kısa vadeli yükümlülüklere bölün.",
+      "Yorum için geçmiş çeyrekler ve sektör ortalamasıyla karşılaştırın.",
+    ],
+    examples: [
+      {
+        title: "Örnek",
+        data: {
+          "Dönen Varlıklar": "15.000.000 ₺",
+          "Kısa Vadeli Yükümlülük": "7.000.000 ₺",
+        },
+        result: "Cari oran ≈ 2,14",
+        explanation:
+          "Her 1 TL kısa vadeli borç için yaklaşık 2,14 TL dönen varlık var — kısa vadeli likidite genelde yeterli kabul edilir; sektör normuna bakılmalıdır.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Tek hücre",
+        formula: "=Bilanco!B10/Bilanco!B25",
+        description: "B10 dönen varlıklar, B25 kısa vadeli yükümlülük (örnek).",
+      },
+      {
+        title: "Koşullu biçimlendirme",
+        formula: "=EĞER(CariOran<1;\"Dikkat\";\"İzle\")",
+        description: "1’in altına düşen hücreleri kırmızıya boyayın.",
+      },
+    ],
+    interpretation: [
+      { range: "< 1", meaning: "Kısa vadeli ödeme riski yüksek — acil nakit veya bilanço incelemesi." },
+      { range: "1 – 1,5", meaning: "Sınırda; sektöre ve tahsilat döngüsüne göre değerlendirin." },
+      { range: "1,5 – 2,5", meaning: "Yaygın olarak kabul edilen sağlıklı bant." },
+      { range: "> 2,5–3", meaning: "Likidite iyi olabilir; varlık verimliliği ve işletme sermayesi detayı istenebilir." },
+    ],
+    tips: [
+      "Dönen varlıklar içinde nakite çevrilmesi zor kalemler (şüpheli alacaklar vb.) için ayrı notlar kullanın.",
+      "Kısa vadeli borç içinde vadesi yaklaşan uzun vadeli kısımları unutmayın.",
+    ],
+    relatedSlugs: ["nakit-oran", "asit-test-orani"],
+    calculatorType: "cari-oran",
+  },
+  {
+    slug: "nakit-oran",
+    name: "Nakit Oranı",
+    nameEn: "Cash Ratio",
+    category: "finansal-oranlar",
+    icon: "💵",
+    summary:
+      "Nakit ve nakit benzerlerinin kısa vadeli yükümlülüklere oranıdır; en katı likidite ölçüsüdür.",
+    whatIs: `Nakit oranı, stok ve alacaklar gibi kalemleri **dışarıda bırakarak** sadece nakit ve nakit benzeri varlıkların kısa vadeli yükümlülüklere oranını ölçer.
+
+**Formül:** Nakit Oranı = (Nakit + Nakit Benzerleri) / Kısa Vadeli Yükümlülükler`,
+    whyImportant: `Cari orandan daha muhafazakâr bir resim verir. Kriz senaryolarında “elimizde gerçekten nakit ne kadar?” sorusuna yaklaşır.`,
+    formulas: [
+      {
+        label: "Nakit oranı",
+        formula: "Nakit Oranı = (Nakit + Nakit Benzerleri) / Kısa Vadeli Yükümlülükler",
+        explanation: "Nakit benzerleri: vadesi kısa, likit enstrümanlar (tanıma göre değişir).",
+      },
+    ],
+    steps: [
+      "Bilançodan nakit kalemini ve nakit benzerlerini toplayın.",
+      "Kısa vadeli yükümlülükleri alın.",
+      "Toplam nakdi kısa vadeli yükümlülüğe bölün.",
+    ],
+    examples: [
+      {
+        title: "Örnek",
+        data: {
+          "Nakit + Nakit benzeri": "3.500.000 ₺",
+          "Kısa Vadeli Yükümlülük": "7.000.000 ₺",
+        },
+        result: "Nakit oranı = 0,50",
+        explanation: "Kısa borcun yarısı nakit ve benzeri ile karşılanabilir; geri kalanı cari oranla birlikte yorumlanmalıdır.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Formül",
+        formula: "=(Nakit+NakitBenzeri)/KisaVadeli",
+        description: "Excel tablosunda satır referanslarıyla güncel tutun.",
+      },
+    ],
+    interpretation: [
+      { range: "< 0,2", meaning: "Çok düşük — kriz likiditesi zayıf olabilir." },
+      { range: "0,2 – 0,5", meaning: "Sektöre bağlı; tahsil hızı yüksekse kabul edilebilir." },
+      { range: "> 0,5", meaning: "Nakit tamponu güçlü — fırsat maliyeti ve sermaye verimliliği değerlendirin." },
+    ],
+    tips: ["Cari ve asit-test ile üçlü likidite seti olarak sunun."],
+    relatedSlugs: ["cari-oran", "asit-test-orani"],
+    calculatorType: "nakit-oran",
+  },
+  {
+    slug: "asit-test-orani",
+    name: "Asit-Test Oranı (Hızlı Oran)",
+    nameEn: "Quick / Acid-test Ratio",
+    category: "finansal-oranlar",
+    icon: "⚡",
+    summary:
+      "Stokları dönen varlıklardan çıkarıp kısa vadeli yükümlülüğe böler; satışa bağlı likiditeyi ölçer.",
+    whatIs: `Asit-test oranı, stokların hızlı nakde dönüşümü her zaman garanti olmadığı için stokları hariç tutar.
+
+**Formül:** Asit-Test = (Dönen Varlıklar − Stoklar) / Kısa Vadeli Yükümlülükler`,
+    whyImportant: `Perakende veya üretimde stok ağırlığı yüksek şirketlerde cari oran yanıltıcı olabilir; asit-test bu açıdan tamamlayıcıdır.`,
+    formulas: [
+      {
+        label: "Asit-test",
+        formula: "Asit-Test Oranı = (Dönen Varlıklar − Stoklar) / Kısa Vadeli Yükümlülükler",
+        explanation: "Stok yerine “stoklar” satırı; TFRS kapsamında tanımlara uyun.",
+      },
+    ],
+    steps: ["Dönen varlıklardan stokları düşün.", "Kısa vadeli yükümlülüğe bölün.", "Cari oranla karşılaştırın."],
+    examples: [
+      {
+        title: "Örnek",
+        data: {
+          "Dönen Varlıklar": "15.000.000 ₺",
+          Stoklar: "4.000.000 ₺",
+          "Kısa Vadeli Yükümlülük": "7.000.000 ₺",
+        },
+        result: "Asit-test ≈ 1,57",
+        explanation: "Stok hariç hızlı varlıklar kısa borcu yaklaşık 1,57 katı karşılıyor.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Formül",
+        formula: "=(Dönen-Stok)/KisaVadeli",
+        description: "",
+      },
+    ],
+    interpretation: [
+      { range: "< 1", meaning: "Stoksuz kısmi likidite kısa borcu tam karşılamıyor olabilir." },
+      { range: "≥ 1", meaning: "Genelde kısa vadeli ödeme için daha rahat tablo." },
+    ],
+    tips: ["Stok devir hızını da ayrıca takip edin."],
+    relatedSlugs: ["cari-oran", "nakit-oran"],
+    calculatorType: "asit-test-orani",
+  },
+  {
+    slug: "vok-roe",
+    name: "VÖK (Öz Sermaye Kârlılığı)",
+    nameEn: "Return on Equity (ROE)",
+    category: "finansal-oranlar",
+    icon: "📈",
+    summary:
+      "Net dönem kârının öz kaynaklara oranıdır; hissedar getirisi açısından sık izlenir.",
+    whatIs: `**VÖK / ROE**, net kârın öz kaynaklara bölünmesiyle (genelde yüzde olarak) hesaplanır.
+
+**Formül:** VÖK (%) = (Net Dönem Kârı / Öz Kaynaklar) × 100
+
+Profesyonel analizde **öz kaynak ortalaması** (dönem başı+sonu/2 vb.) kullanılabilir; hızlı tabloda dönem sonu öz kaynak da kullanılır.`,
+    whyImportant: `Yatırımcı raporları ve performans ölçümünde temel göstergedir; kârlılık ve kaldıraç etkileriyle birlikte yorumlanmalıdır.`,
+    formulas: [
+      {
+        label: "VÖK",
+        formula: "VÖK (%) = Net Dönem Kârı / Öz Kaynaklar × 100",
+        explanation: "Ortalama öz kaynak ile düzeltme tercihe bağlıdır.",
+      },
+    ],
+    steps: ["Gelir tablosundan net dönem kârını alın.", "Bilançodan öz kaynakları alın (veya ortalama hesaplayın).", "Oranı hesaplayın."],
+    examples: [
+      {
+        title: "Örnek",
+        data: { "Net kâr": "2.400.000 ₺", "Öz kaynaklar": "18.000.000 ₺" },
+        result: "VÖK ≈ %13,33",
+        explanation: "Her 100 TL öz kaynak için yaklaşık 13,33 TL net kâr — sektör ve risk ile birlikte okunmalıdır.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Yüzde biçimi",
+        formula: "=NetKar/OzKaynak",
+        description: "Hücreyi % biçiminde gösterin veya *100 ile çarpın.",
+      },
+    ],
+    interpretation: [
+      { range: "Düşük / negatif", meaning: "Kâr baskısı veya zarar — neden analizi (marj, faiz, vergi)." },
+      { range: "Sektör ortalamasına yakın", meaning: "Göreli performans için rakiplerle kıyaslayın." },
+      { range: "Çok yüksek", meaning: "Aşırı finansal kaldıraç ile şişmiş olabilir; borç/öz kaynak ile birlikte bakın." },
+    ],
+    tips: ["ROE’yi borç/öz kaynak ve faaliyet kârı ile birlikte değerlendirin (Dupont yaklaşımı)."],
+    relatedSlugs: ["net-kar-marji", "borc-ozkaynak-orani"],
+    calculatorType: "vok-roe",
+  },
+  {
+    slug: "net-kar-marji",
+    name: "Net Kâr Marjı",
+    nameEn: "Net Profit Margin",
+    category: "finansal-oranlar",
+    icon: "📉",
+    summary:
+      "Net kârın satış hasılatına oranıdır; her 100 TL cirodan ne kadar net kâr kaldığını gösterir.",
+    whatIs: `**Net kâr marjı** = Net Dönem Kârı ÷ Satış Hasılatı × 100
+
+Fiyatlama, maliyet kontrolü ve vergi/Finansman giderlerinin birlikte etkisini özetler.`,
+    whyImportant: `Yönetim ve yatırımcılar için en anlaşılır kârlılık ölçülerinden biridir.`,
+    formulas: [
+      {
+        label: "Net kâr marjı",
+        formula: "Net Kâr Marjı (%) = Net Dönem Kârı / Satış Hasılatı × 100",
+        explanation: "Hasılat tanımı (net hasılat vs brüt) tekdüze olmalıdır.",
+      },
+    ],
+    steps: ["Net dönem kârını alın.", "Aynı dönem satış hasılatını alın.", "Kârı hasılata bölüp yüzdeye çevirin."],
+    examples: [
+      {
+        title: "Örnek",
+        data: { "Net kâr": "2.400.000 ₺", "Satış hasılatı": "48.000.000 ₺" },
+        result: "Net kâr marjı = %5",
+        explanation: "Her 100 TL satıştan 5 TL net kâr kalmış.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Formül",
+        formula: "=NetKar/Hasilat",
+        description: "Çoklu yıl için sütun kopyalama veya PivotTable.",
+      },
+    ],
+    interpretation: [
+      { range: "Negatif", meaning: "Zarar yazılmış — brüt marj ve gider kırılımı gerekir." },
+      { range: "0–3%", meaning: "Dar marj — hacim ve maliyet hassasiyeti yüksek." },
+      { range: "Yüksek (sektöre göre)", meaning: "Fiyat gücü veya düşük maliyet yapısı olabilir." },
+    ],
+    tips: ["Brüt kâr marjı ve faaliyet kârı marjı ile birlikte sunmak daha açıklayıcıdır."],
+    relatedSlugs: ["vok-roe", "borc-ozkaynak-orani"],
+    calculatorType: "net-kar-marji",
+  },
+  {
+    slug: "borc-ozkaynak-orani",
+    name: "Borç / Özkaynak Oranı",
+    nameEn: "Debt-to-Equity Ratio",
+    category: "finansal-oranlar",
+    icon: "⚖️",
+    summary:
+      "Toplam borçların öz kaynaklara oranıdır; finansal kaldıraç ve risk yapısını gösterir.",
+    whatIs: `**Borç / Özkaynak** = Toplam Borçlar / Öz Kaynaklar
+
+“Toplam borç” tanımı (faizli borç mu, tüm yükümlülükler mi) analizde net tanımlanmalıdır; tutarlılık esastır.`,
+    whyImportant: `Banka teminatı, kredi notu ve sigorta finansmanı tartışmalarında sık kullanılır. Çok yüksek oranlar temerrüt riskini artırır.`,
+    formulas: [
+      {
+        label: "Borç/Özkaynak",
+        formula: "Borç / Özkaynak = Toplam Borçlar / Öz Kaynaklar",
+        explanation: "Bazı kaynaklar sadece faiz taşıyan borçları kullanır — raporunuzu açıklayın.",
+      },
+    ],
+    steps: ["Borç toplamını seçin ve tanımlayın.", "Öz kaynakları alın.", "Bölün.", "Sektör normlarıyla karşılaştırın."],
+    examples: [
+      {
+        title: "Örnek",
+        data: { "Toplam borç": "22.000.000 ₺", "Öz kaynak": "18.000.000 ₺" },
+        result: "Borç/Özkaynak ≈ 1,22",
+        explanation: "Her 1 TL öz kaynak için 1,22 TL borç — kaldıraç orta-yüksek banda yaklaşabilir; faiz ödeme kapasitesi kontrol edilmeli.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Formül",
+        formula: "=ToplamBorç/OzKaynak",
+        description: "",
+      },
+    ],
+    interpretation: [
+      { range: "< 0,5", meaning: "Düşük kaldıraç — konservatif yapı." },
+      { range: "0,5 – 1,5", meaning: "Yaygın görülen aralık (sektöre göre değişir)." },
+      { range: "> 2", meaning: "Yüksek kaldıraç — faiz kârını ve borç vadelerini izleyin." },
+    ],
+    tips: ["Öz kaynak negatifse oran yorumlanamaz; önce sermaye yapısı düzeltilmelidir."],
+    relatedSlugs: ["vok-roe", "net-kar-marji", "cari-oran"],
+    calculatorType: "borc-ozkaynak-orani",
+  },
 ];
 
 /* ─── Yardımcı fonksiyonlar ─── */

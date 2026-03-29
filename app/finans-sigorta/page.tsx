@@ -96,11 +96,11 @@ export default function FinansSigortaPage() {
           </section>
         ))}
 
-        {/* Coming soon teaser */}
+        {/* Roadmap */}
         <section className="rounded-2xl border border-dashed border-gray-300 bg-white/50 p-6 text-center">
           <p className="text-sm text-gray-500">
-            <strong>Yakında:</strong> Finansal Oranlar (Cari Oran, Nakit Oran, VÖK) ve
-            Operasyonel Metrikler (SLA, Turnover) eklenecektir.
+            <strong>Sırada:</strong> Operasyonel metrikler (ör. SLA, turnover, devamsızlık) —
+            Excel ile hesaplama rehberleri.
           </p>
         </section>
       </main>

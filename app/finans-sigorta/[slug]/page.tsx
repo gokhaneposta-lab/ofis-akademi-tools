@@ -5,6 +5,14 @@ import { metrics, getMetricBySlug, getRelatedMetrics, metricCategoryLabels } fro
 import HasarPrimCalculator from "@/components/calculators/HasarPrimCalculator";
 import KazanilmisPrimCalculator from "@/components/calculators/KazanilmisPrimCalculator";
 import YenilemeOraniCalculator from "@/components/calculators/YenilemeOraniCalculator";
+import {
+  AsitTestCalculator,
+  BorcOzkaynakCalculator,
+  CariOranCalculator,
+  NakitOranCalculator,
+  NetKarMarjiCalculator,
+  VokRoeCalculator,
+} from "@/components/calculators/FinansSigortaCalculators";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -46,6 +54,18 @@ function CalculatorSection({ type }: { type: string }) {
       return <KazanilmisPrimCalculator />;
     case "yenileme-orani":
       return <YenilemeOraniCalculator />;
+    case "cari-oran":
+      return <CariOranCalculator />;
+    case "nakit-oran":
+      return <NakitOranCalculator />;
+    case "asit-test-orani":
+      return <AsitTestCalculator />;
+    case "vok-roe":
+      return <VokRoeCalculator />;
+    case "net-kar-marji":
+      return <NetKarMarjiCalculator />;
+    case "borc-ozkaynak-orani":
+      return <BorcOzkaynakCalculator />;
     default:
       return null;
   }

@@ -97,6 +97,12 @@ const NAV: NavSection[] = [
       { label: "Hasar/Prim Oranı", href: "/finans-sigorta/hasar-prim-orani" },
       { label: "Kazanılmış Prim", href: "/finans-sigorta/kazanilmis-prim" },
       { label: "Yenileme Oranı", href: "/finans-sigorta/yenileme-orani" },
+      { label: "Cari Oran", href: "/finans-sigorta/cari-oran" },
+      { label: "Nakit Oranı", href: "/finans-sigorta/nakit-oran" },
+      { label: "Asit-Test", href: "/finans-sigorta/asit-test-orani" },
+      { label: "VÖK (ROE)", href: "/finans-sigorta/vok-roe" },
+      { label: "Net Kâr Marjı", href: "/finans-sigorta/net-kar-marji" },
+      { label: "Borç/Özkaynak", href: "/finans-sigorta/borc-ozkaynak-orani" },
     ],
   },
 ];

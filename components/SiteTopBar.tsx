@@ -103,6 +103,10 @@ const NAV: NavSection[] = [
       { label: "VÖK (ROE)", href: "/finans-sigorta/vok-roe" },
       { label: "Net Kâr Marjı", href: "/finans-sigorta/net-kar-marji" },
       { label: "Borç/Özkaynak", href: "/finans-sigorta/borc-ozkaynak-orani" },
+      { label: "SLA / Servis", href: "/finans-sigorta/sla-servis-seviyesi" },
+      { label: "Personel Devir", href: "/finans-sigorta/personel-devir-orani" },
+      { label: "Devamsızlık", href: "/finans-sigorta/devamsizlik-orani" },
+      { label: "Çalışan Başına Ciro", href: "/finans-sigorta/calisan-basina-ciro" },
     ],
   },
 ];

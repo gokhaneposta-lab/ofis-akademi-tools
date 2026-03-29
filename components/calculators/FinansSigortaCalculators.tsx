@@ -239,3 +239,194 @@ function Placeholder() {
     </div>
   );
 }
+
+function parseIntTr(s: string): number {
+  const t = s.replace(/\./g, "").replace(/,/g, "").trim();
+  const n = parseInt(t, 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/** SLA / servis: hedef süre veya kalite eşiği içinde kapanınların payı */
+export function SlaServisSeviyesiCalculator() {
+  const [icinde, setIcinde] = useState("");
+  const [toplam, setToplam] = useState("");
+  const i = parseIntTr(icinde);
+  const t = parseIntTr(toplam);
+  const pct = t > 0 ? (i / t) * 100 : 0;
+  const has = t > 0 && i >= 0 && i <= t;
+  return (
+    <CalculatorShell title="SLA / Servis Seviyesi" emoji="🎯">
+      <p className="text-xs text-gray-500 mb-3">
+        Örnek: &quot;Hedef süre içinde kapanan ticket&quot; / &quot;Toplam ticket&quot; veya aynı mantıkla çağrı / talep.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Hedef içinde (adet)</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={icinde}
+            onChange={(e) => setIcinde(e.target.value)}
+            placeholder="820"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Toplam iş / talep (adet)</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={toplam}
+            onChange={(e) => setToplam(e.target.value)}
+            placeholder="1000"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          />
+        </div>
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Servis seviyesi = %{fmt(pct)}</p>
+          <p className="text-xs text-gray-600 mt-1">
+            ({i} / {t}) — Tanımınızı (SLA süresi, önce çözüm vb.) raporda yazılı tutun.
+          </p>
+        </ResultBox>
+      ) : i > t ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-800">
+          Hedef içindeki adet, toplamdan büyük olamaz.
+        </div>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+/** Turnover: dönem içi ayrılan / ortalama FTE */
+export function PersonelDevirCalculator() {
+  const [ayrilan, setAyrilan] = useState("");
+  const [bas, setBas] = useState("");
+  const [bit, setBit] = useState("");
+  const a = parseIntTr(ayrilan);
+  const b = parseIntTr(bas);
+  const c = parseIntTr(bit);
+  const ort = (b + c) / 2;
+  const pct = ort > 0 ? (a / ort) * 100 : 0;
+  const has = ort > 0 && a >= 0;
+  return (
+    <CalculatorShell title="Personel Devir Oranı (Turnover)" emoji="👥">
+      <p className="text-xs text-gray-500 mb-3">
+        Dönem: ay / çeyrek / yıl — başlangıç ve bitişteki tam zamanlı eşdeğeri (FTE) ortalaması.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Dönemde ayrılan (kişi)</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={ayrilan}
+            onChange={(e) => setAyrilan(e.target.value)}
+            placeholder="12"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Dönem başı FTE</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={bas}
+            onChange={(e) => setBas(e.target.value)}
+            placeholder="240"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Dönem sonu FTE</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={bit}
+            onChange={(e) => setBit(e.target.value)}
+            placeholder="228"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          />
+        </div>
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Devir oranı ≈ %{fmt(pct)}</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Ortalama FTE = {fmt(ort, 1)} — Yıllık kıyas için aynı dönemi 12 ay ile ölçeklemeyi unutmayın (ör. aylık ×12 yaklaşık).
+          </p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+/** Devamsızlık: toplam devamsız gün / toplam planlı iş günü (organizasyon veya birey düzeyinde) */
+export function DevamsizlikOraniCalculator() {
+  const [devGun, setDevGun] = useState("");
+  const [planGun, setPlanGun] = useState("");
+  const d = parseNum(devGun);
+  const p = parseNum(planGun);
+  const pct = p > 0 ? (d / p) * 100 : 0;
+  const has = p > 0 && d >= 0;
+  return (
+    <CalculatorShell title="Devamsızlık Oranı" emoji="📋">
+      <p className="text-xs text-gray-500 mb-3">
+        Örnek: Tüm çalışanların devamsızlık günleri toplamı ÷ (çalışan × iş günü) veya tek kişi için devamsız ÷ planlı iş günü.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field
+          label="Devamsızlık günü (toplam veya kişi bazlı)"
+          value={devGun}
+          onChange={setDevGun}
+          ph="186"
+        />
+        <Field label="Planlanan iş günü (payda)" value={planGun} onChange={setPlanGun} ph="6200" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Devamsızlık oranı ≈ %{fmt(pct)}</p>
+          <p className="text-xs text-gray-600 mt-1">Payda tanımınızı (brüt iş günü, izin hariç vb.) raporda tek cümleyle yazın.</p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+/** Çalışan başına ciro / üretkenlik */
+export function CalisanBasinaCiroCalculator() {
+  const [ciro, setCiro] = useState("");
+  const [fte, setFte] = useState("");
+  const c = parseNum(ciro);
+  const f = parseNum(fte);
+  const per = f > 0 ? c / f : 0;
+  const has = f > 0;
+  return (
+    <CalculatorShell title="Çalışan Başına Ciro" emoji="🏢">
+      <p className="text-xs text-gray-500 mb-3">
+        Satış hasılatı ÷ ortalama FTE — İK ve finans ortak KPI&apos;sı.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="Dönem satış hasılatı (₺)" value={ciro} onChange={setCiro} ph="48.000.000" />
+        <Field label="Ortalama FTE (kişi)" value={fte} onChange={setFte} ph="234" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">
+            Çalışan başına ciro ≈ {fmt(per, 0)} ₺
+          </p>
+          <p className="text-xs text-gray-600 mt-1">Sektör ve sezonluk etkiyi aynı tabloda not edin.</p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}

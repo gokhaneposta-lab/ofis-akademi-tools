@@ -8,9 +8,13 @@ import YenilemeOraniCalculator from "@/components/calculators/YenilemeOraniCalcu
 import {
   AsitTestCalculator,
   BorcOzkaynakCalculator,
+  CalisanBasinaCiroCalculator,
   CariOranCalculator,
+  DevamsizlikOraniCalculator,
   NakitOranCalculator,
   NetKarMarjiCalculator,
+  PersonelDevirCalculator,
+  SlaServisSeviyesiCalculator,
   VokRoeCalculator,
 } from "@/components/calculators/FinansSigortaCalculators";
 
@@ -66,6 +70,14 @@ function CalculatorSection({ type }: { type: string }) {
       return <NetKarMarjiCalculator />;
     case "borc-ozkaynak-orani":
       return <BorcOzkaynakCalculator />;
+    case "sla-servis-seviyesi":
+      return <SlaServisSeviyesiCalculator />;
+    case "personel-devir-orani":
+      return <PersonelDevirCalculator />;
+    case "devamsizlik-orani":
+      return <DevamsizlikOraniCalculator />;
+    case "calisan-basina-ciro":
+      return <CalisanBasinaCiroCalculator />;
     default:
       return null;
   }

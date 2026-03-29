@@ -5,7 +5,7 @@ import { metrics, metricCategoryLabels } from "@/lib/sektorMetrikData";
 export const metadata: Metadata = {
   title: "Finans & Sigorta için Excel — Sektörel Metrikler",
   description:
-    "Sigortacılık ve finans sektöründe kullanılan temel metrikleri Excel ile nasıl hesaplayacağınızı öğrenin. Hasar/Prim oranı, kazanılmış prim, yenileme oranı ve daha fazlası.",
+    "Sigortacılık, finans ve operasyon için temel metrikleri Excel ile hesaplayın: H/P, kazanılmış prim, yenileme, cari oran, VÖK, SLA, turnover, devamsızlık ve daha fazlası.",
   openGraph: {
     title: "Finans & Sigorta için Excel — Ofis Akademi",
     description:
@@ -40,10 +40,9 @@ export default function FinansSigortaPage() {
             Finans & Sigorta için Excel
           </h1>
           <p className="mt-2 text-sm text-gray-600 max-w-2xl">
-            Sigortacılık ve finans sektöründe kullanılan temel metrikleri
-            anlayın ve Excel ile hesaplayın. Her metrik için detaylı açıklama,
-            adım adım rehber, gerçek hayat örnekleri ve{" "}
-            <strong>interaktif hesaplayıcı</strong> bulunmaktadır.
+            Teknik sigortacılık (UW), finansal oranlar ve operasyonel KPI&apos;ları
+            anlayın; Excel ile hesaplayın. Her metrikte açıklama, adımlar, örnekler ve{" "}
+            <strong>interaktif hesaplayıcı</strong> vardır.
           </p>
         </div>
       </header>
@@ -96,13 +95,6 @@ export default function FinansSigortaPage() {
           </section>
         ))}
 
-        {/* Roadmap */}
-        <section className="rounded-2xl border border-dashed border-gray-300 bg-white/50 p-6 text-center">
-          <p className="text-sm text-gray-500">
-            <strong>Sırada:</strong> Operasyonel metrikler (ör. SLA, turnover, devamsızlık) —
-            Excel ile hesaplama rehberleri.
-          </p>
-        </section>
       </main>
     </div>
   );

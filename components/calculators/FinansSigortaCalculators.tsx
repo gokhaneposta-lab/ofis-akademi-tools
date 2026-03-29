@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 function parseNum(s: string): number {
@@ -423,6 +424,180 @@ export function CalisanBasinaCiroCalculator() {
             Çalışan başına ciro ≈ {fmt(per, 0)} ₺
           </p>
           <p className="text-xs text-gray-600 mt-1">Sektör ve sezonluk etkiyi aynı tabloda not edin.</p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+/** Kayıp oranı: hasar / kazanılmış prim — H/P brüt-net için ayrı sayfa */
+export function KayipOraniCalculator() {
+  const [hasar, setHasar] = useState("");
+  const [ep, setEp] = useState("");
+  const h = parseNum(hasar);
+  const e = parseNum(ep);
+  const pct = e > 0 ? (h / e) * 100 : 0;
+  const has = e > 0 && h >= 0;
+  return (
+    <CalculatorShell title="Kayıp Oranı (Kazanılmış Prim)" emoji="📉">
+      <p className="text-xs text-gray-500 mb-3">
+        Reasürans ve brüt/net ayrımı için{" "}
+        <Link href="/finans-sigorta/hasar-prim-orani" className="font-medium text-emerald-700 underline hover:no-underline">
+          Hasar/Prim (H/P)
+        </Link>{" "}
+        hesaplayıcısını kullanın.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="Dönem hasarı (₺)" value={hasar} onChange={setHasar} ph="4.200.000" />
+        <Field label="Kazanılmış prim (₺)" value={ep} onChange={setEp} ph="6.000.000" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Kayıp oranı = % {fmt(pct)}</p>
+          <p className="text-xs text-gray-600 mt-1">Hasar ÷ kazanılmış prim × 100</p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+export function BirlesikOranCalculator() {
+  const [hasar, setHasar] = useState("");
+  const [gider, setGider] = useState("");
+  const [ep, setEp] = useState("");
+  const h = parseNum(hasar);
+  const g = parseNum(gider);
+  const e = parseNum(ep);
+  const lr = e > 0 ? (h / e) * 100 : 0;
+  const er = e > 0 ? (g / e) * 100 : 0;
+  const cr = lr + er;
+  const has = e > 0;
+  return (
+    <CalculatorShell title="Birleşik Oran" emoji="➕">
+      <p className="text-xs text-gray-500 mb-3">
+        UW gideri: komisyon + idari/satış giderleri gibi tek dönem toplamını girin (tanımınıza göre).
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <Field label="Dönem hasarı (₺)" value={hasar} onChange={setHasar} ph="7.000.000" />
+        <Field label="Kazanılmış prim (₺)" value={ep} onChange={setEp} ph="10.000.000" />
+        <Field label="Underwriting gideri (₺)" value={gider} onChange={setGider} ph="2.800.000" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Birleşik oran = % {fmt(cr)}</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Kayıp % {fmt(lr)} + Gider % {fmt(er)} — yaygın eşik: %100 altı teknik kâr (basit tanım).
+          </p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+export function PrimTahsilatOraniCalculator() {
+  const [tahsil, setTahsil] = useState("");
+  const [payda, setPayda] = useState("");
+  const t = parseNum(tahsil);
+  const p = parseNum(payda);
+  const pct = p > 0 ? (t / p) * 100 : 0;
+  const has = p > 0;
+  return (
+    <CalculatorShell title="Prim Tahsilat Oranı" emoji="💳">
+      <p className="text-xs text-gray-500 mb-3">
+        Payda: yazılan / tahakkuk prim veya vadesi gelen tutar — raporda hangisini kullandığınızı yazın.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="Tahsil edilen prim (₺)" value={tahsil} onChange={setTahsil} ph="8.400.000" />
+        <Field label="Payda prim / alacak tutarı (₺)" value={payda} onChange={setPayda} ph="9.000.000" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Tahsilat oranı = % {fmt(pct)}</p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+export function HasarCozumSuresiCalculator() {
+  const [toplamGun, setToplamGun] = useState("");
+  const [adet, setAdet] = useState("");
+  const tg = parseNum(toplamGun);
+  const a = parseNum(adet);
+  const avg = a > 0 ? tg / a : 0;
+  const has = a > 0 && tg >= 0;
+  return (
+    <CalculatorShell title="Ortalama Hasar Çözüm Süresi" emoji="⏱️">
+      <p className="text-xs text-gray-500 mb-3">
+        Kapalı dosyalarda gün farklarının toplamını ve dosya adedini girin (veya toplam/adet ile ortalama).
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="Toplam gün (Σ çözüm süreleri)" value={toplamGun} onChange={setToplamGun} ph="15000" />
+        <Field label="Kapalı dosya adedi" value={adet} onChange={setAdet} ph="1000" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Ortalama ≈ {fmt(avg)} gün</p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+export function IptalOraniCalculator() {
+  const [iptal, setIptal] = useState("");
+  const [referans, setReferans] = useState("");
+  const i = parseNum(iptal);
+  const r = parseNum(referans);
+  const pct = r > 0 ? (i / r) * 100 : 0;
+  const has = r > 0 && i >= 0;
+  return (
+    <CalculatorShell title="Poliçe İptal Oranı" emoji="🚫">
+      <p className="text-xs text-gray-500 mb-3">
+        Payda: örn. dönem başı aktif poliçe — kurum tanımınızla uyumlu tutun.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="İptal edilen poliçe (adet)" value={iptal} onChange={setIptal} ph="340" />
+        <Field label="Referans poliçe adedi (payda)" value={referans} onChange={setReferans} ph="12500" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">İptal oranı = % {fmt(pct)}</p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+export function PoliceBasinaMaliyetCalculator() {
+  const [gider, setGider] = useState("");
+  const [adet, setAdet] = useState("");
+  const g = parseNum(gider);
+  const a = parseNum(adet);
+  const per = a > 0 ? g / a : 0;
+  const has = a > 0;
+  return (
+    <CalculatorShell title="Poliçe Başına Maliyet" emoji="📑">
+      <p className="text-xs text-gray-500 mb-3">Gider kapsamınızı (sadece dağıtım, tüm UW vb.) raporda not edin.</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="Toplam gider (seçilen kapsam) (₺)" value={gider} onChange={setGider} ph="4.500.000" />
+        <Field label="Poliçe / işlem adedi" value={adet} onChange={setAdet} ph="15000" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Poliçe başına ≈ {fmt(per, 2)} ₺</p>
         </ResultBox>
       ) : (
         <Placeholder />

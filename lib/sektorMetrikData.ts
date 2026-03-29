@@ -155,7 +155,7 @@ Yönetim kurulu raporlarında, aktüeryal analizlerde ve regülatöre sunulan ra
       "Aylık takip yapın ancak yorum için en az çeyreklik trende bakın — tek bir büyük hasar oranı geçici olarak şişirebilir.",
       "Branş bazlı kırılım mutlaka yapılmalı — portföy geneli iyi görünürken tek bir branş zarar ediyor olabilir.",
     ],
-    relatedSlugs: ["kazanilmis-prim", "yenileme-orani"],
+    relatedSlugs: ["kazanilmis-prim", "yenileme-orani", "kayip-orani", "birlesik-oran"],
     calculatorType: "hasar-prim",
   },
 
@@ -274,7 +274,7 @@ Bu hesaplama, muhasebenin **dönemsellik ilkesi** gereği zorunludur: gelir, ris
       "Portföy büyükse Power Query ile otomatik kazanılmış prim hesaplama tablosu oluşturun.",
       "Dönem sonu raporlarında 'Kazanılmış Prim = Yazılan Prim + Devreden Kazanılmamış Prim (önceki dönem) − Kazanılmamış Prim (bu dönem)' formülü de kullanılabilir.",
     ],
-    relatedSlugs: ["hasar-prim-orani", "yenileme-orani"],
+    relatedSlugs: ["hasar-prim-orani", "yenileme-orani", "kayip-orani", "birlesik-oran"],
     calculatorType: "kazanilmis-prim",
   },
 
@@ -386,7 +386,7 @@ Adet bazlı veya prim bazlı hesaplanabilir. Adet bazlı müşteri sadakatini, p
       "Fiyat artışı sonrası yenileme oranını yakından izleyin — artış oranı ile yenileme düşüşü arasındaki denge kritik.",
       "Branş bazlı kırılım mutlaka yapın — bir branştaki düşüş portföy genelini gizleyebilir.",
     ],
-    relatedSlugs: ["hasar-prim-orani", "kazanilmis-prim"],
+    relatedSlugs: ["hasar-prim-orani", "kazanilmis-prim", "iptal-orani"],
     calculatorType: "yenileme-orani",
   },
 
@@ -907,6 +907,290 @@ Sadece satış ekibine mi yoksa tüm şirkete mi bölündüğünü raporda belir
     tips: ["Bu metriği net kâr marjı ve personel gideri ile üçlü sunmak daha sağlıklıdır."],
     relatedSlugs: ["personel-devir-orani", "net-kar-marji"],
     calculatorType: "calisan-basina-ciro",
+  },
+
+  /* ═══════════════════════════════════════════
+     Kayıp oranı (kazanılmış prim paydası) — basit
+     ═══════════════════════════════════════════ */
+  {
+    slug: "kayip-orani",
+    name: "Kayıp Oranı (Kazanılmış Prim ile)",
+    nameEn: "Loss Ratio (Earned Premium Basis)",
+    category: "teknik-sigortacilik",
+    icon: "📉",
+    summary:
+      "Dönem hasarının kazanılmış prime bölünmesiyle bulunan kayıp oranıdır. Brüt/net ve reasürans ayrımı için Hasar/Prim (H/P) sayfasına bakın.",
+    whatIs: `**Kayıp oranı (loss ratio)**, sigortada en yaygın tanımıyla hasar tutarının (veya ödenen + muallak değişimi gibi tanımladığınız “dönem hasarı”nın) **kazanılmış prime** oranıdır.
+
+Bu sayfadaki hesaplayıcı tek satırda öğrenmek içindir: Payda olarak **kazanılmış prim** kullanırsınız; böylece yazılan prim ile henüz risk taşınmamış kısım sonucu şişirmez.
+
+Tam teknik analizde **brüt / net** ayrımı ve **reasürans** payları kritiktir; buna uygun 4 alanlı hesap **Hasar/Prim Oranı** sayfasındadır.`,
+    whyImportant: `Doğru payda seçilmezse (örneğin yazılan prim kullanılırsa), dönem sonu kayıp oranı yanıltıcı düşük veya yüksek görünür. Kazanılmış prim, gelir tablosu ve teknik kârlılık ile hizalıdır.`,
+    formulas: [
+      {
+        label: "Kayıp oranı (basit)",
+        formula: "Kayıp Oranı (%) = (Dönem Hasarı / Kazanılmış Prim) × 100",
+        explanation:
+          "Dönem hasarı tanımınızı (ödenen, muallak dahil vb.) tek tip sabitleyin. Payda: aynı döneme ait kazanılmış prim.",
+      },
+    ],
+    steps: [
+      "Dönem için kazanılmış prim toplamını belirleyin.",
+      "Aynı dönem için hasar tutarını (tanımınıza göre) toplayın.",
+      "Hasarı kazanılmış prime bölüp 100 ile çarpın.",
+      "Brüt/net ve reasürans gerekiyorsa H/P sayfasındaki hesaplayıcıyı kullanın.",
+    ],
+    examples: [
+      {
+        title: "Çeyrek portföy",
+        data: { "Dönem hasarı": "4.200.000 ₺", "Kazanılmış prim": "6.000.000 ₺" },
+        result: "Kayıp oranı = %70",
+        explanation: "Her 100 ₺ kazanılmış prim için 70 ₺ hasar — masraf eklenmeden önce teknik görünüm.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Basit formül",
+        formula: "=Hasar/KazanilmisPrim",
+        description: "Hücreyi % biçiminde gösterin veya *100 kullanın.",
+      },
+    ],
+    interpretation: [
+      { range: "H/P ile aynı skala", meaning: "%100’ün üzeri tek başına teknik zarar sinyali (masraflar hariç)." },
+      { range: "Kazanılmış vs yazılan", meaning: "Yazılan prim ile kıyaslamak büyüyen portföyde oranı çarpıtabilir." },
+    ],
+    tips: [
+      "Muallak hasar hareketini dahil edip etmediğinizi raporda yazın.",
+      "Branş ve ürün kırılımı olmadan portföy toplamı yanıltabilir.",
+    ],
+    relatedSlugs: ["hasar-prim-orani", "kazanilmis-prim", "birlesik-oran"],
+    calculatorType: "kayip-orani",
+  },
+  {
+    slug: "birlesik-oran",
+    name: "Birleşik Oran (Combined Ratio)",
+    nameEn: "Combined Ratio",
+    category: "teknik-sigortacilik",
+    icon: "➕",
+    summary:
+      "Kayıp oranı ile gider oranının (genellikle komisyon ve idari/satış giderlerinin kazanılmış prime oranı) toplamıdır. %100 altı teknik kâr için tipik eşik olarak kullanılır.",
+    whatIs: `**Birleşik oran**, sigorta şirketinin **teknik sonucunu** özetler:
+
+Kayıp oranı (hasar / kazanılmış prim) + Gider oranı (underwriting giderleri / kazanılmış prim).
+
+Gider payında genelde **komisyon, idari ve satış giderleri** gibi poliçe üretimine bağlı kalemler kullanılır; tam kapsam şirket muhasebesine göre değişir. Bu araçta gider tutarını tek kutu olarak giriyorsunuz (içeride komisyon + idari toplamı gibi düşünün).
+
+**Yorum:** Birleşik oran %100’ün altındaysa teknik kâr (basit tanım), üzerindeyse teknik zarar — yatırım geliri ve reasürans etkisi bu basit eşikten hariç tutulur.`,
+    whyImportant: `Yönetim kurulu özetlerinde H/P’den sonra en çok citelenen göstergedir; fiyatlama yeterliliği ile operasyonel verimliliği birlikte gösterir.`,
+    formulas: [
+      {
+        label: "Bileşenler",
+        formula: "Birleşik Oran (%) = (Hasar / EP × 100) + (Underwriting Giderleri / EP × 100)",
+        explanation: "EP: kazanılmış prim. İki oran aynı paydada olmalıdır.",
+      },
+    ],
+    steps: [
+      "Dönem kazanılmış primini alın.",
+      "Aynı dönem hasar tutarını (tanımınıza uygun) alın.",
+      "Aynı dönem underwriting gideri toplamını (komisyon + idari/satış vb.) alın.",
+      "Kayıp % ve gider % hesaplayıp toplayın.",
+    ],
+    examples: [
+      {
+        title: "Örnek",
+        data: { Hasar: "7.000.000 ₺", "Kazanılmış prim": "10.000.000 ₺", "UW giderleri": "2.800.000 ₺" },
+        result: "Kayıp %70 + Gider %28 = Birleşik %98",
+        explanation: "Basit tanımla teknik kâr marjı pozitif (%2 pay).",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Toplam yüzde",
+        formula: "=(A2/B2+C2/B2)*100",
+        description: "A2=hasar, C2=gider, B2=kazanılmış prim.",
+      },
+    ],
+    interpretation: [
+      { range: "%100 altı", meaning: "Yaygın yorum: teknik kâr (basit); yatırım geliri ayrı)." },
+      { range: "%100 üzeri", meaning: "Teknik zarar — fiyat, seçim veya gider baskısı." },
+    ],
+    tips: ["Gider kapsamınızı grafik notunda sabitleyin; şirketler arası kıyasta tanımlar farklıdır."],
+    relatedSlugs: ["hasar-prim-orani", "kayip-orani", "kazanilmis-prim"],
+    calculatorType: "birlesik-oran",
+  },
+  {
+    slug: "prim-tahsilat-orani",
+    name: "Prim Tahsilat Oranı",
+    nameEn: "Premium Collection Rate",
+    category: "teknik-sigortacilik",
+    icon: "💳",
+    summary:
+      "Tahsil edilen primin, yazılan veya tahakkuk eden prime (veya vadesi gelen alacağa) oranıdır. Nakit disiplini ve alacak riskini izlemek için kullanılır.",
+    whatIs: `**Prim tahsilat oranı**, “prim poliçede yazıldı ama kasaya ne kadar girdi?” sorusunun özeti için kullanılır.
+
+**Pay:** Dönem içinde tahsil edilen prim (veya net tahsilat).  
+**Payda:** Genelde aynı dönemde yazılan prim, tahakkuk eden prim veya vadesi gelen prim/alacak — şirket politikasına göre seçilir. Bu hesaplayıcıda payda alanını “yazılan/tahakkuk tutarı” olarak değerlendirin; tanımınızı raporda yazın.
+
+%100 üzeri, dönemden önceki döneme ait tahsilat veya iade düzeltmeleri nedeniyle görülebilir; veri kalitesini kontrol edin.`,
+    whyImportant: `Nakit akışı ve müşteri/acente temerrüdü hakkında erken uyarı verir; özellikle taksitli poliçelerde kritiktir.`,
+    formulas: [
+      {
+        label: "Temel",
+        formula: "Tahsilat Oranı (%) = (Tahsil Edilen Prim / Yazılan veya Tahakkuk Prim) × 100",
+        explanation: "Payda tanımı değiştikçe oranın seviyesi değişir; kıyasta hep aynı tanımı kullanın.",
+      },
+    ],
+    steps: ["Tahsilat ve payda primini aynı dönem ve TFRS kapsamında seçin.", "Bölün ve % ifade edin.", "Tarihsel trend ve yaşlandırma raporu ile destekleyin."],
+    examples: [
+      {
+        title: "Ay sonu",
+        data: { "Tahsil edilen": "8.400.000 ₺", "Yazılan prim (payda)": "9.000.000 ₺" },
+        result: "Tahsilat oranı ≈ %93,33",
+        explanation: "Geriye kalan kısım henüz tahsil edilmemiş veya vade takvimindedir.",
+      },
+    ],
+    excelTips: [{ title: "Oran", formula: "=Tahsil/Yazilan", description: "% biçimi." }],
+    interpretation: [
+      { range: "Yüksek (%95+)", meaning: "Güçlü tahsilat; payda tanımına bağlı." },
+      { range: "Düşen trend", meaning: "Ödeme koşulları, acente stoku veya ekonomik baskı sinyali." },
+    ],
+    tips: ["Taksit planı ve iadeleri düzeltmeden önce brüt tahsilatı inceleyin."],
+    relatedSlugs: ["kazanilmis-prim", "hasar-prim-orani"],
+    calculatorType: "prim-tahsilat-orani",
+  },
+  {
+    slug: "hasar-cozum-suresi",
+    name: "Hasar Çözüm Süresi (Ortalama Gün)",
+    nameEn: "Average Claims Settlement Time",
+    category: "teknik-sigortacilik",
+    icon: "⏱️",
+    summary:
+      "Kapanmış hasar dosyalarında, bildirimden kapanışa kadar geçen günlerin ortalamasıdır. Tanımınızı (SLA, takvim günü, iş günü) sabit tutun.",
+    whatIs: `**Ortalama çözüm süresi** = Toplam (veya listedeki taleplerin) çözüm süresi günleri / Talep sayısı.
+
+Tek dosya için: kapanış tarihi − bildirim tarihi. Portföy için: tüm kapanan dosyalarda bu farkların ortalaması veya toplam gün / adet.
+
+İş günü mü takvim günü mü kullandığınızı raporda belirtin; SLA hedefleri genelde iş günüdür.`,
+    whyImportant: `Müşteri memnuniyeti, regülasyon beklentisi ve rezerv tahminleri için operasyonel KPI’dır. SLA servis metriği ile birlikte kullanılabilir.`,
+    formulas: [
+      {
+        label: "Ortalama",
+        formula: "Ortalama Çözüm Süresi (gün) = Σ (Kapanış − Bildirim) / Kapalı Dosya Adedi",
+        explanation: "Sadece kapalı dosyalar — açık dosyalar farklı bir metrik (yaşlandırma) olarak izlenir.",
+      },
+    ],
+    steps: [
+      "Kapalı dosyaları filtreleyin.",
+      "Her dosya için bildirim ve kapanış tarihi arasındaki gün farkını hesaplayın.",
+      "Aritmetik ortalama alın veya Excel’de ORTALAMA kullanın.",
+    ],
+    examples: [
+      {
+        title: "Üç",
+        data: { "Dosya A gün": "12", "Dosya B gün": "18", "Dosya C gün": "15" },
+        result: "Ortalama = 15 gün",
+        explanation: "(12+18+15)/3 — gerçek portföyde yüzlerce dosya ile aynı mantık.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Gün farkı",
+        formula: "=Kapanis-Bildirim",
+        description: "Tarih hücreleri sayı olarak.",
+      },
+      {
+        title: "Ortalama",
+        formula: "=ORTALAMA(E2:E500)",
+        description: "Kapalı dosya sütunu.",
+      },
+    ],
+    interpretation: [
+      { range: "Kısalan ortalama", meaning: "Operasyon iyileşmesi (tanım değişmediyse)." },
+      { range: "Uzayan ortalama", meaning: "Eksper, eksik evrak, anomaly veya hacim artışı." },
+    ],
+    tips: ["Outlier dosyaları (yıllar süren dava) ortalamayı şişirir; medyan da raporlayın."],
+    relatedSlugs: ["sla-servis-seviyesi", "yenileme-orani"],
+    calculatorType: "hasar-cozum-suresi",
+  },
+  {
+    slug: "iptal-orani",
+    name: "Poliçe İptal Oranı",
+    nameEn: "Cancellation Rate",
+    category: "teknik-sigortacilik",
+    icon: "🚫",
+    summary:
+      "Belirli bir dönemde iptal edilen poliçe adedinin, referans portföy adedine oranıdır. Payda tanımı (dönem başı aktif, vadesi gelen, yenilenebilir vb.) kuruma göre değişir.",
+    whatIs: `**İptal oranı** için yaygın bir tanım:
+
+İptal Oranı (%) = (Dönem içi iptal edilen poliçe sayısı / Payda: örn. dönem başı aktif poliçe sayısı) × 100
+
+**Yenileme oranından farkı:** Yenileme, vadesi bitenlerden kaçının devam ettiğini ölçer; iptal, çoğu zaman poliçenin vadesi dolmadan veya yenileme öncesi kesilmesini takip eder. Kurumda “erken iptal” ve “yenilenmeme” ayrı KPI olarak da tutulabilir.
+
+Bu hesaplayıcıda payda olarak **aynı dönem için seçtiğiniz referans adedi** (ör. dönem başı aktif poliçe) kullanılır.`,
+    whyImportant: `Müşteri tatmini, fiyat rekabeti ve kanal davranışı hakkında bilgi verir; yenileme KPI’sı ile birlikte okunmalıdır.`,
+    formulas: [
+      {
+        label: "Adet bazlı",
+        formula: "İptal Oranı (%) = İptal Edilen Poliçe Adedi / Referans Poliçe Adedi × 100",
+        explanation: "Referans: dönem başı aktif, ortalama aktif veya “riskte adet” — tek tanım seçin.",
+      },
+    ],
+    steps: ["İptal tanımınızı (erken iptal, tüm iptaller) netleştirin.", "Payda adedini aynı periyotta üretin.", "Oranı hesaplayın, branş/kanal kırılımı ekleyin."],
+    examples: [
+      {
+        title: "Örnek",
+        data: { "Dönem içi iptal": "340", "Dönem başı aktif poliçe": "12.500" },
+        result: "İptal oranı ≈ %2,72",
+        explanation: "Her 100 aktif poliçeye yaklaşık 2,7 iptal (bu tanım setiyle).",
+      },
+    ],
+    excelTips: [{ title: "Oran", formula: "=İptal/Referans", description: "% biçimi." }],
+    interpretation: [
+      { range: "Sektörle kıyas", meaning: "Mutlak % yerine trend ve segment önemli." },
+      { range: "Ani sıçrama", meaning: "Fiyat değişimi, ürün kapanışı veya kanal sorunu olabilir." },
+    ],
+    tips: ["Yenileme oranı sayfasındaki dönem uyumunu iptal KPI’sına da uygulayın."],
+    relatedSlugs: ["yenileme-orani", "prim-tahsilat-orani"],
+    calculatorType: "iptal-orani",
+  },
+  {
+    slug: "police-basina-maliyet",
+    name: "Poliçe Başına Maliyet",
+    nameEn: "Cost per Policy",
+    category: "teknik-sigortacilik",
+    icon: "📑",
+    summary:
+      "Seçilen gider kovasının (ör. üretim, dağıtım, poliçe başına işlem) toplamının, ilgili poliçe adedine bölünmesidir.",
+    whatIs: `**Poliçe başına maliyet** = Toplam gider (tanımlı kapsam) / Poliçe adedi
+
+Kapsam sadece **net underwriting gideri** olabilir veya **çağrı merkezi + poliçeleştirme** gibi dar bir havuz. Önemli olan: raporda hangi giderlerin dahil edildiğini yazmak ve dönemler arasında aynı kapsamı korumak.
+
+Çalışan başına cirodan farkı: payda **poliçe** veya **işlem adedi**dir; üretim verimliliğini ölçer.`,
+    whyImportant: `Dijitalleşme ve otomasyon projelerinin etkisini kabaca ölçmek için kullanılır; kanal (online/acente) kırılımı fark yaratır.`,
+    formulas: [
+      {
+        label: "Temel",
+        formula: "Poliçe Başına Maliyet = Toplam İlgili Giderler / Üretilen veya Yenilenen Poliçe Adedi",
+        explanation: "Paydada “yeni iş” mi “tüm işlem” mü olduğunu netleştirin.",
+      },
+    ],
+    steps: ["Gider havuzunu ve dönemi seçin.", "Payda adetini aynı dönemde sayın.", "Bölün; geçmiş çeyreklerle kıyaslayın."],
+    examples: [
+      {
+        title: "Dağıtım gideri",
+        data: { "Toplam dağıtım gideri": "4.500.000 ₺", "Poliçe adedi": "15.000" },
+        result: "Poliçe başına ≈ 300 ₺",
+        explanation: "Dar tanım — tam şirket maliyeti değildir.",
+      },
+    ],
+    excelTips: [{ title: "Bölüm", formula: "=Gider/Adet", description: "TL veya USD tutarlılığı." }],
+    interpretation: [
+      { range: "Düşen eğilim", meaning: "Ölçek veya verimlilik (kapsam sabitse)." },
+      { range: "Yüksek mutlak", meaning: "Kanal karışımı veya manuel iş yükü olabilir." },
+    ],
+    tips: ["Bu metriği birleşik orandaki gider oranı ile birlikte okuyun; ikisi farklı payda kullanabilir."],
+    relatedSlugs: ["calisan-basina-ciro", "birlesik-oran"],
+    calculatorType: "police-basina-maliyet",
   },
 ];
 

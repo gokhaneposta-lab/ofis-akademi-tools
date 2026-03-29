@@ -95,6 +95,12 @@ const NAV: NavSection[] = [
     children: [
       { label: "Tüm Metrikler", href: "/finans-sigorta" },
       { label: "Hasar/Prim Oranı", href: "/finans-sigorta/hasar-prim-orani" },
+      { label: "Kayıp Oranı (EP)", href: "/finans-sigorta/kayip-orani" },
+      { label: "Birleşik Oran", href: "/finans-sigorta/birlesik-oran" },
+      { label: "Prim Tahsilat", href: "/finans-sigorta/prim-tahsilat-orani" },
+      { label: "Hasar Çözüm Süresi", href: "/finans-sigorta/hasar-cozum-suresi" },
+      { label: "İptal Oranı", href: "/finans-sigorta/iptal-orani" },
+      { label: "Poliçe Başına Maliyet", href: "/finans-sigorta/police-basina-maliyet" },
       { label: "Kazanılmış Prim", href: "/finans-sigorta/kazanilmis-prim" },
       { label: "Yenileme Oranı", href: "/finans-sigorta/yenileme-orani" },
       { label: "Cari Oran", href: "/finans-sigorta/cari-oran" },

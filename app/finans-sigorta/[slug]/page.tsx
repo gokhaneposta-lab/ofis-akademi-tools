@@ -7,13 +7,19 @@ import KazanilmisPrimCalculator from "@/components/calculators/KazanilmisPrimCal
 import YenilemeOraniCalculator from "@/components/calculators/YenilemeOraniCalculator";
 import {
   AsitTestCalculator,
+  BirlesikOranCalculator,
   BorcOzkaynakCalculator,
   CalisanBasinaCiroCalculator,
   CariOranCalculator,
   DevamsizlikOraniCalculator,
+  HasarCozumSuresiCalculator,
+  IptalOraniCalculator,
+  KayipOraniCalculator,
   NakitOranCalculator,
   NetKarMarjiCalculator,
   PersonelDevirCalculator,
+  PoliceBasinaMaliyetCalculator,
+  PrimTahsilatOraniCalculator,
   SlaServisSeviyesiCalculator,
   VokRoeCalculator,
 } from "@/components/calculators/FinansSigortaCalculators";
@@ -78,6 +84,18 @@ function CalculatorSection({ type }: { type: string }) {
       return <DevamsizlikOraniCalculator />;
     case "calisan-basina-ciro":
       return <CalisanBasinaCiroCalculator />;
+    case "kayip-orani":
+      return <KayipOraniCalculator />;
+    case "birlesik-oran":
+      return <BirlesikOranCalculator />;
+    case "prim-tahsilat-orani":
+      return <PrimTahsilatOraniCalculator />;
+    case "hasar-cozum-suresi":
+      return <HasarCozumSuresiCalculator />;
+    case "iptal-orani":
+      return <IptalOraniCalculator />;
+    case "police-basina-maliyet":
+      return <PoliceBasinaMaliyetCalculator />;
     default:
       return null;
   }

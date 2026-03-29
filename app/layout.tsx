@@ -25,13 +25,19 @@ export const metadata: Metadata = {
     template: "%s | Ofis Akademi",
   },
   description:
-    "Ofis Akademi ile Excel ve veri analizini adim adim ogren. Ucretsiz Excel araclari, blog rehberleri ve egitim seviyeleri.",
+    "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi, finans ve sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri — Ofis Akademi.",
   keywords: [
     "ofis akademi",
     "excel egitimi",
     "excel veri analizi",
     "ucretsiz excel araclari",
     "excel rehberleri",
+    "excel formul",
+    "duseyara",
+    "excel hesaplayici",
+    "sigorta kpı",
+    "finans oranlari",
+    "excel ile sigorta",
   ],
   applicationName: "Ofis Akademi",
   category: "education",
@@ -42,14 +48,14 @@ export const metadata: Metadata = {
     siteName: "Ofis Akademi",
     title: "Ofis Akademi — Excel & Veri Analizi",
     description:
-      "Ofis Akademi ile Excel ve veri analizini adim adim ogren. Ucretsiz Excel araclari, blog rehberleri ve egitim seviyeleri.",
+      "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi, finans ve sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri.",
     url: BASE_URL,
   },
   twitter: {
     card: "summary_large_image",
     title: "Ofis Akademi — Excel & Veri Analizi",
     description:
-      "Ofis Akademi ile Excel ve veri analizini adim adim ogren. Ucretsiz Excel araclari, blog rehberleri ve egitim seviyeleri.",
+      "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi, finans ve sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri.",
   },
   formatDetection: {
     email: false,

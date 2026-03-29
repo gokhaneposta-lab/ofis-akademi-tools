@@ -11,7 +11,7 @@ export default function BrandJsonLd({ baseUrl }: BrandJsonLdProps) {
     url: baseUrl,
     logo: `${baseUrl}/favicon.ico`,
     description:
-      "Ofis Akademi, Excel ve veri analizi odakli egitim icerikleri ve ucretsiz araclar sunar.",
+      "Excel ve veri analizi eğitimi, ücretsiz araçlar, formül kütüphanesi ve finans/sigorta KPI rehberleri.",
   };
 
   const websiteSchema = {

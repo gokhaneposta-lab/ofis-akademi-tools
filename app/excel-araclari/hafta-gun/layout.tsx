@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Hafta Numarası & Gün Adı",
   description:
     "Tarih listesinden ISO hafta numarası ve gün adını hesaplayın.",
   alternates: {
-    canonical: "https://ofisakademi.com/excel-araclari/hafta-gun",
+    canonical: canonicalUrl("/excel-araclari/hafta-gun"),
   },
 };
 

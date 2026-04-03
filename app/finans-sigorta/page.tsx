@@ -1,15 +1,25 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { metrics, metricCategoryLabels } from "@/lib/sektorMetrikData";
+import { canonicalUrl, getSiteUrl } from "@/lib/site";
+
+const BASE = getSiteUrl();
 
 export const metadata: Metadata = {
   title: "Finans & Sigorta için Excel — Sektörel Metrikler",
   description:
     "Sigortacılık, finans ve operasyon için temel metrikleri Excel ile hesaplayın: H/P, kazanılmış prim, yenileme, cari oran, VÖK, SLA, turnover, devamsızlık ve daha fazlası.",
+  alternates: {
+    canonical: canonicalUrl("/finans-sigorta"),
+  },
   openGraph: {
     title: "Finans & Sigorta için Excel — Ofis Akademi",
     description:
       "Sigortacılık ve finans metriklerini Excel ile adım adım hesaplayın.",
+    url: `${BASE}/finans-sigorta`,
+    siteName: "Ofis Akademi",
+    locale: "tr_TR",
+    type: "website",
   },
 };
 

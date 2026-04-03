@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BlogIndexClient from "@/components/blog/BlogIndexClient";
 import { getAllCategorySlugs, getCategoryBySlug, type BlogCategorySlug } from "@/lib/blog-posts";
+import { getSiteUrl } from "@/lib/site";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+const BASE_URL = getSiteUrl();
 
 type Props = { params: Promise<{ category: string }> };
 

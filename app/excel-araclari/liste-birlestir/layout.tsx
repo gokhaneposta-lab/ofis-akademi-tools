@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Liste Birleştirici",
   description:
     "Birden fazla satırdaki değerleri ayraç ile tek satırda birleştirin.",
   alternates: {
-    canonical: "https://ofisakademi.com/excel-araclari/liste-birlestir",
+    canonical: canonicalUrl("/excel-araclari/liste-birlestir"),
   },
 };
 

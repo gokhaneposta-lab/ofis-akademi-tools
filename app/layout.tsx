@@ -5,8 +5,9 @@ import "./globals.css";
 import SiteTopBar from "@/components/SiteTopBar";
 import SiteFooter from "@/components/SiteFooter";
 import BrandJsonLd from "@/components/BrandJsonLd";
+import { getSiteUrl } from "@/lib/site";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+const BASE_URL = getSiteUrl();
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

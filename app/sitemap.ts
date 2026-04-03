@@ -3,8 +3,9 @@ import { EXCEL_TOOLS } from "@/lib/excel-tools";
 import { BLOG_CATEGORIES, getAllSlugs } from "@/lib/blog-posts";
 import { formulas } from "@/lib/formulData";
 import { metrics } from "@/lib/sektorMetrikData";
+import { getSiteUrl } from "@/lib/site";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+const BASE_URL = getSiteUrl();
 
 const withBase = (path: string) => `${BASE_URL}${path}`;
 

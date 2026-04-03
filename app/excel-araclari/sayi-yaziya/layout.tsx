@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Sayıyı Yazıya Çevir",
   description:
     "Rakamları Türkçe yazıya dönüştürün. Fatura, çek ve sözleşme metinlerinde kullanım için TL ve kuruş formatı desteklenir.",
   alternates: {
-    canonical: "https://ofisakademi.com/excel-araclari/sayi-yaziya",
+    canonical: canonicalUrl("/excel-araclari/sayi-yaziya"),
   },
 };
 

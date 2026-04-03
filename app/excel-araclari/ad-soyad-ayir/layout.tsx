@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Ad Soyad Ayırıcı",
   description:
     "Tam ad listesini ad ve soyad olarak ayırın; tablo veya Excel formatında kopyalayın.",
   alternates: {
-    canonical: "https://ofisakademi.com/excel-araclari/ad-soyad-ayir",
+    canonical: canonicalUrl("/excel-araclari/ad-soyad-ayir"),
   },
 };
 

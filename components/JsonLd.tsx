@@ -2,6 +2,8 @@
  * Sayfa için JSON-LD (SoftwareApplication) çıktılar.
  * Google'ın araç sayfalarını daha iyi anlaması için kullanılır.
  */
+import { getSiteUrl } from "@/lib/site";
+
 type JsonLdToolProps = {
   name: string;
   description: string;
@@ -11,7 +13,7 @@ type JsonLdToolProps = {
 
 function getBaseUrl(): string {
   if (typeof window !== "undefined") return window.location.origin;
-  return process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+  return getSiteUrl();
 }
 
 export default function JsonLdTool({ name, description, path, keywords = [] }: JsonLdToolProps) {

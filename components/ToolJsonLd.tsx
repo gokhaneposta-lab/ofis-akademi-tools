@@ -6,6 +6,8 @@
  * - FAQPage
  */
 
+import { getSiteUrl } from "@/lib/site";
+
 type BreadcrumbItem = { name: string; url: string };
 
 type FAQItem = {
@@ -25,7 +27,7 @@ type ToolJsonLdProps = {
 
 function getBaseUrl(): string {
   if (typeof window !== "undefined") return window.location.origin;
-  return process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+  return getSiteUrl();
 }
 
 export default function ToolJsonLd({

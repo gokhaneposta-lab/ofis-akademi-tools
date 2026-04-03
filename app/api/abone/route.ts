@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { getSiteUrl } from "@/lib/site";
 
 /** E-postadaki linkler her zaman bu adrese gider (preview URL'leri kullanılmaz). */
-function getBaseUrl(): string {
-  const url = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
-  return url.replace(/\/$/, "");
-}
 
 type ContactSyncResult =
   | { ok: true; contactId?: string }
@@ -53,7 +50,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "E-posta gerekli." }, { status: 400 });
     }
 
-    const baseUrl = getBaseUrl();
+    const baseUrl = getSiteUrl();
     const linkTemel = `${baseUrl}/egitimler/temel`;
     const linkOrta = `${baseUrl}/egitimler/orta`;
     const linkIleri = `${baseUrl}/egitimler/ileri`;

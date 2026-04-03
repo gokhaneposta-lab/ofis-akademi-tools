@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPostBySlug, getAllSlugs, getRelatedPosts, getBenefitLine, type ContentBlock } from "@/lib/blog-posts";
+import { getSiteUrl } from "@/lib/site";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+const BASE_URL = getSiteUrl();
 const ACCENT = "#217346";
 
 function BlogContent({ block }: { block: ContentBlock }) {

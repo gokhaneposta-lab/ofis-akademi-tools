@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Kısayol & Formül Kartları",
   description:
     "En çok kullanılan Excel kısayolları ve formülleri — tek sayfa, yazdırılabilir PDF.",
   alternates: {
-    canonical:
-      "https://ofisakademi.com/excel-araclari/ksayol-formul-kartlari",
+    canonical: canonicalUrl("/excel-araclari/ksayol-formul-kartlari"),
   },
 };
 

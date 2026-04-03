@@ -16,7 +16,7 @@ Kod GitHub’a push edildi. Site **Vercel**, **Netlify** veya başka bir platfor
 
 | Değişken | Değer | Açıklama |
 |----------|--------|----------|
-| `NEXT_PUBLIC_SITE_URL` | `https://ofisakademi.com` | Gönderilen e-postadaki “Temel / Orta / İleri” linkleri bu adrese gider. Yoksa Vercel otomatik URL kullanılır (örn. ofis-akademi.vercel.app). |
+| `NEXT_PUBLIC_SITE_URL` | `https://ofisakademi.com` (veya tercih ettiğiniz **tek** kanonik adres, örn. `https://www.ofisakademi.com`) | Sitemap, canonical, JSON-LD ve e-posta linkleri bu kökü kullanır. **www ile www’sizyi karıştırmayın** — ziyaretçilerin gittiği ana adresle aynı olsun; diğerini hosting’de 301 ile buraya yönlendirin. Yoksa Vercel önizleme URL’si kullanılabilir. |
 
 ---
 

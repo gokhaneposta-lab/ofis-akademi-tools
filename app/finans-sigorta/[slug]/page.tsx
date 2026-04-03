@@ -23,6 +23,7 @@ import {
   SlaServisSeviyesiCalculator,
   VokRoeCalculator,
 } from "@/components/calculators/FinansSigortaCalculators";
+import { canonicalUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -37,6 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${m.name} — Excel ile Hesaplama Rehberi`,
     description: m.summary,
+    alternates: {
+      canonical: canonicalUrl(`/finans-sigorta/${slug}`),
+    },
     openGraph: {
       title: `${m.name} (${m.nameEn}) — Ofis Akademi`,
       description: m.summary,

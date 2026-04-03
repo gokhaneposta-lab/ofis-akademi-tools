@@ -8,6 +8,7 @@ import {
   categoryLabels,
   type FormulaDef,
 } from "@/lib/formulData";
+import { canonicalUrl } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -22,6 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${f.name} (${f.nameEn}) Kullanımı — Excel Formül Kütüphanesi`,
     description: f.summary,
+    alternates: {
+      canonical: canonicalUrl(`/formul-kutuphanesi/${slug}`),
+    },
     openGraph: {
       title: `${f.name} (${f.nameEn}) — Ofis Akademi Formül Kütüphanesi`,
       description: f.summary,

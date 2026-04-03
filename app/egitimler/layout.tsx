@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { getSiteUrl } from "@/lib/site";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+const BASE_URL = getSiteUrl();
 
 export const metadata: Metadata = {
   title: "Excel Eğitimleri | Temel, Orta, İleri Seviye + Eğitici Araçlar",

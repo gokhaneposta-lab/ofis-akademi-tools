@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+/** Aynı mantık: lib/site.ts getSiteUrl (tek kanonik adres için NEXT_PUBLIC_SITE_URL kullanın). */
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com").replace(/\/$/, "");
 
 const excelToolsPath = path.join(__dirname, "..", "lib", "excel-tools.ts");
 const content = fs.readFileSync(excelToolsPath, "utf8");

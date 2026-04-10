@@ -155,7 +155,7 @@ Yönetim kurulu raporlarında, aktüeryal analizlerde ve regülatöre sunulan ra
       "Aylık takip yapın ancak yorum için en az çeyreklik trende bakın — tek bir büyük hasar oranı geçici olarak şişirebilir.",
       "Branş bazlı kırılım mutlaka yapılmalı — portföy geneli iyi görünürken tek bir branş zarar ediyor olabilir.",
     ],
-    relatedSlugs: ["kazanilmis-prim", "yenileme-orani", "kayip-orani", "birlesik-oran"],
+    relatedSlugs: ["kazanilmis-prim", "yenileme-orani", "kayip-orani", "birlesik-oran", "muallak-hasar-karsiligi"],
     calculatorType: "hasar-prim",
   },
 
@@ -1191,6 +1191,283 @@ Kapsam sadece **net underwriting gideri** olabilir veya **çağrı merkezi + pol
     tips: ["Bu metriği birleşik orandaki gider oranı ile birlikte okuyun; ikisi farklı payda kullanabilir."],
     relatedSlugs: ["calisan-basina-ciro", "birlesik-oran"],
     calculatorType: "police-basina-maliyet",
+  },
+
+  /* ═══ Teknik karşılıklar (eğitim) ═══ */
+  {
+    slug: "kazanilmamis-prim-karsiligi",
+    name: "Kazanılmamış Primler Karşılığı (KPK)",
+    nameEn: "Unearned Premium Reserve (UPR)",
+    category: "teknik-sigortacilik",
+    icon: "📅",
+    summary:
+      "Risk henüz tam taşınmadığı için gelir yazılamayan prim kısmının bilançoda teknik karşılık olarak tutulmasıdır. Poliçe vadesine göre oransal dağıtım en yaygın Excel mantığıdır.",
+    whatIs: `**Kazanılmamış prim karşılığı (KPK)**, tahsil edilmiş veya yazılmış primin, henüz “kazanılmamış” kısmının bilanço pasifinde gösterilen teknik yükümlülüğüdür.
+
+Sigorta şirketi primi peşin alabilir; ancak muhasebe ve teknik mantıkta gelir, riskin taşındığı süre boyunca **zaman içinde** kazanılır. Kalan süreye düşen prim payı KPK’dır.
+
+**Tek poliçe düşüncesi:** Prim × (Kalan gün ÷ Toplam vade günü) = KPK; Kazanılmış prim payı ise Prim × (Geçen gün ÷ Toplam vade).
+
+Portföyde binlerce poliçe vardır; pratikte her poliçe satırı için aynı mantık uygulanıp toplanır veya aktüerya/ERP çıktısı kullanılır.`,
+    whyImportant: `Gelir tablosunda kazanılmış prim ile tutarlılık, bilanço doğruluğu ve regülatör raporlama için zorunludur. KPK’nın eksik veya yanlış hesabı hem teknik kârı hem öz kaynak görünümünü çarpıtabilir.`,
+    formulas: [
+      {
+        label: "Oransal (gün bazlı)",
+        formula: "KPK (poliçe) = Toplam Prim × (Kalan Gün / Toplam Poliçe Günü)",
+        explanation: "En yaygın eğitim formülü; özel ürünlerde farklı dağıtım kuralları olabilir.",
+      },
+      {
+        label: "Bütünlük",
+        formula: "Kazanılmış Prim Payı + KPK = İlgili dönemde dağıtılacak toplam prim (tek poliçe bazında)",
+        explanation: "Kontrol amaçlı.",
+      },
+    ],
+    steps: [
+      "Her poliçe için başlangıç-bitiş tarihi ve primi alın.",
+      "Dönem sonu veya hesap tarihinde geçen ve kalan günü netleştirin.",
+      "Oransal KPK ve kazanılmış payı hesaplayın.",
+      "Branş ve kanal kırılımında toplayın; bilanço satırı ile mutabakat yapın.",
+    ],
+    examples: [
+      {
+        title: "365 günlük poliçe — 100. gün",
+        data: { Prim: "3.650 ₺", "Geçen gün": "100", "Toplam vade": "365 gün" },
+        result: "Kazanılmış pay ≈ 1.000 ₺ | KPK ≈ 2.650 ₺",
+        explanation: "3.650 × (100/365) ve 3.650 × (265/365).",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Satır bazlı KPK",
+        formula: "=Prim*(1-MİN(HesapTarihi;Bitiş)+Başlangıç)/(Bitiş-Başlangıç)",
+        description: "Tarih sınırlarını MİN/MAKS ile güvenli tutun.",
+      },
+    ],
+    interpretation: [
+      { range: "KPK ↑", meaning: "Yeni iş veya uzun vade — nakit gelse bile gelir ertelenir." },
+      { range: "KPK ↓", meaning: "Portföy yaşlanıyor veya kısa vade ağırlığı." },
+    ],
+    tips: ["Reasürans payı düşülmüş net prim üzerinden mi hesaplandığını raporda yazın.", "Kazanmış prim sayfası ile çift kontrol yapın."],
+    relatedSlugs: ["kazanilmis-prim", "birlesik-oran", "muallak-hasar-karsiligi"],
+    calculatorType: "kazanilmamis-prim-karsiligi",
+  },
+  {
+    slug: "muallak-hasar-karsiligi",
+    name: "Muallak Hasar Karşılığı",
+    nameEn: "Claims Outstanding / IBNR (context-dependent)",
+    category: "teknik-sigortacilik",
+    icon: "⚖️",
+    summary:
+      "Henüz ödenmemiş veya tam olarak bilinmeyen hasar yükü için ayrılan teknik karşılıktır. Basit fark: oluşmuş hasar − ödenen; IBNR için zincir merdiveni ve aktüerya gerekir.",
+    whatIs: `**Muallak hasar karşılığı**, raporlanmış ama henüz kapanmamış dosyalar ve bazen **henüz raporlanmamış** (IBNR) bileşenleri içerebilir.
+
+**Basit öğrenme ayrımı:** “Oluşmuş (veya tahmini toplam) hasar − Ödenen hasar” ödenmemiş bileşeni verir. **IBNR** (henüz bildirilmemiş) ayrıca istatistiksel yöntemlerle tahmin edilir; zincir merdiveni, Bornhuetter-Ferguson gibi teknikler sigorta matematiğinde kullanılır.
+
+Şirket bilançosunda muallak, düzenleyici tablo ve TFRS çerçevesinde teknik pasif kalemlerinde izlenir.`,
+    whyImportant: `Teknik kârlılık ve solvabilitenin doğru görünmesi için kritiktir. Muallak eksikse kâr şişik, fazlaysa kâr baskılanmış görünür.`,
+    formulas: [
+      {
+        label: "Ödenmemiş (basit)",
+        formula: "Ödenmemiş ≈ Tahmini Oluşmuş Toplam Hasar − Ödenen Hasar",
+        explanation: "Raporlanan dosyalar için kabaca kontrol; IBNR dahil değildir.",
+      },
+    ],
+    steps: [
+      "Hasar veri tabanından dönem ve branş bazında ödenen ve rezerv tutarlarını çekin.",
+      "Aktüer IBNR tahminini ayrı sütunda tutun.",
+      "Toplam muallak = bilinen ödenmemiş + IBNR (tanımınıza göre).",
+      "Gelir tablosu hareketi ile mutabakat yapın.",
+    ],
+    examples: [
+      {
+        title: "Basit kontrol",
+        data: { "Tahmini oluşmuş": "8.500.000 ₺", Ödenen: "5.200.000 ₺" },
+        result: "Ödenmemiş bileşen ≈ 3.300.000 ₺",
+        explanation: "IBNR eklenmeden önce kabaca taban.",
+      },
+    ],
+    excelTips: [{ title: "Fark", formula: "=Olusmus-Odenen", description: "Branş sütunu ile ÇOKETOPLA kullanın." }],
+    interpretation: [
+      { range: "Muallak artışı", meaning: "Büyük olay, geciken çözüm veya IBNR revizyonu." },
+      { range: "Muallak azalışı", meaning: "Çözüm veya konservatiflik azalması — nedeni ayrıştırın." },
+    ],
+    tips: ["IBNR’yi basit yüzde ile karıştırmayın; yöntem raporda açıklanmalıdır.", "Hasar/Prim ile birlikte okuyun."],
+    relatedSlugs: ["hasar-prim-orani", "kayip-orani", "kazanilmamis-prim-karsiligi"],
+    calculatorType: "muallak-hasar-karsiligi",
+  },
+  {
+    slug: "matematik-karsiliklar",
+    name: "Matematik Karşılıklar",
+    nameEn: "Mathematical Reserves",
+    category: "teknik-sigortacilik",
+    icon: "∞",
+    summary:
+      "Hayat, sağlık ve emeklilikte uzun vadeli yükümlülüklerin bugünkü değerle bilançoda karşılanmasıdır. Tam tutar aktüerya ve FMV yöntemiyle belirlenir; sayfada kavram ve Excel izleme mantığı vardır.",
+    whatIs: `**Matematik karşılıklar**, uzun süreli sigorta ve emeklilik sözleşmelerinde, şirketin gelecekte ödeyeceği faydaların bugünkü değerinin teknik borç olarak ayrılmasıdır.
+
+Ölüm, maluliyet, ferdi kaza, sağlık gideri projeksiyonları ve iskonto oranı birlikte kullanılır. TFRS 17 ve SEDDK düzenlemeleri kapsamında yöntem ve varsayımlar şeffaf olmalıdır.
+
+Bu platformda **tam aktüerya motoru yoktur**; amaç kavramı doğru anlamak ve rapor satırlarını Excel’de takip edebilmektir.`,
+    whyImportant: `Hayat/emeklilik şirketleri için bilançonun büyük kısmını oluşturur; öz kaynak ve getiri analizinin merkezindedir.`,
+    formulas: [
+      {
+        label: "Kavramsal",
+        formula: "Matematik Karşılık ≈ PV(Beklenen Gelecek Ödemeler − Beklenen Gelecek Primler) (politika bazında toplam)",
+        explanation: "PV: bugünkü değer; uygulama tablolar ve yazılımla yapılır.",
+      },
+    ],
+    steps: ["Aktüerden dönem sonu teknik hesap çıktısını alın.", "Bilanço kalem kodlarıyla eşleştirin.", "Hareket: faiz ertelenmesi, yeni iş, ödemeler.", "TFRS dipnotlarıyla çapraz kontrol."],
+    examples: [
+      {
+        title: "Örnek (sayısal değil)",
+        data: { Senaryo: "Vadesi uzun hayat poliçesi", Not: "İskonto ↓ ise karşılık ↑ eğilimi" },
+        result: "Yön analizi — mutlak tutar aktüer çıktısıdır",
+        explanation: "Hassasiyet analizi Excel’de senaryo sütunlarıyla yapılır.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Senaryo sütunu",
+        formula: "=TemelKarşılık*(1+ŞokOranı)",
+        description: "Eğitim için kabaca duyarlılık; resmi hesap değildir.",
+      },
+    ],
+    interpretation: [
+      { range: "Karşılık ↑", meaning: "Beklenti kötüleşti, iskonto düştü veya yeni iş maliyeti arttı (özet)." },
+      { range: "Karşılık ↓", meaning: "Tersi yön — mutlaka dipnotla destekleyin." },
+    ],
+    tips: ["FMV oynaklığı öz kaynak göstergelerini etkiler.", "Hayat dışı KPK ile karıştırmayın."],
+    relatedSlugs: ["devam-eden-riskler-karsiligi", "dengeleme-karsiligi", "kazanilmamis-prim-karsiligi"],
+    calculatorType: "matematik-karsiliklar",
+  },
+  {
+    slug: "ikramiye-indirim-karsiligi",
+    name: "İkramiye ve İndirimler Karşılığı",
+    nameEn: "Bonus & Discount Reserve",
+    category: "teknik-sigortacilik",
+    icon: "🎁",
+    summary:
+      "Poliçe sahiplerine bağlı ikramiye veya indirim taahhütleri için ayrılan teknik karşılıktır. Excel’de sıkça prim veya hasılat üzerinden oransal tahmin ile izlenir; kesin tutar ürün şartnamesine bağlıdır.",
+    whatIs: `**İkramiye** (katılım payı vb.) ve **indirim** taahhütleri, sözleşmede tanımlı koşullara göre gelecekte poliçe sahibine aktarılacak tutarlar için karşılık gerektirebilir.
+
+Hayat ve bazı sağlık ürünlerinde yaygındır. Oran, geçmiş kârlılık, fon getirisi ve şirket politikasına göre belirlenir.
+
+**Basit Excel yaklaşımı:** İlgili prim havuzu × tahmini ikramiye/indirim oranı = dönem karşılık tahmini (eğitim amaçlı).`,
+    whyImportant: `Taahhüt edilmiş faydayı bilançoda göstermezseniz teknik kâr ve öz kaynak yanıltıcı olur.`,
+    formulas: [
+      {
+        label: "Oransal tahmin",
+        formula: "Karşılık ≈ Uygun Prim Tutarı × İkramiye veya İndirim Oranı",
+        explanation: "Ürün bazında farklı kovalar oluşturun.",
+      },
+    ],
+    steps: ["Ürün şartnamesinden ikramiye/indirim kuralını çıkarın.", "Prim veya fon bilançosunu eşleştirin.", "Oranı yönetim onayıyla sabitleyin veya senaryolaştırın.", "Dönemsel hareketi muhasebe ile mutabık tutun."],
+    examples: [
+      {
+        title: "Oransal örnek",
+        data: { Prim: "10.000.000 ₺", "Tahmini oran": "%4" },
+        result: "Kabaca 400.000 ₺ karşılık",
+        explanation: "Gerçekte vesting ve fon performansı eklenir.",
+      },
+    ],
+    excelTips: [{ title: "Çarpım", formula: "=Prim*Oran", description: "Oranı 0,04 veya % biçiminde tutarlı kullanın." }],
+    interpretation: [
+      { range: "Oran ↑", meaning: "Paylaşım politikası cömertleşti veya düzenleme değişti." },
+      { range: "Oran ↓", meaning: "Tersi — müşteri vaadi ve pazar etkisi." },
+    ],
+    tips: ["Katılım sigortası ile geleneksel hayatı karıştırmayın.", "Mevzuat değişimlerini takip edin."],
+    relatedSlugs: ["matematik-karsiliklar", "kazanilmamis-prim-karsiligi"],
+    calculatorType: "ikramiye-indirim-karsiligi",
+  },
+  {
+    slug: "devam-eden-riskler-karsiligi",
+    name: "Devam Eden Riskler Karşılığı (DERK)",
+    nameEn: "Reserve for Unexpired Risk / Similar",
+    category: "teknik-sigortacilik",
+    icon: "🛡️",
+    summary:
+      "Risk süresi devam eden iş için teknik karşılık; hayat dışı ve bazı teknik düzenlemelerde önemlidir. Tutar genelde sistem ve düzenleyici yöntemle belirlenir; sayfada tanım ve raporlama çerçevesi anlatılır.",
+    whatIs: `**Devam eden riskler karşılığı (DERK)**, henüz tamamlanmamış risk dönemine isabet eden teknik yükümlülüğü ifade eden karşılık türlerinden biridir (mevzuat ve şirket uygulamasında isim ve kapsam netleştirilir).
+
+KPK ile kavramsal yakınlık gösterebilir; ancak bazı düzenlemelerde **ek zorunlu karşılık** veya **farklı hesap yöntemi** söz konusu olabilir. Portföyde zeyil, iptal, taksitlendirme ve yenileme akışı hesabı zorlaştırır.
+
+**Bu sayfada** genel tanım ve Excel’de hangi rapor satırlarıyla ilişkilendireceğiniz anlatılır; **tutar hesabı** şirket içi model ve güncel mevzuat ile yapılmalıdır.`,
+    whyImportant: `Yetersiz DERK teknik açığı ve regülatör sorularına yol açabilir; fazlası ise sermaye verimsizliği demektir.`,
+    formulas: [
+      {
+        label: "Genel ifade",
+        formula: "DERK = f(Portföy teknik verisi, yöntem, düzenleyici parametreler)",
+        explanation: "Kapalı formül değil; şirket/period özelidir.",
+      },
+    ],
+    steps: ["Güncel SEDDK/teknik tebliğ ve şirket politikasını referans alın.", "ERP/aktüer DERK çıktısını çekin.", "Bilanço ve gelir tablosu köprü tablolarıyla doğrulayın.", "Dipnot açıklamasını güncelleyin."],
+    examples: [
+      {
+        title: "Kontrol sorusu",
+        data: { "KPK toplamı": "X", "DERK satırı": "Y", Not: "Mutabakat farkı var mı?" },
+        result: "Fark varsa neden analizi (reasürans, ek zorunluluk vb.)",
+        explanation: "Örnek rakamsız süreç.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Köprü tablo",
+        formula: "=ERP_DERK-Bilanço_DERK",
+        description: "Sıfıra yakın olmalı; fark sütunu açıklama ister.",
+      },
+    ],
+    interpretation: [
+      { range: "Dönemsel artış", meaning: "Büyüyen portföy veya ek zorunluluk." },
+      { range: "Dönemsel azalış", meaning: "Çözüm veya yöntem değişimi — dokümante edin." },
+    ],
+    tips: ["KPK ile aynı tutarı göstermeyebilir; satır tanımını TFRS dipnotundan okuyun.", "Hayat dışı branşlarda daha sık karşılaşılır."],
+    relatedSlugs: ["kazanilmamis-prim-karsiligi", "dengeleme-karsiligi", "matematik-karsiliklar"],
+    calculatorType: "devam-eden-riskler-karsiligi",
+  },
+  {
+    slug: "dengeleme-karsiligi",
+    name: "Dengeleme Karşılığı",
+    nameEn: "Equalization / Balancing Reserve",
+    category: "teknik-sigortacilik",
+    icon: "⚖️",
+    summary:
+      "Teknik sonuç dalgalanmalarını yumuşatmak veya mevzuatın öngördüğü denge mekanizmaları için ayrılan karşılıklardır. Tutar ve kullanım hukuki çerçeveye bağlıdır; sayfada mantık ve dikkat listesi verilir.",
+    whatIs: `**Dengeleme karşılığı**, döneme ve mevzuata göre farklı isimlerle anılabilen; teknik kâr/zarar dalgalanmalarını yönetmeye veya sektörel/düzenleyici dengeyi sağlamaya yönelik **özel teknik karşılık** türlerini kapsar.
+
+Ne zaman ayrılır, ne zaman serbest bırakılır, vergi ve öz kaynak etkisi nasıldır — bunlar **güncel kanun, tebliğ ve şirket hukuk/mali görüşü** ile belirlenir.
+
+Bu içerik **yatırım veya muhasebe tavsiyesi değildir**; öğrenme ve rapor satırını tanıma amaçlıdır.`,
+    whyImportant: `Yönetim ve yönetim kurulu sunumlarında teknik sonuçların “tek seferlik mi, yapısal mı” ayrımında dengeleme kalemleri sık sorulur.`,
+    formulas: [
+      {
+        label: "Yer tutucu",
+        formula: "Tutar = Mevzuat ve yönetim kurulu kararına uygun hesaplama",
+        explanation: "Genel formül yoktur.",
+      },
+    ],
+    steps: ["İlgili mevzuat maddelerini ve son genelgeyi kontrol edin.", "Mali işler ve hukuk ile ayrılış koşullarını yazılı hale getirin.", "Bilanço ve dipnotta kalemi açıklayın.", "Yıllık hareket tablosunda giriş/çıkışı gösterin."],
+    examples: [
+      {
+        title: "Kontrol listesi",
+        data: { "Karar var mı?": "E/H", "Dipnot güncel mi?": "E/H", "Öz kaynak etkisi net mi?": "E/H" },
+        result: "Üçü de E olmalı",
+        explanation: "Operasyonel disiplin örneği.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Hareket",
+        formula: "=Açılış+DönemGirişi-DönemÇıkışı",
+        description: "Kapanış bilanço satırı ile eşleşmeli.",
+      },
+    ],
+    interpretation: [
+      { range: "Birikim", meaning: "İstek dışı teknik dalgalanma için tampon oluşturuluyor olabilir." },
+      { range: "Erim", meaning: "Serbest bırakım veya kullanım — gerekçe dosyalanmalı." },
+    ],
+    tips: ["Eski dönem mevzuatı ile güncel uygulamayı karıştırmayın.", "Denetçi sorularına hazır özet paragraf tutun."],
+    relatedSlugs: ["devam-eden-riskler-karsiligi", "muallak-hasar-karsiligi", "birlesik-oran"],
+    calculatorType: "dengeleme-karsiligi",
   },
 ];
 

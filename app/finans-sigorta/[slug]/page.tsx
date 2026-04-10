@@ -13,14 +13,18 @@ import {
   CariOranCalculator,
   DevamsizlikOraniCalculator,
   HasarCozumSuresiCalculator,
+  IkramiyeIndirimKarsiligiCalculator,
   IptalOraniCalculator,
+  KazanilmamisPrimKarsiligiCalculator,
   KayipOraniCalculator,
+  MuallakHasarKarsiligiCalculator,
   NakitOranCalculator,
   NetKarMarjiCalculator,
   PersonelDevirCalculator,
   PoliceBasinaMaliyetCalculator,
   PrimTahsilatOraniCalculator,
   SlaServisSeviyesiCalculator,
+  TeknikKarsilikBilgiCalculator,
   VokRoeCalculator,
 } from "@/components/calculators/FinansSigortaCalculators";
 import { canonicalUrl } from "@/lib/site";
@@ -100,6 +104,18 @@ function CalculatorSection({ type }: { type: string }) {
       return <IptalOraniCalculator />;
     case "police-basina-maliyet":
       return <PoliceBasinaMaliyetCalculator />;
+    case "kazanilmamis-prim-karsiligi":
+      return <KazanilmamisPrimKarsiligiCalculator />;
+    case "muallak-hasar-karsiligi":
+      return <MuallakHasarKarsiligiCalculator />;
+    case "ikramiye-indirim-karsiligi":
+      return <IkramiyeIndirimKarsiligiCalculator />;
+    case "matematik-karsiliklar":
+      return <TeknikKarsilikBilgiCalculator variant="matematik" />;
+    case "devam-eden-riskler-karsiligi":
+      return <TeknikKarsilikBilgiCalculator variant="derk" />;
+    case "dengeleme-karsiligi":
+      return <TeknikKarsilikBilgiCalculator variant="dengeleme" />;
     default:
       return null;
   }

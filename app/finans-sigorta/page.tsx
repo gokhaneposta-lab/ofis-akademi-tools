@@ -8,7 +8,7 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Finans & Sigorta için Excel — Sektörel Metrikler",
   description:
-    "Sigortacılık, finans ve operasyon için temel metrikleri Excel ile hesaplayın: H/P, kazanılmış prim, yenileme, cari oran, VÖK, SLA, turnover, devamsızlık ve daha fazlası.",
+    "Sigortacılık ve finans: H/P, kazanılmış prim, KPK, muallak hasar, matematik karşılıklar, DERK, dengeleme karşılığı, cari oran, VÖK ve operasyonel KPI'lar — Excel rehberi ve hesaplayıcılar.",
   alternates: {
     canonical: canonicalUrl("/finans-sigorta"),
   },

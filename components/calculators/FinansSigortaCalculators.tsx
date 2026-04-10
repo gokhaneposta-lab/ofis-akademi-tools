@@ -605,3 +605,159 @@ export function PoliceBasinaMaliyetCalculator() {
     </CalculatorShell>
   );
 }
+
+/** KPK: poliçe bazlı kalan prim payı (eğitim amaçlı tek poliçe) */
+export function KazanilmamisPrimKarsiligiCalculator() {
+  const [prim, setPrim] = useState("");
+  const [gecen, setGecen] = useState("");
+  const [vade, setVade] = useState("");
+  const p = parseNum(prim);
+  const g = parseNum(gecen);
+  const t = parseNum(vade);
+  const kpk = t > 0 && g >= 0 && g <= t ? p * ((t - g) / t) : 0;
+  const kp = t > 0 && g >= 0 && g <= t ? p * (g / t) : 0;
+  const has = t > 0 && p > 0 && g >= 0 && g <= t;
+  return (
+    <CalculatorShell title="KPK (Tek Poliçe — Kalan Pay)" emoji="📅">
+      <p className="text-xs text-gray-500 mb-3">
+        KPK ≈ Prim × (Kalan gün ÷ Toplam vade günü). Portföy toplamı için her poliçe satırında aynı mantıkla{" "}
+        <Link href="/finans-sigorta/kazanilmis-prim" className="text-emerald-700 underline">
+          kazanılmış prim
+        </Link>{" "}
+        ile tutarlı hesaplayın.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <Field label="Poliçe primi (₺)" value={prim} onChange={setPrim} ph="12000" />
+        <Field label="Geçen gün (risk taşındı)" value={gecen} onChange={setGecen} ph="90" />
+        <Field label="Toplam vade (gün)" value={vade} onChange={setVade} ph="365" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">KPK (kalan) ≈ {fmt(kpk, 2)} ₺</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Kazanılmış prim payı ≈ {fmt(kp, 2)} ₺ — Bilançoda KPK genelde toplu teknik karşılık satırında izlenir.
+          </p>
+        </ResultBox>
+      ) : g > t && t > 0 ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+          Geçen gün, toplam vadeden büyük olamaz (vade bittiyse tüm prim kazanılmış kabul edilir).
+        </div>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+/** Muallak: basit outstanding = tahmini oluşmuş − ödenen (IBNR dahil değildir) */
+export function MuallakHasarKarsiligiCalculator() {
+  const [olusmus, setOlusmus] = useState("");
+  const [odenen, setOdenen] = useState("");
+  const o = parseNum(olusmus);
+  const od = parseNum(odenen);
+  const muallak = o - od;
+  const has = o >= 0 && od >= 0 && o >= od;
+  return (
+    <CalculatorShell title="Muallak / Ödenmemiş Hasar (Basit)" emoji="⚖️">
+      <p className="text-xs text-gray-500 mb-3">
+        Oluşmuş hasar (raporlanan + tahmini) − ödenen = ödenmemiş bileşen. Gerçek IBNR ve zincir merdiveni ayrı aktüerya
+        çalışmasıdır.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="Tahmini oluşmuş hasar (₺)" value={olusmus} onChange={setOlusmus} ph="8.500.000" />
+        <Field label="Ödenen hasar (₺)" value={odenen} onChange={setOdenen} ph="5.200.000" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Ödenmemiş bileşen ≈ {fmt(muallak, 2)} ₺</p>
+        </ResultBox>
+      ) : o < od ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+          Ödenen, oluşmuş tutardan büyük — dönem veya tanımı kontrol edin.
+        </div>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+export function IkramiyeIndirimKarsiligiCalculator() {
+  const [prim, setPrim] = useState("");
+  const [oran, setOran] = useState("");
+  const p = parseNum(prim);
+  const r = parseNum(oran);
+  const tut = p > 0 && r >= 0 ? (p * r) / 100 : 0;
+  const has = p > 0 && r >= 0;
+  return (
+    <CalculatorShell title="İkramiye / İndirim Karşılığı (Oransal)" emoji="🎁">
+      <p className="text-xs text-gray-500 mb-3">
+        Örnek: yazılan prim üzerinden beklenen ikramiye veya poliçe indirimi için ayrılacak tutarın kabaca tahmini.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="İlgili prim tutarı (₺)" value={prim} onChange={setPrim} ph="24.000.000" />
+        <Field label="Karşılık oranı (%)" value={oran} onChange={setOran} ph="3,5" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Tahmini karşılık ≈ {fmt(tut, 2)} ₺</p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+type TeknikBilgiVariant = "matematik" | "derk" | "dengeleme";
+
+const TEKNIK_BILGI: Record<
+  TeknikBilgiVariant,
+  { title: string; emoji: string; lines: string[] }
+> = {
+  matematik: {
+    title: "Matematik Karşılıkları",
+    emoji: "∞",
+    lines: [
+      "Hayat, sağlık ve emeklilik gibi uzun vadeli sözleşmelerde gelecekteki yükümlülüklerin bugünkü değeriyle bilançoda ayrılan teknik borçtur.",
+      "Yöntem (ör. beklenen nakit akışı, iskonto oranı, ölüm/maluliyet tabloları) SEDDK düzenlemeleri ve TFRS ile uyumlu şirket politikasına bağlıdır.",
+      "Tam hesap aktüer ve sistem çıktısıdır; burada sadece kavram ve Excel’de rapor satırı takibi için çerçeve sunulur.",
+    ],
+  },
+  derk: {
+    title: "Devam Eden Riskler Karşılığı (DERK)",
+    emoji: "🛡️",
+    lines: [
+      "Henüz vadesi gelmemiş veya risk süresi devam eden işler için teknik karşılık; branş ve ürün tanımına göre ayrışır.",
+      "Zeyil, iptal, taksit ve yenileme dinamikleri portföy hesabını karmaşıklaştırır; genelde teknik sistem + aktüerya çıktısı kullanılır.",
+      "Bu sayfa tanım ve raporlama mantığı içindir; tutar hesabı şirket içi model ve düzenleyici tablo ile yapılır.",
+    ],
+  },
+  dengeleme: {
+    title: "Dengeleme Karşılığı",
+    emoji: "⚖️",
+    lines: [
+      "Teknik sonuçların dalgalanmasını yumuşatmak veya düzenleyici eşiklerle uyum için ayrılan özel teknik karşılık türlerini kapsar (mevzuat dönemine göre isim ve kapsam değişebilir).",
+      "Ayrılış, kullanım ve geri çevirme kuralları yasal çerçevede ve denetim pratiğinde netleşir; Excel’de genelde ayrı hesap ve hareket takip edilir.",
+      "Burada genel mantık anlatılır; tutar için mutlaka hukuk/mali danışmanlık ve şirket içi prosedür esas alınmalıdır.",
+    ],
+  },
+};
+
+export function TeknikKarsilikBilgiCalculator({ variant }: { variant: TeknikBilgiVariant }) {
+  const b = TEKNIK_BILGI[variant];
+  return (
+    <CalculatorShell title={b.title} emoji={b.emoji}>
+      <p className="text-xs font-medium text-gray-700 mb-2">Bu başlıkta otomatik sayı hesabı yok — nedenleri:</p>
+      <ul className="space-y-2 text-xs text-gray-600 leading-relaxed list-disc pl-4">
+        {b.lines.map((line, i) => (
+          <li key={i}>{line}</li>
+        ))}
+      </ul>
+      <p className="mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+        Eğitim amaçlı içeriktir; raporlama ve karşılık tutarı için şirket politikası, aktüer görüşü ve güncel mevzuat
+        geçerlidir.
+      </p>
+    </CalculatorShell>
+  );
+}

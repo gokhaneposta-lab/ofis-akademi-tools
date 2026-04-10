@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Tfrs17PolicyCoverageDiagram, Tfrs17PremiumFlowDiagram } from "@/components/blog/BlogDiagrams";
+import {
+  Tfrs17CsmAmortizationDiagram,
+  Tfrs17PolicyCoverageDiagram,
+  Tfrs17PremiumFlowDiagram,
+} from "@/components/blog/BlogDiagrams";
 import { getPostBySlug, getAllSlugs, getRelatedPosts, getBenefitLine, getPostPlainText, type ContentBlock } from "@/lib/blog-posts";
 import { getSiteUrl } from "@/lib/site";
 
@@ -74,7 +78,26 @@ function BlogContent({ block }: { block: ContentBlock }) {
     case "diagram":
       if (block.variant === "tfrs17-policy-coverage") return <Tfrs17PolicyCoverageDiagram />;
       if (block.variant === "tfrs17-premium-flow") return <Tfrs17PremiumFlowDiagram />;
+      if (block.variant === "tfrs17-csm-bars") return <Tfrs17CsmAmortizationDiagram />;
       return null;
+    case "download":
+      return (
+        <div className="mb-8 rounded-2xl border-2 border-emerald-400/80 bg-gradient-to-b from-emerald-50 to-white p-5 shadow-sm">
+          <p className="mb-1 text-[15px] font-bold text-gray-900">{block.title}</p>
+          <p className="mb-4 text-[14px] leading-relaxed text-gray-600">{block.description}</p>
+          <a
+            href={block.href}
+            download={block.fileName}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#217346] px-5 py-3 text-[14px] font-semibold text-white shadow-sm transition hover:opacity-90"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+            </svg>
+            {block.buttonLabel}
+          </a>
+          <p className="mt-3 text-[12px] text-gray-500">Dosya: {block.fileName} — Excel veya uyumlu programla açın.</p>
+        </div>
+      );
     case "links":
       return (
         <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50/50 px-4 py-3">

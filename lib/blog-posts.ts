@@ -10,8 +10,9 @@ export type ContentBlock =
   | { type: "formula"; label: string; formula: string }
   | { type: "table"; caption?: string; headers: string[]; rows: string[][] }
   | { type: "callout"; variant: "info" | "warning"; title?: string; text: string }
-  | { type: "diagram"; variant: "tfrs17-policy-coverage" | "tfrs17-premium-flow" }
-  | { type: "links"; title?: string; items: Array<{ label: string; href: string }> };
+  | { type: "diagram"; variant: "tfrs17-policy-coverage" | "tfrs17-premium-flow" | "tfrs17-csm-bars" }
+  | { type: "links"; title?: string; items: Array<{ label: string; href: string }> }
+  | { type: "download"; title: string; description: string; href: string; fileName: string; buttonLabel: string };
 
 export type BlogPost = {
   slug: string;
@@ -122,6 +123,7 @@ export function getPostPlainText(post: BlogPost): string {
     if (b.type === "callout") return `${b.title ?? ""} ${b.text}`;
     if (b.type === "diagram") return `diagram ${b.variant}`;
     if (b.type === "links") return b.items.map((x) => `${x.label} ${x.href}`).join(" ");
+    if (b.type === "download") return `${b.title} ${b.description} ${b.href}`;
     return "";
   });
   const faqText = (post.faqs ?? []).map((f) => `${f.question} ${f.answer}`).join(" ");

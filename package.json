@@ -6,7 +6,8 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate-tfrs-xlsx": "node scripts/generate-tfrs17-xlsx.js"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

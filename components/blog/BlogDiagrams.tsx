@@ -111,3 +111,57 @@ export function Tfrs17PremiumFlowDiagram() {
     </figure>
   );
 }
+
+/** Eşit aylık itfa varsayımı: 12 ay × 20 TL (hayali CSM 240 TL). */
+export function Tfrs17CsmAmortizationDiagram() {
+  const titleId = "tfrs17-csm-bars-title";
+  const barW = 38;
+  const gap = 6;
+  const baseY = 168;
+  const maxH = 90;
+  const startX = 32;
+  return (
+    <figure className="my-6 rounded-2xl border border-violet-200 bg-gradient-to-b from-violet-50/80 to-white p-4 sm:p-5">
+      <figcaption id={titleId} className="mb-3 text-sm font-semibold text-gray-900">
+        Beklenen kârın aylara yayılması (eşit itfa — illüstrasyon)
+      </figcaption>
+      <svg
+        role="img"
+        aria-labelledby={titleId}
+        viewBox="0 0 640 220"
+        className="h-auto w-full max-h-[260px]"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <title>On iki ay boyunca her ay yirmi TL eşit itfa sütun grafiği</title>
+        <defs>
+          <linearGradient id="tfrs17csmBar" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.95" />
+          </linearGradient>
+        </defs>
+        <text x="320" y="28" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="12" fill="#4b5563">
+          Her sütun: dönemde gelire yansıyan itfa (ör. 20 TL)
+        </text>
+        {Array.from({ length: 12 }, (_, i) => {
+          const x = startX + i * (barW + gap);
+          const h = maxH;
+          const y = baseY - h;
+          return (
+            <g key={i}>
+              <rect x={x} y={y} width={barW} height={h} rx={4} fill="url(#tfrs17csmBar)" stroke="#6d28d9" strokeWidth={1} />
+              <text x={x + barW / 2} y={baseY + 18} textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="11" fill="#374151">
+                {i + 1}
+              </text>
+            </g>
+          );
+        })}
+        <text x="320" y="206" textAnchor="middle" fontFamily="system-ui,sans-serif" fontSize="11" fill="#6b7280">
+          Ay (1–12)
+        </text>
+      </svg>
+      <p className="mt-2 text-xs text-gray-500">
+        Gerçek uygulamada itfa hızı kapsam birimlerine göre değişir; bu grafik yalnızca “neden düzgün dağılıyor gibi görünüyor?” sezgisini destekler.
+      </p>
+    </figure>
+  );
+}

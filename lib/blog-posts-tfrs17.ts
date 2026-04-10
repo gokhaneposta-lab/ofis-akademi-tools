@@ -9,8 +9,8 @@ export const BLOG_POSTS_TFRS17: BlogPost[] = [
     title:
       "TFRS 17 ve Yeni Sigorta Mali Tablosu: Sigorta Çalışanları İçin Rehber (Hayali Tablo + Şemalar)",
     description:
-      "TFRS 17 sonrası bilanço ve gelir tablosunu sigorta operasyonu gözüyle okumak: poliçe, tahsilat, sözleşme grupları, LIC/LRC/CSM özeti ve tamamen hayali örnek tablo. Eğitim amaçlıdır.",
-    date: "2026-03-29",
+      "TFRS 17 sonrası bilanço ve gelir tablosunu sigorta operasyonu gözüyle okumak: CSM basit örnek, poliçe/tahsilat şemaları, hayali tablolar ve indirilebilir Excel şablonu. Eğitim amaçlıdır.",
+    date: "2026-04-10",
     guideHref: "/finans-sigorta",
     guideName: "Finans & Sigorta metrikleri",
     keywords: [
@@ -24,8 +24,15 @@ export const BLOG_POSTS_TFRS17: BlogPost[] = [
       "sözleşme grubu",
       "TMS",
       "sigorta çalışanı",
+      "TFRS 17 Excel şablonu",
+      "CSM örneği",
     ],
     faqs: [
+      {
+        question: "Excel şablonunda hangi sayfalar var?",
+        answer:
+          "Basit ornek: 1.200 TL prim / 960 TL beklenen maliyet / 240 TL başlangıç CSM ve 12 ay için eşit itfa tablosu (formüllü). KPI sablonu: dönem bazında CSM açılış, itfa, düzeltme ve kapanış ile hizmet sonucu ve zarar bileşeni için manuel doldurulacak sütunlar. Feragat: eğitim amaçlı uyarı metni.",
+      },
       {
         question: "TFRS 17 ile birlikte prim tahsilatı gelir tablosunda doğrudan 'brüt prim' olarak mı görünür?",
         answer:
@@ -119,6 +126,62 @@ export const BLOG_POSTS_TFRS17: BlogPost[] = [
           "LRC (kalan kapsam yükümlülüğü): Henüz sunulmamış hizmete ait kısım — klasik 'kazanılmamış' riskin finansal ölçüm karşılığıdır fakat TFRS 17 ölçümü ile birebir aynı rakam olmayabilir.",
           "CSM (sözleşme hizmet marjı): Beklenen kârın, henüz kazanılmamış kısmı; hizmet sunuldukça gelire itfa edilir. Kötü teknik sonuç bazen önce CSM'i tüketir, sonra kârlılığı etkiler — bu yüzden yönetim sunumlarında CSM hareketleri ayrı slayt olarak gezer.",
         ],
+      },
+      {
+        type: "h3",
+        text: "CSM'yi tek seferde anlamak: basit rakamlar (so what?)",
+      },
+      {
+        type: "p",
+        text:
+          "Teknik tanımlar uzun kalabilir. Aşağıdaki örnek, CSM fikrini 'ertelenmiş kârın hizmet süresine yayılması' olarak düşünmenize yardım eder. Rakamlar bilinçli olarak yuvarlak ve hayalidir; gerçek TFRS 17 ölçümünde iskonto, kapsam birimi, unlocking ve zarar bileşeni gibi unsurlar devreye girer.",
+      },
+      {
+        type: "callout",
+        variant: "info",
+        title: "Basitçe: CSM ≈ ertelenmiş beklenen kâr",
+        text:
+          "Tam muhasebe tanımı değildir; öğrenme için kısayol: poliçede kilitlenen beklenen kârın tamamı, risk süresi boyunca parça parça gelire yazılır. Zararda veya belirli durumlarda bu kısayol geçerli olmayabilir.",
+      },
+      {
+        type: "table",
+        caption: "TFRS 17 basit örnek (hayali tutarlar, TL)",
+        headers: ["Kalem", "Tutar"],
+        rows: [
+          ["Prim", "1.200"],
+          ["Beklenen maliyet (özet)", "960"],
+          ["Beklenen kâr (başlangıç CSM)", "240 (= 1.200 − 960)"],
+          ["Hizmet süresi", "12 ay"],
+          ["Her ay gelire yansıyan itfa (eşit dağılım varsayımı)", "20 (= 240 ÷ 12)"],
+        ],
+      },
+      {
+        type: "p",
+        text:
+          "Bu örnekte 240 TL kâr poliçe kesildiği gün tek seferde gelir tablosuna düşmez; her ay yaklaşık 20 TL’lik pay hizmet sunumuyla ilişkilendirilir. Şirketinizin kârı böyle ‘düzgünleşmiş’ görünür — tabii gerçek hayatta itfa eğrisi düz çizgi olmayabilir.",
+      },
+      { type: "diagram", variant: "tfrs17-csm-bars" },
+      {
+        type: "h3",
+        text: "İşinize ne değişti? (Rapor ve dashboard gözüyle)",
+      },
+      {
+        type: "ul",
+        items: [
+          "Satış primi rekoru kırdığı çeyrekte, TFRS geliri aynı hızda zıplamayabilir — dashboard’da ‘brüt prim’ ile ‘TFRS hizmet geliri’ ayrı izlenmelidir.",
+          "Hasar operasyonu aynı kalırken ‘teknik sonuç’ slaytı ile ‘CSM itfa’ satırı farklı dönemlerde hareket edebilir; toplantıda ikisinin aynı şey olmadığını netleştirin.",
+          "Yönetim raporunda ‘Deferred profit / CSM roll-forward’ tablosu görürseniz, yukarıdaki 240→20 mantığının kurumsal versiyonunu okuyorsunuz demektir.",
+          "Excel şablonumuzdaki KPI sayfası, kendi şirket dilinizle bu tür bir takibi denemeniz için boş çerçeve sunar (doldurma sizde).",
+        ],
+      },
+      {
+        type: "download",
+        title: "TFRS 17 örnek model — Excel indir",
+        description:
+          "Üç sayfalık eğitim dosyası: formüllü basit CSM örneği, manuel doldurulacak KPI şablonu ve feragat metni. TMS/TFRS yerine geçmez; iç eğitim ve sunum provası için kullanın.",
+        href: "/downloads/tfrs-17-ornek-model.xlsx",
+        fileName: "tfrs-17-ornek-model.xlsx",
+        buttonLabel: "Excel şablonunu indir (.xlsx)",
       },
       {
         type: "callout",

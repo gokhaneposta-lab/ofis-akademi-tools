@@ -1,12 +1,17 @@
 /**
  * Blog yazıları — araçlara yönlendiren SEO dostu içerik.
- * content: p = paragraf, h3 = başlık, ul = madde listesi, formula = formül kutusu
+ * content: p = paragraf, h3 = başlık, ul = madde listesi, formula = formül kutusu,
+ * table = tablo, callout = vurgu kutusu, diagram = blog şema SVG'leri
  */
 export type ContentBlock =
   | { type: "p"; text: string }
   | { type: "h3"; text: string }
   | { type: "ul"; items: string[] }
-  | { type: "formula"; label: string; formula: string };
+  | { type: "formula"; label: string; formula: string }
+  | { type: "table"; caption?: string; headers: string[]; rows: string[][] }
+  | { type: "callout"; variant: "info" | "warning"; title?: string; text: string }
+  | { type: "diagram"; variant: "tfrs17-policy-coverage" | "tfrs17-premium-flow" }
+  | { type: "links"; title?: string; items: Array<{ label: string; href: string }> };
 
 export type BlogPost = {
   slug: string;
@@ -18,10 +23,15 @@ export type BlogPost = {
   /** For posts without a tool: link to a related education/guide page. */
   guideHref?: string;
   guideName?: string;
+  /** SEO / JSON-LD için anahtar kelimeler */
+  keywords?: string[];
+  /** Sayfa altında FAQ + FAQPage şeması */
+  faqs?: Array<{ question: string; answer: string }>;
   content: ContentBlock[];
 };
 
 import { BLOG_POSTS_EXTRA } from "./blog-posts-extra";
+import { BLOG_POSTS_TFRS17 } from "./blog-posts-tfrs17";
 
 export type BlogCategorySlug =
   | "formuller"
@@ -52,6 +62,14 @@ export function getCategoryBySlug(slug: string): (typeof BLOG_CATEGORIES)[number
 
 export function categorizePost(post: Pick<BlogPost, "slug" | "toolHref" | "toolName" | "title">): BlogCategorySlug {
   const s = `${post.slug} ${post.title} ${post.toolHref ?? ""} ${post.toolName ?? ""}`.toLowerCase();
+  if (
+    s.includes("tfrs") ||
+    s.includes("tfrs 17") ||
+    s.includes("sigorta muhasebe") ||
+    s.includes("sigortacılık mali") ||
+    (s.includes("sigorta") && (s.includes("bilanço") || s.includes("gelir tablosu") || s.includes("teknik")))
+  )
+    return "finans";
   if (s.includes("kredi") || s.includes("faiz") || s.includes("yuzde") || s.includes("yüzde")) return "finans";
   if (s.includes("iban") || s.includes("telefon") || s.includes("email") || s.includes("e-posta")) return "dogrulama";
   if (s.includes("json") || s.includes("sql") || s.includes("csv")) return "donusturme";
@@ -88,6 +106,7 @@ export function getBenefitLine(post: Pick<BlogPost, "title" | "toolName" | "slug
   if (post.slug.includes("csv")) return "CSV'yi tek tıkla sütunlara ayırın.";
   if (post.slug.includes("tarih-farki")) return "Tarih farkını toplu hesaplayın.";
   if (post.slug.includes("iki-liste")) return "Ortak ve farklı kayıtları anında bulun.";
+  if (post.slug.includes("tfrs-17")) return "Finans & Sigorta metrikleri ve teknik karşılık özetleriyle tabloyu bağlamlandırın.";
   if (post.guideName) return `${post.guideName} ile adım adım öğrenin.`;
   if (post.toolName) return `${post.toolName} ile 5 saniyede çözün.`;
   return "Adım adım rehberimizle hemen öğrenin.";
@@ -99,9 +118,14 @@ export function getPostPlainText(post: BlogPost): string {
     if (b.type === "h3") return b.text;
     if (b.type === "ul") return b.items.join(" ");
     if (b.type === "formula") return `${b.label} ${b.formula}`;
+    if (b.type === "table") return [b.caption, ...b.headers, ...b.rows.map((r) => r.join(" "))].filter(Boolean).join(" ");
+    if (b.type === "callout") return `${b.title ?? ""} ${b.text}`;
+    if (b.type === "diagram") return `diagram ${b.variant}`;
+    if (b.type === "links") return b.items.map((x) => `${x.label} ${x.href}`).join(" ");
     return "";
   });
-  return `${post.title} ${post.description} ${parts.join(" ")}`.trim();
+  const faqText = (post.faqs ?? []).map((f) => `${f.question} ${f.answer}`).join(" ");
+  return `${post.title} ${post.description} ${parts.join(" ")} ${faqText}`.trim();
 }
 
 const BLOG_POSTS_CORE: BlogPost[] = [
@@ -181,7 +205,7 @@ const BLOG_POSTS_CORE: BlogPost[] = [
   },
 ];
 
-export const BLOG_POSTS: BlogPost[] = [...BLOG_POSTS_CORE, ...BLOG_POSTS_EXTRA];
+export const BLOG_POSTS: BlogPost[] = [...BLOG_POSTS_CORE, ...BLOG_POSTS_EXTRA, ...BLOG_POSTS_TFRS17];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);

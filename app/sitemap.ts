@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { EXCEL_TOOLS } from "@/lib/excel-tools";
-import { BLOG_CATEGORIES, getAllSlugs } from "@/lib/blog-posts";
+import { BLOG_CATEGORIES, getAllSlugs, getPostBySlug } from "@/lib/blog-posts";
 import { formulas } from "@/lib/formulData";
 import { metrics } from "@/lib/sektorMetrikData";
 import { getSiteUrl } from "@/lib/site";
@@ -65,10 +65,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...finansRoutes,
   ];
 
-  return allRoutes.map((route) => ({
-    url: withBase(route),
-    lastModified: now,
-    changeFrequency: changeFreqFor(route),
-    priority: priorityFor(route),
-  }));
+  return allRoutes.map((route) => {
+    let lastModified = now;
+    if (route.startsWith("/blog/") && !route.startsWith("/blog/kategori/")) {
+      const slug = route.slice("/blog/".length);
+      const post = getPostBySlug(slug);
+      if (post?.date) {
+        const d = new Date(post.date);
+        if (!Number.isNaN(d.getTime())) lastModified = d;
+      }
+    }
+    return {
+      url: withBase(route),
+      lastModified,
+      changeFrequency: changeFreqFor(route),
+      priority: priorityFor(route),
+    };
+  });
 }

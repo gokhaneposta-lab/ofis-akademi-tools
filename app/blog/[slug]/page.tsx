@@ -130,6 +130,8 @@ export async function generateMetadata({ params }: Props) {
   if (!post) return { title: "Yazı bulunamadı | Ofis Akademi" };
   const title = `${post.title} | Ofis Akademi Blog`;
   const url = `${BASE_URL}/blog/${slug}`;
+  const publishedTime = `${post.date}T08:00:00.000Z`;
+
   return {
     title,
     description: post.description,
@@ -141,6 +143,8 @@ export async function generateMetadata({ params }: Props) {
       url,
       siteName: "Ofis Akademi",
       locale: "tr_TR",
+      publishedTime,
+      modifiedTime: publishedTime,
     },
     twitter: { card: "summary_large_image", title, description: post.description },
     alternates: { canonical: url },

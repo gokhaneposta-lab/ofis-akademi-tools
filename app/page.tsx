@@ -187,6 +187,19 @@ export default function Home() {
                 Sıfırdan ileri seviye
               </span>
             </div>
+
+            <Link
+              href="/blog/tfrs-17-yeni-sigorta-mali-tablosu-rehberi"
+              className="mt-2 inline-flex max-w-full items-center gap-3 rounded-2xl border border-emerald-500/40 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-600 hover:bg-white"
+            >
+              <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-white">
+                Yeni rehber
+              </span>
+              <span className="min-w-0 truncate font-medium">
+                IFRS 17 (TFRS 17) &mdash; CSM + Excel örnek model (ücretsiz şablon)
+              </span>
+              <span aria-hidden className="ml-auto shrink-0 text-emerald-700">→</span>
+            </Link>
           </div>
 
           <div className="relative group/dashboard">

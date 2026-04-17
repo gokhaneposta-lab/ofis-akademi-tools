@@ -58,6 +58,28 @@ export default function FinansSigortaPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+        <section className="mb-8 rounded-2xl border-2 border-emerald-400/80 bg-gradient-to-b from-emerald-50 to-white p-5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-800">
+                Yeni · Blog rehberi
+              </span>
+              <h2 className="mt-2 text-lg font-bold text-gray-900 sm:text-xl">
+                IFRS 17 (TFRS 17) &mdash; Sigorta Mali Tablosu + Excel Şablonu
+              </h2>
+              <p className="mt-1 text-[13px] text-gray-600 sm:text-sm">
+                CSM nedir, gelir tablosu nasıl okunur ve Excel&apos;de nasıl modellenir? Serinin tüm yazılarına ve ücretsiz şablona hub yazıdan ulaşın.
+              </p>
+            </div>
+            <Link
+              href="/blog/tfrs-17-yeni-sigorta-mali-tablosu-rehberi"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#217346] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition hover:opacity-90 sm:text-sm"
+            >
+              IFRS 17 rehberini oku →
+            </Link>
+          </div>
+        </section>
+
         {Object.entries(grouped).map(([category, items]) => (
           <section key={category} className="mb-10">
             <h2 className="flex items-center gap-2 text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">

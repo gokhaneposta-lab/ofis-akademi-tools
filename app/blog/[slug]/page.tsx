@@ -83,6 +83,17 @@ function BlogContent({ block }: { block: ContentBlock }) {
     case "download":
       return (
         <div className="mb-8 rounded-2xl border-2 border-emerald-400/80 bg-gradient-to-b from-emerald-50 to-white p-5 shadow-sm">
+          {block.previewSrc ? (
+            <div className="mb-4 overflow-hidden rounded-xl border border-emerald-200 bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={block.previewSrc}
+                alt={block.previewAlt || block.title}
+                className="block w-full h-auto"
+                loading="lazy"
+              />
+            </div>
+          ) : null}
           <p className="mb-1 text-[15px] font-bold text-gray-900">{block.title}</p>
           <p className="mb-4 text-[14px] leading-relaxed text-gray-600">{block.description}</p>
           <a
@@ -96,6 +107,15 @@ function BlogContent({ block }: { block: ContentBlock }) {
             {block.buttonLabel}
           </a>
           <p className="mt-3 text-[12px] text-gray-500">Dosya: {block.fileName} — Excel veya uyumlu programla açın.</p>
+        </div>
+      );
+    case "snippet":
+      return (
+        <div className="mb-6 rounded-2xl border border-emerald-300 bg-emerald-50/70 px-4 py-4">
+          <p className="mb-1 text-[12px] font-semibold uppercase tracking-wider text-emerald-800">
+            {block.question}
+          </p>
+          <p className="text-[14px] leading-relaxed text-emerald-950">{block.answer}</p>
         </div>
       );
     case "links":
@@ -131,6 +151,11 @@ export async function generateMetadata({ params }: Props) {
   const title = `${post.title} | Ofis Akademi Blog`;
   const url = `${BASE_URL}/blog/${slug}`;
   const publishedTime = `${post.date}T08:00:00.000Z`;
+  const imageAbs = post.image
+    ? post.image.startsWith("http")
+      ? post.image
+      : `${BASE_URL}${post.image}`
+    : undefined;
 
   return {
     title,
@@ -145,8 +170,14 @@ export async function generateMetadata({ params }: Props) {
       locale: "tr_TR",
       publishedTime,
       modifiedTime: publishedTime,
+      images: imageAbs ? [{ url: imageAbs, width: 1200, height: 630 }] : undefined,
     },
-    twitter: { card: "summary_large_image", title, description: post.description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: post.description,
+      images: imageAbs ? [imageAbs] : undefined,
+    },
     alternates: { canonical: url },
   };
 }
@@ -178,6 +209,11 @@ export default async function BlogPostPage({ params }: Props) {
     articleSection: "Finans",
     keywords: post.keywords?.join(", "),
     wordCount,
+    image: post.image
+      ? post.image.startsWith("http")
+        ? post.image
+        : `${BASE_URL}${post.image}`
+      : undefined,
   };
 
   const faqJsonLd =

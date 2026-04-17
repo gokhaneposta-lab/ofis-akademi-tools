@@ -1,151 +1,196 @@
 /**
- * TFRS 17 — sigorta çalışanları için eğitim blog içeriği (hayali tablo, şema).
+ * IFRS 17 / TFRS 17 — Ofis Akademi eğitim blog kümesi.
+ *
+ * Küme yapısı (topic cluster):
+ *  - Hub: "tfrs-17-yeni-sigorta-mali-tablosu-rehberi" (ana rehber; slug geçmişe uyumlu kaldı)
+ *  - Uydu 1: "ifrs-17-csm-nedir"
+ *  - Uydu 2: "ifrs-17-gelir-tablosu-nasil-okunur"
+ *  - Uydu 3: "ifrs-17-excel-modeli-basit-ornek"
+ *
+ * Tüm yazılar eğitim amaçlıdır; TMS/TFRS, KGK düzenlemeleri ve şirket
+ * muhasebe/aktüerya politikalarının yerine geçmez. Rakamlar hayalidir.
  */
 import type { BlogPost } from "./blog-posts";
 
+const OG_IMAGE = "/og/tfrs-17-excel";
+const EXCEL_PREVIEW = "/og/tfrs-17-excel?variant=preview";
+
+const HUB_SLUG = "tfrs-17-yeni-sigorta-mali-tablosu-rehberi";
+const CSM_SLUG = "ifrs-17-csm-nedir";
+const GELIR_SLUG = "ifrs-17-gelir-tablosu-nasil-okunur";
+const EXCEL_SLUG = "ifrs-17-excel-modeli-basit-ornek";
+
+const COMMON_KEYWORDS = [
+  "IFRS 17",
+  "IFRS 17 nedir",
+  "TFRS 17",
+  "ifrs 17 csm",
+  "csm nedir",
+  "ifrs 17 excel",
+  "ifrs 17 hesaplama",
+  "ifrs 17 örnek",
+  "sigorta muhasebesi",
+  "sigorta bilançosu",
+  "sigorta gelir tablosu",
+];
+
+const clusterLinks = (exclude: string) =>
+  ({
+    type: "links" as const,
+    title: "IFRS 17 serisi — diğer yazılar",
+    items: [
+      { label: "IFRS 17 rehberi (hub)", href: `/blog/${HUB_SLUG}` },
+      { label: "IFRS 17 CSM nedir? (örnekli)", href: `/blog/${CSM_SLUG}` },
+      { label: "IFRS 17 gelir tablosu nasıl okunur?", href: `/blog/${GELIR_SLUG}` },
+      { label: "IFRS 17 Excel modeli — basit örnek", href: `/blog/${EXCEL_SLUG}` },
+    ].filter((x) => !x.href.endsWith(`/${exclude}`)),
+  });
+
 export const BLOG_POSTS_TFRS17: BlogPost[] = [
+  /* ============================================================
+   *  HUB — Ana rehber (mevcut slug korundu; başlık ve giriş yenilendi)
+   * ============================================================ */
   {
-    slug: "tfrs-17-yeni-sigorta-mali-tablosu-rehberi",
+    slug: HUB_SLUG,
     title:
-      "TFRS 17 ve Yeni Sigorta Mali Tablosu: Sigorta Çalışanları İçin Rehber (Hayali Tablo + Şemalar)",
+      "IFRS 17 Nedir? Türkiye'de TFRS 17 ve Yeni Sigorta Mali Tablosu — Excel Örnek + Ücretsiz Şablon",
     description:
-      "TFRS 17 sonrası bilanço ve gelir tablosunu sigorta operasyonu gözüyle okumak: CSM basit örnek, poliçe/tahsilat şemaları, hayali tablolar ve indirilebilir Excel şablonu. Eğitim amaçlıdır.",
-    date: "2026-04-10",
+      "IFRS 17 (Türkiye'de TFRS 17) sigorta mali tablolarını nasıl değiştirdi? CSM, LIC, LRC özeti; 1.200 TL primden 240 TL CSM'e basit Excel örneği ve indirilebilir şablonla anlatım.",
+    date: "2026-04-19",
     guideHref: "/finans-sigorta",
     guideName: "Finans & Sigorta metrikleri",
+    image: OG_IMAGE,
     keywords: [
-      "TFRS 17",
-      "sigorta muhasebesi",
-      "sigorta bilançosu",
-      "CSM",
+      ...COMMON_KEYWORDS,
+      "IFRS 17 Excel şablonu",
+      "sözleşme grubu",
       "LIC",
       "LRC",
-      "kazanılmamış prim",
-      "sözleşme grubu",
-      "TMS",
-      "sigorta çalışanı",
-      "TFRS 17 Excel şablonu",
-      "CSM örneği",
+      "IFRS 17 Türkiye",
     ],
     faqs: [
       {
-        question: "Excel şablonunda hangi sayfalar var?",
+        question: "IFRS 17 nedir, kısaca?",
         answer:
-          "Basit ornek: 1.200 TL prim / 960 TL beklenen maliyet / 240 TL başlangıç CSM ve 12 ay için eşit itfa tablosu (formüllü). KPI sablonu: dönem bazında CSM açılış, itfa, düzeltme ve kapanış ile hizmet sonucu ve zarar bileşeni için manuel doldurulacak sütunlar. Feragat: eğitim amaçlı uyarı metni.",
+          "IFRS 17, sigorta sözleşmelerinin muhasebeleştirilmesi için uluslararası standarttır; Türkiye'de TFRS 17 olarak uygulanır. Sözleşmeleri gruplar halinde güncel tahminlerle ölçer, beklenen kârı (CSM) hizmet süresine yayar ve gelir tablosunda hizmet sunumuyla orantılı bir gelir tanıma mantığı getirir.",
       },
       {
-        question: "TFRS 17 ile birlikte prim tahsilatı gelir tablosunda doğrudan 'brüt prim' olarak mı görünür?",
+        question: "IFRS 17 ile TFRS 17 farklı mı?",
         answer:
-          "Genel olarak hayır: TFRS 17, geliri çoğu sözleşme için hizmetin sunulmasıyla orantılı (zaman içinde) tanıma ve teknik sonuçları ayrıştırma mantığına kaydırır. Gördüğünüz kalemler şirketin ölçüm modeline ve sunuma bağlıdır; detay TMS/TFRS ve şirket politikasına göre değişir.",
+          "Özde aynı standarttır. IFRS 17, IASB tarafından yayımlanan uluslararası metin; TFRS 17 ise Kamu Gözetimi Kurumu tarafından Türkçe olarak yayımlanan ve Türkiye'de uygulanan versiyonudur.",
       },
       {
-        question: "Poliçe kesildiği gün tüm prim bilançoda aynı şekilde mi durur?",
+        question: "CSM (Sözleşme Hizmet Marjı) nedir?",
         answer:
-          "Tahsilat veya alacak ile ilgili nakit etkileri bilançonun bir tarafında görülürken, sigorta yükümlülüğü ve kalan kapsam bileşenleri ayrı satırlarda izlenir. Klasik 'sadece kazanılmamış prim' düşüncesi tek başına yeterli değildir; CSM ve yükümlülük ölçümü devreye girer.",
+          "Basitçe: beklenen kârın henüz kazanılmamış kısmıdır. Poliçe kesildiğinde bilançoda yükümlülüğün bileşeni olarak durur, hizmet sunuldukça parça parça gelire yazılır. Bu yüzden 'ertelenmiş kâr' kısa özeti olarak düşünülebilir.",
       },
       {
-        question: "CSM (sözleşme hizmet marjı) nedir, operasyonel raporlarla ilişkisi nedir?",
+        question: "IFRS 17 için Excel şablonu var mı?",
         answer:
-          "Basitçe: sözleşmeden beklenen kârın, hizmet sunuldukça gelire yansıtılacak kısmının muhasebe karşılığıdır. Operasyonel olarak iyi dönem performansı ile CSM hareketleri aynı yönde olmayabilir; bu yüzden yönetim sunumlarında 'teknik + muhasebe' ayrımı sık anlatılır.",
+          "Evet, bu sayfanın sonunda üç sayfalık (basit örnek, KPI şablonu, feragat) ücretsiz Excel dosyası indirebilirsiniz. Formüllü hazırdır; eğitim ve sunum provası içindir, muhasebe sistemi yerine geçmez.",
       },
       {
-        question: "Bu yazıdaki rakamlar gerçek şirket verisi midir?",
+        question: "Prim tahsilatı doğrudan gelir tablosuna mı gider?",
         answer:
-          "Hayır. Tablolardaki tutarlar tamamen hayali ve yuvarlatılmıştır; yalnızca satır mantığını göstermek içindir. Gerçek finansal tablo için ilgili döneme ait TFRS uygun raporlamaya bakılmalıdır.",
+          "Genel olarak hayır. Tahsilat nakit/alacak tarafını, sigortacılık geliri ise hizmet sunumu ile orantılı tanımayı etkiler. Bu yüzden çeyreklik prim üretimi ile IFRS 17 hizmet geliri her zaman aynı yönde zıplamaz.",
       },
       {
-        question: "Hayat ve sağlık ile zarar branşları bu yazıda ayrı mı ele alınıyor?",
+        question: "Bu yazıdaki rakamlar gerçek şirket verisi mi?",
         answer:
-          "Bu yazı genel çerçevededir. Ölçüm modeli (ör. genelleştirilmiş model, prim ayırma yaklaşımı, değişken ücret) branş ve sözleşme tipine göre değişebilir; ayrıntı için TFRS 17 metni ve şirket içi aktüerya/finans dokümanları esas alınmalıdır.",
-      },
-      {
-        question: "TFRS 17'yi Excel veya KPI sayfalarınızla nasıl ilişkilendirebilirim?",
-        answer:
-          "Operasyonel KPI'lar (ör. hasar/prim, kazanılmış prim, tahsilat oranı) hâlâ işi yönetmek için kullanılır; TFRS 17 tablosu ise bu faaliyetlerin finansal dilde konsolide ifadesidir. Sitemizdeki Finans & Sigorta bölümündeki teknik karşılık ve prim metrikleri klasik/ara dönem dilini anlamanıza yardımcı olur.",
+          "Hayır. Tüm rakamlar bilinçli olarak yuvarlatılmış ve hayalidir; yalnızca satır ve oran mantığını göstermek içindir. Gerçek ölçüm iskonto, kapsam birimleri, ölçüm modeli (GMM/PAA/VFA) ve zarar bileşeni gibi unsurları kapsar.",
       },
     ],
     content: [
+      {
+        type: "snippet",
+        question: "IFRS 17 nedir? (Kısa cevap)",
+        answer:
+          "IFRS 17, sigorta sözleşmelerini sözleşme grupları düzeyinde, güncel tahminlerle ölçen ve beklenen kârın bir kısmını CSM adı verilen hesapta saklayıp hizmet süresine yayan uluslararası muhasebe standardıdır. Türkiye'de TFRS 17 olarak uygulanır ve 2023'ten itibaren sigorta mali tablolarının görünümünü değiştirmiştir.",
+      },
       {
         type: "callout",
         variant: "warning",
         title: "Önemli not",
         text:
-          "Bu yazı eğitim amaçlıdır; TMS/TFRS, KGK düzenlemeleri veya şirketinizin aktüerya ve muhasebe politikalarının yerine geçmez. Rakamlar tamamen hayalidir.",
+          "Bu yazı eğitim amaçlıdır; TMS/TFRS, KGK düzenlemeleri veya şirketinizin aktüerya ve muhasebe politikalarının yerine geçmez. Rakamlar hayalidir.",
       },
       {
         type: "p",
         text:
-          "Sigorta şirketinde satıştan hasara, tahsilattan yenilemeye kadar günlük işiniz operasyonel verilerle döner; yıllık ve çeyreklik finansal tablolar ise aynı faaliyetin farklı bir dilde özetidir. TFRS 17 (Sigorta Sözleşmeleri Standardı), bu özeti yeniden düzenleyerek bilanço ve gelir tablosunda gördüğünüz kalemlerin mantığını değiştirdi. Bu rehber, teknik terimleri sadeleştirerek 'tabloda ne arıyorum?' sorusuna odaklanır.",
+          "Sigorta şirketinde satıştan hasara, tahsilattan yenilemeye kadar günlük iş operasyonel verilerle döner; mali tablolar ise aynı faaliyetin farklı bir dilde özetidir. IFRS 17 bu özeti yeniden düzenler: sözleşmeleri gruplar halinde değerlendirir, yükümlülükleri güncel tahminlerle ölçer ve beklenen kârın bir kısmını CSM ile hizmet süresine yayar. Bu rehber, sigorta çalışanı gözüyle 'tabloda ne arıyorum?' sorusuna odaklanır.",
       },
+
+      { type: "h3", text: "IFRS 17 ile TFRS 17 arasındaki fark nedir?" },
       {
-        type: "h3",
-        text: "Neden tablo değişti? (Tek cümlelik çerçeve)",
-      },
-      {
-        type: "p",
-        text:
-          "Eski uygulamada çoğu sigortacıda alışıldık olan tablo yapısı, brüt prim üretimi ve teknik karşılıklar üzerinden daha doğrudan okunabiliyordu. TFRS 17 ise sözleşmeleri gruplar halinde ölçer, yükümlülükleri güncel tahminlerle değerlendirir ve beklenen kârın bir kısmını CSM üzerinden hizmet süresine yayar. Sonuç: aynı poliçe portföyü, farklı satır başlıkları ve farklı zamanlama ile görünür.",
-      },
-      {
-        type: "h3",
-        text: "Poliçe ve risk süresi: tabloyu hangi zaman ekseninde düşünmeliyim?",
+        type: "snippet",
+        question: "Kısaca",
+        answer:
+          "İkisi aynı standardı ifade eder: IFRS 17 IASB'ın yayımladığı uluslararası metindir, TFRS 17 ise KGK tarafından Türkçe yayımlanan ve Türkiye'de uygulanan versiyondur.",
       },
       {
         type: "p",
         text:
-          "Poliçe başladığında risk üstlenilir; süre boyunca prim (veya taksitler) tahsil edilebilir; dönem içinde hasar veya iddia oluşabilir; sözleşme yenilenir veya sona erer. Mali tablo, bu olayların parasal yansımalarını dönemlere dağıtır.",
+          "Yazının devamında 'IFRS 17' diye geçeceğiz; bölümler TFRS 17 kapsamında Türkiye uygulaması için de aynen geçerlidir.",
+      },
+
+      { type: "h3", text: "Neden tablo değişti?" },
+      {
+        type: "snippet",
+        question: "Kısaca",
+        answer:
+          "Eski uygulamada brüt prim üretimi ve teknik karşılıklar daha doğrudan okunabiliyordu. IFRS 17, sözleşmeleri gruplayıp güncel tahminlerle ölçerek beklenen kârı CSM üzerinden hizmet süresine yayar; aynı poliçe portföyü farklı satır başlıklarıyla ve farklı zamanlamayla görünür.",
+      },
+
+      { type: "h3", text: "Poliçe ve risk süresi: hangi zaman ekseni?" },
+      {
+        type: "p",
+        text:
+          "Poliçe başladığında risk üstlenilir; süre boyunca prim (veya taksitler) tahsil edilebilir; hasar oluşabilir; sözleşme yenilenir veya sona erer. IFRS 17 mali tablosu, bu olayların parasal yansımalarını dönemlere dağıtır.",
       },
       { type: "diagram", variant: "tfrs17-policy-coverage" },
+
+      { type: "h3", text: "Tahsilat (nakit) ile gelir tablosu aynı şey değildir" },
       {
-        type: "h3",
-        text: "Tahsilat (nakit) ile gelir tablosu aynı şey değildir",
-      },
-      {
-        type: "p",
-        text:
-          "Saha ekibi için 'prim tahsil edildi' güçlü bir başarı göstergesidir. Muhasebe tarafında ise tahsilat bilançoda nakit veya alacağı etkiler; gelir tablosundaki teknik gelir/gider kalemleri ise çoğu modelde hizmetin sunulması ve yükümlülük ölçümüyle ilişkilendirilir. Bu uyumsuzluk, çeyrek sonuçlarını yorumlarken sık sorulan soruların kaynağıdır.",
+        type: "snippet",
+        question: "Kısaca",
+        answer:
+          "Prim tahsilatı bilançoda nakit/alacağı etkiler; IFRS 17 hizmet geliri ise hizmet sunumu ve yükümlülük ölçümü ile ilişkilendirilir. Bu yüzden rekor tahsilat çeyreğinde bile gelir tablosu aynı oranda zıplamayabilir.",
       },
       { type: "diagram", variant: "tfrs17-premium-flow" },
-      {
-        type: "h3",
-        text: "Sözleşme grubu: neden tek tek poliçe değil?",
-      },
-      {
-        type: "p",
-        text:
-          "TFRS 17, benzer risk özellikli sözleşmeleri bir arada değerlendirmeyi gerektirir. Pratikte finans ekipleri portföyleri 'gruplar' halinde modeler; sizin raporlarınızdaki ürün hattı veya kanal kırılımı bu gruplarla tam örtüşmeyebilir ama yorum yaparken aynı mantığın var olduğunu bilmeniz faydalıdır.",
-      },
-      {
-        type: "h3",
-        text: "Üç kısa kavram: LIC, LRC ve CSM",
-      },
+
+      { type: "h3", text: "Üç kısa kavram: LIC, LRC ve CSM" },
       {
         type: "ul",
         items: [
-          "LIC (yükümlülük karşılığı bileşeni): Oluşmuş iddia ve olaylarla ilgili yükümlülüğün güncel tahmini — operasyonel dilde 'henüz kapanmamış hasar/IDV' yaklaşımına yakın düşünülebilir (IBNR ve düzeltmeler modelde ayrıntılanır).",
-          "LRC (kalan kapsam yükümlülüğü): Henüz sunulmamış hizmete ait kısım — klasik 'kazanılmamış' riskin finansal ölçüm karşılığıdır fakat TFRS 17 ölçümü ile birebir aynı rakam olmayabilir.",
-          "CSM (sözleşme hizmet marjı): Beklenen kârın, henüz kazanılmamış kısmı; hizmet sunuldukça gelire itfa edilir. Kötü teknik sonuç bazen önce CSM'i tüketir, sonra kârlılığı etkiler — bu yüzden yönetim sunumlarında CSM hareketleri ayrı slayt olarak gezer.",
+          "LIC (Liability for Incurred Claims): Oluşmuş iddia ve olaylarla ilgili yükümlülüğün güncel tahmini. Klasik 'muallak hasar' yaklaşımına yakın, IBNR ve düzeltmeler modelde ayrıntılanır.",
+          "LRC (Liability for Remaining Coverage): Henüz sunulmamış hizmete ait kalan kapsam yükümlülüğü. Klasik 'kazanılmamış prim karşılığı' fikrinin IFRS 17 ölçüm karşılığıdır, ama birebir aynı rakam olmayabilir.",
+          "CSM (Contractual Service Margin): Beklenen kârın henüz kazanılmamış kısmı. Hizmet sunuldukça itfa olur; bazı olumsuz durumlarda azalır veya biterse zarar bileşeni devreye girer.",
         ],
-      },
-      {
-        type: "h3",
-        text: "CSM'yi tek seferde anlamak: basit rakamlar (so what?)",
       },
       {
         type: "p",
         text:
-          "Teknik tanımlar uzun kalabilir. Aşağıdaki örnek, CSM fikrini 'ertelenmiş kârın hizmet süresine yayılması' olarak düşünmenize yardım eder. Rakamlar bilinçli olarak yuvarlak ve hayalidir; gerçek TFRS 17 ölçümünde iskonto, kapsam birimi, unlocking ve zarar bileşeni gibi unsurlar devreye girer.",
+          "CSM'yi daha ayrıntılı incelemek için seride ayrı bir yazı var; örnekli anlatımı okuyabilirsiniz.",
       },
       {
-        type: "callout",
-        variant: "info",
-        title: "Basitçe: CSM ≈ ertelenmiş beklenen kâr",
-        text:
-          "Tam muhasebe tanımı değildir; öğrenme için kısayol: poliçede kilitlenen beklenen kârın tamamı, risk süresi boyunca parça parça gelire yazılır. Zararda veya belirli durumlarda bu kısayol geçerli olmayabilir.",
+        type: "links",
+        title: "Derinleştir",
+        items: [
+          { label: "IFRS 17 CSM nedir? — örnekli anlatım", href: `/blog/${CSM_SLUG}` },
+          { label: "IFRS 17 gelir tablosu nasıl okunur?", href: `/blog/${GELIR_SLUG}` },
+        ],
+      },
+
+      { type: "h3", text: "CSM'yi tek seferde anlamak: basit rakamlar" },
+      {
+        type: "snippet",
+        question: "Kısaca",
+        answer:
+          "CSM'yi 'ertelenmiş beklenen kâr' olarak düşünebilirsiniz: poliçe kesildiğinde hesaplanan beklenen kâr, hizmet süresince parça parça gelire yazılır. Aşağıdaki örnek bu fikri sayıyla gösterir; gerçek ölçüm iskonto ve kapsam birimleri ile daha karmaşıktır.",
       },
       {
         type: "table",
-        caption: "TFRS 17 basit örnek (hayali tutarlar, TL)",
+        caption: "IFRS 17 basit örnek (hayali tutarlar, TL)",
         headers: ["Kalem", "Tutar"],
         rows: [
           ["Prim", "1.200"],
@@ -158,42 +203,42 @@ export const BLOG_POSTS_TFRS17: BlogPost[] = [
       {
         type: "p",
         text:
-          "Bu örnekte 240 TL kâr poliçe kesildiği gün tek seferde gelir tablosuna düşmez; her ay yaklaşık 20 TL’lik pay hizmet sunumuyla ilişkilendirilir. Şirketinizin kârı böyle ‘düzgünleşmiş’ görünür — tabii gerçek hayatta itfa eğrisi düz çizgi olmayabilir.",
+          "Bu örnekte 240 TL beklenen kâr poliçe kesildiği gün tek seferde gelir tablosuna düşmez; her ay yaklaşık 20 TL'lik pay hizmet sunumuyla ilişkilendirilir. Şirket kârı böylece 'düzgünleşmiş' görünür — ama gerçek itfa eğrisi her zaman düz çizgi değildir.",
       },
       { type: "diagram", variant: "tfrs17-csm-bars" },
-      {
-        type: "h3",
-        text: "İşinize ne değişti? (Rapor ve dashboard gözüyle)",
-      },
+
+      { type: "h3", text: "İşinize ne değişti? (Rapor ve dashboard gözüyle)" },
       {
         type: "ul",
         items: [
-          "Satış primi rekoru kırdığı çeyrekte, TFRS geliri aynı hızda zıplamayabilir — dashboard’da ‘brüt prim’ ile ‘TFRS hizmet geliri’ ayrı izlenmelidir.",
-          "Hasar operasyonu aynı kalırken ‘teknik sonuç’ slaytı ile ‘CSM itfa’ satırı farklı dönemlerde hareket edebilir; toplantıda ikisinin aynı şey olmadığını netleştirin.",
-          "Yönetim raporunda ‘Deferred profit / CSM roll-forward’ tablosu görürseniz, yukarıdaki 240→20 mantığının kurumsal versiyonunu okuyorsunuz demektir.",
-          "Excel şablonumuzdaki KPI sayfası, kendi şirket dilinizle bu tür bir takibi denemeniz için boş çerçeve sunar (doldurma sizde).",
+          "Satış primi rekoru kırdığı çeyrekte, IFRS 17 hizmet geliri aynı hızda zıplamayabilir — dashboard'da 'brüt prim' ile 'IFRS hizmet geliri' ayrı izlenmelidir.",
+          "Hasar operasyonu aynı kalırken 'teknik sonuç' ile 'CSM itfa' satırı farklı dönemlerde hareket edebilir; toplantıda ikisinin aynı şey olmadığını netleştirin.",
+          "Yönetim raporunda 'CSM roll-forward' tablosu görürseniz, yukarıdaki 240→20 mantığının kurumsal versiyonunu okuyorsunuz demektir.",
+          "Excel şablonumuzdaki KPI sayfası, kendi şirket dilinizle bu tür bir takibi denemeniz için boş çerçeve sunar.",
         ],
       },
+
       {
         type: "download",
-        title: "TFRS 17 örnek model — Excel indir",
+        title: "IFRS 17 örnek model — Excel indir (ücretsiz)",
         description:
-          "Üç sayfalık eğitim dosyası: formüllü basit CSM örneği, manuel doldurulacak KPI şablonu ve feragat metni. TMS/TFRS yerine geçmez; iç eğitim ve sunum provası için kullanın.",
+          "Üç sayfalık eğitim dosyası: formüllü basit CSM örneği (1.200 / 960 / 240 / 12 ay × 20 TL), manuel doldurulacak KPI şablonu ve feragat metni. Muhasebe sistemi yerine geçmez; iç eğitim ve sunum provası içindir.",
         href: "/downloads/tfrs-17-ornek-model.xlsx",
         fileName: "tfrs-17-ornek-model.xlsx",
         buttonLabel: "Excel şablonunu indir (.xlsx)",
+        previewSrc: EXCEL_PREVIEW,
+        previewAlt: "IFRS 17 örnek Excel modelinin önizlemesi: prim, beklenen maliyet ve CSM tablosu",
       },
+
       {
         type: "callout",
         variant: "info",
         title: "Operasyonel KPI ile köprü",
         text:
-          "Hasar/prim oranı, kazanılmış prim, tahsilat oranı gibi göstergeler işi yönetmek içindir. TFRS 17 tablosu bu göstergelerin tamamının tek satırda toplanmadığı, zamanlama ve ölçüm farklarıyla yeniden kurgulandığı bir özet sunar. Ofis Akademi Finans & Sigorta bölümünde kazanılmış prim, KPK ve muallak hasar gibi konulara kısa hesaplayıcılar ve tanımlar bulunur.",
+          "Hasar/prim, kazanılmış prim, tahsilat oranı gibi göstergeler işi yönetmek içindir; IFRS 17 tablosu bu göstergelerin yükümlülük ölçümü ve CSM itfasıyla zamanlanmış finansal ifadesidir. Ofis Akademi Finans & Sigorta bölümünde teknik karşılık ve prim metriklerine ait kısa hesaplayıcılar vardır.",
       },
-      {
-        type: "h3",
-        text: "Hayali özet bilanço ve gelir tablosu (illüstratif)",
-      },
+
+      { type: "h3", text: "Hayali özet bilanço ve gelir tablosu (illüstratif)" },
       {
         type: "p",
         text:
@@ -231,44 +276,30 @@ export const BLOG_POSTS_TFRS17: BlogPost[] = [
       {
         type: "p",
         text:
-          "Gerçek raporlarda satır sayısı çok daha fazladır; özellikle CSM açılışı, düzeltmeler, risk ayarlaması ve faiz etkileri dipnotlarda ayrıntılanır. Yönetim kurulu özetinde gördüğünüz 'teknik kâr' tanımı ile TFRS 17 gelir tablosu satırları birebir aynı etiketleri kullanmayabilir.",
+          "Gerçek raporlarda satır sayısı çok daha fazladır; CSM açılışı, düzeltmeler, risk ayarlaması ve faiz etkileri dipnotlarda ayrıntılanır. Gelir tablosunun nasıl okunacağına dair ayrı bir yazı var:",
       },
       {
-        type: "h3",
-        text: "Rapor okurken sigorta çalışanı olarak nelere dikkat edebilirsiniz?",
-      },
-      {
-        type: "ul",
+        type: "links",
+        title: "Uydu yazı",
         items: [
-          "Aynı çeyrekte tahsilatın güçlü olması ile gelir tablosundaki teknik gelirin güçlü görünmesi her zaman örtüşmez — sunumda 'nakit' ve 'TFRS geliri' ayrı slaytlarda ise şaşırmayın.",
-          "Hasar yılı kötü geçmiş olsa bile CSM tüketimi veya geçmiş dönem düzeltmeleri net kârı farklı yönde hareket ettirebilir.",
-          "Yenileme ve fiyat artışı operasyonel olarak olumlu görünür; tabloda ise yeni sözleşme veya değişen varsayımlar CSM ve LRC ölçümünü aynı yönde taşımayabilir.",
-          "Reasürans payı, brüt kalemlerden sonra netleştiği için brüt hasarı yorumlarken reasürans satırlarını birlikte okumak gerekir.",
+          { label: "IFRS 17 gelir tablosu nasıl okunur? (örneklerle)", href: `/blog/${GELIR_SLUG}` },
         ],
       },
-      {
-        type: "h3",
-        text: "Resmi kaynak ve iç eğitim",
-      },
+
+      { type: "h3", text: "Resmi kaynak ve iç eğitim" },
       {
         type: "p",
         text:
-          "TFRS 17 metni ve KGK'nın yayımladığı Türkiye finansal raporlama standartları, bağlayıcı referanstır. Şirket içi aktüerya el kitabı ve finans kontrol departmanının 'TFRS 17 mapping' dokümanı (operasyonel rapor satırı → muhasebe hesabı) en doğru iş yeri kaynağınızdır.",
+          "IFRS 17 metni (IASB) ve KGK'nın yayımladığı TFRS 17, bağlayıcı referanstır. Şirket içi aktüerya el kitabı ve finans kontrol departmanının IFRS 17 mapping dokümanı (operasyonel rapor satırı → muhasebe hesabı) en doğru iş yeri kaynağınızdır.",
       },
-      {
-        type: "h3",
-        text: "Özet",
-      },
+
+      { type: "h3", text: "Özet" },
       {
         type: "p",
         text:
-          "TFRS 17, sigorta faaliyetini sözleşme grupları üzerinden ölçerek bilanço ve gelir tablosunu yeniden düzenler. Poliçe ve tahsilat operasyonel gerçekliktir; tablo ise bu gerçekliğin yükümlülük ölçümü, kalan kapsam ve CSM itfasıyla zamanlanmış finansal yansımasıdır. Hayali tablolarımız satır mantığını göstermek içindir — gerçek rakamlar için her zaman resmi finansal rapora ve dipnotlara başvurun.",
+          "IFRS 17, sigorta faaliyetini sözleşme grupları üzerinden ölçerek bilanço ve gelir tablosunu yeniden düzenler. Poliçe ve tahsilat operasyonel gerçekliktir; tablo ise bu gerçekliğin yükümlülük ölçümü, kalan kapsam ve CSM itfasıyla zamanlanmış finansal yansımasıdır. Hayali tablolarımız satır mantığını göstermek içindir — gerçek rakamlar için her zaman resmi finansal rapora ve dipnotlara başvurun.",
       },
-      {
-        type: "p",
-        text:
-          "Aşağıdaki sayfalar klasik teknik dil ile günlük işi bağlamanıza yardımcı olur; TFRS 17 satırlarıyla birebir örtüşmeyebilir ancak KPI mantığını pekiştirir.",
-      },
+
       {
         type: "links",
         title: "Finans & Sigorta — ilgili başlıklar",
@@ -280,6 +311,353 @@ export const BLOG_POSTS_TFRS17: BlogPost[] = [
           { label: "Hasar / prim oranı", href: "/finans-sigorta/hasar-prim-orani" },
         ],
       },
+      clusterLinks(HUB_SLUG),
+    ],
+  },
+
+  /* ============================================================
+   *  UYDU 1 — CSM Nedir?
+   * ============================================================ */
+  {
+    slug: CSM_SLUG,
+    title: "IFRS 17 CSM Nedir? Sözleşme Hizmet Marjı — Excel Örnekli Basit Anlatım",
+    description:
+      "IFRS 17 Sözleşme Hizmet Marjı (CSM) nedir, nasıl hesaplanır ve gelire nasıl yayılır? Basit 1.200 / 960 / 240 örneği, aylık itfa, unlocking mantığı ve Excel şablonu.",
+    date: "2026-04-19",
+    guideHref: `/blog/${HUB_SLUG}`,
+    guideName: "IFRS 17 ana rehber",
+    image: OG_IMAGE,
+    keywords: [
+      ...COMMON_KEYWORDS,
+      "IFRS 17 CSM hesaplama",
+      "CSM itfa",
+      "CSM unlocking",
+      "sözleşme hizmet marjı",
+    ],
+    faqs: [
+      {
+        question: "CSM tek cümleyle nedir?",
+        answer:
+          "CSM, bir sigorta sözleşmesi grubundan beklenen kârın, hizmet sunuldukça gelire yayılmak üzere bilançoda tutulan kısmıdır.",
+      },
+      {
+        question: "CSM nasıl hesaplanır?",
+        answer:
+          "Başlangıçta = Primlerin bugünkü değeri − Beklenen nakit çıkışlarının (hasar, gider) bugünkü değeri − Risk ayarlaması. Sonraki dönemlerde faiz birikimi, yeni sözleşmeler, varsayım değişiklikleri (unlocking) ve itfa ile güncellenir.",
+      },
+      {
+        question: "CSM negatif olabilir mi?",
+        answer:
+          "Hayır. Hesap CSM'yi negatife indirecek kadar olumsuzsa aradaki fark gelir tablosuna zarar bileşeni olarak yansıtılır; CSM sıfıra yapışır.",
+      },
+      {
+        question: "CSM, kazanılmamış prim (UPR) ile aynı mı?",
+        answer:
+          "Hayır. UPR prim tabanlı ve nominaldir; CSM ise beklenen kâr tabanlı, iskonto edilmiş ve güncel tahminlerle yenilenen bir ölçümdür. Aynı portföy için farklı rakamlar verebilirler.",
+      },
+    ],
+    content: [
+      {
+        type: "snippet",
+        question: "IFRS 17 CSM nedir? (Kısa cevap)",
+        answer:
+          "CSM (Contractual Service Margin), bir sigorta sözleşmesi grubundan beklenen kârın henüz kazanılmamış kısmıdır. Sözleşme başlangıcında hesaplanır, hizmet süresince kapsam birimleriyle orantılı olarak gelire yansıtılır; olumsuz varsayım değişikliklerinde önce CSM tüketilir, sıfıra inerse fark 'zarar bileşeni' olarak doğrudan gelir tablosuna düşer.",
+      },
+      {
+        type: "callout",
+        variant: "warning",
+        title: "Not",
+        text:
+          "Bu sayfa eğitim amaçlıdır; gerçek CSM ölçümü iskonto eğrisi, risk ayarlaması, kapsam birimleri (coverage units) ve ölçüm modeli (GMM/PAA/VFA) gibi unsurlara göre değişir.",
+      },
+      { type: "h3", text: "Bir sözleşme grubunda CSM'yi tek cümlede özetleyelim" },
+      {
+        type: "p",
+        text:
+          "Sözleşme grubundan kazanılması beklenen 'saf kâr' tutarı, hizmet sunumuyla orantılı olarak gelire itfa edilir. Yani IFRS 17, beklenen kârı poliçe kesildiği gün gelir yazmaz; hizmet süresine dağıtır.",
+      },
+
+      { type: "h3", text: "Basit örnek: 1.200 / 960 / 240 / 12 ay" },
+      {
+        type: "table",
+        caption: "Hayali CSM hesaplaması (TL)",
+        headers: ["Kalem", "Tutar", "Açıklama"],
+        rows: [
+          ["Prim (bugünkü değer varsayılıyor)", "1.200", "Tek ödeme"],
+          ["Beklenen nakit çıkışı (hasar + gider)", "960", "Beklenen maliyet"],
+          ["Risk ayarlaması (basit varsayım)", "0", "Eğitim için ihmal edildi"],
+          ["Başlangıç CSM", "240", "= 1.200 − 960 − 0"],
+          ["Hizmet süresi", "12 ay", "Eşit kapsam birimi varsayımı"],
+          ["Aylık itfa", "20", "= 240 ÷ 12"],
+        ],
+      },
+      {
+        type: "p",
+        text:
+          "Sözleşme grubu 240 TL beklenen kâr ile başlar; her ay 20 TL IFRS 17 hizmet gelirine eklenir. Gerçek hayatta iskonto ve değişen varsayımlar yüzünden bu çizgi düz değildir.",
+      },
+      { type: "diagram", variant: "tfrs17-csm-bars" },
+
+      { type: "h3", text: "CSM nasıl hareket eder? (Roll-forward özet)" },
+      {
+        type: "ul",
+        items: [
+          "Açılış CSM",
+          "+ Yeni sözleşmelerin CSM'si",
+          "+ Faiz birikimi (iskonto etkisiyle zamanla büyüme)",
+          "± Varsayım değişikliği düzeltmesi (unlocking) — ör. hasar beklentisi yükseldiyse CSM azalır",
+          "− Dönem itfası (gelire yazılan kısım)",
+          "= Kapanış CSM",
+        ],
+      },
+      {
+        type: "callout",
+        variant: "info",
+        title: "Kilit nokta",
+        text:
+          "Varsayım değişiklikleri önce CSM'yi etkiler; CSM pozitif kaldıkça gelir tablosu 'sakin' görünür. CSM bittiğinde aradaki fark zarar bileşeni olarak doğrudan gelir tablosuna düşer — bu yüzden CSM yöneticiler için 'tampon' gibi düşünülür.",
+      },
+
+      { type: "h3", text: "CSM ile UPR (kazanılmamış prim) farkı" },
+      {
+        type: "table",
+        caption: "CSM vs UPR (hızlı karşılaştırma)",
+        headers: ["Özellik", "CSM (IFRS 17)", "UPR (klasik)"],
+        rows: [
+          ["Tabanı", "Beklenen kâr", "Prim"],
+          ["İskonto", "Evet", "Hayır"],
+          ["Güncel tahminler", "Evet (her dönem)", "Nadiren yenilenir"],
+          ["Unlocking", "Evet (varsayım değişirse)", "Hayır"],
+          ["Gelire yayılma kriteri", "Kapsam birimleri", "Zamanla orantılı (çoğunlukla)"],
+        ],
+      },
+
+      {
+        type: "download",
+        title: "CSM hesaplama Excel şablonu — ücretsiz",
+        description:
+          "Basit örnek sayfası + manuel doldurulacak KPI (roll-forward) sayfası. Formüller açık; kendi portföyünüzle deneyebilirsiniz.",
+        href: "/downloads/tfrs-17-ornek-model.xlsx",
+        fileName: "tfrs-17-ornek-model.xlsx",
+        buttonLabel: "CSM örnek şablonunu indir (.xlsx)",
+        previewSrc: EXCEL_PREVIEW,
+        previewAlt: "CSM örnek şablonu önizlemesi",
+      },
+
+      clusterLinks(CSM_SLUG),
+    ],
+  },
+
+  /* ============================================================
+   *  UYDU 2 — Gelir Tablosu Nasıl Okunur?
+   * ============================================================ */
+  {
+    slug: GELIR_SLUG,
+    title: "IFRS 17 Gelir Tablosu Nasıl Okunur? Sigorta Çalışanı İçin Satır Satır Rehber",
+    description:
+      "IFRS 17 sonrası sigortacılık geliri, sigorta hizmet gideri ve finansman gelir/giderleri nasıl okunur? Hayali örnek tablo ve operasyonel KPI ile bağlantılar.",
+    date: "2026-04-19",
+    guideHref: `/blog/${HUB_SLUG}`,
+    guideName: "IFRS 17 ana rehber",
+    image: OG_IMAGE,
+    keywords: [
+      ...COMMON_KEYWORDS,
+      "IFRS 17 gelir tablosu",
+      "insurance service result",
+      "sigorta hizmet gideri",
+      "insurance finance income",
+    ],
+    faqs: [
+      {
+        question: "IFRS 17 gelir tablosunda 'Sigortacılık geliri' brüt prim midir?",
+        answer:
+          "Hayır. Sigortacılık geliri, dönemde sunulan hizmetle ilişkilendirilmiş tanıma; beklenen hasar ve gider + risk ayarlaması azalışı + CSM itfası bileşenlerini içerir. Brüt prim üretimi ayrı bir operasyonel göstergedir.",
+      },
+      {
+        question: "'Hizmet sonucu' ile 'net kâr' aynı mı?",
+        answer:
+          "Hayır. Hizmet sonucu = Sigortacılık geliri − Sigorta hizmet gideri. Finansman (iskonto/faiz) etkileri ve yatırım sonuçları ayrı satırlardadır; net kâr bunların toplamından sonra çıkar.",
+      },
+      {
+        question: "Reasürans satırı nerede görünür?",
+        answer:
+          "IFRS 17 gelir tablosunda genellikle 'Reasürans ile ilgili gelir/gider' ayrı bir satır grubunda görünür; brüt hizmet sonucundan sonra net hizmet sonucuna taşır.",
+      },
+    ],
+    content: [
+      {
+        type: "snippet",
+        question: "IFRS 17 gelir tablosu kısaca nasıl kurulur?",
+        answer:
+          "En üstte 'Sigortacılık geliri' (hizmet sunumuyla orantılı tanıma) ve 'Sigorta hizmet gideri' (hasar, gider, zarar bileşeni) yer alır; farkı 'Sigorta hizmet sonucu' (Insurance Service Result) verir. Altta 'Sigorta finansman gelir/gideri' (iskonto birikimi, faiz etkisi) ve reasürans etkileri net hizmet sonucunu oluşturur; yatırım sonucu ve diğer kalemler eklenerek net kâra ulaşılır.",
+      },
+
+      { type: "h3", text: "Satır başı özet" },
+      {
+        type: "table",
+        caption: "IFRS 17 gelir tablosu — basit illüstrasyon (hayali, milyon TL)",
+        headers: ["Satır", "Tutar", "Nereden gelir?"],
+        rows: [
+          ["Sigortacılık geliri (Insurance revenue)", "890", "CSM itfa + beklenen hasar/gider + risk düz."],
+          ["Sigorta hizmet gideri (Insurance service expenses)", "-720", "Oluşan hasar, gider, zarar bileşeni, düzeltmeler"],
+          ["Sigorta hizmet sonucu (brüt)", "170", "Üst iki satırın farkı"],
+          ["Reasürans geliri/gideri (net)", "-10", "Reasürans sözleşmelerinin etkisi"],
+          ["Net sigorta hizmet sonucu", "160", ""],
+          ["Sigorta finansman gelir/gideri", "-25", "İskonto birikimi, iskonto oranı değişimi"],
+          ["Yatırım gelir/gideri (özet)", "40", "Finansal varlıkların getirisi"],
+          ["Vergi öncesi kâr (özet)", "95", ""],
+        ],
+      },
+      {
+        type: "callout",
+        variant: "info",
+        title: "Okuma ipucu",
+        text:
+          "Çeyreklik trendde 'Sigortacılık geliri'nin zıpladığını ama 'Hizmet sonucu'nun aynı oranda artmadığını görebilirsiniz. Bunun nedeni genelde hasar beklentisinin veya zarar bileşeninin gideri yukarı çekmesidir.",
+      },
+
+      { type: "h3", text: "Operasyonel KPI ile köprü" },
+      {
+        type: "ul",
+        items: [
+          "Brüt prim üretimi ↗ ama sigortacılık geliri yatay → Yeni sözleşmeler ağırlıklı; CSM birikiyor, gelire henüz yansımadı.",
+          "Hasar/prim oranı kötü ama hizmet sonucu iyi → Beklentilerle uyumlu; CSM itfa sürüyor, sürpriz yok.",
+          "Hasar/prim iyi ama hizmet sonucu zayıf → Finansman gideri veya zarar bileşeni bastırıyor olabilir; dipnotları okuyun.",
+        ],
+      },
+
+      {
+        type: "links",
+        title: "Bağlantılı metrikler (Ofis Akademi Finans & Sigorta)",
+        items: [
+          { label: "Kazanılmış prim", href: "/finans-sigorta/kazanilmis-prim" },
+          { label: "Hasar / prim oranı", href: "/finans-sigorta/hasar-prim-orani" },
+          { label: "Birleşik oran (combined ratio)", href: "/finans-sigorta/birlesik-oran" },
+        ],
+      },
+
+      {
+        type: "download",
+        title: "IFRS 17 şablonu — gelir tablosu ile birlikte kullanın",
+        description:
+          "Şablondaki KPI sayfası, CSM hareketini takip etmenize yardım eder; bu yazıdaki gelir tablosu satırlarıyla birlikte okunduğunda hizmet sonucu daha anlamlı hale gelir.",
+        href: "/downloads/tfrs-17-ornek-model.xlsx",
+        fileName: "tfrs-17-ornek-model.xlsx",
+        buttonLabel: "Excel şablonunu indir (.xlsx)",
+        previewSrc: EXCEL_PREVIEW,
+        previewAlt: "IFRS 17 gelir tablosu destek şablonu önizlemesi",
+      },
+
+      clusterLinks(GELIR_SLUG),
+    ],
+  },
+
+  /* ============================================================
+   *  UYDU 3 — Excel Modeli Basit Örnek
+   * ============================================================ */
+  {
+    slug: EXCEL_SLUG,
+    title: "IFRS 17 Excel Modeli: Basit Örnek (Ücretsiz Şablon + Adım Adım Anlatım)",
+    description:
+      "IFRS 17 için basit bir Excel modeli: Prim, beklenen maliyet, CSM ve aylık itfa. Formüller, KPI roll-forward çerçevesi ve ücretsiz indirilebilir şablon.",
+    date: "2026-04-19",
+    guideHref: `/blog/${HUB_SLUG}`,
+    guideName: "IFRS 17 ana rehber",
+    image: OG_IMAGE,
+    keywords: [
+      ...COMMON_KEYWORDS,
+      "IFRS 17 Excel modeli",
+      "ifrs 17 excel şablonu",
+      "csm excel",
+      "csm roll forward excel",
+    ],
+    faqs: [
+      {
+        question: "Bu Excel gerçek bir IFRS 17 modeli mi?",
+        answer:
+          "Hayır. Şablon eğitim amaçlıdır; iskonto, kapsam birimleri, risk ayarlaması ve reasürans gibi unsurlar basitleştirilmiştir. Amaç fikirleri göstermektir.",
+      },
+      {
+        question: "Kendi portföyüm için nasıl uyarlarım?",
+        answer:
+          "KPI sayfasındaki sütunları kendi dönem/ürün dilinizle doldurun: açılış CSM, yeni sözleşmeler, faiz, unlocking, itfa, kapanış. Roll-forward mantığı aynıdır; formülleri kendi varsayımlarınızla değiştirin.",
+      },
+    ],
+    content: [
+      {
+        type: "snippet",
+        question: "IFRS 17 Excel modelinde ne var?",
+        answer:
+          "Üç sayfa: (1) Basit örnek — 1.200 TL prim, 960 TL beklenen maliyet, 240 TL başlangıç CSM ve 12 ay boyunca eşit itfa, formüllerle; (2) KPI şablonu — CSM roll-forward (açılış, yeni, faiz, unlocking, itfa, kapanış); (3) Feragat.",
+      },
+
+      { type: "h3", text: "Sayfa 1 — Basit örnek (formüllü)" },
+      {
+        type: "formula",
+        label: "Başlangıç CSM",
+        formula: "= Prim − Beklenen maliyet  (örnek: 1.200 − 960 = 240)",
+      },
+      {
+        type: "formula",
+        label: "Aylık itfa (eşit dağılım varsayımı)",
+        formula: "= Başlangıç CSM ÷ Hizmet süresi (ay)  (240 ÷ 12 = 20)",
+      },
+      {
+        type: "p",
+        text:
+          "Şablondaki B6 ve B8 hücreleri formül içerir; üstteki girdileri değiştirirseniz (prim, maliyet, ay) tablo otomatik güncellenir.",
+      },
+
+      { type: "h3", text: "Sayfa 2 — KPI (CSM roll-forward) şablonu" },
+      {
+        type: "table",
+        caption: "Dönem bazlı doldurulacak sütunlar (örnek)",
+        headers: [
+          "Dönem",
+          "Açılış CSM",
+          "Yeni sözleşmeler",
+          "Faiz",
+          "Unlocking (±)",
+          "İtfa",
+          "Kapanış CSM",
+          "Not",
+        ],
+        rows: [
+          ["Q1", "—", "—", "—", "—", "—", "—", "örnek satır"],
+          ["Q2", "—", "—", "—", "—", "—", "—", "örnek satır"],
+        ],
+      },
+      {
+        type: "callout",
+        variant: "info",
+        title: "Pratik ipucu",
+        text:
+          "Kapanış = Açılış + Yeni + Faiz ± Unlocking − İtfa. Bir çeyrekte 'unlocking' sütununun büyüklüğü, varsayım değişikliklerinizin şiddetini gösterir; yönetim sunumunda bu sayıyı ayrıca anlatmak değerlidir.",
+      },
+
+      {
+        type: "download",
+        title: "IFRS 17 Excel modelini indirin",
+        description:
+          "Üç sayfalık eğitim dosyası — formüller açıktır, kendi sayılarınızla deneyebilirsiniz. Lisans: eğitim ve dahili kullanım.",
+        href: "/downloads/tfrs-17-ornek-model.xlsx",
+        fileName: "tfrs-17-ornek-model.xlsx",
+        buttonLabel: "Şablonu indir (.xlsx)",
+        previewSrc: EXCEL_PREVIEW,
+        previewAlt: "IFRS 17 Excel modelinin önizlemesi",
+      },
+
+      { type: "h3", text: "Sonraki adım" },
+      {
+        type: "ul",
+        items: [
+          "Şablondaki girdileri kendi bir ürün grubunuzun 1 dönemlik verisiyle doldurun.",
+          "Roll-forward sayfasını 4 çeyrek boyunca doldurun — örüntü hemen görünür hale gelir.",
+          "CSM tanımı ve gelir tablosu satırlarıyla bağlantıyı kurmak için serinin diğer yazılarını okuyun.",
+        ],
+      },
+
+      clusterLinks(EXCEL_SLUG),
     ],
   },
 ];

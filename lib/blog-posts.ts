@@ -12,7 +12,17 @@ export type ContentBlock =
   | { type: "callout"; variant: "info" | "warning"; title?: string; text: string }
   | { type: "diagram"; variant: "tfrs17-policy-coverage" | "tfrs17-premium-flow" | "tfrs17-csm-bars" }
   | { type: "links"; title?: string; items: Array<{ label: string; href: string }> }
-  | { type: "download"; title: string; description: string; href: string; fileName: string; buttonLabel: string };
+  | {
+      type: "download";
+      title: string;
+      description: string;
+      href: string;
+      fileName: string;
+      buttonLabel: string;
+      previewSrc?: string;
+      previewAlt?: string;
+    }
+  | { type: "snippet"; question: string; answer: string };
 
 export type BlogPost = {
   slug: string;
@@ -28,6 +38,8 @@ export type BlogPost = {
   keywords?: string[];
   /** Sayfa altında FAQ + FAQPage şeması */
   faqs?: Array<{ question: string; answer: string }>;
+  /** Sosyal paylaşım / OG görseli URL'si (opsiyonel; yoksa site varsayılanı kullanılır). */
+  image?: string;
   content: ContentBlock[];
 };
 
@@ -64,8 +76,9 @@ export function getCategoryBySlug(slug: string): (typeof BLOG_CATEGORIES)[number
 export function categorizePost(post: Pick<BlogPost, "slug" | "toolHref" | "toolName" | "title">): BlogCategorySlug {
   const s = `${post.slug} ${post.title} ${post.toolHref ?? ""} ${post.toolName ?? ""}`.toLowerCase();
   if (
+    s.includes("ifrs") ||
     s.includes("tfrs") ||
-    s.includes("tfrs 17") ||
+    s.includes("csm") ||
     s.includes("sigorta muhasebe") ||
     s.includes("sigortacılık mali") ||
     (s.includes("sigorta") && (s.includes("bilanço") || s.includes("gelir tablosu") || s.includes("teknik")))
@@ -107,7 +120,9 @@ export function getBenefitLine(post: Pick<BlogPost, "title" | "toolName" | "slug
   if (post.slug.includes("csv")) return "CSV'yi tek tıkla sütunlara ayırın.";
   if (post.slug.includes("tarih-farki")) return "Tarih farkını toplu hesaplayın.";
   if (post.slug.includes("iki-liste")) return "Ortak ve farklı kayıtları anında bulun.";
-  if (post.slug.includes("tfrs-17")) return "Finans & Sigorta metrikleri ve teknik karşılık özetleriyle tabloyu bağlamlandırın.";
+  if (post.slug.includes("ifrs-17") || post.slug.includes("tfrs-17")) {
+    return "Excel örnek + CSM hesaplama + indirilebilir şablon ile konuyu uygulayarak öğrenin.";
+  }
   if (post.guideName) return `${post.guideName} ile adım adım öğrenin.`;
   if (post.toolName) return `${post.toolName} ile 5 saniyede çözün.`;
   return "Adım adım rehberimizle hemen öğrenin.";
@@ -124,6 +139,7 @@ export function getPostPlainText(post: BlogPost): string {
     if (b.type === "diagram") return `diagram ${b.variant}`;
     if (b.type === "links") return b.items.map((x) => `${x.label} ${x.href}`).join(" ");
     if (b.type === "download") return `${b.title} ${b.description} ${b.href}`;
+    if (b.type === "snippet") return `${b.question} ${b.answer}`;
     return "";
   });
   const faqText = (post.faqs ?? []).map((f) => `${f.question} ${f.answer}`).join(" ");

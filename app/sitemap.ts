@@ -22,7 +22,7 @@ const HUB_ROUTES = [
 ] as const;
 
 function priorityFor(route: string): number {
-  if (route === "/") return 1;
+  if (route === "/") return 1.0;
   if (
     route === "/excel-araclari" ||
     route === "/egitimler" ||
@@ -32,13 +32,13 @@ function priorityFor(route: string): number {
   ) {
     return 0.9;
   }
-  if (route.startsWith("/egitimler/")) return 0.85;
-  if (route.startsWith("/finans-sigorta/") || route.startsWith("/formul-kutuphanesi/")) {
-    return 0.85;
-  }
-  if (route.startsWith("/blog/")) return 0.75;
-  if (route.startsWith("/excel-araclari/")) return 0.8;
-  return 0.7;
+  if (route.startsWith("/egitimler/")) return 0.8;
+  if (route.startsWith("/blog/kategori/")) return 0.7;
+  if (route.startsWith("/formul-kutuphanesi/")) return 0.7;
+  if (route.startsWith("/finans-sigorta/")) return 0.7;
+  if (route.startsWith("/excel-araclari/")) return 0.7;
+  if (route.startsWith("/blog/")) return 0.65;
+  return 0.6;
 }
 
 function changeFreqFor(route: string): MetadataRoute.Sitemap[0]["changeFrequency"] {

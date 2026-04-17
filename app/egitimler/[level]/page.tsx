@@ -13,6 +13,7 @@ import {
   type FunctionDef,
   type LevelKey,
 } from "@/lib/egitimData";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 
 const svgProps = { width: 24, height: 24, viewBox: "0 0 24 24" as const, fill: "none" as const, stroke: "#374151", strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
 
@@ -346,6 +347,13 @@ export default function TrainingLevelPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Ana Sayfa", path: "/" },
+          { name: "Eğitimler", path: "/egitimler" },
+          { name: config.label, path: `/egitimler/${levelKey}` },
+        ]}
+      />
       <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-3 sm:px-6">
           <Link href="/egitimler" className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition hover:bg-gray-200" aria-label="Eğitimler">

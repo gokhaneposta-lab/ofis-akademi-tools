@@ -7,6 +7,7 @@ import {
 } from "@/components/blog/BlogDiagrams";
 import { getPostBySlug, getAllSlugs, getRelatedPosts, getBenefitLine, getPostPlainText, type ContentBlock } from "@/lib/blog-posts";
 import { getSiteUrl } from "@/lib/site";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 
 const BASE_URL = getSiteUrl();
 const ACCENT = "#217346";
@@ -238,6 +239,13 @@ export default async function BlogPostPage({ params }: Props) {
       {faqJsonLd ? (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       ) : null}
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Ana Sayfa", path: "/" },
+          { name: "Blog", path: "/blog" },
+          { name: post.title, path: `/blog/${slug}` },
+        ]}
+      />
 
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">

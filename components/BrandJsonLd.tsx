@@ -7,11 +7,22 @@ export default function BrandJsonLd({ baseUrl }: BrandJsonLdProps) {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Ofis Akademi",
-    alternateName: "Ofis Akademi Excel ve Veri Analizi",
+    alternateName: ["Ofis Akademi Excel ve Veri Analizi", "OfisAkademi"],
     url: baseUrl,
-    logo: `${baseUrl}/favicon.ico`,
+    logo: {
+      "@type": "ImageObject",
+      url: `${baseUrl}/favicon.ico`,
+    },
     description:
       "Excel ve veri analizi eğitimi, ücretsiz araçlar, formül kütüphanesi ve finans/sigorta KPI rehberleri.",
+    knowsAbout: [
+      "Microsoft Excel",
+      "Veri Analizi",
+      "Finansal Raporlama",
+      "Sigorta KPI",
+      "IFRS 17",
+      "Power Query",
+    ],
   };
 
   const websiteSchema = {
@@ -20,14 +31,11 @@ export default function BrandJsonLd({ baseUrl }: BrandJsonLdProps) {
     name: "Ofis Akademi",
     url: baseUrl,
     inLanguage: "tr-TR",
+    description:
+      "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi ve finans/sigorta KPI hesaplayıcıları.",
     publisher: {
       "@type": "Organization",
       name: "Ofis Akademi",
-    },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${baseUrl}/blog?k={search_term_string}`,
-      "query-input": "required name=search_term_string",
     },
   };
 

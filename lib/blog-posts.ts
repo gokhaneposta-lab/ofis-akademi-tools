@@ -10,7 +10,18 @@ export type ContentBlock =
   | { type: "formula"; label: string; formula: string }
   | { type: "table"; caption?: string; headers: string[]; rows: string[][] }
   | { type: "callout"; variant: "info" | "warning"; title?: string; text: string }
-  | { type: "diagram"; variant: "tfrs17-policy-coverage" | "tfrs17-premium-flow" | "tfrs17-csm-bars" }
+  | {
+      type: "diagram";
+      variant:
+        | "tfrs17-policy-coverage"
+        | "tfrs17-premium-flow"
+        | "tfrs17-csm-bars"
+        | "tfrs17-paa-vs-gmm"
+        | "tfrs17-ra-confidence"
+        | "excel-pivot-fields"
+        | "excel-dashboard-layout"
+        | "excel-slicer-timeline";
+    }
   | { type: "links"; title?: string; items: Array<{ label: string; href: string }> }
   | {
       type: "download";
@@ -45,6 +56,7 @@ export type BlogPost = {
 
 import { BLOG_POSTS_EXTRA } from "./blog-posts-extra";
 import { BLOG_POSTS_TFRS17 } from "./blog-posts-tfrs17";
+import { BLOG_POSTS_EXCEL_HUB } from "./blog-posts-excel-hub";
 
 export type BlogCategorySlug =
   | "formuller"
@@ -223,7 +235,12 @@ const BLOG_POSTS_CORE: BlogPost[] = [
   },
 ];
 
-export const BLOG_POSTS: BlogPost[] = [...BLOG_POSTS_CORE, ...BLOG_POSTS_EXTRA, ...BLOG_POSTS_TFRS17];
+export const BLOG_POSTS: BlogPost[] = [
+  ...BLOG_POSTS_CORE,
+  ...BLOG_POSTS_EXTRA,
+  ...BLOG_POSTS_TFRS17,
+  ...BLOG_POSTS_EXCEL_HUB,
+];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);

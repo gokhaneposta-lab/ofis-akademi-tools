@@ -4,6 +4,11 @@ import {
   Tfrs17CsmAmortizationDiagram,
   Tfrs17PolicyCoverageDiagram,
   Tfrs17PremiumFlowDiagram,
+  Tfrs17PaaVsGmmDiagram,
+  Tfrs17RaConfidenceDiagram,
+  ExcelPivotFieldsDiagram,
+  ExcelDashboardLayoutDiagram,
+  ExcelSlicerTimelineDiagram,
 } from "@/components/blog/BlogDiagrams";
 import { getPostBySlug, getAllSlugs, getRelatedPosts, getBenefitLine, getPostPlainText, type ContentBlock } from "@/lib/blog-posts";
 import { getSiteUrl } from "@/lib/site";
@@ -80,6 +85,11 @@ function BlogContent({ block }: { block: ContentBlock }) {
       if (block.variant === "tfrs17-policy-coverage") return <Tfrs17PolicyCoverageDiagram />;
       if (block.variant === "tfrs17-premium-flow") return <Tfrs17PremiumFlowDiagram />;
       if (block.variant === "tfrs17-csm-bars") return <Tfrs17CsmAmortizationDiagram />;
+      if (block.variant === "tfrs17-paa-vs-gmm") return <Tfrs17PaaVsGmmDiagram />;
+      if (block.variant === "tfrs17-ra-confidence") return <Tfrs17RaConfidenceDiagram />;
+      if (block.variant === "excel-pivot-fields") return <ExcelPivotFieldsDiagram />;
+      if (block.variant === "excel-dashboard-layout") return <ExcelDashboardLayoutDiagram />;
+      if (block.variant === "excel-slicer-timeline") return <ExcelSlicerTimelineDiagram />;
       return null;
     case "download":
       return (

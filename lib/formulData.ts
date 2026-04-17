@@ -50,6 +50,12 @@ export type FormulaDef = {
   /** Link to tool page */
   toolHref?: string;
   toolName?: string;
+  /** SEO override: başlık (yoksa varsayılan generateMetadata kullanılır) */
+  seoTitle?: string;
+  /** SEO override: meta description (yoksa summary kullanılır) */
+  seoDescription?: string;
+  /** SEO override: anahtar kelimeler */
+  seoKeywords?: string[];
 };
 
 export const formulas: FormulaDef[] = [
@@ -130,6 +136,18 @@ export const formulas: FormulaDef[] = [
     guideName: "Orta Seviye Eğitim",
     blogHref: "/blog/excel-caprazara-xlookup-kullanimi",
     blogName: "XLOOKUP Blog Yazısı",
+    seoTitle: "XLOOKUP Kullanımı: Excel'de Sola Arama, Örnekler ve DÜŞEYARA Farkı",
+    seoDescription:
+      "XLOOKUP nasıl kullanılır? Sözdizimi, sola arama, bulunamazsa parametresi, gerçek örnekler ve DÜŞEYARA ile karşılaştırma — adım adım rehber.",
+    seoKeywords: [
+      "xlookup kullanımı",
+      "xlookup nasıl kullanılır",
+      "excel xlookup",
+      "xlookup örnek",
+      "xlookup düşeyara farkı",
+      "xlookup sola arama",
+      "çaprazara kullanımı",
+    ],
   },
   {
     slug: "indis",

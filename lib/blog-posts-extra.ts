@@ -602,8 +602,18 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
   },
   {
     slug: "excel-acilir-liste-dropdown-yapma",
-    title: "Excel'de Açılır Liste (Dropdown) Yapma: Adım Adım Rehber",
-    description: "Excel'de veri doğrulama ile açılır liste oluşturma, dinamik liste ve bağımlı dropdown yapımı. Adım adım anlatım.",
+    title: "Excel Dropdown Liste Nasıl Yapılır? Açılır Liste (Veri Doğrulama) Rehberi",
+    description:
+      "Excel'de dropdown (açılır) liste oluşturma: Veri Doğrulama ile sabit, hücre aralığı, dinamik tablo ve DOLAYLI ile bağımlı liste — adım adım örnekler.",
+    keywords: [
+      "excel dropdown liste",
+      "excel dropdown",
+      "excel açılır liste",
+      "açılır liste nasıl yapılır",
+      "excel veri doğrulama",
+      "bağımlı açılır liste",
+      "dinamik dropdown excel",
+    ],
     date: "2026-03-24",
     guideHref: "/egitimler/orta",
     guideName: "Orta Seviye Eğitim",

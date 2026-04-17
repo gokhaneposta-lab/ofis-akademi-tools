@@ -22,11 +22,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "Ofis Akademi — Excel & Veri Analizi",
+    default: "Ofis Akademi — Excel Rehberleri, Ücretsiz Araçlar ve Formül Kütüphanesi",
     template: "%s | Ofis Akademi",
   },
   description:
-    "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi, finans ve sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri — Ofis Akademi.",
+    "Ofis Akademi: Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi (DÜŞEYARA, XLOOKUP, EĞER), finans & sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri.",
   keywords: [
     "ofis akademi",
     "excel egitimi",
@@ -47,16 +47,16 @@ export const metadata: Metadata = {
     type: "website",
     locale: "tr_TR",
     siteName: "Ofis Akademi",
-    title: "Ofis Akademi — Excel & Veri Analizi",
+    title: "Ofis Akademi — Excel Rehberleri, Ücretsiz Araçlar ve Formül Kütüphanesi",
     description:
-      "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi, finans ve sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri.",
+      "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi (DÜŞEYARA, XLOOKUP, EĞER), finans & sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri.",
     url: BASE_URL,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ofis Akademi — Excel & Veri Analizi",
+    title: "Ofis Akademi — Excel Rehberleri, Ücretsiz Araçlar ve Formül Kütüphanesi",
     description:
-      "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi, finans ve sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri.",
+      "Excel ve veri analizi rehberleri, ücretsiz araçlar, formül kütüphanesi (DÜŞEYARA, XLOOKUP, EĞER), finans & sigorta KPI hesaplayıcıları, blog ve eğitim seviyeleri.",
   },
   formatDetection: {
     email: false,

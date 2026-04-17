@@ -20,15 +20,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const f = getFormulaBySlug(slug);
   if (!f) return {};
+  const title = f.seoTitle ?? `${f.name} Kullanımı — Excel Formül Kütüphanesi`;
+  const description = f.seoDescription ?? f.summary;
   return {
-    title: `${f.name} (${f.nameEn}) Kullanımı — Excel Formül Kütüphanesi`,
-    description: f.summary,
+    title,
+    description,
+    keywords: f.seoKeywords,
     alternates: {
       canonical: canonicalUrl(`/formul-kutuphanesi/${slug}`),
     },
     openGraph: {
-      title: `${f.name} (${f.nameEn}) — Ofis Akademi Formül Kütüphanesi`,
-      description: f.summary,
+      title: f.seoTitle ?? `${f.name} (${f.nameEn}) — Ofis Akademi Formül Kütüphanesi`,
+      description,
+      type: "article",
+      url: canonicalUrl(`/formul-kutuphanesi/${slug}`),
+      siteName: "Ofis Akademi",
+      locale: "tr_TR",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
     },
   };
 }

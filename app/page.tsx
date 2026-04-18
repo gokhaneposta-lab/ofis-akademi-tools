@@ -153,25 +153,14 @@ export default function Home() {
               >
                 Excel Araçları
               </a>
-              <a
-                href="/blog"
-                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
-              >
-                Blog
-              </a>
-              <a
-                href="/formul-kutuphanesi"
-                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
-              >
-                Formül Kütüphanesi
-              </a>
-              <a
-                href="/finans-sigorta"
-                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
-              >
-                Finans & Sigorta
-              </a>
             </div>
+            <p className="-mt-2 text-xs text-slate-600">
+              Daha fazla: <Link href="/blog" className="underline underline-offset-2 hover:text-emerald-700">Blog</Link>
+              {" · "}
+              <Link href="/formul-kutuphanesi" className="underline underline-offset-2 hover:text-emerald-700">Formül Kütüphanesi</Link>
+              {" · "}
+              <Link href="/finans-sigorta" className="underline underline-offset-2 hover:text-emerald-700">Finans &amp; Sigorta</Link>
+            </p>
 
             <div className="flex flex-wrap gap-4 text-sm text-slate-600">
               <span className="inline-flex items-center gap-2">
@@ -190,15 +179,15 @@ export default function Home() {
 
             <Link
               href="/blog/tfrs-17-yeni-sigorta-mali-tablosu-rehberi"
-              className="mt-2 inline-flex max-w-full items-center gap-3 rounded-2xl border border-emerald-500/40 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-600 hover:bg-white"
+              className="mt-2 flex w-full max-w-full items-center gap-3 overflow-hidden rounded-2xl border border-emerald-500/40 bg-white/80 px-4 py-3 text-sm text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-600 hover:bg-white"
             >
               <span className="inline-flex shrink-0 items-center rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-white">
-                Yeni rehber
+                Yeni
               </span>
-              <span className="min-w-0 truncate font-medium">
-                IFRS 17 (TFRS 17) &mdash; CSM + Excel örnek model (ücretsiz şablon)
+              <span className="min-w-0 flex-1 truncate font-medium">
+                IFRS 17 rehberi + Excel şablonu
               </span>
-              <span aria-hidden className="ml-auto shrink-0 text-emerald-700">→</span>
+              <span aria-hidden className="shrink-0 text-emerald-700">→</span>
             </Link>
           </div>
 

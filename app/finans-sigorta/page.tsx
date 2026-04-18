@@ -1,21 +1,21 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { metrics, metricCategoryLabels } from "@/lib/sektorMetrikData";
+import { metrics, metricCategoryLabels, metricCategoryOrder } from "@/lib/sektorMetrikData";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
 
 const BASE = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Finans & Sigorta için Excel — Sektörel Metrikler",
+  title: "Finans & Sigorta için Excel — Sektörel Metrikler & IFRS 17",
   description:
-    "Sigortacılık ve finans: H/P, kazanılmış prim, KPK, muallak hasar, matematik karşılıklar, DERK, dengeleme karşılığı, cari oran, VÖK ve operasyonel KPI'lar — Excel rehberi ve hesaplayıcılar.",
+    "Sigortacılık ve finans: H/P, kazanılmış prim, KPK, muallak hasar, IFRS 17 (TFRS 17) — CSM, RA, PAA, LIC, LRC, GMM — cari oran, VÖK ve operasyonel KPI'lar. Excel rehberi ve interaktif hesaplayıcılar.",
   alternates: {
     canonical: canonicalUrl("/finans-sigorta"),
   },
   openGraph: {
-    title: "Finans & Sigorta için Excel — Ofis Akademi",
+    title: "Finans & Sigorta için Excel & IFRS 17 (TFRS 17) — Ofis Akademi",
     description:
-      "Sigortacılık ve finans metriklerini Excel ile adım adım hesaplayın.",
+      "Sigortacılık ve finans metrikleri ile IFRS 17 (CSM, RA, PAA, LIC, LRC, GMM) — Excel rehberi ve interaktif hesaplayıcılar.",
     url: `${BASE}/finans-sigorta`,
     siteName: "Ofis Akademi",
     locale: "tr_TR",
@@ -50,9 +50,9 @@ export default function FinansSigortaPage() {
             Finans & Sigorta için Excel
           </h1>
           <p className="mt-2 text-sm text-gray-600 max-w-2xl">
-            Teknik sigortacılık (UW), finansal oranlar ve operasyonel KPI&apos;ları
-            anlayın; Excel ile hesaplayın. Her metrikte açıklama, adımlar, örnekler ve{" "}
-            <strong>interaktif hesaplayıcı</strong> vardır.
+            Teknik sigortacılık (UW), <strong>IFRS 17 (TFRS 17) metrikleri</strong> (CSM, RA, PAA, LIC, LRC, GMM),
+            finansal oranlar ve operasyonel KPI&apos;ları anlayın; Excel ile hesaplayın. Her metrikte açıklama,
+            adımlar, örnekler ve <strong>interaktif hesaplayıcı</strong> vardır.
           </p>
         </div>
       </header>
@@ -80,11 +80,14 @@ export default function FinansSigortaPage() {
           </div>
         </section>
 
-        {Object.entries(grouped).map(([category, items]) => (
+        {metricCategoryOrder.map((category) => {
+          const items = grouped[category];
+          if (!items || items.length === 0) return null;
+          return (
           <section key={category} className="mb-10">
             <h2 className="flex items-center gap-2 text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">
               <span className="h-1 w-5 rounded-full bg-emerald-500" />
-              {metricCategoryLabels[category as keyof typeof metricCategoryLabels]}
+              {metricCategoryLabels[category]}
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -125,7 +128,8 @@ export default function FinansSigortaPage() {
               ))}
             </div>
           </section>
-        ))}
+          );
+        })}
 
       </main>
     </div>

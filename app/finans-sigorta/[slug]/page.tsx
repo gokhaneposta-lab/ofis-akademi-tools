@@ -11,8 +11,10 @@ import {
   BorcOzkaynakCalculator,
   CalisanBasinaCiroCalculator,
   CariOranCalculator,
+  CsmRollForwardCalculator,
   DevamsizlikOraniCalculator,
   HasarCozumSuresiCalculator,
+  Ifrs17KavramCalculator,
   IkramiyeIndirimKarsiligiCalculator,
   IptalOraniCalculator,
   KazanilmamisPrimKarsiligiCalculator,
@@ -20,9 +22,11 @@ import {
   MuallakHasarKarsiligiCalculator,
   NakitOranCalculator,
   NetKarMarjiCalculator,
+  PaaLrcCalculator,
   PersonelDevirCalculator,
   PoliceBasinaMaliyetCalculator,
   PrimTahsilatOraniCalculator,
+  RaConfidenceCalculator,
   SlaServisSeviyesiCalculator,
   TeknikKarsilikBilgiCalculator,
   VokRoeCalculator,
@@ -117,6 +121,18 @@ function CalculatorSection({ type }: { type: string }) {
       return <TeknikKarsilikBilgiCalculator variant="derk" />;
     case "dengeleme-karsiligi":
       return <TeknikKarsilikBilgiCalculator variant="dengeleme" />;
+    case "ifrs17-csm":
+      return <CsmRollForwardCalculator />;
+    case "ifrs17-ra":
+      return <RaConfidenceCalculator />;
+    case "ifrs17-paa":
+      return <PaaLrcCalculator />;
+    case "ifrs17-lic":
+      return <Ifrs17KavramCalculator variant="lic" />;
+    case "ifrs17-lrc":
+      return <Ifrs17KavramCalculator variant="lrc" />;
+    case "ifrs17-gmm":
+      return <Ifrs17KavramCalculator variant="gmm" />;
     default:
       return null;
   }

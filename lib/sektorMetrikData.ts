@@ -1,10 +1,23 @@
-export type MetricCategory = "teknik-sigortacilik" | "finansal-oranlar" | "operasyonel";
+export type MetricCategory =
+  | "teknik-sigortacilik"
+  | "ifrs-metrikleri"
+  | "finansal-oranlar"
+  | "operasyonel";
 
 export const metricCategoryLabels: Record<MetricCategory, string> = {
   "teknik-sigortacilik": "Teknik Sigortacılık (UW)",
+  "ifrs-metrikleri": "IFRS Metrikleri (TFRS 17)",
   "finansal-oranlar": "Finansal Oranlar",
   operasyonel: "Operasyonel Metrikler",
 };
+
+/** Hub sayfasında kategori sırasını sabitler (insertion order'a güvenmemek için). */
+export const metricCategoryOrder: MetricCategory[] = [
+  "teknik-sigortacilik",
+  "ifrs-metrikleri",
+  "finansal-oranlar",
+  "operasyonel",
+];
 
 export type MetricParam = { name: string; description: string };
 
@@ -1248,7 +1261,7 @@ Portföyde binlerce poliçe vardır; pratikte her poliçe satırı için aynı m
       { range: "KPK ↓", meaning: "Portföy yaşlanıyor veya kısa vade ağırlığı." },
     ],
     tips: ["Reasürans payı düşülmüş net prim üzerinden mi hesaplandığını raporda yazın.", "Kazanmış prim sayfası ile çift kontrol yapın."],
-    relatedSlugs: ["kazanilmis-prim", "birlesik-oran", "muallak-hasar-karsiligi"],
+    relatedSlugs: ["kazanilmis-prim", "birlesik-oran", "muallak-hasar-karsiligi", "ifrs17-paa", "ifrs17-lrc"],
     calculatorType: "kazanilmamis-prim-karsiligi",
   },
   {
@@ -1292,7 +1305,7 @@ Portföyde binlerce poliçe vardır; pratikte her poliçe satırı için aynı m
       { range: "Muallak azalışı", meaning: "Çözüm veya konservatiflik azalması — nedeni ayrıştırın." },
     ],
     tips: ["IBNR’yi basit yüzde ile karıştırmayın; yöntem raporda açıklanmalıdır.", "Hasar/Prim ile birlikte okuyun."],
-    relatedSlugs: ["hasar-prim-orani", "kayip-orani", "kazanilmamis-prim-karsiligi"],
+    relatedSlugs: ["hasar-prim-orani", "kayip-orani", "kazanilmamis-prim-karsiligi", "ifrs17-lic", "ifrs17-ra"],
     calculatorType: "muallak-hasar-karsiligi",
   },
   {
@@ -1468,6 +1481,557 @@ Bu içerik **yatırım veya muhasebe tavsiyesi değildir**; öğrenme ve rapor s
     tips: ["Eski dönem mevzuatı ile güncel uygulamayı karıştırmayın.", "Denetçi sorularına hazır özet paragraf tutun."],
     relatedSlugs: ["devam-eden-riskler-karsiligi", "muallak-hasar-karsiligi", "birlesik-oran"],
     calculatorType: "dengeleme-karsiligi",
+  },
+
+  /* ═══════════════════════════════════════════
+     IFRS METRİKLERİ (TFRS 17)
+     CSM, RA, PAA, LIC, LRC, GMM
+     ═══════════════════════════════════════════ */
+  {
+    slug: "ifrs17-csm",
+    name: "CSM (Sözleşmeye Bağlı Hizmet Marjı)",
+    nameEn: "Contractual Service Margin",
+    category: "ifrs-metrikleri",
+    icon: "📈",
+    summary:
+      "IFRS 17 / TFRS 17 kapsamında bir sigorta sözleşme grubunun gelecekteki kazanılmamış kârıdır. Bilançoda LRC içinde tutulur, hizmet birimleri ile dönemsel olarak gelir tablosuna açılır. Kayıp grubunda CSM = 0.",
+    whatIs: `**CSM (Contractual Service Margin / Sözleşmeye Bağlı Hizmet Marjı)**, IFRS 17 (Türkiye'de TFRS 17) kapsamında bir sigorta sözleşmeleri grubunun **gelecekte kazanılacak kârının** ilk muhasebeleştirme anındaki bugünkü değeridir.
+
+Eski TFRS 4'te prim, alındığı anda büyük oranda gelir yazılırken, IFRS 17'de durum farklıdır:
+
+- İlk gün **kâr yazılmaz**; bunun yerine **CSM** bilançoda pasifte (LRC bileşeni içinde) tutulur.
+- Şirket sözleşme süresi boyunca **hizmet birimi (coverage units)** ürettikçe, CSM her dönem **sigortacılık geliri** olarak P&L'a aktarılır.
+- Tahminler güncellendiğinde (faiz dışı varsayımlar) CSM **yukarı/aşağı kaydırılır** (CSM unlocking).
+- Eğer grup **kayıplıysa (onerous)**, CSM = 0; tüm beklenen kayıp anında P&L'a yansır.
+
+CSM, IFRS 17'nin "kâr ne zaman okunur?" sorusuna verdiği yapısal cevaptır.`,
+    whyImportant: `CSM, IFRS 17 mali tablosunun en stratejik kalemidir. Yatırımcılar ve analistler için **gelecek dönem kârının görünür stoğu** anlamına gelir.
+
+- **Yüksek CSM:** Kuvvetli bir kâr biriktirme; gelecek dönemlerde sigortacılık geliri istikrarlı görünür.
+- **Düşen CSM (sürekli):** Yeni iş azalıyor olabilir veya unlocking nedeniyle eriyor.
+- **CSM unlocking (aşağı):** Risk varsayımları kötüleşti; yönetim açıklaması beklenir.
+- **CSM = 0 (onerous):** Grup kayıplı; tüm beklenen kayıp anında gelir tablosuna düşer.
+
+Yönetim kurulu sunumlarında **yeni iş CSM'i** ve **CSM hareket tablosu (roll-forward)** standart slayttır.`,
+    formulas: [
+      {
+        label: "CSM Hareket (Roll-forward)",
+        formula:
+          "Kapanış CSM = Açılış CSM + Yeni İş CSM + Faiz Tahakkuku ± Estimate Değişimi (Unlocking) − Cari Dönem İtfa",
+        explanation:
+          "Her dönem CSM için yapılan standart hareket tablosu. İtfa kısmı sigortacılık gelirine aktarılır.",
+      },
+      {
+        label: "Faiz Tahakkuku",
+        formula: "Faiz = Açılış CSM × İlk muhasebeleştirme iskonto oranı",
+        explanation:
+          "İlk gün belirlenen iskonto oranı (locked-in rate) kullanılır; piyasa değişimi P&L değil OCI tarafına gider.",
+      },
+      {
+        label: "İtfa (Coverage Units)",
+        formula: "İtfa = Kapanış (öncesi) CSM × (Cari dönem hizmet birimi / Toplam beklenen hizmet birimi)",
+        explanation:
+          "Hizmet birimi tanımı (poliçe sayısı, sigorta bedeli, gün sayısı vb.) IFRS 17 politika seçimidir.",
+      },
+    ],
+    steps: [
+      "Sözleşme grubunu IFRS 17 kohort kurallarına göre belirleyin (yıllık + kâr profiline göre).",
+      "İlk muhasebeleştirmede beklenen nakit akışı (BEL) + iskonto + RA hesaplayın.",
+      "Eğer net pozitif ise CSM açılır; net negatif ise grup onerous → CSM = 0, kayıp anında gelire düşer.",
+      "Her dönem: faiz tahakkuku ekle, varsayım değişimini (unlocking) yansıt, hizmet birimine göre itfa et.",
+      "Kapanış CSM bilançoda LRC içinde gösterilir; itfa edilen kısım sigortacılık gelirine aktarılır.",
+      "Hareket tablosunu dipnotlarda satır bazında açıklayın.",
+    ],
+    examples: [
+      {
+        title: "Basit yıllık CSM hareketi (hayali)",
+        data: {
+          "Açılış CSM": "1.000.000 ₺",
+          "Yeni iş CSM": "300.000 ₺",
+          "Faiz (%5)": "50.000 ₺",
+          "Unlocking (+/-)": "-80.000 ₺",
+          "Cari dönem itfa": "260.000 ₺",
+        },
+        result: "Kapanış CSM ≈ 1.010.000 ₺ | Sigortacılık geliri (CSM payı) ≈ 260.000 ₺",
+        explanation:
+          "Faiz CSM'i büyütür, unlocking küçültür, itfa hem CSM'i azaltır hem de cari dönem gelirine aktarılır.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Roll-forward satırı",
+        formula: "=Acilis+YeniIs+Faiz+Unlocking-Itfa",
+        description: "Her dönem için açılış–kapanış mutabakatı; bilançoda LRC'ye bağlanmalı.",
+      },
+      {
+        title: "İtfa katsayısı",
+        formula: "=DonemBirim/ToplamBeklenenBirim",
+        description: "Coverage unit oranı; her dönem yeniden hesaplanabilir (politika kararına bağlı).",
+      },
+    ],
+    interpretation: [
+      { range: "CSM artıyor", meaning: "Yeni iş güçlü; gelecek kâr stoğu büyüyor." },
+      { range: "CSM yatay", meaning: "Yeni iş, faiz ve itfa dengeli; portföy olgun." },
+      { range: "CSM hızla düşüyor", meaning: "Yeni iş eriyor veya kötü unlocking; nedeni dipnotta açıklanmalı." },
+      { range: "CSM = 0 (onerous grup)", meaning: "Grup kayıplı; beklenen kayıp anında P&L'a yansıdı." },
+    ],
+    tips: [
+      "İskonto oranı **ilk muhasebeleştirme**de sabitlenir (locked-in); cari piyasa hareketleri OCI tarafına gider.",
+      "Coverage unit tanımı kritik politika seçimidir; bir kez seçilince tutarlı uygulanmalı.",
+      "Onerous grup tespit edilince beklenen kayıp **hemen** gelire yansır — bu IFRS 4'e göre büyük fark.",
+      "CSM yalnızca GMM (BBA) ve VFA modelinde tutulur; PAA'da ayrı CSM yoktur.",
+    ],
+    relatedSlugs: ["ifrs17-gmm", "ifrs17-lrc", "ifrs17-ra", "ifrs17-paa"],
+    calculatorType: "ifrs17-csm",
+  },
+
+  {
+    slug: "ifrs17-ra",
+    name: "RA (Risk Ayarlaması)",
+    nameEn: "Risk Adjustment for Non-Financial Risk",
+    category: "ifrs-metrikleri",
+    icon: "🎯",
+    summary:
+      "Şirketin finansal olmayan risk (sigortacılık riski) almak için talep ettiği tazminatın bilançodaki karşılığıdır. Genellikle %70-85 güven düzeyi (quantile) veya sermaye maliyeti yöntemi ile hesaplanır.",
+    whatIs: `**RA (Risk Adjustment / Risk Ayarlaması)**, sigorta yükümlülüklerinin tahmininde **finansal olmayan risk belirsizliği** için ayrılan ek karşılıktır. Yani şirketin "bu beklenen nakit akışını üstlenmek için kâr beklentisinin **yanı sıra** ne kadar bir tampon istiyorum?" sorusunun cevabıdır.
+
+IFRS 17, hesaplama yöntemini **kuralcı şekilde dayatmaz**. Pratikte iki yaklaşım yaygındır:
+
+1. **Quantile / Confidence Level (yüzdelik) yöntemi:** Beklenen ortalama nakit akışının üzerinde belirli bir güven düzeyine (ör. %75) kadar tampon ayrılır. Açıklamada **denk gelen güven düzeyi** zorunlu olarak yazılır.
+2. **Cost of Capital (CoC) yöntemi:** Risk taşıma süresinde gerekli sermayenin maliyeti hesaplanır.
+
+RA, **bilançoda LIC ve (GMM altında) LRC'nin içinde** yer alır. Risk azaldıkça (örneğin hasarlar sonuçlandıkça) RA serbest bırakılır → sigortacılık geliri olarak gelire döner.`,
+    whyImportant: `RA, IFRS 17'nin "ihtiyatlılık" sinyalidir. Dipnotta verilen güven düzeyi, **şirketler arası karşılaştırma** için en önemli tek sayıdır.
+
+- **Yüksek RA / yüksek güven düzeyi (örn. %85+):** Daha ihtiyatlı; CSM görece küçük, ileriki gelir tablosunda RA serbest bırakım kalemi büyük.
+- **Düşük RA / düşük güven düzeyi (örn. %70):** Daha az ihtiyatlı; ilk anda CSM görece büyük.
+- Şirketler arası karşılaştırmada **mutlak RA tutarı yerine güven düzeyi** anlamlıdır.
+
+Aktüer çalışması ve RA politikası, IFRS 17 denetimlerinde en sık sorgulanan konulardan biridir.`,
+    formulas: [
+      {
+        label: "Basit Quantile (Normal yaklaşım)",
+        formula: "RA ≈ Z(γ) × σ(toplam hasar)",
+        explanation:
+          "γ güven düzeyi için standart normal Z değeri (ör. %75 → ~0,674; %85 → ~1,036). σ ise toplam hasar tahmininin standart sapmasıdır. Eğitim amaçlı yaklaşıktır; gerçekte aktüer modeli kullanılır.",
+      },
+      {
+        label: "Cost of Capital (CoC) yaklaşımı",
+        formula: "RA = Σ_t [ Sermaye_t × CoC oranı / (1 + r)^t ]",
+        explanation:
+          "Risk taşıma süresinde gerekli sermayenin maliyetinin iskontolu toplamı. Solvency II'den ödünç alınan klasik yaklaşımdır.",
+      },
+    ],
+    steps: [
+      "RA yöntemini ve güven düzeyini şirket politikası olarak yazılı hale getirin.",
+      "Hasar/kayıp dağılımının makul bir tahminini (en az ortalama + standart sapma veya simülasyon) çıkarın.",
+      "Quantile yöntemi için Z(γ) × σ ile başlangıç tampon hesaplayın; daha sofistike modeli aktüer yapsın.",
+      "RA'yı LIC ve (GMM ise) LRC'ye dağıtın; yıl içi serbest bırakım planını çıkarın.",
+      "Dipnotta hangi güven düzeyine denk geldiğini açıklayın — IFRS 17 zorunluluğudur.",
+    ],
+    examples: [
+      {
+        title: "Hayali bir branşta yaklaşık RA (eğitim amaçlı)",
+        data: {
+          "Beklenen toplam hasar": "10.000.000 ₺",
+          "Standart sapma (σ)": "1.500.000 ₺",
+          "Güven düzeyi": "%75 (Z ≈ 0,674)",
+        },
+        result: "RA ≈ 0,674 × 1.500.000 ≈ 1.011.000 ₺",
+        explanation:
+          "Toplam yükümlülük tahmini ≈ 10 mn + 1,01 mn RA. Dipnota \"%75 güven düzeyi\" yazılır. Gerçek modelde aktüer Solvency II veya stokastik simülasyon kullanır.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Z değerleri (yaklaşık)",
+        formula: "%70 → 0,524 | %75 → 0,674 | %80 → 0,842 | %85 → 1,036 | %90 → 1,282",
+        description: "Standart normal kuyruğun pratik referansı; eğitim için kullanın.",
+      },
+      {
+        title: "Excel'de NORMSTERS",
+        formula: "=NORMSTERS(GuvenDuzeyi)",
+        description: "Verilen olasılık için Z değerini döndürür (Türkçe Excel: NORMSTERS, İngilizce: NORM.S.INV).",
+      },
+    ],
+    interpretation: [
+      { range: "Güven düzeyi ≥ %85", meaning: "İhtiyatlı; CSM küçük, RA serbest bırakım geliri zamana yayılır." },
+      { range: "Güven düzeyi %75 civarı", meaning: "Sektörde sık görülen seviye; yorum yapılırken karşılaştırma kolay." },
+      { range: "Güven düzeyi < %70", meaning: "Düşük; denetçi ve regülatör soracaktır — gerekçe net olmalı." },
+    ],
+    tips: [
+      "Mutlak RA tutarı **karşılaştırma için yetmez**; mutlaka güven düzeyi ile birlikte değerlendirin.",
+      "RA yöntemi yıllar arasında değiştirilmemelidir; değişirse açıklama zorunlu.",
+      "RA'nın LIC kısmı zaman içinde hızlı erir; LRC'deki RA hizmet süresine yayılır.",
+      "Quantile ile CoC arasındaki seçim, sermaye yükü ve raporlama anlatısını ciddi şekilde etkiler.",
+    ],
+    relatedSlugs: ["ifrs17-csm", "ifrs17-lic", "ifrs17-gmm", "muallak-hasar-karsiligi"],
+    calculatorType: "ifrs17-ra",
+  },
+
+  {
+    slug: "ifrs17-paa",
+    name: "PAA (Basitleştirilmiş Yaklaşım)",
+    nameEn: "Premium Allocation Approach",
+    category: "ifrs-metrikleri",
+    icon: "⚡",
+    summary:
+      "IFRS 17'nin kısa vadeli sözleşmeler için izin verdiği basitleştirilmiş ölçüm yaklaşımıdır. LRC, kazanılmamış prim mantığıyla hesaplanır; LIC için tam IFRS 17 (iskonto + RA) uygulanır.",
+    whatIs: `**PAA (Premium Allocation Approach / Basitleştirilmiş Yaklaşım)**, IFRS 17'nin **kısa vadeli sigorta sözleşmeleri** için sunduğu sadeleştirilmiş ölçüm modelidir. Trafik, kasko, sağlık, yangın gibi yıllık veya daha kısa süreli ürünlerde sıkça kullanılır.
+
+**Uygulama şartı:**
+
+- Sözleşme süresi ≤ **1 yıl**, **veya**
+- Şirket, PAA sonucunun **GMM'e (BBA) makul ölçüde yakın** olacağını gösterebiliyorsa.
+
+**Mantığı çok benzer KPK gibidir:**
+
+- **LRC (Kalan Kapsam Yükümlülüğü)** → Tahsil edilen prim − kazanılan kısım (− iskontolu acquisition cost ayarlaması).
+- **LIC (Oluşmuş Hasarlar Yükümlülüğü)** → Tam IFRS 17 mantığı (BEL + iskonto + RA) uygulanır. **PAA, LIC'i basitleştirmez**.
+
+PAA altında **CSM tutulmaz**; kâr, prim kazanıldıkça gelir tablosuna yansır.`,
+    whyImportant: `Türkiye'de hayat dışı sigorta portföyünün büyük kısmı (trafik, kasko, sağlık) yıllık olduğu için, çoğu şirket için **uygulamada IFRS 17 ölçümü = PAA + LIC için tam IFRS 17** demektir.
+
+- PAA, **operasyonel yük**: tek tek nakit akışı + iskonto + CSM yapma yükünü ortadan kaldırır.
+- KPK ile mantıksal olarak çok yakındır; eski raporlama altyapısı PAA için **görece kolay uyarlanır**.
+- LIC tarafında ise **iskonto + RA** dahil olduğu için eski "muallak hasar karşılığı" sayısından farklı çıkar.
+
+PAA seçimi politika kararıdır; uygunluk testleri ve dipnot açıklaması her dönem yapılır.`,
+    formulas: [
+      {
+        label: "LRC (PAA — basit)",
+        formula:
+          "LRC = Tahsil Edilen Prim − Kazanılan Prim − İskontolu Acquisition Cost (politika seçimine göre)",
+        explanation:
+          "Kazanılan prim genelde gün sayısı oranıyla hesaplanır (KPK ile aynı mantık). Acquisition cost'u P&L'a yayma seçeneği vardır.",
+      },
+      {
+        label: "Kazanılan Kısım",
+        formula: "Kazanılan = Toplam Prim × (Geçen Gün ÷ Toplam Vade)",
+        explanation: "Klasik gün-bazlı dağılım; KPK'nın aynası.",
+      },
+      {
+        label: "LIC (PAA altında bile tam IFRS 17)",
+        formula: "LIC = BEL (Best Estimate) + İskonto Etkisi + RA",
+        explanation:
+          "PAA, LIC için bir kolaylık sağlamaz; aktüer hesabı yapılır.",
+      },
+    ],
+    steps: [
+      "Sözleşme grubunun PAA uygunluğunu kontrol edin (≤ 1 yıl, veya GMM'e yakınlık testi).",
+      "Yazılan prim, tahsilat ve acquisition cost kalemlerini grup bazında izleyin.",
+      "Her dönem: kazanılan prim → sigortacılık geliri; kalan prim → LRC.",
+      "LIC için ayrı aktüer modeli ile BEL + iskonto + RA hesaplayın.",
+      "Toplam yükümlülük = LRC + LIC olarak bilançoya yansıtın.",
+      "Dipnotta PAA seçimi ve uygunluk gerekçesini yazın.",
+    ],
+    examples: [
+      {
+        title: "1 yıllık trafik poliçesi — 100. gün",
+        data: {
+          "Tahsil edilen prim": "3.650 ₺",
+          "Geçen gün": "100",
+          "Toplam vade": "365 gün",
+        },
+        result: "Kazanılan ≈ 1.000 ₺ (gelir) | LRC ≈ 2.650 ₺ (pasif)",
+        explanation:
+          "PAA'da bu hesap KPK ile birebir aynı sonuç verir; fark, dipnot anlatısı ve acquisition cost politikasında.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "PAA LRC satırı",
+        formula: "=ToplamPrim*(1-(MIN(GunSayisi;Vade)/Vade))",
+        description: "Her poliçe satırı için kalan kapsam yükümlülüğü; KPK ile aynı mantık.",
+      },
+      {
+        title: "Kazanılan prim (sigortacılık geliri)",
+        formula: "=ToplamPrim*(GunSayisi/Vade)",
+        description: "Gün bazlı kazanım — politika tek seferse buradan gelir tablosuna aktarılır.",
+      },
+    ],
+    interpretation: [
+      { range: "LRC ↑", meaning: "Yeni iş yoğun veya uzun vadeli ağırlık; gelir gelecek dönemlere ertelenir." },
+      { range: "LRC ↓", meaning: "Portföy yaşlanıyor veya yeni iş yavaş; gelir hızlı kazanılıyor." },
+      { range: "LIC ↑", meaning: "Hasarlar arttı veya RA yukarı revize; teknik baskı işareti." },
+    ],
+    tips: [
+      "PAA seçilse bile **LIC için tam IFRS 17 (iskonto + RA)** zorunludur — bu en sık atlanan noktadır.",
+      "Acquisition cost'u dönem boyunca yayma vs. gider yazma seçimi politika tutarlılığı gerektirir.",
+      "GMM'e yakınlık testi düzenli yapılmalı; portföy yapısı değişirse PAA uygunluğu yeniden değerlendirilmeli.",
+      "KPK ile PAA LRC sayıları yakın çıkar ama **mevzuat altyapısı ve dipnotlar farklıdır**.",
+    ],
+    relatedSlugs: ["ifrs17-lrc", "ifrs17-lic", "kazanilmamis-prim-karsiligi", "ifrs17-gmm"],
+    calculatorType: "ifrs17-paa",
+  },
+
+  {
+    slug: "ifrs17-lic",
+    name: "LIC (Oluşmuş Hasarlar Yükümlülüğü)",
+    nameEn: "Liability for Incurred Claims",
+    category: "ifrs-metrikleri",
+    icon: "🧾",
+    summary:
+      "IFRS 17 bilançosunda bilanço tarihinde oluşmuş ama henüz tamamı ödenmemiş hasarlar için tutulan yükümlülüktür. BEL + iskonto + RA bileşenlerini içerir; eski 'muallak hasar karşılığı'nın IFRS 17 karşılığıdır.",
+    whatIs: `**LIC (Liability for Incurred Claims / Oluşmuş Hasarlar Yükümlülüğü)**, bilanço tarihine kadar **gerçekleşmiş ama henüz tamamı ödenmemiş** hasarlar için ayrılan IFRS 17 yükümlülüğüdür.
+
+Eski TFRS 4 dünyasındaki "muallak hasar karşılığı"nın IFRS 17 karşılığıdır, ama daha kapsamlıdır:
+
+- **BEL (Best Estimate of Liability):** Beklenen tüm gelecekteki hasar ödemelerinin olasılık ağırlıklı tahmini. Raporlanmış (RBNS) + raporlanmamış (IBNR) + masraf tahsisleri (ALAE/ULAE).
+- **İskonto etkisi:** Beklenen ödeme tarihlerine göre nakit akışları **bugüne indirgenir**. (Eski sistemde yoktu — bu büyük fark.)
+- **RA (Risk Adjustment):** Finansal olmayan risk için ek tampon.
+
+**LIC = BEL (iskontolu) + RA**
+
+Bu sayfa **bilgi sayfasıdır** — gerçek LIC tutarı, aktüer modeli ve hasar dosyası bazlı sistem çıktısıyla hesaplanır.`,
+    whyImportant: `LIC, sigortacılık şirketinin **gerçekten ne kadar hasar ödemekle yükümlü olduğunu** gösterir. IFRS 17 ile gelen iskonto ve RA, eski muallaktan **farklı bir sayı** üretir.
+
+- **İskonto, LIC'i küçültür** (beklenen ödeme uzun vadeli ise belirgin etki).
+- **RA, LIC'i büyütür** (ihtiyatlılık tamponu).
+- **IBNR tahmin yöntemi** (zincir merdiveni, Bornhuetter-Ferguson, Cape Cod vb.) sonuca büyük etki eder.
+
+LIC değişimi, gelir tablosunda **sigortacılık hizmet gideri** ve **finans gideri** olarak ayrışır — bu ayrım analist okumasında kritiktir.`,
+    formulas: [
+      {
+        label: "LIC genel ifade",
+        formula: "LIC = BEL (iskontolu nakit akışları) + RA",
+        explanation:
+          "BEL = beklenen tüm hasar + masraf nakit akışlarının iskontolu toplamı; RA finansal olmayan risk tamponu.",
+      },
+      {
+        label: "Eski muallak ile köprü",
+        formula: "LIC ≈ (Eski Muallak — undiscounted) − İskonto Etkisi + RA",
+        explanation:
+          "Eski TFRS 4 muallak rakamından IFRS 17 LIC'e geçişin kavramsal yorumu (gerçek geçiş daha komplikedir).",
+      },
+    ],
+    steps: [
+      "Hasar dosyalarını dönem ve branş bazında çekin (RBNS).",
+      "Aktüer ile IBNR + ALAE/ULAE dahil **toplam beklenen hasar nakit akışını** kurun.",
+      "Beklenen ödeme zamanlamasını çıkarın ve uygun iskonto eğrisi ile bugüne indirgeyin.",
+      "RA'yı (politika yöntemi) LIC'e dağıtın.",
+      "Bilançoya LIC olarak yansıtın; hareket tablosunu (açılış / yeni hasar / ödeme / revizyon / iskonto unwind) dipnotta açıklayın.",
+    ],
+    examples: [
+      {
+        title: "Kavramsal hayali örnek",
+        data: {
+          "Eski muallak (undiscounted)": "10.000.000 ₺",
+          "İskonto etkisi": "− 400.000 ₺",
+          RA: "+ 700.000 ₺",
+        },
+        result: "LIC ≈ 10.300.000 ₺",
+        explanation:
+          "İskonto LIC'i küçültür, RA büyütür. Net etki portföy süresine ve risk dağılımına bağlıdır. Sayı tamamen eğitim amaçlıdır.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Hasar hareket tablosu (rapor satırı)",
+        formula: "=Acilis+YeniHasar-Odeme+Revizyon+IskontoUnwind+RAHareket",
+        description: "Dipnotta LIC roll-forward için temel iskelet.",
+      },
+    ],
+    interpretation: [
+      { range: "LIC artıyor", meaning: "Yeni dönem hasarları yüksek veya RA yukarı revize edildi." },
+      { range: "LIC azalıyor", meaning: "Hasar ödemeleri hızlandı veya iskonto / yöntem revizyonu olumlu." },
+      { range: "Hareket tablosunda 'iskonto unwind' büyük", meaning: "Portföy uzun vadeli; her dönem otomatik finansal gider doğar." },
+    ],
+    tips: [
+      "PAA seçilmiş olsa bile LIC için **tam IFRS 17 (iskonto + RA)** zorunludur.",
+      "İskonto eğrisi seçimi (top-down vs. bottom-up) politikadır ve denetim sorgular.",
+      "Hareket tablosunda **operasyonel etki** (yeni hasar, revizyon) ile **finansal etki** (iskonto unwind, oran değişimi) ayrıştırılmalıdır.",
+      "Eski muallak rakamı ile LIC arasında köprü tablosu, iç kontrol için faydalıdır.",
+    ],
+    relatedSlugs: ["muallak-hasar-karsiligi", "ifrs17-ra", "ifrs17-paa", "ifrs17-gmm"],
+    calculatorType: "ifrs17-lic",
+  },
+
+  {
+    slug: "ifrs17-lrc",
+    name: "LRC (Kalan Kapsam Yükümlülüğü)",
+    nameEn: "Liability for Remaining Coverage",
+    category: "ifrs-metrikleri",
+    icon: "📦",
+    summary:
+      "IFRS 17 bilançosunda kalan poliçe süresi için sözleşmeyi sürdürme yükümlülüğüdür. PAA altında KPK benzeri; GMM altında BEL + iskonto + RA + CSM bileşenlerini içerir.",
+    whatIs: `**LRC (Liability for Remaining Coverage / Kalan Kapsam Yükümlülüğü)**, sigorta sözleşmesinin **henüz hizmet verilmemiş** bölümüne karşılık gelen IFRS 17 yükümlülüğüdür. Yani "müşteriye verilmesi gereken kalan kapsam".
+
+LRC'nin içeriği uygulanan modele göre **çok farklı** görünür:
+
+**PAA altında (basit):**
+
+- LRC = Tahsil edilen prim − Kazanılan prim − İskontolu acquisition cost (politikaya göre)
+- KPK ile mantıksal olarak çok yakın.
+
+**GMM (BBA) altında (tam):**
+
+- LRC = BEL (gelecek nakit akışı, iskontolu) + RA + CSM
+- CSM, gelecekteki kazanılmamış kâr olarak burada tutulur.
+
+Bu sayfa **kavram ve raporlama bilgi sayfasıdır**; tutar, sistem ve aktüer çıktısı ile oluşur.`,
+    whyImportant: `LRC, IFRS 17 bilançosunda **gelecek dönem gelirinin stoğu** anlamına gelir. CSM açılışı LRC içinde olduğu için yatırımcı analizinde merkezi rol oynar.
+
+- **PAA LRC** anlamlı, ama KPK'ya çok benzer; anlatı farkı **iskonto + acquisition cost politikasında** ortaya çıkar.
+- **GMM LRC** içindeki CSM, gelecek kâr stoğu sinyali olarak okunur.
+- LRC azalışı = sigortacılık geliri kazanımı; LRC yükselişi = yeni iş veya unlocking.
+
+LRC hareket tablosu, IFRS 17 dipnotlarının **en görünür** parçasıdır.`,
+    formulas: [
+      {
+        label: "PAA LRC",
+        formula: "LRC (PAA) = Tahsil Edilen Prim − Kazanılan Prim ± Acquisition Cost Ayarlaması",
+        explanation: "KPK ile aynı mantık; politika farkları küçük ama dipnot anlatısı ayrı.",
+      },
+      {
+        label: "GMM LRC",
+        formula: "LRC (GMM) = BEL (gelecek, iskontolu) + RA + CSM",
+        explanation:
+          "Tam model: nakit akışı + iskonto + risk + CSM. Her bileşen ayrı hareket tablosunda izlenir.",
+      },
+    ],
+    steps: [
+      "Grubu doğru modele atayın (PAA mı GMM mi).",
+      "PAA'da: tahsilat, kazanılan kısım ve acquisition cost akışı ile LRC'yi izleyin.",
+      "GMM'de: BEL (gelecek nakit akışı + iskonto) + RA + CSM ayrı ayrı tutulur.",
+      "Her dönem LRC roll-forward'ı: açılış → yeni iş → faiz → unlocking → hizmet (gelir tarafı) → kapanış.",
+      "Dipnotta LRC'yi alt bileşenlere ayrıştırarak gösterin.",
+    ],
+    examples: [
+      {
+        title: "PAA LRC — kısa örnek",
+        data: { "Tahsil prim": "3.650 ₺", "Kazanılan (100/365)": "1.000 ₺" },
+        result: "LRC (PAA) ≈ 2.650 ₺",
+        explanation: "KPK ile aynı sayı; fark dipnot ve politika tarafında.",
+      },
+      {
+        title: "GMM LRC — kavramsal",
+        data: { BEL: "5.000.000 ₺", RA: "300.000 ₺", CSM: "1.200.000 ₺" },
+        result: "LRC (GMM) ≈ 6.500.000 ₺",
+        explanation:
+          "Üç bileşen toplamı LRC'yi verir; her biri ayrı hareket tablosunda izlenir.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "PAA LRC satırı",
+        formula: "=ToplamPrim-KazanilanPrim-AcquisitionAyarlamasi",
+        description: "Eski KPK altyapısı küçük güncellemeyle yeniden kullanılabilir.",
+      },
+      {
+        title: "GMM LRC satırı",
+        formula: "=BEL_Gelecek+RA+CSM",
+        description: "Üç bileşeni ayrı sütunda tutmak hareket tablosunu çok kolaylaştırır.",
+      },
+    ],
+    interpretation: [
+      { range: "PAA LRC ≈ KPK", meaning: "Beklenen durum; geçişin doğru yapıldığının işareti." },
+      { range: "GMM LRC içinde CSM büyük", meaning: "Sağlıklı gelecek kâr stoğu." },
+      { range: "GMM LRC içinde CSM = 0", meaning: "Onerous grup; kayıp anında P&L'a yansımış." },
+      { range: "LRC hızla eriyor", meaning: "Yeni iş üretimi yetersiz veya portföy yaşlanıyor." },
+    ],
+    tips: [
+      "PAA LRC için KPK altyapısı %80 hazırdır — köprü tablosu mutlaka kurulmalı.",
+      "GMM LRC'de CSM ayrı bilanço alt kalemi gibi düşünülmeli; hareketleri ayrı izleyin.",
+      "LRC azalışı (servis kazanımı) sigortacılık gelirinin kaynağıdır — gelir tablosu açıklamasında bu bağ kurulmalı.",
+      "Acquisition cost politika seçimi PAA LRC üzerinde belirgin etki yapar.",
+    ],
+    relatedSlugs: ["ifrs17-paa", "ifrs17-csm", "kazanilmamis-prim-karsiligi", "ifrs17-gmm"],
+    calculatorType: "ifrs17-lrc",
+  },
+
+  {
+    slug: "ifrs17-gmm",
+    name: "GMM (Genel Ölçüm Modeli)",
+    nameEn: "General Measurement Model (Building Block Approach)",
+    category: "ifrs-metrikleri",
+    icon: "🏗️",
+    summary:
+      "IFRS 17'nin tüm gruplara uygulanabilen tam ölçüm modeli. Building Block Approach (BBA) olarak da bilinir: BEL + iskonto + RA + CSM bileşenleriyle hem LIC hem LRC oluşur.",
+    whatIs: `**GMM (General Measurement Model / Genel Ölçüm Modeli)**, IFRS 17'nin **temel ve genel** ölçüm yaklaşımıdır. **BBA (Building Block Approach)** olarak da anılır.
+
+Dört "yapı taşı" üzerine kurulur:
+
+1. **Future Cash Flows (BEL):** Gelecekteki tüm nakit akışlarının (prim girişleri, hasar, masraf) olasılık ağırlıklı tahmini.
+2. **İskonto (Discount):** Bu nakit akışlarının para zaman değeri ile bugüne indirgenmesi.
+3. **RA (Risk Adjustment):** Finansal olmayan risk için tampon.
+4. **CSM (Contractual Service Margin):** Gelecekte kazanılacak kâr stoğu (onerous grupta CSM = 0, kayıp hemen P&L'a).
+
+GMM, **uzun vadeli sözleşmeler** (hayat, emeklilik, uzun vadeli sağlık, anüite) ve PAA'ya uygun olmayan tüm gruplar için zorunludur.
+
+Bu sayfa **kavram ve mali tablo etkisi bilgi sayfasıdır**; gerçek hesaplama aktüer modeli, sistem altyapısı ve denetlenmiş varsayımlarla yapılır.`,
+    whyImportant: `GMM, IFRS 17'nin **felsefi merkezini** temsil eder. PAA bir kolaylıktır; GMM ise standardın asıl mimarisidir.
+
+- Mali tablo şeffaflığını artırır: kâr nereden geldi (sigorta servisi mi, finansal etki mi) açıkça görülür.
+- CSM ve RA ayrımı sayesinde **kâr profili sigorta süresine yayılır** — ilk yıl prim, son yıl bumeranglıkla kâr çıkması ortadan kalkar.
+- Uzun vadeli portföy taşıyan sigortacılar için **bilanço dönüşümü PAA'ya göre çok daha derin**.
+
+Yatırımcılar GMM altında bir şirketi okurken **CSM hareketi + RA serbest bırakım + finansal etki** üçlüsünü ayrı ayrı izler.`,
+    formulas: [
+      {
+        label: "GMM yükümlülük yapısı",
+        formula: "Yükümlülük = LRC (BEL_gelecek + RA + CSM) + LIC (BEL_olusmus + RA)",
+        explanation:
+          "Her grup için bilanço pasifinde iki yükümlülük: kalan kapsam (LRC) ve oluşmuş hasar (LIC).",
+      },
+      {
+        label: "Sigortacılık geliri (özet)",
+        formula:
+          "Sigortacılık Geliri = CSM İtfa + RA Serbest Bırakım + Beklenen Hasar / Masraf + Acquisition Geri Kazanım",
+        explanation:
+          "Bu tanım, eski 'kazanılmış prim' satırından çok farklı; gelir parçalanır ve şeffaf hale gelir.",
+      },
+    ],
+    steps: [
+      "Sözleşme grubunu kohort kurallarına göre oluşturun (yıl + kâr profili).",
+      "Beklenen nakit akışı (BEL) modelini kurun.",
+      "İskonto eğrisini seçin (top-down veya bottom-up); ilk gün için locked-in oran sabitlenir.",
+      "RA yöntemini ve güven düzeyini belirleyin.",
+      "Net pozitif: CSM açılır; net negatif: onerous → kayıp hemen P&L'a, CSM = 0.",
+      "Her dönem: faiz tahakkuku, unlocking, RA hareketleri ve CSM itfasını roll-forward ile yansıtın.",
+      "Mali tablo ve dipnot setini IFRS 17 zorunluluklarına göre üretin.",
+    ],
+    examples: [
+      {
+        title: "GMM bilanço görünümü (kavramsal)",
+        data: {
+          "BEL (gelecek, iskontolu)": "8.000.000 ₺",
+          RA: "500.000 ₺",
+          CSM: "1.500.000 ₺",
+          "BEL (oluşmuş, iskontolu)": "3.000.000 ₺",
+          "RA (LIC içinde)": "200.000 ₺",
+        },
+        result: "LRC ≈ 10.000.000 ₺ | LIC ≈ 3.200.000 ₺ | Toplam yükümlülük ≈ 13.200.000 ₺",
+        explanation:
+          "Bilanço pasifi LRC + LIC olarak gösterilir. Dipnotta her bileşen (BEL, RA, CSM) ayrı satırda yer alır.",
+      },
+    ],
+    excelTips: [
+      {
+        title: "Gruba özel building blocks",
+        formula: "BEL_F | İskonto | RA | CSM | BEL_O | RA(LIC)",
+        description: "Her sözleşme grubu için bu altı sütun, tüm hareket tablosunun temelidir.",
+      },
+      {
+        title: "Gelir dağılımı",
+        formula: "Gelir = CSMItfa + RAReleased + BeklenenHasarMasraf + AcquisitionGeriKazanim",
+        description: "P&L tarafına yansıyan sigortacılık geliri; her bileşen ayrı sütunda izlenmeli.",
+      },
+    ],
+    interpretation: [
+      { range: "GMM uygulanan portföy büyük", meaning: "Şirket uzun vadeli iş ağırlıklı (hayat, emeklilik, anüite)." },
+      { range: "CSM stoğu büyüyor", meaning: "Yeni iş kuvvetli; gelecek kâr potansiyeli yüksek." },
+      { range: "Onerous grup oranı yüksek", meaning: "Fiyatlama veya hasar varsayımları sorunlu — derhal aksiyon gerekir." },
+      { range: "OCI tarafında büyük finansal hareket", meaning: "Faiz/iskonto oranı dalgalanmaları yansıyor." },
+    ],
+    tips: [
+      "Locked-in iskonto oranı vs. cari oran ayrımı, OCI vs. P&L bölünmesinin kalbidir.",
+      "Coverage unit politikası (CSM itfasını belirler) net yazılmalı; denetim sorgular.",
+      "Onerous grup tespiti **her dönem** yapılır; ihmal ciddi mali tablo riski doğurur.",
+      "GMM altyapısı PAA'ya göre çok daha sistem yoğundur — Excel sadece raporlama / mutabakat amaçlı kullanılmalıdır.",
+    ],
+    relatedSlugs: ["ifrs17-csm", "ifrs17-ra", "ifrs17-lrc", "ifrs17-lic", "ifrs17-paa"],
+    calculatorType: "ifrs17-gmm",
   },
 ];
 

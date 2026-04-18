@@ -761,3 +761,233 @@ export function TeknikKarsilikBilgiCalculator({ variant }: { variant: TeknikBilg
     </CalculatorShell>
   );
 }
+
+/* ═══════════════════════════════════════════
+   IFRS 17 / TFRS 17 — METRİK HESAPLAYICILARI
+   CSM Roll-forward, RA Confidence, PAA LRC,
+   ve LIC / LRC / GMM için bilgi varyantları
+   ═══════════════════════════════════════════ */
+
+/** CSM Roll-forward: Açılış + Yeni iş + Faiz ± Unlocking − İtfa = Kapanış */
+export function CsmRollForwardCalculator() {
+  const [acilis, setAcilis] = useState("");
+  const [yeniIs, setYeniIs] = useState("");
+  const [faizPct, setFaizPct] = useState("");
+  const [unlock, setUnlock] = useState("");
+  const [itfa, setItfa] = useState("");
+
+  const a = parseNum(acilis);
+  const y = parseNum(yeniIs);
+  const r = parseNum(faizPct) / 100;
+  const u = parseNum(unlock);
+  const i = parseNum(itfa);
+
+  const faiz = a * r;
+  const kapanis = a + y + faiz + u - i;
+  const has = a > 0 || y > 0;
+
+  return (
+    <CalculatorShell title="CSM Roll-Forward (Hareket Tablosu)" emoji="📈">
+      <p className="text-xs text-gray-500 mb-3">
+        Kapanış CSM = Açılış + Yeni İş + Faiz Tahakkuku ± Estimate Değişimi (Unlocking) − Cari Dönem İtfa.
+        Unlocking için negatif değer girebilirsiniz (kötüleşen varsayım).
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field label="Açılış CSM (₺)" value={acilis} onChange={setAcilis} ph="1.000.000" />
+        <Field label="Yeni iş CSM (₺)" value={yeniIs} onChange={setYeniIs} ph="300.000" />
+        <Field label="Faiz oranı (locked-in, %)" value={faizPct} onChange={setFaizPct} ph="5" />
+        <Field label="Unlocking (± ₺, eksi için '-')" value={unlock} onChange={setUnlock} ph="-80000" />
+        <Field label="Cari dönem itfa (₺)" value={itfa} onChange={setItfa} ph="260.000" />
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">Kapanış CSM ≈ {fmt(kapanis, 2)} ₺</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Faiz tahakkuku ≈ {fmt(faiz, 2)} ₺ · İtfa (sigortacılık geliri) ≈ {fmt(i, 2)} ₺
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Onerous grupta CSM = 0 ve beklenen kayıp anında P&amp;L&apos;a yansır — bu basit hesap o senaryoyu kapsamaz.
+          </p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+/** RA basit Quantile yaklaşımı: RA = Z(γ) × σ */
+export function RaConfidenceCalculator() {
+  const [sigma, setSigma] = useState("");
+  const [confidence, setConfidence] = useState<"70" | "75" | "80" | "85" | "90">("75");
+
+  const Z_TABLE: Record<typeof confidence, number> = {
+    "70": 0.524,
+    "75": 0.674,
+    "80": 0.842,
+    "85": 1.036,
+    "90": 1.282,
+  };
+  const z = Z_TABLE[confidence];
+  const s = parseNum(sigma);
+  const ra = z * s;
+  const has = s > 0;
+
+  return (
+    <CalculatorShell title="RA Hesaplayıcı (Basit Quantile / Normal Yaklaşım)" emoji="🎯">
+      <p className="text-xs text-gray-500 mb-3">
+        Eğitim amaçlı: <strong>RA ≈ Z(γ) × σ</strong>. Gerçek hesap aktüer modeli (ör. stokastik simülasyon, CoC) ile yapılır.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <Field
+          label="Toplam hasar standart sapması σ (₺)"
+          value={sigma}
+          onChange={setSigma}
+          ph="1.500.000"
+        />
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">Güven düzeyi (γ)</label>
+          <select
+            value={confidence}
+            onChange={(e) => setConfidence(e.target.value as typeof confidence)}
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          >
+            <option value="70">%70 (Z ≈ 0,524)</option>
+            <option value="75">%75 (Z ≈ 0,674)</option>
+            <option value="80">%80 (Z ≈ 0,842)</option>
+            <option value="85">%85 (Z ≈ 1,036)</option>
+            <option value="90">%90 (Z ≈ 1,282)</option>
+          </select>
+        </div>
+      </div>
+      {has ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">
+            RA ≈ {fmt(ra, 2)} ₺ <span className="text-xs font-medium text-emerald-700">({confidence}% güven düzeyinde)</span>
+          </p>
+          <p className="text-xs text-gray-600 mt-1">
+            Z = {z.toFixed(3)} · σ = {fmt(s, 2)} ₺
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Dipnotta hangi güven düzeyine denk geldiği <strong>zorunlu</strong> olarak yazılmalıdır.
+          </p>
+        </ResultBox>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+/** PAA LRC: Tahsil edilen prim − kazanılan prim. Gün-bazlı klasik hesap. */
+export function PaaLrcCalculator() {
+  const [prim, setPrim] = useState("");
+  const [gecen, setGecen] = useState("");
+  const [vade, setVade] = useState("");
+
+  const p = parseNum(prim);
+  const g = parseNum(gecen);
+  const t = parseNum(vade);
+  const valid = t > 0 && p > 0 && g >= 0 && g <= t;
+  const kazanilan = valid ? p * (g / t) : 0;
+  const lrc = valid ? p - kazanilan : 0;
+
+  return (
+    <CalculatorShell title="PAA LRC (Tek Sözleşme — Basit)" emoji="⚡">
+      <p className="text-xs text-gray-500 mb-3">
+        PAA altında <strong>LRC ≈ Tahsil Edilen Prim − Kazanılan Prim</strong>. Mantık{" "}
+        <Link href="/finans-sigorta/kazanilmamis-prim-karsiligi" className="text-emerald-700 underline">
+          KPK
+        </Link>{" "}
+        ile birebir aynıdır; fark dipnot anlatısı ve acquisition cost politikasındadır.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <Field label="Tahsil edilen prim (₺)" value={prim} onChange={setPrim} ph="3650" />
+        <Field label="Geçen gün" value={gecen} onChange={setGecen} ph="100" />
+        <Field label="Toplam vade (gün)" value={vade} onChange={setVade} ph="365" />
+      </div>
+      {valid ? (
+        <ResultBox>
+          <p className="text-lg font-bold text-emerald-800">LRC (PAA) ≈ {fmt(lrc, 2)} ₺</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Kazanılan kısım (sigortacılık geliri) ≈ {fmt(kazanilan, 2)} ₺
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            LIC tarafında PAA bir kolaylık <strong>sağlamaz</strong>: BEL + iskonto + RA tam olarak hesaplanır.
+          </p>
+        </ResultBox>
+      ) : g > t && t > 0 ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+          Geçen gün, toplam vadeden büyük olamaz (vade bittiyse tüm prim kazanılmış kabul edilir).
+        </div>
+      ) : (
+        <Placeholder />
+      )}
+    </CalculatorShell>
+  );
+}
+
+/** LIC / LRC / GMM için bilgi-only kart. */
+type Ifrs17BilgiVariant = "lic" | "lrc" | "gmm";
+
+const IFRS17_BILGI: Record<
+  Ifrs17BilgiVariant,
+  { title: string; emoji: string; lines: string[] }
+> = {
+  lic: {
+    title: "LIC (Oluşmuş Hasarlar Yükümlülüğü)",
+    emoji: "🧾",
+    lines: [
+      "LIC = BEL (iskontolu beklenen hasar nakit akışları) + RA. Eski 'muallak hasar karşılığı'nın IFRS 17 karşılığıdır.",
+      "Tek bir kapalı formül yoktur: hasar dosya bazlı sistem + aktüer IBNR modeli + iskonto eğrisi + RA politikası birleşir.",
+      "PAA seçilmiş olsa bile LIC için tam IFRS 17 (iskonto + RA) zorunludur — bu sıkça atlanan noktadır.",
+      "Hareket tablosunda operasyonel etki (yeni hasar / ödeme / revizyon) ile finansal etki (iskonto unwind, oran değişimi) ayrıştırılmalıdır.",
+    ],
+  },
+  lrc: {
+    title: "LRC (Kalan Kapsam Yükümlülüğü)",
+    emoji: "📦",
+    lines: [
+      "PAA altında LRC ≈ Tahsil Edilen Prim − Kazanılan Prim ± Acquisition Cost ayarlaması (KPK mantığı).",
+      "GMM altında LRC = BEL (gelecek, iskontolu) + RA + CSM. Üç bileşen ayrı izlenir, dipnotta açıklanır.",
+      "PAA ölçümü için yukarıdaki 'PAA LRC' hesaplayıcısını kullanın; GMM için sistem ve aktüer çıktısı esastır.",
+      "LRC azalışı = sigortacılık gelirinin temel kaynağıdır; yorumlamada bu bağ kurulmalıdır.",
+    ],
+  },
+  gmm: {
+    title: "GMM (Genel Ölçüm Modeli / BBA)",
+    emoji: "🏗️",
+    lines: [
+      "Dört yapı taşı: Future Cash Flows (BEL) + İskonto + RA + CSM. PAA'ya uygun olmayan tüm gruplar için zorunludur.",
+      "Onerous grup tespit edilirse CSM = 0; beklenen kayıp anında P&L'a yansır. Her dönem onerous testi yapılmalı.",
+      "Locked-in iskonto oranı (P&L) ile cari oran (OCI) ayrımı, mali tablo okumasının kalbidir.",
+      "Excel sadece raporlama / mutabakat amaçlıdır; gerçek hesap aktüer modeli ve IFRS 17 sistem altyapısı ile yapılır.",
+    ],
+  },
+};
+
+export function Ifrs17KavramCalculator({ variant }: { variant: Ifrs17BilgiVariant }) {
+  const b = IFRS17_BILGI[variant];
+  return (
+    <CalculatorShell title={b.title} emoji={b.emoji}>
+      <p className="text-xs font-medium text-gray-700 mb-2">
+        Bu başlıkta tek bir interaktif sayı hesabı sunmuyoruz — nedenleri:
+      </p>
+      <ul className="space-y-2 text-xs text-gray-600 leading-relaxed list-disc pl-4">
+        {b.lines.map((line, i) => (
+          <li key={i}>{line}</li>
+        ))}
+      </ul>
+      <p className="mt-3 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+        Pratik hesap için ilgili bileşen sayfalarına bakın:{" "}
+        <Link href="/finans-sigorta/ifrs17-csm" className="underline">CSM</Link>,{" "}
+        <Link href="/finans-sigorta/ifrs17-ra" className="underline">RA</Link>,{" "}
+        <Link href="/finans-sigorta/ifrs17-paa" className="underline">PAA LRC</Link>.
+      </p>
+      <p className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+        Eğitim amaçlı içeriktir; raporlama tutarı için şirket politikası, aktüer görüşü ve güncel TFRS 17 / TMS 17
+        düzenlemeleri esas alınmalıdır.
+      </p>
+    </CalculatorShell>
+  );
+}

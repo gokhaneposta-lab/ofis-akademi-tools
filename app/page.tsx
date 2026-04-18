@@ -217,28 +217,28 @@ export default function Home() {
                       {DASHBOARD_FORMULAS[formulaIndex]}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-200 sm:grid-cols-4">
-                    <div className="rounded-xl bg-emerald-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
-                      <p className="text-[10px] text-slate-400">Toplam Satış</p>
-                      <p className="mt-1 text-base font-semibold text-emerald-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite] tabular-nums">
+                  <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-200">
+                    <div className="min-w-0 rounded-xl bg-emerald-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
+                      <p className="truncate text-[10px] text-slate-400">Toplam Satış</p>
+                      <p className="mt-1 truncate text-base font-semibold text-emerald-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite] tabular-nums">
                         {formatCurrency(toplamSatis)}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-sky-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
-                      <p className="text-[10px] text-slate-400">Aylık Artış</p>
-                      <p className="mt-1 text-base font-semibold text-sky-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.15s] tabular-nums">
+                    <div className="min-w-0 rounded-xl bg-sky-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
+                      <p className="truncate text-[10px] text-slate-400">Aylık Artış</p>
+                      <p className="mt-1 truncate text-base font-semibold text-sky-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.15s] tabular-nums">
                         {formatPercent(aylikArtis)}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-violet-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
-                      <p className="text-[10px] text-slate-400">Sipariş</p>
-                      <p className="mt-1 text-base font-semibold text-violet-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.3s] tabular-nums">
+                    <div className="min-w-0 rounded-xl bg-violet-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
+                      <p className="truncate text-[10px] text-slate-400">Sipariş</p>
+                      <p className="mt-1 truncate text-base font-semibold text-violet-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.3s] tabular-nums">
                         {siparis.toLocaleString("tr-TR")}
                       </p>
                     </div>
-                    <div className="rounded-xl bg-amber-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
-                      <p className="text-[10px] text-slate-400">İade Oranı</p>
-                      <p className="mt-1 text-base font-semibold text-amber-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.45s] tabular-nums">
+                    <div className="min-w-0 rounded-xl bg-amber-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
+                      <p className="truncate text-[10px] text-slate-400">İade Oranı</p>
+                      <p className="mt-1 truncate text-base font-semibold text-amber-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite_0.45s] tabular-nums">
                         {formatPercent(iadeOrani, 1)}
                       </p>
                     </div>

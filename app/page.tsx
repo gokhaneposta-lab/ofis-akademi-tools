@@ -153,14 +153,25 @@ export default function Home() {
               >
                 Excel Araçları
               </a>
+              <Link
+                href="/blog"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
+              >
+                Blog
+              </Link>
+              <Link
+                href="/formul-kutuphanesi"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
+              >
+                Formül Kütüphanesi
+              </Link>
+              <Link
+                href="/finans-sigorta"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
+              >
+                Finans &amp; Sigorta
+              </Link>
             </div>
-            <p className="-mt-2 text-xs text-slate-600">
-              Daha fazla: <Link href="/blog" className="underline underline-offset-2 hover:text-emerald-700">Blog</Link>
-              {" · "}
-              <Link href="/formul-kutuphanesi" className="underline underline-offset-2 hover:text-emerald-700">Formül Kütüphanesi</Link>
-              {" · "}
-              <Link href="/finans-sigorta" className="underline underline-offset-2 hover:text-emerald-700">Finans &amp; Sigorta</Link>
-            </p>
 
             <div className="flex flex-wrap gap-4 text-sm text-slate-600">
               <span className="inline-flex items-center gap-2">

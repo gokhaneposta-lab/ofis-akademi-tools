@@ -117,7 +117,7 @@ export default function Home() {
       />
       <main className="relative mx-auto flex min-h-screen w-full min-w-0 max-w-6xl flex-col px-4 py-10 sm:px-8 lg:px-12">
         {/* Hero */}
-        <section className="grid flex-1 gap-10 py-8 sm:py-14 lg:grid-cols-[minmax(0,1.4fr),minmax(0,1fr)] lg:items-center">
+        <section className="grid flex-1 gap-10 py-8 sm:py-14 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center">
           <div className="space-y-8">
             <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.14em] text-emerald-800 ring-1 ring-emerald-600/40">
               Ofis Akademi · Excel & Veri Analizi
@@ -209,15 +209,15 @@ export default function Home() {
                 <span>Excel Gösterge Paneli</span>
                 <span>Canlı Uygulama</span>
               </div>
-              <div className="grid gap-4 md:grid-cols-[1.2fr,0.9fr]">
-                <div className="space-y-3 rounded-2xl bg-slate-950/60 p-4 ring-1 ring-slate-800">
-                  <div className="flex items-center justify-between text-[11px] text-slate-400">
-                    <span>Satış Özeti</span>
-                    <span className="font-mono tabular-nums transition-opacity duration-300" title="Dönen Excel formülleri">
+              <div className="grid min-w-0 gap-4 md:grid-cols-[1.2fr_0.9fr]">
+                <div className="min-w-0 space-y-3 rounded-2xl bg-slate-950/60 p-4 ring-1 ring-slate-800">
+                  <div className="flex min-w-0 items-center justify-between gap-2 text-[11px] text-slate-400">
+                    <span className="shrink-0">Satış Özeti</span>
+                    <span className="min-w-0 truncate font-mono tabular-nums transition-opacity duration-300" title={DASHBOARD_FORMULAS[formulaIndex]}>
                       {DASHBOARD_FORMULAS[formulaIndex]}
                     </span>
                   </div>
-                  <div className="grid grid-cols-4 gap-2 text-[11px] text-slate-200">
+                  <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-200 sm:grid-cols-4">
                     <div className="rounded-xl bg-emerald-500/10 p-3 transition-transform duration-300 ease-out group-hover/dashboard:scale-[1.03] origin-center">
                       <p className="text-[10px] text-slate-400">Toplam Satış</p>
                       <p className="mt-1 text-base font-semibold text-emerald-300 origin-bottom-left animate-[dashboard-number-pulse_1.2s_ease-in-out_infinite] tabular-nums">
@@ -434,7 +434,7 @@ export default function Home() {
           id="free"
           className="border-t border-slate-800/80 py-10 sm:py-14"
         >
-          <div className="grid gap-[2px] rounded-2xl overflow-hidden border border-slate-300 bg-slate-200/80 sm:grid-cols-[minmax(0,1.5fr),minmax(0,1fr)]" style={{ backgroundImage: "linear-gradient(to right, rgba(15,23,42,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.06) 1px, transparent 1px)", backgroundSize: "1.5rem 1.5rem" }}>
+          <div className="grid gap-[2px] rounded-2xl overflow-hidden border border-slate-300 bg-slate-200/80 sm:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]" style={{ backgroundImage: "linear-gradient(to right, rgba(15,23,42,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.06) 1px, transparent 1px)", backgroundSize: "1.5rem 1.5rem" }}>
             <div className="space-y-4 rounded-none border border-slate-300/80 bg-gradient-to-r from-emerald-500/10 via-sky-500/5 to-transparent p-6 sm:p-8">
               <h2 className="text-xl font-semibold text-slate-800 sm:text-2xl">
                 Ücretsiz Excel öğrenme alanı

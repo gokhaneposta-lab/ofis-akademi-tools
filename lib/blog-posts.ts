@@ -262,13 +262,140 @@ export function getAllCategorySlugs(): BlogCategorySlug[] {
   return BLOG_CATEGORIES.map((c) => c.slug);
 }
 
+/** İki post arasındaki "ilgililik" skoru: kategori eşleşmesi + ortak token sayısı.
+ *  Ortak token: slug, title ve keywords'ten basitçe türetilen sözcükler. */
+function tokenize(post: BlogPost): Set<string> {
+  const stop = new Set([
+    "ve", "ile", "icin", "için", "bir", "bu", "ne", "de", "da", "mi", "mı", "ya",
+    "excel", "excelde", "yöntem", "yontem", "rehber", "ucretsiz", "ücretsiz", "araç",
+    "arac", "tek", "tikla", "tıkla", "saniyeler", "icinde", "içinde", "nasil",
+    "nasıl", "en", "hizli", "hızlı", "kolayi", "kolayı",
+  ]);
+  const text = `${post.slug} ${post.title} ${(post.keywords ?? []).join(" ")}`
+    .toLowerCase()
+    .replace(/[^a-z0-9çğıöşü\s-]+/g, " ")
+    .replace(/-/g, " ");
+  return new Set(
+    text
+      .split(/\s+/)
+      .filter((t) => t.length > 2 && !stop.has(t))
+  );
+}
+
+function relatedScore(a: BlogPost, b: BlogPost): number {
+  let score = 0;
+  if (categorizePost(a) === categorizePost(b)) score += 5;
+  const ta = tokenize(a);
+  const tb = tokenize(b);
+  let overlap = 0;
+  ta.forEach((t) => {
+    if (tb.has(t)) overlap += 1;
+  });
+  score += overlap * 2;
+  return score;
+}
+
+/** Related/popular widget'ları için minimal liste — full content yok, bundle dostu. */
+export type BlogPostMeta = {
+  slug: string;
+  title: string;
+  description: string;
+  toolHref?: string;
+  toolName?: string;
+  category: BlogCategorySlug;
+  categoryLabel: string;
+};
+
+export function toMeta(p: BlogPost): BlogPostMeta {
+  const cat = categorizePost(p);
+  return {
+    slug: p.slug,
+    title: p.title,
+    description: p.description,
+    toolHref: p.toolHref,
+    toolName: p.toolName,
+    category: cat,
+    categoryLabel: getCategoryBySlug(cat)?.label ?? "Excel",
+  };
+}
+
 export function getRelatedPosts(slug: string, limit = 3): BlogPost[] {
   const post = getPostBySlug(slug);
   if (!post) return [];
-  const cat = categorizePost(post);
-  const sameCategory = BLOG_POSTS.filter((p) => p.slug !== slug && categorizePost(p) === cat);
-  const take = sameCategory.slice(0, limit);
-  if (take.length >= limit) return take;
-  const rest = BLOG_POSTS.filter((p) => p.slug !== slug && !take.some((x) => x.slug === p.slug));
-  return [...take, ...rest.slice(0, limit - take.length)];
+  const scored = BLOG_POSTS
+    .filter((p) => p.slug !== slug)
+    .map((p) => ({ p, score: relatedScore(post, p) }))
+    .sort((a, b) => b.score - a.score);
+  return scored.slice(0, limit).map((s) => s.p);
+}
+
+/** Belirli bir Excel aracı sayfası için ilgili blog yazıları.
+ *  Önce aracın kendi yazısı varsa o + benzer kategoriden tamamla. */
+export function getRelatedPostsForTool(toolHref: string, limit = 3): BlogPost[] {
+  const direct = getPostByToolHref(toolHref);
+  if (direct) {
+    const others = getRelatedPosts(direct.slug, limit - 1);
+    return [direct, ...others].slice(0, limit);
+  }
+  // Tool için yazı yoksa, slug parçasından kategori tahmin etmeye çalış.
+  const fakePost = {
+    slug: toolHref.split("/").pop() ?? "",
+    title: toolHref,
+    toolHref,
+  };
+  const cat = categorizePost(fakePost);
+  return BLOG_POSTS.filter((p) => categorizePost(p) === cat).slice(0, limit);
+}
+
+/** Manuel kürasyonlu "öne çıkan / popüler" yazılar. Listede olmayan slug'lar atlanır. */
+const POPULAR_BLOG_SLUGS: string[] = [
+  "excelde-ad-soyad-ayirma",
+  "csv-veriyi-sutunlara-ayirma",
+  "iki-listeyi-karsilastirma-excel",
+  "excel-yinelenenleri-kaldirma",
+  "excel-listeleri-birlestirme",
+  "tfrs-17-yeni-sigorta-mali-tablosu-rehberi",
+];
+
+export function getPopularPosts(limit = 6): BlogPost[] {
+  const out: BlogPost[] = [];
+  for (const slug of POPULAR_BLOG_SLUGS) {
+    const p = getPostBySlug(slug);
+    if (p) out.push(p);
+    if (out.length >= limit) break;
+  }
+  // Eğer manuel liste yetmezse en yeni yazılarla doldur.
+  if (out.length < limit) {
+    const taken = new Set(out.map((p) => p.slug));
+    const rest = BLOG_POSTS.filter((p) => !taken.has(p.slug))
+      .sort((a, b) => (a.date < b.date ? 1 : -1))
+      .slice(0, limit - out.length);
+    out.push(...rest);
+  }
+  return out;
+}
+
+/** Eğitim seviyesine uygun blog yazılarını seç.
+ *  Basit eşleme: temel→formuller+kaynaklar, orta→formuller+veri-analizi, ileri→veri-analizi+finans. */
+export function getPostsForLevel(
+  level: "temel" | "orta" | "ileri",
+  limit = 4
+): BlogPost[] {
+  const map: Record<typeof level, BlogCategorySlug[]> = {
+    temel: ["formuller", "metin", "kaynaklar"],
+    orta: ["formuller", "veri-analizi", "metin"],
+    ileri: ["veri-analizi", "finans", "donusturme"],
+  };
+  const cats = map[level];
+  const seen = new Set<string>();
+  const out: BlogPost[] = [];
+  for (const cat of cats) {
+    for (const p of getPostsByCategory(cat)) {
+      if (seen.has(p.slug)) continue;
+      seen.add(p.slug);
+      out.push(p);
+      if (out.length >= limit) return out;
+    }
+  }
+  return out;
 }

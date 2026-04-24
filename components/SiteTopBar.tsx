@@ -131,6 +131,8 @@ const pathTitles: Record<string, string> = {
   "/excel-araclari/kisayol-formul-kartlari": "Kısayol & Formül Kartları",
   "/blog": "Blog",
   "/egitimler": "Eğitimler",
+  "/kaynaklar": "Ücretsiz Kaynaklar",
+  "/gizlilik": "Gizlilik Politikası",
   "/egitimler/temel": "Seviye 1 · Temel",
   "/egitimler/orta": "Seviye 2 · Orta",
   "/egitimler/ileri": "Seviye 3 · İleri",

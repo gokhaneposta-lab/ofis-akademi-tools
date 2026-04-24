@@ -13,6 +13,7 @@ import {
 import { getPostBySlug, getAllSlugs, getRelatedPosts, getBenefitLine, getPostPlainText, type ContentBlock } from "@/lib/blog-posts";
 import { getSiteUrl } from "@/lib/site";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
+import NewsletterForm from "@/components/NewsletterForm";
 
 const BASE_URL = getSiteUrl();
 const ACCENT = "#217346";
@@ -346,6 +347,9 @@ export default async function BlogPostPage({ params }: Props) {
           ))}
         </article>
 
+        {/* Inline newsletter — content sonrası, FAQ öncesi */}
+        <NewsletterForm variant="inline" source={`blog:${slug}`} />
+
         {post.faqs && post.faqs.length > 0 ? (
           <section className="mt-10 rounded-2xl border border-gray-200 bg-gray-50/80 p-5 sm:p-6" aria-labelledby="blog-faq-heading">
             <h2 id="blog-faq-heading" className="text-lg font-bold text-gray-900 mb-4">
@@ -400,8 +404,8 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Related posts */}
         <section className="mt-8">
           <h2 className="text-base font-bold text-gray-900 mb-3">İlgili yazılar</h2>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {getRelatedPosts(slug, 3).map((p) => (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {getRelatedPosts(slug, 4).map((p) => (
               <Link
                 key={p.slug}
                 href={`/blog/${p.slug}`}

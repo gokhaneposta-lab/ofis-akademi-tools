@@ -49,3 +49,15 @@ body {
     opacity: 0.9;
   }
 }
+
+/* Excel araç sayfaları için sıralı fade-in animasyonu (ToolLayout / ResultCard) */
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

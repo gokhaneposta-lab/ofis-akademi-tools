@@ -5,6 +5,7 @@ import Link from "next/link";
 import JsonLdTool from "@/components/JsonLd";
 import ToolJsonLd from "@/components/ToolJsonLd";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
+import RelatedBlogForTool from "@/components/RelatedBlogForTool";
 import Accordion from "@/components/Accordion";
 
 const ACCENT = "#217346";
@@ -115,6 +116,9 @@ export default function ToolLayout({
             </div>
           )}
 
+          {/* Bu araçla ilgili blog rehberleri */}
+          <RelatedBlogForTool toolHref={path} limit={3} />
+
           <div className="mt-6">
             <BenzerExcelAraclari currentHref={path} />
           </div>
@@ -124,13 +128,6 @@ export default function ToolLayout({
           </p>
         </div>
       </main>
-
-      <style jsx global>{`
-        @keyframes staggerFadeIn {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }

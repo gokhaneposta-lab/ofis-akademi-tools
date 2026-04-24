@@ -14,6 +14,7 @@ import {
   type LevelKey,
 } from "@/lib/egitimData";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
+import RelatedBlogForLevel from "@/components/RelatedBlogForLevel";
 
 const svgProps = { width: 24, height: 24, viewBox: "0 0 24 24" as const, fill: "none" as const, stroke: "#374151", strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
 
@@ -498,6 +499,8 @@ export default function TrainingLevelPage({
           ))}
         </section>
         </div>
+
+        <RelatedBlogForLevel level={levelKey} />
 
         <div className="mt-8 text-center text-xs text-gray-500">Ofis Akademi · Excel & Veri Analizi</div>
       </main>

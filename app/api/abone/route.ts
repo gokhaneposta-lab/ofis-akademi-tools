@@ -45,10 +45,14 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const email = typeof body.email === "string" ? body.email.trim() : "";
+    const sourceRaw = typeof body.source === "string" ? body.source.trim() : "";
+    const source = sourceRaw.length > 0 && sourceRaw.length <= 64 ? sourceRaw : "unknown";
 
     if (!email) {
       return NextResponse.json({ error: "E-posta gerekli." }, { status: 400 });
     }
+
+    console.info(`[abone] yeni abone (source=${source}) ${email}`);
 
     const baseUrl = getSiteUrl();
     const linkTemel = `${baseUrl}/egitimler/temel`;

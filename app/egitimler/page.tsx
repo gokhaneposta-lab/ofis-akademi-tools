@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { getPopularPosts, getCategoryLabelForPost } from "@/lib/blog-posts";
 
 const ACCENT = "#217346";
 
@@ -59,6 +60,7 @@ const EGITICI_ARACLAR = [
 ];
 
 export default function EgitimlerPage() {
+  const featuredPosts = getPopularPosts(3);
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
       {/* Header */}
@@ -177,6 +179,55 @@ export default function EgitimlerPage() {
             ))}
           </div>
         </section>
+
+        {/* Section 3: Featured guides */}
+        {featuredPosts.length > 0 && (
+          <section className="mb-10">
+            <div className="mb-4 flex items-center gap-3">
+              <span
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm"
+                style={{ background: ACCENT }}
+              >
+                3
+              </span>
+              <div className="flex-1">
+                <h2 className="text-base font-bold text-gray-900">Öne Çıkan Rehberler</h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Eğitimle birlikte okumanı önerdiğimiz pratik blog rehberleri
+                </p>
+              </div>
+              <Link
+                href="/blog"
+                className="hidden text-xs font-medium text-emerald-700 hover:text-emerald-800 sm:inline"
+              >
+                Tüm rehberler →
+              </Link>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {featuredPosts.map((p) => {
+                const cat = getCategoryLabelForPost(p);
+                return (
+                  <Link
+                    key={p.slug}
+                    href={`/blog/${p.slug}`}
+                    className="group block rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
+                  >
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+                      {cat}
+                    </span>
+                    <p className="mt-1 text-[14px] font-semibold text-gray-900 group-hover:text-emerald-700 line-clamp-2">
+                      {p.title}
+                    </p>
+                    <p className="mt-1 text-[12px] text-gray-500 line-clamp-2">
+                      {p.description}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </main>
 
     </div>

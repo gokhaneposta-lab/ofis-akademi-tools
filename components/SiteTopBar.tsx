@@ -126,6 +126,9 @@ const NAV: NavSection[] = [
 const pathTitles: Record<string, string> = {
   "/": "Ana Sayfa",
   "/excel-araclari": "Excel Araçları",
+  "/excel-araclari/rapor-sablonlari": "Otomatik Rapor Şablonları",
+  "/excel-araclari/hata-kontrol-checklist": "Hata Kontrol Checklist'i",
+  "/excel-araclari/kisayol-formul-kartlari": "Kısayol & Formül Kartları",
   "/blog": "Blog",
   "/egitimler": "Eğitimler",
   "/egitimler/temel": "Seviye 1 · Temel",
@@ -351,7 +354,7 @@ export default function SiteTopBar() {
         {/* Drawer footer */}
         <div className="border-t border-gray-100 px-4 py-3">
           <p className="text-[11px] text-gray-400">
-            © 2025 Ofis Akademi · Excel & Veri Analizi
+            © {new Date().getFullYear()} Ofis Akademi · Excel & Veri Analizi
           </p>
         </div>
       </nav>

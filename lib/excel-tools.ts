@@ -7,7 +7,7 @@ export type ExcelTool = { name: string; href: string };
 export const EXCEL_TOOLS: ExcelTool[] = [
   { name: "Otomatik Rapor Şablonları", href: "/excel-araclari/rapor-sablonlari" },
   { name: "Hata Kontrol Checklist'i", href: "/excel-araclari/hata-kontrol-checklist" },
-  { name: "Kısayol & Formül Kartları", href: "/excel-araclari/ksayol-formul-kartlari" },
+  { name: "Kısayol & Formül Kartları", href: "/excel-araclari/kisayol-formul-kartlari" },
   { name: "Ad Soyad Ayırıcı", href: "/excel-araclari/ad-soyad-ayir" },
   { name: "CSV Ayırıcı", href: "/excel-araclari/csv-ayir" },
   { name: "Liste Birleştirici", href: "/excel-araclari/liste-birlestir" },

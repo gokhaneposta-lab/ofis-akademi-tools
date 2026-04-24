@@ -15,6 +15,9 @@ export default function BrandJsonLd({ baseUrl }: BrandJsonLdProps) {
     },
     description:
       "Excel ve veri analizi eğitimi, ücretsiz araçlar, formül kütüphanesi ve finans/sigorta KPI rehberleri.",
+    sameAs: [
+      "https://www.linkedin.com/in/gokhan-yıldırım-72276551/",
+    ],
     knowsAbout: [
       "Microsoft Excel",
       "Veri Analizi",
@@ -23,12 +26,21 @@ export default function BrandJsonLd({ baseUrl }: BrandJsonLdProps) {
       "IFRS 17",
       "Power Query",
     ],
+    founder: {
+      "@type": "Person",
+      name: "Gökhan Yıldırım",
+      jobTitle: "Ofis Akademi Kurucusu",
+      sameAs: [
+        "https://www.linkedin.com/in/gokhan-yıldırım-72276551/",
+      ],
+    },
   };
 
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Ofis Akademi",
+    alternateName: "OfisAkademi",
     url: baseUrl,
     inLanguage: "tr-TR",
     description:
@@ -37,7 +49,17 @@ export default function BrandJsonLd({ baseUrl }: BrandJsonLdProps) {
       "@type": "Organization",
       name: "Ofis Akademi",
     },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${baseUrl}/blog?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
   };
+  // SearchAction'ın geçerli olması için /blog sayfası ?q= parametresini destekliyor
+  // (BlogIndexClient `useSearchParams` ile okur).
 
   return (
     <>
@@ -52,4 +74,3 @@ export default function BrandJsonLd({ baseUrl }: BrandJsonLdProps) {
     </>
   );
 }
-

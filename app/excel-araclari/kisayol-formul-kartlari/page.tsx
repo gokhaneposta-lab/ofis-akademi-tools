@@ -423,7 +423,7 @@ export default function KsayolFormulKartlariPage() {
         </div>
 
         <div className="mt-6 print:hidden">
-          <BenzerExcelAraclari currentHref="/excel-araclari/ksayol-formul-kartlari" />
+          <BenzerExcelAraclari currentHref="/excel-araclari/kisayol-formul-kartlari" />
         </div>
         <p className="mt-4 text-center text-xs text-slate-500 print:hidden">
           Ofis Akademi · Excel & Veri Analizi

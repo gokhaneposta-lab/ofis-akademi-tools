@@ -782,7 +782,7 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
     title: "Excel Kısayol ve Formül Kartları: Tek Sayfada Hızlı Referans (Ücretsiz)",
     description: "Klavye kısayolları ve sık formüller tek sayfada. Yazdır, masada tut—ücretsiz kartlar.",
     date: DATE,
-    toolHref: "/excel-araclari/ksayol-formul-kartlari",
+    toolHref: "/excel-araclari/kisayol-formul-kartlari",
     toolName: "Kısayol & Formül Kartları",
     content: [
       { type: "p", text: "Sık kullanılan Excel kısayolları ve formül özetlerini tek sayfada veya kart setinde bulmak hız kazandırır. Yazdırıp masada tutulabilir." },

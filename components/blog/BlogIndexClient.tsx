@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import {
   BLOG_POSTS,
   BLOG_CATEGORIES,
@@ -105,8 +106,16 @@ function CategoryTabs({ active }: { active?: BlogCategorySlug }) {
   );
 }
 
-export default function BlogIndexClient({ category }: { category?: BlogCategorySlug }) {
-  const [q, setQ] = useState("");
+function BlogIndexClientInner({ category }: { category?: BlogCategorySlug }) {
+  const searchParams = useSearchParams();
+  const initialQ = searchParams.get("q") ?? "";
+  const [q, setQ] = useState(initialQ);
+
+  // URL ?q= değişirse state'i senkron tut (Google SearchAction için /blog?q=foo girildiğinde).
+  useEffect(() => {
+    const next = searchParams.get("q") ?? "";
+    setQ(next);
+  }, [searchParams]);
 
   const popular = useMemo(() => BLOG_POSTS.filter((p) => POPULAR_SLUGS.has(p.slug)), []);
   const allSorted = useMemo(() => [...BLOG_POSTS].sort((a, b) => (a.date < b.date ? 1 : -1)), []);
@@ -211,5 +220,14 @@ export default function BlogIndexClient({ category }: { category?: BlogCategoryS
       </main>
 
     </>
+  );
+}
+
+// useSearchParams'in Suspense sınırı içinde olması gerekiyor (Next.js).
+export default function BlogIndexClient({ category }: { category?: BlogCategorySlug }) {
+  return (
+    <Suspense fallback={null}>
+      <BlogIndexClientInner category={category} />
+    </Suspense>
   );
 }

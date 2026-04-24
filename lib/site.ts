@@ -1,10 +1,10 @@
 /**
  * Kanonik site kökü (sonunda / yok).
  * Production'da `NEXT_PUBLIC_SITE_URL` ile tek adres kullanın (www veya www'siz — ikisini birden değil).
- * Örnek: https://ofisakademi.com
+ * Şu an kanonik: https://www.ofisakademi.com (Vercel'de ofisakademi.com → www'a 308 yönleniyor).
  */
 export function getSiteUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL || "https://ofisakademi.com";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ofisakademi.com";
   return raw.replace(/\/$/, "");
 }
 

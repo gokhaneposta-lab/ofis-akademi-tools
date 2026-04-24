@@ -42,7 +42,14 @@ export const metadata: Metadata = {
   ],
   applicationName: "Ofis Akademi",
   category: "education",
-  alternates: {},
+  // alternates.canonical her sayfada kendi metadata'sında verilmeli — buraya koyarsak
+  // override etmeyen tüm alt sayfalar root layout'un canonical'ını miras alır ve
+  // tek tek özelleştirme şansı kaybolur.
+  verification: {
+    other: {
+      "msvalidate.01": "005B44FBB0B57E2F7D80711F49FBC354",
+    },
+  },
   openGraph: {
     type: "website",
     locale: "tr_TR",

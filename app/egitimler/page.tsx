@@ -51,7 +51,7 @@ const EGITICI_ARACLAR = [
   },
   {
     name: "Kısayol & Formül Kartları",
-    href: "/excel-araclari/ksayol-formul-kartlari",
+    href: "/excel-araclari/kisayol-formul-kartlari",
     description:
       "En çok kullanılan Excel kısayolları ve formülleri tek sayfada — PDF indir, yazdır, eğitim sırasında masanda referans olsun.",
     icon: "🃏",

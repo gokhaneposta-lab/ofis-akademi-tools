@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "En çok kullanılan Excel kısayolları ve formülleri — tek sayfa, yazdırılabilir PDF.",
   alternates: {
-    canonical: canonicalUrl("/excel-araclari/ksayol-formul-kartlari"),
+    canonical: canonicalUrl("/excel-araclari/kisayol-formul-kartlari"),
   },
 };
 

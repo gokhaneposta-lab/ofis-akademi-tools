@@ -94,6 +94,7 @@ const NAV: NavSection[] = [
     ),
     children: [
       { label: "Tüm Metrikler", href: "/finans-sigorta" },
+      { label: "Kanal bazlı prim (TSB)", href: "/sigorta/kanal-prim" },
       { label: "Hasar/Prim Oranı", href: "/finans-sigorta/hasar-prim-orani" },
       { label: "Kayıp Oranı (EP)", href: "/finans-sigorta/kayip-orani" },
       { label: "Birleşik Oran", href: "/finans-sigorta/birlesik-oran" },

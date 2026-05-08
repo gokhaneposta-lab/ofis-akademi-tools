@@ -9,7 +9,8 @@
     "lint": "eslint",
     "generate-tfrs-xlsx": "node scripts/generate-tfrs17-xlsx.js",
     "generate-pivot-xlsx": "node scripts/generate-pivot-xlsx.js",
-    "generate-dashboard-xlsx": "node scripts/generate-dashboard-xlsx.js"
+    "generate-dashboard-xlsx": "node scripts/generate-dashboard-xlsx.js",
+    "tsb:import-prim": "node scripts/tsb-import-prim.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

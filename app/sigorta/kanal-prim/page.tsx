@@ -67,21 +67,6 @@ export default function SigortaKanalPrimPage() {
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <TsbKanalPrimDashboard />
-        <section className="mt-10 rounded-xl border border-gray-200 bg-white p-4 text-[13px] text-gray-600 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-900">Veriyi güncellemek</h2>
-          <p className="mt-2">
-            Yeni TSB Excel dosyasını projeye ekleyip şu komutu çalıştırın (dosya adında yıl ve ay bulunsun, örn.{" "}
-            <code className="rounded bg-gray-100 px-1">…2026 03…xlsx</code> veya{" "}
-            <code className="rounded bg-gray-100 px-1">prim-2026-03.xlsx</code>):
-          </p>
-          <pre className="mt-2 overflow-x-auto rounded-lg bg-gray-900 px-3 py-2 text-[12px] text-emerald-100">
-            npm run tsb:import-prim -- path/dosya.xlsx
-          </pre>
-          <p className="mt-2">
-            Aynı dönem tekrar içe aktarılırsa mevcut satırlar yenisiyle değiştirilir. Çıktı:{" "}
-            <code className="rounded bg-gray-100 px-1">public/data/tsb/prim-tidy.json</code>
-          </p>
-        </section>
       </main>
     </div>
   );

@@ -10,7 +10,8 @@
     "generate-tfrs-xlsx": "node scripts/generate-tfrs17-xlsx.js",
     "generate-pivot-xlsx": "node scripts/generate-pivot-xlsx.js",
     "generate-dashboard-xlsx": "node scripts/generate-dashboard-xlsx.js",
-    "tsb:import-prim": "node scripts/tsb-import-prim.mjs"
+    "tsb:import-prim": "node scripts/tsb-import-prim.mjs",
+    "tsb:import-tidy-xlsb": "node scripts/tsb-import-tidy-xlsb.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

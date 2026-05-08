@@ -6,16 +6,16 @@ import TsbKanalPrimDashboard from "@/components/tsb/TsbKanalPrimDashboard";
 const BASE = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Kanal Bazlı Prim Üretimi (Hayat / Hayat Dışı) — TSB Verisi",
+  title: "Kanal Bazlı Prim Üretimi (Hayat Dışı / Hayat–Emeklilik) — TSB Verisi",
   description:
-    "TSB satış kanalı bazında prim: hayat (H) ve hayat dışı (HD) şirket görünümü; dönem, ana branş ve kanal ile sıra, pay ve yıllık değişim. Kamuya açık TSB verisinden.",
+    "TSB satış kanalı bazında prim: hayat dışı (HD) ve hayat–emeklilik (kod 3… veya tip H); dönem, ana branş ve kanal; sıra, pay ve toplam satırı.",
   alternates: {
     canonical: canonicalUrl("/sigorta/kanal-prim"),
   },
   openGraph: {
-    title: "Kanal Bazlı Prim (Hayat / Hayat Dışı) | Ofis Akademi",
+    title: "Kanal Bazlı Prim (Hayat Dışı / Hayat–Emeklilik) | Ofis Akademi",
     description:
-      "TSB prim verisi: H ve HD şirket görünümü; sıra, pay ve değişim.",
+      "TSB prim verisi; filtreler ve tablo altında sektör toplamı.",
     url: `${BASE}/sigorta/kanal-prim`,
     siteName: "Ofis Akademi",
     locale: "tr_TR",
@@ -38,14 +38,16 @@ export default function SigortaKanalPrimPage() {
             Finans &amp; Sigorta
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-            Kanal bazlı prim üretimi (Hayat / Hayat dışı)
+            Kanal bazlı prim üretimi (Hayat dışı / Hayat–emeklilik)
           </h1>
           <p className="mt-2 text-sm text-gray-600 max-w-3xl">
             Sigorta Bilgi ve Gözetim Merkezi&apos;nin yayınladığı{" "}
-            <strong>satış kanalı bazında primler</strong> verisinden türetilmiş özet tablo. Üstte{" "}
-            <strong>Hayat (H)</strong> veya <strong>Hayat dışı (HD)</strong> görünümünü seçin; dönem, ana branş ve kanala
-            göre filtreleyin. Önceki yıl karşılaştırması aynı takvim ayı için otomatik hesaplanır (ör. 2026-03 ↔
-            2025-03). TSB&apos;nin <strong>9000 / 9001 / 9003</strong> alt toplam satırları tabloda yer almaz.
+            <strong>satış kanalı bazında primler</strong> verisinden türetilmiş özet tablo.{" "}
+            <strong>Hayat–emeklilik</strong> görünümünde şirket kodu <strong>3</strong> ile başlayan şirketler ile tip{" "}
+            <strong>H</strong> olanlar yer alır; <strong>Hayat dışı</strong> görünümünde tip <strong>HD</strong> ve kodu{" "}
+            <strong>3</strong> ile başlamayan şirketler listelenir. Dönem, ana branş ve kanala göre filtreleyin; önceki yıl
+            karşılaştırması aynı takvim ayı için hesaplanır (ör. 2026-03 ↔ 2025-03). Tabloda alt satırda seçili filtreye
+            göre prim toplamı gösterilir.
           </p>
           <aside className="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[12px] text-gray-600 max-w-3xl">
             <strong>Kaynak:</strong> TSB kamuya açık prim istatistikleri. Ofis Akademi bu veriyi yeniden düzenler;

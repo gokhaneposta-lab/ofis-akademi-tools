@@ -19,7 +19,7 @@ export type TsbPrimRow = {
 
 export type TsbKanalField = "genelToplam" | "acente" | "banka" | "broker" | "diger" | "merkez";
 
-/** Dashboard görünümü: TSB şirket tipi HD = hayat dışı, H = hayat */
+/** Dashboard: hayat dışı (HD, kod 3… değil) · hayat-emeklilik (kod 3… veya tip H) */
 export type TsbSektorSegment = "hayatdisi" | "hayat";
 
 /** TSB Excel'deki sektör alt toplam şirket kodları */
@@ -33,12 +33,36 @@ function normalizedSirketTipi(row: TsbPrimRow): string {
   return String(row.sirketTipi ?? "").trim().toUpperCase();
 }
 
+/** Şirket kodu 3 ile başlıyorsa hayat/emeklilik şirketi (TSB kodlaması) */
+export function sirketKoduHayatEmeklilikPrefix(kod: number): boolean {
+  if (!Number.isFinite(kod)) return false;
+  const s = String(Math.trunc(Math.abs(kod)));
+  return s.startsWith("3");
+}
+
+/** Hayat-emeklilik havuzu: kod 3… veya şirket tipi H */
+export function isHayatEmeklilikSirket(row: TsbPrimRow): boolean {
+  if (isTsbToplamSirketKodu(row.sirketKodu)) return false;
+  if (sirketKoduHayatEmeklilikPrefix(row.sirketKodu)) return true;
+  return normalizedSirketTipi(row) === "H";
+}
+
+/** Hayat dışı: tip HD ve kod 3… değil (3… satırları hayat-emeklilikte kalır) */
+export function isHayatdisiSirket(row: TsbPrimRow): boolean {
+  if (isTsbToplamSirketKodu(row.sirketKodu)) return false;
+  if (sirketKoduHayatEmeklilikPrefix(row.sirketKodu)) return false;
+  return normalizedSirketTipi(row) === "HD";
+}
+
 /** Segment + alt toplam satırları hariç */
 export function rowMatchesSegment(row: TsbPrimRow, segment: TsbSektorSegment): boolean {
-  if (isTsbToplamSirketKodu(row.sirketKodu)) return false;
-  const t = normalizedSirketTipi(row);
-  if (segment === "hayatdisi") return t === "HD";
-  return t === "H";
+  return segment === "hayat" ? isHayatEmeklilikSirket(row) : isHayatdisiSirket(row);
+}
+
+/** Tablo alt toplam satırı için yüzde değişim */
+export function sektorToplamDegisimYuzde(primOnceki: number, primBu: number): number | null {
+  if (primOnceki === 0) return primBu === 0 ? 0 : null;
+  return ((primBu - primOnceki) / Math.abs(primOnceki)) * 100;
 }
 
 export function prevYearPeriod(ym: string): string | null {
@@ -155,7 +179,7 @@ export function uniqueSortedPeriods(rows: TsbPrimRow[]): string[] {
   return [...s].sort();
 }
 
-/** Seçilen segmentte, ilgili dönemde üretim olan ana branşlar (Hayat: sadece H şirketlerinin satırları) */
+/** Seçilen segmentte, ilgili dönemde üretim olan ana branşlar */
 export function uniqueAnaBransForSegment(
   rows: TsbPrimRow[],
   donem: string,

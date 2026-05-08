@@ -5,6 +5,7 @@ import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimD
 import {
   buildKiyaslamaTablosu,
   isTsbToplamSirketKodu,
+  sektorToplamDegisimYuzde,
   uniqueAnaBransForSegment,
   uniqueSortedPeriods,
 } from "@/lib/tsbPrimDashboard";
@@ -91,7 +92,14 @@ export default function TsbKanalPrimDashboard() {
   }
 
   const tumAnaBransLabel =
-    segment === "hayatdisi" ? "Tümü (hayat dışı şirketleri, HD)" : "Tümü (hayat şirketleri, H)";
+    segment === "hayatdisi"
+      ? "Tümü (hayat dışı · HD, kod 3… hariç)"
+      : "Tümü (hayat-emeklilik · kod 3… veya tip H)";
+
+  const toplamDegisim =
+    tablo !== null
+      ? sektorToplamDegisimYuzde(tablo.sektorToplamOnceki, tablo.sektorToplamBu)
+      : null;
 
   return (
     <div className="space-y-6">
@@ -111,7 +119,7 @@ export default function TsbKanalPrimDashboard() {
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            Hayat dışı (HD)
+            Hayat dışı
           </button>
           <button
             type="button"
@@ -126,12 +134,12 @@ export default function TsbKanalPrimDashboard() {
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            Hayat (H)
+            Hayat &amp; emeklilik
           </button>
         </div>
         <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
-          Tablo ve ana branş listesi yalnızca seçilen şirket tipine göre filtrelenir. TSB dosyasındaki{" "}
-          <strong>9000 / 9001 / 9003</strong> sektör alt toplam satırları dahil edilmez.
+          Hayat-emeklilik: şirket kodu <strong>3</strong> ile başlayanlar veya şirket tipi <strong>H</strong>. Hayat
+          dışı: tip <strong>HD</strong> ve kodu <strong>3</strong> ile başlamayan şirketler.
         </p>
       </div>
 
@@ -187,17 +195,8 @@ export default function TsbKanalPrimDashboard() {
       {tablo && (
         <>
           <p className="text-xs text-gray-500">
-            {segment === "hayatdisi" ? (
-              <>
-                Şirket tipi <strong>HD</strong> (hayat dışı). Önceki yıl:{" "}
-                <strong>{tablo.donemOnceki ?? "—"}</strong>.
-              </>
-            ) : (
-              <>
-                Şirket tipi <strong>H</strong> (hayat). Ana branş listesi yalnızca bu dönemde hayat şirketlerinin üretim
-                gösterdiği branşları içerir. Önceki yıl: <strong>{tablo.donemOnceki ?? "—"}</strong>.
-              </>
-            )}
+            Önceki yıl karşılaştırması: <strong>{tablo.donemOnceki ?? "—"}</strong>. Tablonun alt satırında seçili
+            filtrelerdeki tüm şirketlerin prim toplamı yer alır (pay sütunları %100).
           </p>
           <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
             <table className="min-w-[900px] w-full border-collapse text-left text-[13px]">
@@ -239,17 +238,32 @@ export default function TsbKanalPrimDashboard() {
                   </tr>
                 ))}
               </tbody>
+              <tfoot>
+                <tr className="border-t-2 border-emerald-600 bg-emerald-50/95 font-semibold text-gray-900">
+                  <td className="px-3 py-2.5 text-gray-500" colSpan={2}>
+                    —
+                  </td>
+                  <td className="px-3 py-2.5 text-gray-500">—</td>
+                  <td className="px-3 py-2.5">TOPLAM</td>
+                  <td className="px-3 py-2.5 text-right tabular-nums">{nf.format(tablo.sektorToplamOnceki)}</td>
+                  <td className="px-3 py-2.5 text-right tabular-nums text-emerald-900">{pf.format(100)}</td>
+                  <td className="px-3 py-2.5 text-right tabular-nums">{nf.format(tablo.sektorToplamBu)}</td>
+                  <td className="px-3 py-2.5 text-right tabular-nums text-emerald-900">{pf.format(100)}</td>
+                  <td
+                    className={`px-3 py-2.5 text-right tabular-nums ${
+                      toplamDegisim === null
+                        ? "text-gray-600"
+                        : toplamDegisim < 0
+                          ? "text-red-700"
+                          : "text-emerald-800"
+                    }`}
+                  >
+                    {toplamDegisim === null ? "—" : pf.format(toplamDegisim)}
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
-          <p className="text-xs text-gray-500">
-            Sektör toplamı ({secilenDonem}): <strong>{nf.format(tablo.sektorToplamBu)}</strong>
-            {tablo.donemOnceki ? (
-              <>
-                {" "}
-                · Önceki ({tablo.donemOnceki}): <strong>{nf.format(tablo.sektorToplamOnceki)}</strong>
-              </>
-            ) : null}
-          </p>
         </>
       )}
     </div>

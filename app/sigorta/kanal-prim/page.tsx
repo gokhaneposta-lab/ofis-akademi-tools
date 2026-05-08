@@ -8,7 +8,7 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Kanal Bazlı Prim Üretimi (Hayat Dışı / Hayat–Emeklilik) — TSB Verisi",
   description:
-    "TSB satış kanalı bazında prim: hayat dışı (HD) ve hayat–emeklilik (kod 3… veya tip H); dönem, ana branş ve kanal; sıra, pay ve toplam satırı.",
+    "TSB satış kanalı bazında prim: hayat dışı (HD) ve hayat–emeklilik (kod 3… veya tip H/E); dönem, ana branş ve kanal; sıra, pay ve toplam satırı.",
   alternates: {
     canonical: canonicalUrl("/sigorta/kanal-prim"),
   },
@@ -43,8 +43,8 @@ export default function SigortaKanalPrimPage() {
           <p className="mt-2 text-sm text-gray-600 max-w-3xl">
             Sigorta Bilgi ve Gözetim Merkezi&apos;nin yayınladığı{" "}
             <strong>satış kanalı bazında primler</strong> verisinden türetilmiş özet tablo.{" "}
-            <strong>Hayat–emeklilik</strong> görünümünde şirket kodu <strong>3</strong> ile başlayan şirketler ile tip{" "}
-            <strong>H</strong> olanlar yer alır; <strong>Hayat dışı</strong> görünümünde tip <strong>HD</strong> ve kodu{" "}
+            <strong>Hayat–emeklilik</strong> görünümünde şirket kodu <strong>3</strong> ile başlayanlar ile tip{" "}
+            <strong>H</strong> (hayat) ve <strong>E</strong> (yaşam–emeklilik, örn. Zurich Yaşam ve Emeklilik) yer alır; <strong>Hayat dışı</strong> görünümünde tip <strong>HD</strong> ve kodu{" "}
             <strong>3</strong> ile başlamayan şirketler listelenir. Dönem, ana branş ve kanala göre filtreleyin; önceki yıl
             karşılaştırması aynı takvim ayı için hesaplanır (ör. 2026-03 ↔ 2025-03). Tabloda alt satırda seçili filtreye
             göre prim toplamı gösterilir.

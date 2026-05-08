@@ -94,7 +94,7 @@ export default function TsbKanalPrimDashboard() {
   const tumAnaBransLabel =
     segment === "hayatdisi"
       ? "Tümü (hayat dışı · HD, kod 3… hariç)"
-      : "Tümü (hayat-emeklilik · kod 3… veya tip H)";
+      : "Tümü (hayat-emeklilik · kod 3… veya tip H / E)";
 
   const toplamDegisim =
     tablo !== null
@@ -138,8 +138,9 @@ export default function TsbKanalPrimDashboard() {
           </button>
         </div>
         <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
-          Hayat-emeklilik: şirket kodu <strong>3</strong> ile başlayanlar veya şirket tipi <strong>H</strong>. Hayat
-          dışı: tip <strong>HD</strong> ve kodu <strong>3</strong> ile başlamayan şirketler.
+            Hayat-emeklilik: şirket kodu <strong>3</strong> ile başlayanlar veya şirket tipi{" "}
+            <strong>H</strong> (hayat) / <strong>E</strong> (yaşam–emeklilik). Hayat dışı: tip <strong>HD</strong> ve
+            kodu <strong>3</strong> ile başlamayan şirketler.
         </p>
       </div>
 

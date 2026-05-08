@@ -19,7 +19,7 @@ export type TsbPrimRow = {
 
 export type TsbKanalField = "genelToplam" | "acente" | "banka" | "broker" | "diger" | "merkez";
 
-/** Dashboard: hayat dışı (HD, kod 3… değil) · hayat-emeklilik (kod 3… veya tip H) */
+/** Dashboard: hayat dışı (HD, kod 3… değil) · hayat-emeklilik (kod 3… veya tip H / E) */
 export type TsbSektorSegment = "hayatdisi" | "hayat";
 
 /** TSB Excel'deki sektör alt toplam şirket kodları */
@@ -40,11 +40,12 @@ export function sirketKoduHayatEmeklilikPrefix(kod: number): boolean {
   return s.startsWith("3");
 }
 
-/** Hayat-emeklilik havuzu: kod 3… veya şirket tipi H */
+/** Hayat-emeklilik havuzu: kod 3… veya TSB şirket tipi H (hayat) / E (emeklilik–yaşam, örn. Zurich 2006) */
 export function isHayatEmeklilikSirket(row: TsbPrimRow): boolean {
   if (isTsbToplamSirketKodu(row.sirketKodu)) return false;
   if (sirketKoduHayatEmeklilikPrefix(row.sirketKodu)) return true;
-  return normalizedSirketTipi(row) === "H";
+  const t = normalizedSirketTipi(row);
+  return t === "H" || t === "E";
 }
 
 /** Hayat dışı: tip HD ve kod 3… değil (3… satırları hayat-emeklilikte kalır) */

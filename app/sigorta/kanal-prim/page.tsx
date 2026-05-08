@@ -8,7 +8,7 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Kanal Bazlı Prim Üretimi (Hayat Dışı / Hayat–Emeklilik) — TSB Verisi",
   description:
-    "TSB satış kanalı bazında prim: hayat dışı (HD) ve hayat–emeklilik (kod 3… veya tip H/E); dönem, ana branş ve kanal; sıra, pay ve toplam satırı.",
+    "TSB kanal bazlı prim özeti: hayat ve hayat dışı grupları, dönem ve kanal filtreleri, sıra ve pay.",
   alternates: {
     canonical: canonicalUrl("/sigorta/kanal-prim"),
   },
@@ -40,14 +40,10 @@ export default function SigortaKanalPrimPage() {
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
             Kanal bazlı prim üretimi (Hayat dışı / Hayat–emeklilik)
           </h1>
-          <p className="mt-2 text-sm text-gray-600 max-w-3xl">
-            Sigorta Bilgi ve Gözetim Merkezi&apos;nin yayınladığı{" "}
-            <strong>satış kanalı bazında primler</strong> verisinden türetilmiş özet tablo.{" "}
-            <strong>Hayat–emeklilik</strong> görünümünde şirket kodu <strong>3</strong> ile başlayanlar ile tip{" "}
-            <strong>H</strong> (hayat) ve <strong>E</strong> (yaşam–emeklilik, örn. Zurich Yaşam ve Emeklilik) yer alır; <strong>Hayat dışı</strong> görünümünde tip <strong>HD</strong> ve kodu{" "}
-            <strong>3</strong> ile başlamayan şirketler listelenir. Dönem, ana branş ve kanala göre filtreleyin; önceki yıl
-            karşılaştırması aynı takvim ayı için hesaplanır (ör. 2026-03 ↔ 2025-03). Tabloda alt satırda seçili filtreye
-            göre prim toplamı gösterilir.
+          <p className="mt-2 text-sm text-gray-600 max-w-2xl">
+            TSB satış kanalı bazında prim verisinden hazırlanmış özet tablo.{" "}
+            <strong>Hayat</strong> ve <strong>hayat dışı</strong> şirketler üstteki görünümde ayrı gruplanmıştır; dönem,
+            ana branş ve kanal ile filtreleyerek tabloyu daraltabilirsiniz.
           </p>
           <aside className="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[12px] text-gray-600 max-w-3xl">
             <strong>Kaynak:</strong> TSB kamuya açık prim istatistikleri. Ofis Akademi bu veriyi yeniden düzenler;

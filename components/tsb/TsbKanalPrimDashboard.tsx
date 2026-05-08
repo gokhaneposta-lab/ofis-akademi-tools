@@ -22,6 +22,14 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
+/** Düşük sıra numarası = daha iyi. Bu yıl sırası önceki yıla göre kötüleştiyse kırmızı, iyileştiyse yeşil, aynıysa sarı. */
+function buYilSiraRenk(siraOnceki: number, siraBu: number): string {
+  if (siraOnceki <= 0 || siraBu <= 0) return "text-gray-900 font-medium tabular-nums";
+  if (siraBu > siraOnceki) return "text-red-600 font-semibold tabular-nums";
+  if (siraBu < siraOnceki) return "text-emerald-600 font-semibold tabular-nums";
+  return "text-amber-500 font-semibold tabular-nums";
+}
+
 export default function TsbKanalPrimDashboard() {
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -85,8 +93,7 @@ export default function TsbKanalPrimDashboard() {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
-        Henüz prim verisi yok. TSB Excel dosyasını içe aktarmak için:{" "}
-        <code className="rounded bg-white px-1.5 py-0.5 text-xs">npm run tsb:import-prim -- path/dosya.xlsx</code>
+        Gösterilecek prim verisi bulunamadı.
       </div>
     );
   }
@@ -138,9 +145,8 @@ export default function TsbKanalPrimDashboard() {
           </button>
         </div>
         <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
-            Hayat-emeklilik: şirket kodu <strong>3</strong> ile başlayanlar veya şirket tipi{" "}
-            <strong>H</strong> (hayat) / <strong>E</strong> (yaşam–emeklilik). Hayat dışı: tip <strong>HD</strong> ve
-            kodu <strong>3</strong> ile başlamayan şirketler.
+          Hayat ve hayat dışı şirketler ayrı gruplanmıştır; üstteki seçimle görünümü değiştirip aşağıdan dönem, branş ve
+          kanalla filtreleyebilirsiniz.
         </p>
       </div>
 
@@ -196,62 +202,82 @@ export default function TsbKanalPrimDashboard() {
       {tablo && (
         <>
           <p className="text-xs text-gray-500">
-            Önceki yıl karşılaştırması: <strong>{tablo.donemOnceki ?? "—"}</strong>. Tablonun alt satırında seçili
-            filtrelerdeki tüm şirketlerin prim toplamı yer alır (pay sütunları %100).
+            Önceki yıl: <strong>{tablo.donemOnceki ?? "—"}</strong>. Alt satırda seçili filtrelere göre toplam prim;
+            pay sütunları en fazla %100.
           </p>
           <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-            <table className="min-w-[820px] w-full table-fixed border-collapse text-left text-[13px]">
+            <table className="min-w-[800px] w-full table-fixed border-collapse text-left text-[13px]">
               <colgroup>
-                <col className="w-11" />
-                <col className="w-11" />
+                <col className="w-[4.75rem]" />
+                <col className="w-[4.75rem]" />
                 <col className="w-[4.25rem]" />
                 <col className="w-[135px]" />
                 <col />
+                <col className="w-[4.5rem]" />
                 <col />
-                <col />
-                <col />
-                <col />
+                <col className="w-[4.5rem]" />
+                <col className="min-w-[5.25rem]" />
               </colgroup>
               <thead>
-                <tr className="h-11 border-b border-gray-200 bg-gray-50 text-[11px] font-semibold uppercase tracking-wide text-gray-600">
-                  <th className="px-3 align-middle">Önceki yıl sıra</th>
-                  <th className="px-3 align-middle">Bu yıl sıra</th>
-                  <th className="px-3 align-middle">Şirket kodu</th>
-                  <th className="px-3 align-middle">Şirket adı</th>
-                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">
+                <tr className="min-h-11 border-b border-gray-200 bg-gray-50 text-[10px] font-semibold uppercase tracking-wide text-gray-600">
+                  <th className="px-2 py-2 align-middle text-center leading-snug whitespace-normal">
+                    Önceki yıl
+                    <br />
+                    sıra
+                  </th>
+                  <th className="px-2 py-2 align-middle text-center leading-snug whitespace-normal">
+                    Bu yıl
+                    <br />
+                    sıra
+                  </th>
+                  <th className="px-2 py-2 align-middle text-center whitespace-normal">Şirket kodu</th>
+                  <th className="px-2 py-2 align-middle leading-snug">Şirket adı</th>
+                  <th className="px-2 py-2 text-right align-middle whitespace-nowrap leading-snug">
                     {tablo.donemOnceki ?? "Önceki"} prim
                   </th>
-                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">Önceki pay %</th>
-                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">{secilenDonem} prim</th>
-                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">Bu yıl pay %</th>
-                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">Değişim %</th>
+                  <th className="px-1.5 py-2 text-right align-middle whitespace-normal leading-snug">
+                    Önceki
+                    <br />
+                    pay %
+                  </th>
+                  <th className="px-2 py-2 text-right align-middle whitespace-nowrap leading-snug">
+                    {secilenDonem} prim
+                  </th>
+                  <th className="px-1.5 py-2 text-right align-middle whitespace-normal leading-snug">
+                    Bu yıl
+                    <br />
+                    pay %
+                  </th>
+                  <th className="px-2 py-2 text-right align-middle whitespace-nowrap leading-snug">Değişim %</th>
                 </tr>
               </thead>
               <tbody>
                 {tablo.satirlar.map((s) => (
                   <tr key={s.sirketKodu} className="h-11 border-b border-gray-100 hover:bg-gray-50/80">
-                    <td className="px-3 align-middle tabular-nums text-gray-600">{s.siraOnceki}</td>
-                    <td className="px-3 align-middle tabular-nums font-medium text-gray-900">{s.siraBu}</td>
-                    <td className="px-3 align-middle tabular-nums whitespace-nowrap">{s.sirketKodu}</td>
-                    <td className="max-w-[135px] px-3 align-middle">
+                    <td className="px-2 align-middle text-center tabular-nums text-gray-600">{s.siraOnceki}</td>
+                    <td className={`px-2 align-middle text-center tabular-nums ${buYilSiraRenk(s.siraOnceki, s.siraBu)}`}>
+                      {s.siraBu}
+                    </td>
+                    <td className="px-2 align-middle tabular-nums whitespace-nowrap text-center">{s.sirketKodu}</td>
+                    <td className="max-w-[135px] px-2 align-middle">
                       <div className="truncate text-gray-900" title={s.sirketAdi}>
                         {s.sirketAdi}
                       </div>
                     </td>
-                    <td className="px-3 align-middle text-right tabular-nums whitespace-nowrap">
+                    <td className="px-2 align-middle text-right tabular-nums whitespace-nowrap">
                       {nf.format(s.primOnceki)}
                     </td>
-                    <td className="px-3 align-middle text-right tabular-nums text-gray-600 whitespace-nowrap">
+                    <td className="px-1.5 align-middle text-right tabular-nums text-gray-600 whitespace-nowrap">
                       {pf.format(s.payOncekiYuzde)}
                     </td>
-                    <td className="px-3 align-middle text-right tabular-nums font-medium whitespace-nowrap">
+                    <td className="px-2 align-middle text-right tabular-nums font-medium whitespace-nowrap">
                       {nf.format(s.primBu)}
                     </td>
-                    <td className="px-3 align-middle text-right tabular-nums whitespace-nowrap">
+                    <td className="px-1.5 align-middle text-right tabular-nums whitespace-nowrap">
                       {pf.format(s.payBuYuzde)}
                     </td>
                     <td
-                      className={`px-3 align-middle text-right tabular-nums font-medium whitespace-nowrap ${
+                      className={`px-2 align-middle text-right tabular-nums font-medium whitespace-nowrap ${
                         s.degisimYuzde === null
                           ? "text-gray-500"
                           : s.degisimYuzde < 0
@@ -266,25 +292,24 @@ export default function TsbKanalPrimDashboard() {
               </tbody>
               <tfoot>
                 <tr className="h-11 border-t-2 border-emerald-600 bg-emerald-50/95 font-semibold text-gray-900">
-                  <td className="px-3 align-middle text-gray-500" colSpan={2}>
-                    —
-                  </td>
-                  <td className="px-3 align-middle text-gray-500">—</td>
-                  <td className="px-3 align-middle">TOPLAM</td>
-                  <td className="px-3 align-middle text-right tabular-nums whitespace-nowrap">
+                  <td className="px-2 align-middle text-center text-gray-500">—</td>
+                  <td className="px-2 align-middle text-center text-gray-500">—</td>
+                  <td className="px-2 align-middle text-center text-gray-500">—</td>
+                  <td className="px-2 align-middle">TOPLAM</td>
+                  <td className="px-2 align-middle text-right tabular-nums whitespace-nowrap">
                     {nf.format(tablo.sektorToplamOnceki)}
                   </td>
-                  <td className="px-3 align-middle text-right tabular-nums text-emerald-900 whitespace-nowrap">
+                  <td className="px-1.5 align-middle text-right tabular-nums text-emerald-900 whitespace-nowrap">
                     {pf.format(100)}
                   </td>
-                  <td className="px-3 align-middle text-right tabular-nums whitespace-nowrap">
+                  <td className="px-2 align-middle text-right tabular-nums whitespace-nowrap">
                     {nf.format(tablo.sektorToplamBu)}
                   </td>
-                  <td className="px-3 align-middle text-right tabular-nums text-emerald-900 whitespace-nowrap">
+                  <td className="px-1.5 align-middle text-right tabular-nums text-emerald-900 whitespace-nowrap">
                     {pf.format(100)}
                   </td>
                   <td
-                    className={`px-3 align-middle text-right tabular-nums whitespace-nowrap ${
+                    className={`px-2 align-middle text-right tabular-nums whitespace-nowrap ${
                       toplamDegisim === null
                         ? "text-gray-600"
                         : toplamDegisim < 0

@@ -6,16 +6,16 @@ import TsbKanalPrimDashboard from "@/components/tsb/TsbKanalPrimDashboard";
 const BASE = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Hayat Dışı Kanal Bazlı Prim Üretimi — TSB Verisi",
+  title: "Kanal Bazlı Prim Üretimi (Hayat / Hayat Dışı) — TSB Verisi",
   description:
-    "TSB satış kanalı bazında prim üretimi: dönem, ana branş ve kanal seçerek şirket sıralaması, pazar payı ve yıllık değişim. Veriler kamuya açık TSB yayınından türetilir.",
+    "TSB satış kanalı bazında prim: hayat (H) ve hayat dışı (HD) şirket görünümü; dönem, ana branş ve kanal ile sıra, pay ve yıllık değişim. Kamuya açık TSB verisinden.",
   alternates: {
     canonical: canonicalUrl("/sigorta/kanal-prim"),
   },
   openGraph: {
-    title: "Hayat Dışı Kanal Bazlı Prim Üretimi | Ofis Akademi",
+    title: "Kanal Bazlı Prim (Hayat / Hayat Dışı) | Ofis Akademi",
     description:
-      "TSB prim verisi ile hayat dışı kanal bazlı üretim; sıra, pay ve değişim.",
+      "TSB prim verisi: H ve HD şirket görünümü; sıra, pay ve değişim.",
     url: `${BASE}/sigorta/kanal-prim`,
     siteName: "Ofis Akademi",
     locale: "tr_TR",
@@ -38,13 +38,14 @@ export default function SigortaKanalPrimPage() {
             Finans &amp; Sigorta
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-            Hayat dışı kanal bazlı prim üretimi
+            Kanal bazlı prim üretimi (Hayat / Hayat dışı)
           </h1>
           <p className="mt-2 text-sm text-gray-600 max-w-3xl">
             Sigorta Bilgi ve Gözetim Merkezi&apos;nin yayınladığı{" "}
-            <strong>satış kanalı bazında primler</strong> verisinden türetilmiş özet tablo. Dönem seçin; isteğe bağlı
-            olarak ana branş ve kanala göre filtreleyin. Önceki yıl karşılaştırması aynı takvim ayı için otomatik
-            hesaplanır (ör. 2026-03 ↔ 2025-03).
+            <strong>satış kanalı bazında primler</strong> verisinden türetilmiş özet tablo. Üstte{" "}
+            <strong>Hayat (H)</strong> veya <strong>Hayat dışı (HD)</strong> görünümünü seçin; dönem, ana branş ve kanala
+            göre filtreleyin. Önceki yıl karşılaştırması aynı takvim ayı için otomatik hesaplanır (ör. 2026-03 ↔
+            2025-03). TSB&apos;nin <strong>9000 / 9001 / 9003</strong> alt toplam satırları tabloda yer almaz.
           </p>
           <aside className="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[12px] text-gray-600 max-w-3xl">
             <strong>Kaynak:</strong> TSB kamuya açık prim istatistikleri. Ofis Akademi bu veriyi yeniden düzenler;

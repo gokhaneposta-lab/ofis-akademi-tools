@@ -19,14 +19,32 @@ export type TsbPrimRow = {
 
 export type TsbKanalField = "genelToplam" | "acente" | "banka" | "broker" | "diger" | "merkez";
 
+/** Dashboard görünümü: TSB şirket tipi HD = hayat dışı, H = hayat */
+export type TsbSektorSegment = "hayatdisi" | "hayat";
+
+/** TSB Excel'deki sektör alt toplam şirket kodları */
+export const TSB_TOPLAM_SIRKET_KODLARI = new Set([9000, 9001, 9003]);
+
+export function isTsbToplamSirketKodu(kod: number): boolean {
+  return TSB_TOPLAM_SIRKET_KODLARI.has(kod);
+}
+
+function normalizedSirketTipi(row: TsbPrimRow): string {
+  return String(row.sirketTipi ?? "").trim().toUpperCase();
+}
+
+/** Segment + alt toplam satırları hariç */
+export function rowMatchesSegment(row: TsbPrimRow, segment: TsbSektorSegment): boolean {
+  if (isTsbToplamSirketKodu(row.sirketKodu)) return false;
+  const t = normalizedSirketTipi(row);
+  if (segment === "hayatdisi") return t === "HD";
+  return t === "H";
+}
+
 export function prevYearPeriod(ym: string): string | null {
   const [y, m] = ym.split("-").map(Number);
   if (!Number.isFinite(y) || !Number.isFinite(m)) return null;
   return `${y - 1}-${String(m).padStart(2, "0")}`;
-}
-
-export function isHayatdisiTarife(row: TsbPrimRow): boolean {
-  return row.tarifeGrubu !== "HAYAT";
 }
 
 function channelValue(row: TsbPrimRow, channel: TsbKanalField): number {
@@ -39,11 +57,12 @@ export function aggregateByCompany(
   donem: string,
   channel: TsbKanalField,
   anaBransH: string | null,
+  segment: TsbSektorSegment,
 ): Map<number, { sirketAdi: string; toplam: number }> {
   const m = new Map<number, { sirketAdi: string; toplam: number }>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
-    if (!isHayatdisiTarife(r)) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
     if (anaBransH && r.anaBransH !== anaBransH) continue;
     const v = channelValue(r, channel);
     if (v === 0) continue;
@@ -75,10 +94,11 @@ export function buildKiyaslamaTablosu(
   donemBu: string,
   channel: TsbKanalField,
   anaBransH: string | null,
+  segment: TsbSektorSegment,
 ): { donemOnceki: string | null; sektorToplamOnceki: number; sektorToplamBu: number; satirlar: SirketKiyaslama[] } {
   const donemOnceki = prevYearPeriod(donemBu);
-  const buMap = aggregateByCompany(rows, donemBu, channel, anaBransH);
-  const oncekiMap = donemOnceki ? aggregateByCompany(rows, donemOnceki, channel, anaBransH) : new Map();
+  const buMap = aggregateByCompany(rows, donemBu, channel, anaBransH, segment);
+  const oncekiMap = donemOnceki ? aggregateByCompany(rows, donemOnceki, channel, anaBransH, segment) : new Map();
 
   let sektorToplamBu = 0;
   for (const v of buMap.values()) sektorToplamBu += v.toplam;
@@ -135,11 +155,16 @@ export function uniqueSortedPeriods(rows: TsbPrimRow[]): string[] {
   return [...s].sort();
 }
 
-export function uniqueAnaBransForHayatdisi(rows: TsbPrimRow[], donem: string): string[] {
+/** Seçilen segmentte, ilgili dönemde üretim olan ana branşlar (Hayat: sadece H şirketlerinin satırları) */
+export function uniqueAnaBransForSegment(
+  rows: TsbPrimRow[],
+  donem: string,
+  segment: TsbSektorSegment,
+): string[] {
   const set = new Set<string>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
-    if (!isHayatdisiTarife(r)) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
     set.add(r.anaBransH);
   }
   return [...set].sort((a, b) => a.localeCompare(b, "tr"));

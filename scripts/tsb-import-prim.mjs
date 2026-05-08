@@ -8,6 +8,8 @@
  *
  * Dönem: dosya adından YYYY-MM (ör. "...2026 03..." veya "prim-2026-03.xlsx").
  * Aynı dönem tekrar içe aktarılırsa public/data/tsb/prim-tidy.json içindeki o dönem satırları silinip yenisi yazılır.
+ *
+ * Şirket kodu 9000 / 9001 / 9003 (TSB alt toplamları) satırları atlanır.
  */
 
 import fs from "fs";
@@ -36,6 +38,9 @@ const COL_SIRKET_ADI = 0;
 const COL_SIRKET_KODU = 1;
 const COL_SIRKET_TIPI = 2;
 const FIRST_BRANCH_COL = 3;
+
+/** TSB Excel'deki sektör alt toplam satırları (şirket kodu) — tabloya dahil edilmez */
+const TSB_TOPLAM_SIRKET_KODLARI = new Set([9000, 9001, 9003]);
 
 function parsePeriodFromFilename(filePath) {
   const base = path.basename(filePath).replace(/\.xlsx$/i, "");
@@ -117,6 +122,7 @@ function parseSheet(wb, sheetName, channelField, lookup, merged) {
     const sirketAdi = String(cell(ws, r, COL_SIRKET_ADI) ?? "").trim();
     const kod = normalizeCompanyCode(cell(ws, r, COL_SIRKET_KODU));
     if (kod === null) continue;
+    if (TSB_TOPLAM_SIRKET_KODLARI.has(kod)) continue;
     const sirketTipi = String(cell(ws, r, COL_SIRKET_TIPI) ?? "").trim();
 
     for (const { c, code } of branchCols) {

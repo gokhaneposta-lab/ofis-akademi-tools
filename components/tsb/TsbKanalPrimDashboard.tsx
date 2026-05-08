@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { TsbKanalField, TsbPrimRow } from "@/lib/tsbPrimDashboard";
+import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
   buildKiyaslamaTablosu,
-  uniqueAnaBransForHayatdisi,
+  isTsbToplamSirketKodu,
+  uniqueAnaBransForSegment,
   uniqueSortedPeriods,
 } from "@/lib/tsbPrimDashboard";
 
@@ -24,6 +25,7 @@ export default function TsbKanalPrimDashboard() {
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
   const [donem, setDonem] = useState<string>("");
   const [anaBrans, setAnaBrans] = useState<string>("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
@@ -38,7 +40,8 @@ export default function TsbKanalPrimDashboard() {
       .then((data: TsbPrimRow[]) => {
         if (cancelled) return;
         if (!Array.isArray(data)) throw new Error("Geçersiz veri formatı");
-        setRows(data);
+        const cleaned = data.filter((row) => !isTsbToplamSirketKodu(row.sirketKodu));
+        setRows(cleaned);
       })
       .catch((e: unknown) => {
         if (!cancelled) setError(e instanceof Error ? e.message : "Yükleme hatası");
@@ -50,18 +53,17 @@ export default function TsbKanalPrimDashboard() {
 
   const donemler = useMemo(() => (rows ? uniqueSortedPeriods(rows) : []), [rows]);
   const sonDonem = donemler.length ? donemler[donemler.length - 1] : "";
-  /** Boşken en güncel dönem */
   const secilenDonem = donem || sonDonem;
 
   const anaBransSecenekleri = useMemo(() => {
     if (!rows || !secilenDonem) return [];
-    return uniqueAnaBransForHayatdisi(rows, secilenDonem);
-  }, [rows, secilenDonem]);
+    return uniqueAnaBransForSegment(rows, secilenDonem, segment);
+  }, [rows, secilenDonem, segment]);
 
   const tablo = useMemo(() => {
     if (!rows || !secilenDonem) return null;
-    return buildKiyaslamaTablosu(rows, secilenDonem, kanal, anaBrans || null);
-  }, [rows, secilenDonem, kanal, anaBrans]);
+    return buildKiyaslamaTablosu(rows, secilenDonem, kanal, anaBrans || null, segment);
+  }, [rows, secilenDonem, kanal, anaBrans, segment]);
 
   if (error) {
     return (
@@ -88,8 +90,51 @@ export default function TsbKanalPrimDashboard() {
     );
   }
 
+  const tumAnaBransLabel =
+    segment === "hayatdisi" ? "Tümü (hayat dışı şirketleri, HD)" : "Tümü (hayat şirketleri, H)";
+
   return (
     <div className="space-y-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-500">Sektör görünümü</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={segment === "hayatdisi"}
+            onClick={() => {
+              setSegment("hayatdisi");
+              setAnaBrans("");
+            }}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              segment === "hayatdisi"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Hayat dışı (HD)
+          </button>
+          <button
+            type="button"
+            aria-pressed={segment === "hayat"}
+            onClick={() => {
+              setSegment("hayat");
+              setAnaBrans("");
+            }}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              segment === "hayat"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Hayat (H)
+          </button>
+        </div>
+        <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
+          Tablo ve ana branş listesi yalnızca seçilen şirket tipine göre filtrelenir. TSB dosyasındaki{" "}
+          <strong>9000 / 9001 / 9003</strong> sektör alt toplam satırları dahil edilmez.
+        </p>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="block text-sm">
           <span className="mb-1.5 block font-medium text-gray-700">Dönem</span>
@@ -115,7 +160,7 @@ export default function TsbKanalPrimDashboard() {
             onChange={(e) => setAnaBrans(e.target.value)}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           >
-            <option value="">Tümü (hayat dışı)</option>
+            <option value="">{tumAnaBransLabel}</option>
             {anaBransSecenekleri.map((a) => (
               <option key={a} value={a}>
                 {a}
@@ -142,8 +187,17 @@ export default function TsbKanalPrimDashboard() {
       {tablo && (
         <>
           <p className="text-xs text-gray-500">
-            Hayat dışı: <strong>TARİFE GRUBU = HAYAT</strong> satırları hariç. Önceki yıl: aynı ay bir önceki
-            takvim yılı ({tablo.donemOnceki ?? "—"}).
+            {segment === "hayatdisi" ? (
+              <>
+                Şirket tipi <strong>HD</strong> (hayat dışı). Önceki yıl:{" "}
+                <strong>{tablo.donemOnceki ?? "—"}</strong>.
+              </>
+            ) : (
+              <>
+                Şirket tipi <strong>H</strong> (hayat). Ana branş listesi yalnızca bu dönemde hayat şirketlerinin üretim
+                gösterdiği branşları içerir. Önceki yıl: <strong>{tablo.donemOnceki ?? "—"}</strong>.
+              </>
+            )}
           </p>
           <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
             <table className="min-w-[900px] w-full border-collapse text-left text-[13px]">

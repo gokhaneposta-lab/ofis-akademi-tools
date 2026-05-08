@@ -200,33 +200,58 @@ export default function TsbKanalPrimDashboard() {
             filtrelerdeki tüm şirketlerin prim toplamı yer alır (pay sütunları %100).
           </p>
           <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-            <table className="min-w-[900px] w-full border-collapse text-left text-[13px]">
+            <table className="min-w-[820px] w-full table-fixed border-collapse text-left text-[13px]">
+              <colgroup>
+                <col className="w-11" />
+                <col className="w-11" />
+                <col className="w-[4.25rem]" />
+                <col className="w-[135px]" />
+                <col />
+                <col />
+                <col />
+                <col />
+                <col />
+              </colgroup>
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50 text-[11px] font-semibold uppercase tracking-wide text-gray-600">
-                  <th className="px-3 py-2.5">Önceki yıl sıra</th>
-                  <th className="px-3 py-2.5">Bu yıl sıra</th>
-                  <th className="px-3 py-2.5">Şirket kodu</th>
-                  <th className="px-3 py-2.5 min-w-[180px]">Şirket adı</th>
-                  <th className="px-3 py-2.5 text-right">{tablo.donemOnceki ?? "Önceki"} prim</th>
-                  <th className="px-3 py-2.5 text-right">Önceki pay %</th>
-                  <th className="px-3 py-2.5 text-right">{secilenDonem} prim</th>
-                  <th className="px-3 py-2.5 text-right">Bu yıl pay %</th>
-                  <th className="px-3 py-2.5 text-right">Değişim %</th>
+                <tr className="h-11 border-b border-gray-200 bg-gray-50 text-[11px] font-semibold uppercase tracking-wide text-gray-600">
+                  <th className="px-3 align-middle">Önceki yıl sıra</th>
+                  <th className="px-3 align-middle">Bu yıl sıra</th>
+                  <th className="px-3 align-middle">Şirket kodu</th>
+                  <th className="px-3 align-middle">Şirket adı</th>
+                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">
+                    {tablo.donemOnceki ?? "Önceki"} prim
+                  </th>
+                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">Önceki pay %</th>
+                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">{secilenDonem} prim</th>
+                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">Bu yıl pay %</th>
+                  <th className="px-3 py-2.5 text-right align-middle whitespace-nowrap">Değişim %</th>
                 </tr>
               </thead>
               <tbody>
                 {tablo.satirlar.map((s) => (
-                  <tr key={s.sirketKodu} className="border-b border-gray-100 hover:bg-gray-50/80">
-                    <td className="px-3 py-2 tabular-nums text-gray-600">{s.siraOnceki}</td>
-                    <td className="px-3 py-2 tabular-nums font-medium text-gray-900">{s.siraBu}</td>
-                    <td className="px-3 py-2 tabular-nums">{s.sirketKodu}</td>
-                    <td className="px-3 py-2 text-gray-900">{s.sirketAdi}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{nf.format(s.primOnceki)}</td>
-                    <td className="px-3 py-2 text-right tabular-nums text-gray-600">{pf.format(s.payOncekiYuzde)}</td>
-                    <td className="px-3 py-2 text-right tabular-nums font-medium">{nf.format(s.primBu)}</td>
-                    <td className="px-3 py-2 text-right tabular-nums">{pf.format(s.payBuYuzde)}</td>
+                  <tr key={s.sirketKodu} className="h-11 border-b border-gray-100 hover:bg-gray-50/80">
+                    <td className="px-3 align-middle tabular-nums text-gray-600">{s.siraOnceki}</td>
+                    <td className="px-3 align-middle tabular-nums font-medium text-gray-900">{s.siraBu}</td>
+                    <td className="px-3 align-middle tabular-nums whitespace-nowrap">{s.sirketKodu}</td>
+                    <td className="max-w-[135px] px-3 align-middle">
+                      <div className="truncate text-gray-900" title={s.sirketAdi}>
+                        {s.sirketAdi}
+                      </div>
+                    </td>
+                    <td className="px-3 align-middle text-right tabular-nums whitespace-nowrap">
+                      {nf.format(s.primOnceki)}
+                    </td>
+                    <td className="px-3 align-middle text-right tabular-nums text-gray-600 whitespace-nowrap">
+                      {pf.format(s.payOncekiYuzde)}
+                    </td>
+                    <td className="px-3 align-middle text-right tabular-nums font-medium whitespace-nowrap">
+                      {nf.format(s.primBu)}
+                    </td>
+                    <td className="px-3 align-middle text-right tabular-nums whitespace-nowrap">
+                      {pf.format(s.payBuYuzde)}
+                    </td>
                     <td
-                      className={`px-3 py-2 text-right tabular-nums font-medium ${
+                      className={`px-3 align-middle text-right tabular-nums font-medium whitespace-nowrap ${
                         s.degisimYuzde === null
                           ? "text-gray-500"
                           : s.degisimYuzde < 0
@@ -240,18 +265,26 @@ export default function TsbKanalPrimDashboard() {
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t-2 border-emerald-600 bg-emerald-50/95 font-semibold text-gray-900">
-                  <td className="px-3 py-2.5 text-gray-500" colSpan={2}>
+                <tr className="h-11 border-t-2 border-emerald-600 bg-emerald-50/95 font-semibold text-gray-900">
+                  <td className="px-3 align-middle text-gray-500" colSpan={2}>
                     —
                   </td>
-                  <td className="px-3 py-2.5 text-gray-500">—</td>
-                  <td className="px-3 py-2.5">TOPLAM</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums">{nf.format(tablo.sektorToplamOnceki)}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-emerald-900">{pf.format(100)}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums">{nf.format(tablo.sektorToplamBu)}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-emerald-900">{pf.format(100)}</td>
+                  <td className="px-3 align-middle text-gray-500">—</td>
+                  <td className="px-3 align-middle">TOPLAM</td>
+                  <td className="px-3 align-middle text-right tabular-nums whitespace-nowrap">
+                    {nf.format(tablo.sektorToplamOnceki)}
+                  </td>
+                  <td className="px-3 align-middle text-right tabular-nums text-emerald-900 whitespace-nowrap">
+                    {pf.format(100)}
+                  </td>
+                  <td className="px-3 align-middle text-right tabular-nums whitespace-nowrap">
+                    {nf.format(tablo.sektorToplamBu)}
+                  </td>
+                  <td className="px-3 align-middle text-right tabular-nums text-emerald-900 whitespace-nowrap">
+                    {pf.format(100)}
+                  </td>
                   <td
-                    className={`px-3 py-2.5 text-right tabular-nums ${
+                    className={`px-3 align-middle text-right tabular-nums whitespace-nowrap ${
                       toplamDegisim === null
                         ? "text-gray-600"
                         : toplamDegisim < 0

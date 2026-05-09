@@ -80,6 +80,61 @@ export default function FinansSigortaPage() {
           </div>
         </section>
 
+        <section className="mb-10" aria-labelledby="tsb-sektor-baslik">
+          <h2
+            id="tsb-sektor-baslik"
+            className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gray-900"
+          >
+            <span className="h-1 w-5 rounded-full bg-sky-500" />
+            TSB · Sektör verileri
+          </h2>
+          <p className="mb-4 max-w-2xl text-[13px] text-gray-600 sm:text-sm">
+            Türkiye Sigortalar Birliği (TSB) yayınlarından derlenen resmi sektör verileri; teknik metrik
+            kartlarının altında, doğrudan <strong>kanal bazlı prim dağılımı</strong> ve zaman serisini
+            inceleyebilirsin.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Link
+              href="/sigorta/kanal-prim"
+              className="group relative overflow-hidden rounded-2xl border-2 border-sky-200 bg-gradient-to-br from-sky-50 to-white p-5 shadow-sm transition hover:border-sky-400 hover:shadow-md sm:col-span-2 lg:col-span-3"
+            >
+              <span className="absolute right-4 top-4 rounded-full bg-sky-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                Canlı
+              </span>
+              <div className="flex items-start gap-3 pr-16">
+                <span className="text-2xl" aria-hidden>
+                  📊
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-bold text-gray-900 transition-colors group-hover:text-sky-800">
+                    Kanal bazlı prim
+                  </h3>
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                    TSB · NON-LIFE BY CHANNEL
+                  </span>
+                </div>
+              </div>
+              <p className="mt-3 text-xs text-gray-600 line-clamp-3">
+                Merkez, acente, banka, broker ve diğer kanallarda brüt prim; dönem seçimi ve sektör
+                karşılaştırması. Veriler siteye özel işlenmiş TSB tabanlı gösterge panelidir.
+              </p>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800">
+                    Dashboard
+                  </span>
+                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+                    Grafik &amp; tablo
+                  </span>
+                </div>
+                <span className="text-[11px] font-semibold text-sky-700 group-hover:underline">
+                  Panele git →
+                </span>
+              </div>
+            </Link>
+          </div>
+        </section>
+
         {metricCategoryOrder.map((category) => {
           const items = grouped[category];
           if (!items || items.length === 0) return null;

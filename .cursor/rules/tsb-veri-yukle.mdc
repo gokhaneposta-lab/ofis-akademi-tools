@@ -1,0 +1,26 @@
+---
+description: "TSB verisi geldi yükle" — ham Excel → prim-tidy.json içe aktarma
+alwaysApply: false
+---
+
+# TSB prim verisi içe aktarma (ofis-akademi)
+
+Bu kural **yalnızca** sohbette **`@tsb-veri-yukle`** ile eklendiğinde uygulanır (her oturumda otomatik yüklenmez).
+
+Kullanıcı **dosyayı önceden** `data/tsb/incoming/` klasörüne koyduğunu ve şu ifadelerden birini kullandığını varsay:
+
+- **"TSB verisi geldi yükle"** (veya aynı anlamda: TSB geldi, yükle, import et, prim verisini güncelle)
+
+## Yapılacaklar (sırayla)
+
+1. **`data/tsb/incoming/`** içindeki `.xlsx` dosyalarını kontrol et. Birden fazlaysa **en yeni değiştirileni** veya kullanıcıya hangisini kullanacağını sor.
+2. Proje kökünde çalıştır (yol tırnak içinde, PowerShell uyumlu):
+   - `npm run tsb:import-prim -- "data/tsb/incoming/<dosya-adı>.xlsx"`
+3. Çıktının **`public/data/tsb/prim-tidy.json`** güncellendiğini doğrula (komut çıktısı + gerekirse dosya tarihi/satır sayısı).
+4. **Dosya adında yıl ve ay** olmalı (ör. `2026 04` veya `2026-04`); script dönemi dosya adından çıkarır.
+5. Kullanıcı yayına alacaksa: `git add public/data/tsb/prim-tidy.json` (ve gerekirse `data/tsb/incoming/` altındaki dosya **repo’ya eklenmeyecekse** incoming’e xlsx ekleme — genelde sadece JSON commitlenir), ardından anlamlı commit mesajı ve push öner.
+
+## Notlar
+
+- Bu akış **TSB ham** “satış kanalı bazında primler” Excel’i içindir (`scripts/tsb-import-prim.mjs`).
+- Kullanıcının **tidy `.xlsb`** çalışma kitabını birleştirmesi gerekiyorsa komut: `npm run tsb:import-tidy-xlsb -- "yol.xlsb"` — kullanıcı özellikle xlsb/tidy dediyse onu kullan.

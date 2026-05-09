@@ -22,8 +22,11 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
   { value: "merkez", label: "Merkez" },
 ];
 
-const nfMn = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+const nfMn = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0, minimumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+
+const COL_SEKTOR = "#dc2626";
+const COL_SIRKET = "#059669";
 
 function fmtMnLab(v: number): string {
   return nfMn.format(v / 1e6);
@@ -40,7 +43,7 @@ function TrendSvg({
 }) {
   const W = 780;
   const H = 380;
-  const pad = { l: 60, r: 32, t: 44, b: 62 };
+  const pad = { l: 60, r: 28, t: 44, b: 62 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
 
@@ -56,7 +59,7 @@ function TrendSvg({
     yAt = (v: number) => pad.t + innerH - (Math.min(Math.max(v, 0), hi) / hi) * innerH;
   } else {
     const pos = allRaw.filter((x) => x > 0);
-    const floor = pos.length ? Math.min(...pos) * 0.32 : 1e6;
+    const floor = pos.length ? Math.min(...pos) * 0.28 : 1e6;
     const ceil = Math.max(maxRaw, floor * 5);
     const lo = Math.log10(Math.max(floor, 100));
     const hiL = Math.log10(Math.max(ceil, floor + 1));
@@ -68,44 +71,79 @@ function TrendSvg({
     tickVals = [0, 0.25, 0.5, 0.75, 1].map((t) => Math.pow(10, lo + (hiL - lo) * t));
   }
 
-  const xAt = (i: number) => pad.l + (i / Math.max(seri.length - 1, 1)) * innerW;
+  const n = seri.length;
+  const xAt = (i: number) => pad.l + (i / Math.max(n - 1, 1)) * innerW;
+
+  function bandBounds(i: number): [number, number] {
+    if (n <= 1) return [pad.l, pad.l + innerW];
+    const xi = xAt(i);
+    const left = i === 0 ? pad.l : (xAt(i - 1) + xi) / 2;
+    const right = i === n - 1 ? pad.l + innerW : (xi + xAt(i + 1)) / 2;
+    return [left, right];
+  }
 
   const ptsSektor = seri.map((p, i) => `${xAt(i)},${yAt(p.sektor)}`).join(" ");
   const ptsSirket = seri.map((p, i) => `${xAt(i)},${yAt(p.sirket)}`).join(" ");
 
+  const adKisa = sirketAdi.length > 40 ? `${sirketAdi.slice(0, 38)}…` : sirketAdi;
+
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full max-w-full" role="img" aria-label="Son dönem prim trendi">
-      <rect width={W} height={H} fill="white" />
+      <rect width={W} height={H} fill="#fafafa" />
       <text x={pad.l} y={24} fill="#374151" fontSize={12} fontWeight={600}>
         Aylık prim (Mn ₺){logOlcek ? " · logaritmik eksen" : " · doğrusal eksen"}
       </text>
-      <text x={pad.l} y={40} fill="#6b7280" fontSize={10}>
-        Gri: sektör · Yeşil: {sirketAdi.slice(0, 42)}
-        {sirketAdi.length > 42 ? "…" : ""}
+      <text x={pad.l} y={40} fontSize={10}>
+        <tspan fill={COL_SEKTOR} fontWeight={700}>
+          Sektör
+        </tspan>
+        <tspan fill="#64748b"> — kırmızı çizgi · </tspan>
+        <tspan fill={COL_SIRKET} fontWeight={700}>
+          {adKisa}
+        </tspan>
+        <tspan fill="#64748b"> — yeşil çizgi (üstte Mn ₺, altta pay %)</tspan>
       </text>
 
-      <line x1={pad.l} y1={pad.t + innerH} x2={pad.l + innerW} y2={pad.t + innerH} stroke="#cbd5e1" strokeWidth={1} />
-      <line x1={pad.l} y1={pad.t} x2={pad.l} y2={pad.t + innerH} stroke="#cbd5e1" strokeWidth={1} />
+      {seri.map((p, i) => {
+        const [left, right] = bandBounds(i);
+        const w = Math.max(right - left, 0);
+        const stripe = i % 2 === 0 ? "#ffffff" : "#f1f5f9";
+        return (
+          <rect
+            key={`band-${p.donem}`}
+            x={left}
+            y={pad.t}
+            width={w}
+            height={innerH}
+            fill={stripe}
+            stroke="#e2e8f0"
+            strokeWidth={0.75}
+          />
+        );
+      })}
+
+      <line x1={pad.l} y1={pad.t + innerH} x2={pad.l + innerW} y2={pad.t + innerH} stroke="#94a3b8" strokeWidth={1} />
+      <line x1={pad.l} y1={pad.t} x2={pad.l} y2={pad.t + innerH} stroke="#94a3b8" strokeWidth={1} />
 
       {tickVals.map((tv, ti) => {
         const y = yAt(tv);
         return (
           <g key={`tg-${ti}`}>
-            <line x1={pad.l} y1={y} x2={pad.l + innerW} y2={y} stroke="#f1f5f9" strokeWidth={1} />
-            <text x={pad.l - 6} y={y + 4} textAnchor="end" fill="#94a3b8" fontSize={9}>
+            <line x1={pad.l} y1={y} x2={pad.l + innerW} y2={y} stroke="#e2e8f0" strokeWidth={1} />
+            <text x={pad.l - 6} y={y + 4} textAnchor="end" fill="#64748b" fontSize={9}>
               {fmtMnLab(tv)}
             </text>
           </g>
         );
       })}
 
-      <polyline fill="none" stroke="#64748b" strokeWidth={2.25} points={ptsSektor} strokeLinejoin="round" />
-      <polyline fill="none" stroke="#059669" strokeWidth={2.25} points={ptsSirket} strokeLinejoin="round" />
+      <polyline fill="none" stroke={COL_SEKTOR} strokeWidth={2.35} points={ptsSektor} strokeLinejoin="round" />
+      <polyline fill="none" stroke={COL_SIRKET} strokeWidth={2.35} points={ptsSirket} strokeLinejoin="round" />
 
       {seri.map((p, i) => (
         <g key={p.donem}>
-          <circle cx={xAt(i)} cy={yAt(p.sektor)} r={3.5} fill="#64748b" />
-          <circle cx={xAt(i)} cy={yAt(p.sirket)} r={3.5} fill="#059669" />
+          <circle cx={xAt(i)} cy={yAt(p.sektor)} r={3.5} fill={COL_SEKTOR} stroke="#fff" strokeWidth={1} />
+          <circle cx={xAt(i)} cy={yAt(p.sirket)} r={3.5} fill={COL_SIRKET} stroke="#fff" strokeWidth={1} />
         </g>
       ))}
 
@@ -113,43 +151,26 @@ function TrendSvg({
         const xs = xAt(i);
         const ys = yAt(p.sektor);
         const yk = yAt(p.sirket);
-        const stagger = i % 2 === 0 ? 1 : -1;
         return (
           <g key={`lab-${p.donem}`}>
-            <text x={xs} y={ys - 10} textAnchor="middle" fill="#475569" fontSize={8} fontWeight={600}>
+            <text x={xs} y={ys - 11} textAnchor="middle" fill={COL_SEKTOR} fontSize={8} fontWeight={700}>
               {fmtMnLab(p.sektor)}
             </text>
-            <text
-              x={xs + stagger * 22}
-              y={yk + 14 + stagger * 6}
-              textAnchor="middle"
-              fill="#047857"
-              fontSize={8}
-              fontWeight={600}
-            >
-              {`${fmtMnLab(p.sirket)} · %${pf.format(p.payYuzde)}`}
+            <text x={xs} y={yk - 11} textAnchor="middle" fill={COL_SIRKET} fontSize={8} fontWeight={700}>
+              {fmtMnLab(p.sirket)}
+            </text>
+            <text x={xs} y={yk + 15} textAnchor="middle" fill="#065f46" fontSize={8} fontWeight={600}>
+              %{pf.format(p.payYuzde)}
             </text>
           </g>
         );
       })}
 
       {seri.map((p, i) => (
-        <text key={`lx-${p.donem}`} x={xAt(i)} y={H - 20} textAnchor="middle" fill="#475569" fontSize={9}>
+        <text key={`lx-${p.donem}`} x={xAt(i)} y={H - 18} textAnchor="middle" fill="#334155" fontSize={9} fontWeight={600}>
           {p.donem}
         </text>
       ))}
-
-      <g transform={`translate(${pad.l + innerW - 172}, ${pad.t + 8})`}>
-        <rect width={164} height={52} rx={6} fill="#f8fafc" stroke="#e2e8f0" />
-        <line x1={10} y1={18} x2={30} y2={18} stroke="#64748b" strokeWidth={2.5} />
-        <text x={36} y={22} fill="#374151" fontSize={10}>
-          Sektör (etiket: Mn ₺)
-        </text>
-        <line x1={10} y1={38} x2={30} y2={38} stroke="#059669" strokeWidth={2.5} />
-        <text x={36} y={42} fill="#374151" fontSize={10}>
-          Şirket (Mn · pay %)
-        </text>
-      </g>
     </svg>
   );
 }
@@ -296,9 +317,11 @@ export default function TsbPrimTrend12Dashboard() {
           </button>
         </div>
         <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
-          Seçtiğiniz <strong>bitiş ayına</strong> kadar geriye dönük en fazla <strong>12 ay</strong> gösterilir. Grafik ve etiketler{" "}
-          <strong>milyon TL</strong> üzerinden; şirket etiketinde <strong>sektör içi pay %</strong> de yer alır. Küçük primler sıfıra
-          yapışmasın diye varsayılan eksen <strong>logaritmik</strong>dir (Excel’deki log ölçeğe benzer).
+          Seçtiğiniz <strong>bitiş ayına</strong> kadar geriye dönük en fazla <strong>12 ay</strong> gösterilir. Primler{" "}
+          <strong>tam sayı milyon ₺</strong>; şirket için üstte Mn, altta <strong>pay %</strong>. Sektör çizgisi{" "}
+          <strong className="text-red-600">kırmızı</strong>, şirket <strong className="text-emerald-700">yeşil</strong>. Aylar
+          için grafikte alternatif dikey şeritler kullanılır. Küçük primler için varsayılan eksen{" "}
+          <strong>logaritmik</strong>dir.
         </p>
       </div>
 

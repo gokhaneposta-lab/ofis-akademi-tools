@@ -8,7 +8,7 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Branş sıra özeti (TSB) — Şirket bazlı sektör sıralaması",
   description:
-    "Hayat dışı ve hayat–emeklilik ana branşlarında seçilen şirketin prim sırası; önceki yılın aynı ayı ile kıyas (TSB verisi).",
+    "Hayat dışı ve hayat–emeklilik branş/tarife satırlarında şirket primi, branş ve sektör ağırlığı (%), sektör içi sıra ve önceki yılın aynı ayına göre Δ sıra (TSB verisi).",
   alternates: {
     canonical: canonicalUrl("/sigorta/brans-sira"),
   },
@@ -38,11 +38,10 @@ export default function SigortaBransSiraPage() {
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Branş sıra özeti</h1>
           <p className="mt-2 max-w-3xl text-sm text-gray-600">
-            Her ana branş için seçilen şirketin <strong>prim sırası</strong>, o branşta üretimi olan diğer şirketlere göre
-            hesaplanır. Karşılaştırma, seçtiğiniz dönem ile <strong>bir önceki yılın aynı ayı</strong> arasındaki sıra
-            farkını gösterir. Şirketi listeden değiştirebilirsiniz; sayfa açıldığında sık izlenen bir şirket önceliklidir
-            (ör. <strong>Bereket Sigorta AŞ</strong>, kod 1025). Hayat–emeklilik şirketleri için listeden uygun kodu
-            seçebilirsiniz (ör. <strong>Bereket Emeklilik ve Hayat AŞ</strong>, 3005).
+            Hayat dışı ve hayat–emeklilik bloklarında her satır için <strong>prim</strong>, şirket portföyüne göre{" "}
+            <strong>branş ağırlığı</strong> ve sektöre göre <strong>sektör ağırlığı</strong>, ardından seçilen aya göre{" "}
+            <strong>sıra</strong> ve önceki yılın aynı ayına göre <strong>Δ sıra</strong> gösterilir. Üstteki daraltma
+            türü ana branş veya tarife satır listesini değiştirir.
           </p>
           <aside className="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[12px] text-gray-600 max-w-3xl">
             <strong>Kaynak:</strong> TSB kamuya açık prim istatistikleri (işlenmiş). Resmi tablo için{" "}

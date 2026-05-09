@@ -128,6 +128,67 @@ function aggregatePortfolioByCompany(
   return m;
 }
 
+function agirlikYuzde(parca: number, tum: number): number | null {
+  if (tum <= 0) return null;
+  return (parca / tum) * 100;
+}
+
+function sectorSegmentPrim(
+  rows: TsbPrimRow[],
+  donem: string,
+  channel: TsbKanalField,
+  segment: TsbSektorSegment,
+): number {
+  let s = 0;
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    s += channelPremium(r, channel);
+  }
+  return s;
+}
+
+function sectorGrupKeyPrim(
+  rows: TsbPrimRow[],
+  donem: string,
+  channel: TsbKanalField,
+  segment: TsbSektorSegment,
+  key: string,
+  grupModu: "anaBransH" | "tarifeGrubu",
+  lookup: TsbBranchLookupMap | null,
+): number {
+  let s = 0;
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    if (grupModu === "anaBransH") {
+      if (r.anaBransH !== key) continue;
+    } else if (tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup) !== key) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    s += channelPremium(r, channel);
+  }
+  return s;
+}
+
+function sectorPortfolioPrim(
+  rows: TsbPrimRow[],
+  donem: string,
+  channel: TsbKanalField,
+  segment: TsbSektorSegment,
+  daraltma: TsbPrimDaraltma,
+): number {
+  let s = 0;
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    if (!rowMatchesPrimDaraltma(r, daraltma)) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    s += channelPremium(r, channel);
+  }
+  return s;
+}
+
 export type BransSiraSatir = {
   anaBransH: string;
   grup: TsbSektorSegment;
@@ -138,6 +199,10 @@ export type BransSiraSatir = {
   katilimciOnceki: number;
   /** Pozitif = sıra kötüleşti (sayı arttı), negatif = iyileşti */
   siraDelta: number | null;
+  /** donemBu: satır priminin şirket segment portföyüne oranı (%) */
+  sirketAgirlikBuYuzde: number | null;
+  /** donemBu: aynı branş/tarifenin sektör segment primine oranı (%) */
+  sektorAgirlikBuYuzde: number | null;
 };
 
 export type BransSiraOzet = {
@@ -145,7 +210,8 @@ export type BransSiraOzet = {
   donemBu: string;
   donemOnceki: string;
   hayatdisiBranslar: BransSiraSatir[];
-  hayatdisiTrafikHaricPortfoy: BransSiraSatir;
+  /** Şirketin seçilen ayda hayat dışı üretimi yoksa null */
+  hayatdisiTrafikHaricPortfoy: BransSiraSatir | null;
   hayatdisiPortfoy: BransSiraSatir;
   hayatBranslar: BransSiraSatir[];
   hayatPortfoy: BransSiraSatir;
@@ -177,6 +243,8 @@ function buildSatir(
     siraOnceki,
     katilimciOnceki,
     siraDelta,
+    sirketAgirlikBuYuzde: null,
+    sektorAgirlikBuYuzde: null,
   };
 }
 
@@ -208,13 +276,13 @@ export function buildBransSiraTablosu(
     haySirali = narrowTarifeKeys([...haySet].sort((a, b) => a.localeCompare(b, "tr")), daraltma);
   }
 
-  const hayatdisiBranslar = hdSirali.map((b) => {
+  const hayatdisiBranslarRaw = hdSirali.map((b) => {
     const bu = aggregateGrupKeyByCompany(rows, donemBu, channel, "hayatdisi", b, grupModu, lookup);
     const oc = aggregateGrupKeyByCompany(rows, donemOnceki, channel, "hayatdisi", b, grupModu, lookup);
     return buildSatir(b, "hayatdisi", bu, oc, sirketKodu);
   });
 
-  const hayatBranslar = haySirali.map((b) => {
+  const hayatBranslarRaw = haySirali.map((b) => {
     const bu = aggregateGrupKeyByCompany(rows, donemBu, channel, "hayat", b, grupModu, lookup);
     const oc = aggregateGrupKeyByCompany(rows, donemOnceki, channel, "hayat", b, grupModu, lookup);
     return buildSatir(b, "hayat", bu, oc, sirketKodu);
@@ -228,24 +296,7 @@ export function buildBransSiraTablosu(
     lookup,
   };
 
-  const hayatdisiTrafikHaricPortfoy =
-    grupModu === "anaBransH"
-      ? buildSatir(
-          "TRAFİK HARİÇ TOPLAM",
-          "hayatdisi",
-          aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", trafikHaricDaraltma),
-          aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", trafikHaricDaraltma),
-          sirketKodu,
-        )
-      : buildSatir(
-          "TRAFİK HARİÇ TOPLAM",
-          "hayatdisi",
-          aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", tarifeTrafikHaricDaraltma),
-          aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", tarifeTrafikHaricDaraltma),
-          sirketKodu,
-        );
-
-  const hayatdisiPortfoy = buildSatir(
+  const hayatdisiPortfoyRaw = buildSatir(
     grupModu === "anaBransH" ? "HAYATDIŞI PORTFÖY (tüm branşlar)" : "HAYATDIŞI (daraltma kapsamı)",
     "hayatdisi",
     aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", daraltma),
@@ -253,13 +304,84 @@ export function buildBransSiraTablosu(
     sirketKodu,
   );
 
-  const hayatPortfoy = buildSatir(
+  const hayatPortfoyRaw = buildSatir(
     grupModu === "anaBransH" ? "HAYAT & EMEKLİLİK PORTFÖY (tüm branşlar)" : "HAYAT–EMEKLİLİK (daraltma kapsamı)",
     "hayat",
     aggregatePortfolioByCompany(rows, donemBu, channel, "hayat", daraltma),
     aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayat", daraltma),
     sirketKodu,
   );
+
+  const hdDen = hayatdisiPortfoyRaw.prim;
+  const hyDen = hayatPortfoyRaw.prim;
+
+  const hayatdisiTrafikHaricPortfoyRaw =
+    hdDen > 0
+      ? grupModu === "anaBransH"
+        ? buildSatir(
+            "TRAFİK HARİÇ TOPLAM",
+            "hayatdisi",
+            aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", trafikHaricDaraltma),
+            aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", trafikHaricDaraltma),
+            sirketKodu,
+          )
+        : buildSatir(
+            "TRAFİK HARİÇ TOPLAM",
+            "hayatdisi",
+            aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", tarifeTrafikHaricDaraltma),
+            aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", tarifeTrafikHaricDaraltma),
+            sirketKodu,
+          )
+      : null;
+
+  const sektorHdToplam = sectorSegmentPrim(rows, donemBu, channel, "hayatdisi");
+  const sektorHyToplam = sectorSegmentPrim(rows, donemBu, channel, "hayat");
+
+  const sektorTrafikHaricToplam =
+    hayatdisiTrafikHaricPortfoyRaw !== null
+      ? grupModu === "anaBransH"
+        ? sectorPortfolioPrim(rows, donemBu, channel, "hayatdisi", trafikHaricDaraltma)
+        : sectorPortfolioPrim(rows, donemBu, channel, "hayatdisi", tarifeTrafikHaricDaraltma)
+      : 0;
+
+  const hayatdisiBranslar = hayatdisiBranslarRaw.map((satir) => ({
+    ...satir,
+    sirketAgirlikBuYuzde: agirlikYuzde(satir.prim, hdDen),
+    sektorAgirlikBuYuzde: agirlikYuzde(
+      sectorGrupKeyPrim(rows, donemBu, channel, "hayatdisi", satir.anaBransH, grupModu, lookup),
+      sektorHdToplam,
+    ),
+  }));
+
+  const hayatBranslar = hayatBranslarRaw.map((satir) => ({
+    ...satir,
+    sirketAgirlikBuYuzde: agirlikYuzde(satir.prim, hyDen),
+    sektorAgirlikBuYuzde: agirlikYuzde(
+      sectorGrupKeyPrim(rows, donemBu, channel, "hayat", satir.anaBransH, grupModu, lookup),
+      sektorHyToplam,
+    ),
+  }));
+
+  const hayatdisiPortfoy: BransSiraSatir = {
+    ...hayatdisiPortfoyRaw,
+    sirketAgirlikBuYuzde: hdDen > 0 ? 100 : null,
+    sektorAgirlikBuYuzde: sektorHdToplam > 0 ? 100 : null,
+  };
+
+  const hayatPortfoy: BransSiraSatir = {
+    ...hayatPortfoyRaw,
+    sirketAgirlikBuYuzde: hyDen > 0 ? 100 : null,
+    sektorAgirlikBuYuzde: sektorHyToplam > 0 ? 100 : null,
+  };
+
+  const hayatdisiTrafikHaricPortfoy: BransSiraSatir | null =
+    hayatdisiTrafikHaricPortfoyRaw === null
+      ? null
+      : {
+          ...hayatdisiTrafikHaricPortfoyRaw,
+          sirketAgirlikBuYuzde: agirlikYuzde(hayatdisiTrafikHaricPortfoyRaw.prim, hdDen),
+          sektorAgirlikBuYuzde: agirlikYuzde(sektorTrafikHaricToplam, sektorHdToplam),
+        };
 
   return {
     kirisumModu: grupModu,

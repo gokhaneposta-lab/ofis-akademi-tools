@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import type { BransDegisimSatir } from "@/lib/tsbBransDegisim";
@@ -194,11 +193,7 @@ export default function TsbBransDegisimDashboard() {
         <p className="mt-2 text-[11px] text-gray-600">
           Tablo satırları yalnızca bu seçime göre <strong>ana branş</strong> veya <strong>tarife grubu</strong> listesine
           döner; tek tek branş/tarife daraltması yoktur. Hayat dışı bölümünde{" "}
-          <strong>TRAFİK HARİÇ TOPLAM</strong> ara satırı her iki görünümde de yer alır. Üretim payı grafiği için{" "}
-          <Link href="/sigorta/brans-pay-dagilim" className="font-medium text-emerald-800 underline decoration-emerald-600/40">
-            Branş üretim payı
-          </Link>{" "}
-          sayfasına bakın.
+          <strong>TRAFİK HARİÇ TOPLAM</strong> ara satırı her iki görünümde de yer alır.
         </p>
       </div>
 

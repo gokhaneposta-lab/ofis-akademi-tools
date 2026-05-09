@@ -200,6 +200,25 @@ export function channelPremium(row: TsbPrimRow, channel: TsbKanalField): number 
   return channel === "genelToplam" ? row.genelToplam : row[channel];
 }
 
+/** Şirketin tek segmentteki kanal prim toplamı (daraltma yok). Trafik/trafik hariç anlamı yalnızca hayat dışı segmentte geçerlidir. */
+export function sirketSegmentPrimToplam(
+  rows: TsbPrimRow[],
+  donem: string,
+  channel: TsbKanalField,
+  segment: TsbSektorSegment,
+  sirketKodu: number,
+): number {
+  let s = 0;
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (r.sirketKodu !== sirketKodu) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    s += channelPremium(r, channel);
+  }
+  return s;
+}
+
 /** Belirtilen dönem + filtreler için şirket bazında kanal prim toplamı */
 export function aggregateByCompany(
   rows: TsbPrimRow[],

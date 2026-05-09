@@ -6,17 +6,11 @@ import type { BransSiraSatir } from "@/lib/tsbBransSira";
 import { buildBransSiraTablosu, listSirketlerSiraOzeti } from "@/lib/tsbBransSira";
 import type { TsbKanalField, TsbPrimDaraltmaModu, TsbPrimRow } from "@/lib/tsbPrimDashboard";
 import {
-  ANA_BRANS_FILTER_TRAFIK_HARIC,
-  ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
   daraltmaFromUiState,
   isTsbToplamSirketKodu,
   prevYearPeriod,
   resolveDefaultSirketKodu,
-  TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
-  TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL,
-  uniqueAnaBransForSegment,
   uniqueSortedPeriods,
-  uniqueTarifeGruplariDonem,
 } from "@/lib/tsbPrimDashboard";
 
 const KANALLAR: { value: TsbKanalField; label: string }[] = [
@@ -29,6 +23,7 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 ];
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
+const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
 function deltaRenk(delta: number | null): string {
   if (delta === null) return "text-gray-600";
@@ -42,6 +37,11 @@ function deltaMetin(delta: number | null): string {
   if (delta === 0) return "0";
   const arrow = delta < 0 ? "↑" : "↓";
   return `${arrow} ${Math.abs(delta)}`;
+}
+
+function agirlikHucre(v: number | null): string {
+  if (v === null) return "—";
+  return `${pf.format(v)}%`;
 }
 
 function Satir({
@@ -64,6 +64,8 @@ function Satir({
         {satir.anaBransH}
       </td>
       <td className="px-2 py-2 text-right text-[11px] tabular-nums text-gray-800">{nf.format(satir.prim)}</td>
+      <td className="px-2 py-2 text-right text-[11px] tabular-nums text-gray-700">{agirlikHucre(satir.sirketAgirlikBuYuzde)}</td>
+      <td className="px-2 py-2 text-right text-[11px] tabular-nums text-gray-700">{agirlikHucre(satir.sektorAgirlikBuYuzde)}</td>
       <td className="px-2 py-2 text-center text-[11px] tabular-nums font-medium text-gray-900">{siraBuStr}</td>
       <td className="px-2 py-2 text-center text-[11px] tabular-nums text-gray-700">{siraOcStr}</td>
       <td className={`px-2 py-2 text-center text-[11px] tabular-nums ${deltaRenk(satir.siraDelta)}`}>
@@ -78,9 +80,7 @@ export default function TsbBransSiraDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [donem, setDonem] = useState("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
-  const [anaBrans, setAnaBrans] = useState("");
   const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
-  const [tarifeSecim, setTarifeSecim] = useState("");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
 
   const branchLookup = useTsbBranchLookupFetch();
@@ -110,32 +110,9 @@ export default function TsbBransSiraDashboard() {
   const secilenDonem = donem || sonDonem;
 
   const daraltma = useMemo(
-    () => daraltmaFromUiState(filtreModu, anaBrans, tarifeSecim, branchLookup),
-    [filtreModu, anaBrans, tarifeSecim, branchLookup],
+    () => daraltmaFromUiState(filtreModu, "", "", branchLookup),
+    [filtreModu, branchLookup],
   );
-
-  useEffect(() => {
-    setAnaBrans("");
-    setTarifeSecim("");
-  }, [filtreModu]);
-
-  const anaBransSecenekleri = useMemo(() => {
-    if (!rows || !secilenDonem) return [];
-    const hd = uniqueAnaBransForSegment(rows, secilenDonem, "hayatdisi");
-    const hy = uniqueAnaBransForSegment(rows, secilenDonem, "hayat");
-    return [...new Set([...hd, ...hy])].sort((a, b) => a.localeCompare(b, "tr"));
-  }, [rows, secilenDonem]);
-
-  const tarifeSecenekleri = useMemo(() => {
-    if (!rows || !secilenDonem) return [];
-    return uniqueTarifeGruplariDonem(rows, secilenDonem, branchLookup);
-  }, [rows, secilenDonem, branchLookup]);
-
-  useEffect(() => {
-    if (filtreModu !== "tarifeGrubu" || tarifeSecim === "") return;
-    if (tarifeSecim === TARIFE_GRUBU_FILTER_TRAFIK_HARIC) return;
-    if (!tarifeSecenekleri.includes(tarifeSecim)) setTarifeSecim("");
-  }, [filtreModu, tarifeSecim, tarifeSecenekleri]);
 
   const sirketler = useMemo(() => {
     if (!rows || !secilenDonem) return [];
@@ -193,6 +170,9 @@ export default function TsbBransSiraDashboard() {
 
   const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
   const kolonBaslik = tablo.kirisumModu === "anaBransH" ? "Branş" : "Tarife grubu";
+  const gosterHd = tablo.hayatdisiPortfoy.prim > 0;
+  const gosterHy = tablo.hayatPortfoy.prim > 0;
+  const colSpanSection = 7;
 
   return (
     <div className="space-y-6">
@@ -224,6 +204,10 @@ export default function TsbBransSiraDashboard() {
             Tarife grubu
           </button>
         </div>
+        <p className="mt-2 text-[11px] text-gray-600">
+          Satır listesi yalnızca ana branş veya tarife moduna göre değişir. Hayat dışı üretimi olmayan şirketlerde{" "}
+          <strong>TRAFİK HARİÇ TOPLAM</strong> satırı gösterilmez.
+        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -259,11 +243,7 @@ export default function TsbBransSiraDashboard() {
           <span className="mb-1.5 block font-medium text-gray-700">Dönem</span>
           <select
             value={secilenDonem}
-            onChange={(e) => {
-              setDonem(e.target.value);
-              setAnaBrans("");
-              setTarifeSecim("");
-            }}
+            onChange={(e) => setDonem(e.target.value)}
             className="w-full max-w-xs rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           >
             {donemler.map((d) => (
@@ -277,84 +257,72 @@ export default function TsbBransSiraDashboard() {
             (prim &gt; 0 olan şirketler arasında).
           </p>
         </label>
-        <label className="block text-sm sm:col-span-3">
-          <span className="mb-1.5 block font-medium text-gray-700">
-            {filtreModu === "anaBransH" ? "Ana branş filtresi (satır listesi)" : "Tarife grubu filtresi"}
-          </span>
-          {filtreModu === "anaBransH" ? (
-            <select
-              value={anaBrans}
-              onChange={(e) => setAnaBrans(e.target.value)}
-              className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-            >
-              <option value="">Tüm ana branşlar</option>
-              <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
-              {anaBransSecenekleri.map((a) => (
-                <option key={a} value={a}>
-                  {a}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <select
-              value={tarifeSecim}
-              onChange={(e) => setTarifeSecim(e.target.value)}
-              className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-            >
-              <option value="">Tüm tarife grupları</option>
-              <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
-              {tarifeSecenekleri.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          )}
-        </label>
       </div>
 
       <p className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[11px] leading-relaxed text-gray-600">
         <strong>Sıra:</strong> İlgili satırda seçilen kanaldaki prim üretimine göre sektör içi yarışma sırası (1 en yüksek
         prim). <strong>Δ sıra:</strong> Önceki yıla göre sıra farkı; sayının{" "}
         <span className="text-emerald-700">azalması</span> iyileşmedir (↑ gösterilir). Üretim yoksa (prim 0) sıra gösterilmez.
+        <strong className="ml-1">Branş ağırlığı</strong> ({tablo.donemBu}
+        ): satır priminin şirketin ilgili segment portföy toplamına oranı. <strong>Sektör ağırlığı</strong>: aynı branşın
+        sektör segment primine oranı.
       </p>
 
       <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-        <table className="min-w-[640px] w-full border-collapse text-left text-[11px]">
+        <table className="min-w-[920px] w-full border-collapse text-left text-[11px]">
           <thead>
             <tr className="border-b border-gray-300 bg-slate-800 text-white">
               <th className="sticky left-0 z-20 border-r border-slate-600 bg-slate-800 px-2 py-2 font-semibold">
                 {kolonBaslik}
               </th>
               <th className="px-2 py-2 text-right font-semibold">
-                Prim ({tablo.donemBu}) · {secilenAd.slice(0, 28)}
-                {secilenAd.length > 28 ? "…" : ""}
+                Prim ({tablo.donemBu}) · {secilenAd.slice(0, 22)}
+                {secilenAd.length > 22 ? "…" : ""}
               </th>
+              <th className="px-2 py-2 text-right font-semibold">Branş ağırlığı</th>
+              <th className="px-2 py-2 text-right font-semibold">Sektör ağırlığı</th>
               <th className="px-2 py-2 text-center font-semibold">Sıra ({tablo.donemBu})</th>
               <th className="px-2 py-2 text-center font-semibold">Sıra ({tablo.donemOnceki})</th>
               <th className="px-2 py-2 text-center font-semibold">Δ sıra</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-emerald-50">
-              <td colSpan={5} className="px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-emerald-900">
-                Hayat dışı {tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "branşları"}
-              </td>
-            </tr>
-            {tablo.hayatdisiBranslar.map((s) => (
-              <Satir key={`hd-${s.anaBransH}`} satir={s} />
-            ))}
-            <Satir satir={tablo.hayatdisiTrafikHaricPortfoy} portfoy />
-            <Satir satir={tablo.hayatdisiPortfoy} portfoy />
-            <tr className="bg-sky-50">
-              <td colSpan={5} className="px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-sky-900">
-                Hayat &amp; emeklilik {tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "branşları"}
-              </td>
-            </tr>
-            {tablo.hayatBranslar.map((s) => (
-              <Satir key={`hy-${s.anaBransH}`} satir={s} />
-            ))}
-            <Satir satir={tablo.hayatPortfoy} portfoy />
+            {gosterHd && (
+              <>
+                <tr className="bg-emerald-50">
+                  <td colSpan={colSpanSection} className="px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-emerald-900">
+                    Hayat dışı {tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "branşları"}
+                  </td>
+                </tr>
+                {tablo.hayatdisiBranslar.map((s) => (
+                  <Satir key={`hd-${s.anaBransH}`} satir={s} />
+                ))}
+                {tablo.hayatdisiTrafikHaricPortfoy && (
+                  <Satir satir={tablo.hayatdisiTrafikHaricPortfoy} portfoy />
+                )}
+                <Satir satir={tablo.hayatdisiPortfoy} portfoy />
+              </>
+            )}
+            {gosterHy && (
+              <>
+                <tr className="bg-sky-50">
+                  <td colSpan={colSpanSection} className="px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-sky-900">
+                    Hayat &amp; emeklilik {tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "branşları"}
+                  </td>
+                </tr>
+                {tablo.hayatBranslar.map((s) => (
+                  <Satir key={`hy-${s.anaBransH}`} satir={s} />
+                ))}
+                <Satir satir={tablo.hayatPortfoy} portfoy />
+              </>
+            )}
+            {!gosterHd && !gosterHy && (
+              <tr>
+                <td colSpan={colSpanSection} className="px-3 py-6 text-center text-gray-600">
+                  Bu kanal ve ay için şirketin hayat dışı veya hayat–emeklilik üretimi görünmüyor.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

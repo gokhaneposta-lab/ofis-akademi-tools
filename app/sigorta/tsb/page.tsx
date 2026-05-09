@@ -44,17 +44,10 @@ const PANELLER = [
     icon: "📑",
   },
   {
-    href: "/sigorta/brans-pay-dagilim",
-    badge: "Grafik",
-    title: "Branş üretim payı",
-    subtitle: "Şirket vs sektör · yan yana %100 şerit · tek ay",
-    icon: "🧭",
-  },
-  {
     href: "/sigorta/brans-sira",
     badge: "Sıra",
     title: "Branş sıra özeti",
-    subtitle: "Şirket bazlı branş sıralaması · önceki yıl ile Δ sıra",
+    subtitle: "Sıra · branş/sektör ağırlığı · önceki yıl Δ sıra",
     icon: "🏅",
   },
   {

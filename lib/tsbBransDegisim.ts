@@ -315,59 +315,6 @@ export function listSirketlerBransDashboard(
 
 export type BransPayDilim = { etiket: string; sirketPay: number; sektorPay: number };
 
-/**
- * Tek rapor ayı için hayat dışı + hayat–emeklilik satırlarında şirket ve sektör üretim payları (%).
- * Önceki yıl gerektirmez (branş payı grafiği sayfası için).
- */
-export function buildBransPrimPayDilimleriTekDonem(
-  rows: TsbPrimRow[],
-  donem: string,
-  channel: TsbKanalField,
-  sirketKodu: number,
-  daraltma: TsbPrimDaraltma,
-): BransPayDilim[] {
-  const grupModu = daraltma.kind;
-  const lookup = grupModu === "tarifeGrubu" ? daraltma.lookup : null;
-
-  let hdSirali: string[];
-  let haySirali: string[];
-
-  if (grupModu === "anaBransH") {
-    const hdSet = collectAnaBransKeys(rows, donem, donem, "hayatdisi");
-    const haySet = collectAnaBransKeys(rows, donem, donem, "hayat");
-    hdSirali = narrowAnaKeys(sortAnaBransSirasi(hdSet, HD_ANA_BRANS_SIRASI), daraltma);
-    haySirali = narrowAnaKeys(sortAnaBransSirasi(haySet, HAYAT_ANA_BRANS_SIRASI), daraltma);
-  } else {
-    const hdSet = collectTarifeKeys(rows, donem, donem, "hayatdisi", lookup);
-    const haySet = collectTarifeKeys(rows, donem, donem, "hayat", lookup);
-    hdSirali = narrowTarifeKeys([...hdSet].sort((a, b) => a.localeCompare(b, "tr")), daraltma);
-    haySirali = narrowTarifeKeys([...haySet].sort((a, b) => a.localeCompare(b, "tr")), daraltma);
-  }
-
-  type PrimSatir = { etiket: string; sirketPrimBu: number; sektorPrimBu: number };
-  const hdSatirlar: PrimSatir[] = hdSirali.map((etiket) => ({
-    etiket,
-    sektorPrimBu: sumGrupKey(rows, donem, channel, "hayatdisi", etiket, grupModu, lookup, null),
-    sirketPrimBu: sumGrupKey(rows, donem, channel, "hayatdisi", etiket, grupModu, lookup, sirketKodu),
-  }));
-  const haySatirlar: PrimSatir[] = haySirali.map((etiket) => ({
-    etiket,
-    sektorPrimBu: sumGrupKey(rows, donem, channel, "hayat", etiket, grupModu, lookup, null),
-    sirketPrimBu: sumGrupKey(rows, donem, channel, "hayat", etiket, grupModu, lookup, sirketKodu),
-  }));
-
-  const detay = [...hdSatirlar, ...haySatirlar];
-  const ts = detay.reduce((a, x) => a + x.sektorPrimBu, 0);
-  const tk = detay.reduce((a, x) => a + x.sirketPrimBu, 0);
-  const raw = detay.map((x) => ({
-    etiket: x.etiket,
-    sirketPay: tk > 0 ? (x.sirketPrimBu / tk) * 100 : 0,
-    sektorPay: ts > 0 ? (x.sektorPrimBu / ts) * 100 : 0,
-  }));
-  raw.sort((a, b) => b.sektorPay - a.sektorPay);
-  return raw;
-}
-
 /** Tablodaki branş/tarife satırlarından “bu dönem” üretim payları (şirket portföyü vs sektör) */
 export function buildBransPaySnapshot(tablo: BransDegisimOzet): BransPayDilim[] {
   const detay = [...tablo.hayatdisiBranslar, ...tablo.hayatBranslar];

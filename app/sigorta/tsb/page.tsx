@@ -50,6 +50,20 @@ const PANELLER = [
     subtitle: "Şirket bazlı branş sıralaması · önceki yıl ile Δ sıra",
     icon: "🏅",
   },
+  {
+    href: "/sigorta/prim-waterfall",
+    badge: "Köprü",
+    title: "Prim su şelalesi",
+    subtitle: "İki dönem arası toplam prim · ana branş katkıları",
+    icon: "🌊",
+  },
+  {
+    href: "/sigorta/prim-trend-12",
+    badge: "Trend",
+    title: "Son 12 ay prim",
+    subtitle: "Sektör vs şirket çizgisi · aylık üretim",
+    icon: "〰️",
+  },
 ] as const;
 
 export default function SigortaTsbHubPage() {
@@ -85,7 +99,7 @@ export default function SigortaTsbHubPage() {
           <h2 id="tsb-panels" className="sr-only">
             TSB panelleri
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {PANELLER.map((p) => (
               <Link
                 key={p.href}

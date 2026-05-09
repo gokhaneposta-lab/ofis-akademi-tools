@@ -24,6 +24,8 @@ const HUB_ROUTES = [
   "/sigorta/brans-degisim",
   "/sigorta/brans-sira",
   "/sigorta/kanal-dagilim",
+  "/sigorta/prim-waterfall",
+  "/sigorta/prim-trend-12",
   "/kaynaklar",
   "/gizlilik",
 ] as const;
@@ -44,7 +46,9 @@ function priorityFor(route: string): number {
     route === "/sigorta/kanal-prim" ||
     route === "/sigorta/kanal-dagilim" ||
     route === "/sigorta/brans-degisim" ||
-    route === "/sigorta/brans-sira"
+    route === "/sigorta/brans-sira" ||
+    route === "/sigorta/prim-waterfall" ||
+    route === "/sigorta/prim-trend-12"
   )
     return 0.82;
   if (route === "/kaynaklar") return 0.85;

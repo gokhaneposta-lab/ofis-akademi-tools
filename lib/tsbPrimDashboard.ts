@@ -115,6 +115,16 @@ export function prevYearPeriod(ym: string): string | null {
   return `${y - 1}-${String(m).padStart(2, "0")}`;
 }
 
+/** Bir önceki takvim ayı (YYYY-MM) */
+export function prevMonthPeriod(ym: string): string | null {
+  const [yStr, mStr] = ym.split("-");
+  const y = Number(yStr);
+  const m = Number(mStr);
+  if (!Number.isFinite(y) || !Number.isFinite(m) || m < 1 || m > 12) return null;
+  if (m === 1) return `${y - 1}-12`;
+  return `${y}-${String(m - 1).padStart(2, "0")}`;
+}
+
 /** Kanal alanından prim tutarı (aggregate fonksiyonları için ortak) */
 export function channelPremium(row: TsbPrimRow, channel: TsbKanalField): number {
   return channel === "genelToplam" ? row.genelToplam : row[channel];
@@ -237,4 +247,30 @@ export function uniqueAnaBransForSegment(
     set.add(r.anaBransH);
   }
   return [...set].sort((a, b) => a.localeCompare(b, "tr"));
+}
+
+/** Seçilen segmentte, ilgili dönem + kanalda üretimi olan şirketler (sıralı liste) */
+export function listSirketlerSegmentDonem(
+  rows: TsbPrimRow[],
+  donem: string,
+  channel: TsbKanalField,
+  segment: TsbSektorSegment,
+): { kod: number; ad: string; toplam: number }[] {
+  const m = new Map<number, { ad: string; toplam: number }>();
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    const v = channelPremium(r, channel);
+    const cur = m.get(r.sirketKodu);
+    if (!cur) {
+      m.set(r.sirketKodu, { ad: r.sirketAdi, toplam: v });
+    } else {
+      cur.toplam += v;
+      if (r.sirketAdi) cur.ad = r.sirketAdi;
+    }
+  }
+  const arr = [...m.entries()].map(([kod, { ad, toplam }]) => ({ kod, ad, toplam }));
+  arr.sort((a, b) => b.toplam - a.toplam);
+  return arr;
 }

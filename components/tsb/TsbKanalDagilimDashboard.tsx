@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   buildKanalDagilimKiyas,
+  kanalBazindaSirketSektorPayYuzde,
   kanalYuzdeleri,
   KANAL_DAGILIM_SATIRLARI,
   listSirketlerKanalDagilim,
@@ -38,9 +39,11 @@ const KANAL_RENK: Record<KanalDagilimSatirKey, string> = {
 function KanalYuzdeGroupedBars({
   ys,
   yk,
+  kanalSektorPayi,
 }: {
   ys: Record<KanalDagilimSatirKey, number>;
   yk: Record<KanalDagilimSatirKey, number>;
+  kanalSektorPayi: Record<KanalDagilimSatirKey, number | null>;
 }) {
   const H = 168;
   return (
@@ -68,6 +71,14 @@ function KanalYuzdeGroupedBars({
             </div>
           </div>
           <p className="mt-2 max-w-[6.5rem] text-center text-[10px] font-medium leading-tight text-gray-800">{label}</p>
+          <p className="mt-0.5 text-center text-[9px] tabular-nums text-slate-600">
+            Kanalda{" "}
+            {kanalSektorPayi[key] !== null ? (
+              <span className="font-semibold text-slate-800">{pf.format(kanalSektorPayi[key]!)}%</span>
+            ) : (
+              "—"
+            )}
+          </p>
         </div>
       ))}
     </div>
@@ -193,6 +204,9 @@ export default function TsbKanalDagilimDashboard() {
 
   const ys = kanalYuzdeleri(kiyas.sirket);
   const yk = kanalYuzdeleri(kiyas.sektor);
+  const kanalSektorPayi = kanalBazindaSirketSektorPayYuzde(kiyas.sirket, kiyas.sektor);
+  const genelKanalPayi =
+    kiyas.sektor.genelToplam > 0 ? (kiyas.sirket.genelToplam / kiyas.sektor.genelToplam) * 100 : null;
   const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
 
   const tumBransLabel =
@@ -336,10 +350,12 @@ export default function TsbKanalDagilimDashboard() {
         <p className="text-xs font-semibold text-gray-800">Kanal payları — yüzde (yan yana)</p>
         <p className="mt-1 text-[11px] leading-relaxed text-gray-600">
           Her kanal için <strong>sol sütun</strong> seçilen şirket (<span className="text-gray-800">{secilenAd}</span>),
-          <strong className="ml-1">sağ sütun</strong> aynı filtredeki sektör toplamıdır. Aynı kanal her iki tarafta da{" "}
-          <strong>aynı renk</strong>; sektör sütunu daha soluktur.
+          <strong className="ml-1">sağ sütun</strong> aynı filtredeki sektör toplamıdır (ikisi de kendi genel toplamlarına
+          göre yüzde). Çubukların altındaki <strong>Kanalda %</strong>, o kanaldaki şirket priminin sektörün aynı kanaldaki
+          primine oranıdır (şirket ₺ ÷ sektör ₺). Aynı değer tabloda <strong>Kanalda sektör payı</strong> sütununda da
+          vardır.
         </p>
-        <KanalYuzdeGroupedBars ys={ys} yk={yk} />
+        <KanalYuzdeGroupedBars ys={ys} yk={yk} kanalSektorPayi={kanalSektorPayi} />
         <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-t border-gray-100 pt-3 text-[11px] text-gray-600">
           <span>
             Şirket toplam prim: <strong className="tabular-nums text-gray-900">{nf.format(kiyas.sirket.genelToplam)}</strong>{" "}
@@ -353,7 +369,7 @@ export default function TsbKanalDagilimDashboard() {
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-        <table className="min-w-[720px] w-full border-collapse text-left text-[11px]">
+        <table className="min-w-[820px] w-full border-collapse text-left text-[11px]">
           <thead>
             <tr className="border-b border-gray-300 bg-slate-800 text-white">
               <th className="px-3 py-2 font-semibold">Kanal</th>
@@ -361,6 +377,7 @@ export default function TsbKanalDagilimDashboard() {
               <th className="px-3 py-2 text-right font-semibold">Şirket %</th>
               <th className="px-3 py-2 text-right font-semibold">Sektör ₺</th>
               <th className="px-3 py-2 text-right font-semibold">Sektör %</th>
+              <th className="px-3 py-2 text-right font-semibold">Kanalda sektör payı</th>
               <th className="px-3 py-2 text-right font-semibold">Fark (pp)</th>
             </tr>
           </thead>
@@ -369,6 +386,7 @@ export default function TsbKanalDagilimDashboard() {
               const ps = ys[key];
               const pk = yk[key];
               const pp = ps - pk;
+              const kp = kanalSektorPayi[key];
               return (
                 <tr key={key} className="border-b border-gray-100 bg-white">
                   <td className="px-3 py-2 font-medium text-gray-900">{label}</td>
@@ -376,6 +394,9 @@ export default function TsbKanalDagilimDashboard() {
                   <td className="px-3 py-2 text-right tabular-nums text-gray-700">{pf.format(ps)}%</td>
                   <td className="px-3 py-2 text-right tabular-nums text-gray-700">{nf.format(kiyas.sektor[key])}</td>
                   <td className="px-3 py-2 text-right tabular-nums text-gray-600">{pf.format(pk)}%</td>
+                  <td className="px-3 py-2 text-right tabular-nums font-medium text-emerald-900">
+                    {kp !== null ? `${pf.format(kp)}%` : "—"}
+                  </td>
                   <td className="px-3 py-2 text-right tabular-nums font-medium text-gray-900">{pf.format(pp)}</td>
                 </tr>
               );
@@ -386,6 +407,9 @@ export default function TsbKanalDagilimDashboard() {
               <td className="px-3 py-2 text-right tabular-nums">100,00%</td>
               <td className="px-3 py-2 text-right tabular-nums">{nf.format(kiyas.sektor.genelToplam)}</td>
               <td className="px-3 py-2 text-right tabular-nums">100,00%</td>
+              <td className="px-3 py-2 text-right tabular-nums text-emerald-900">
+                {genelKanalPayi !== null ? `${pf.format(genelKanalPayi)}%` : "—"}
+              </td>
               <td className="px-3 py-2 text-right tabular-nums">—</td>
             </tr>
           </tbody>
@@ -393,8 +417,11 @@ export default function TsbKanalDagilimDashboard() {
       </div>
 
       <p className="text-[11px] leading-relaxed text-gray-500">
-        Paylar, seçilen kapsamda <strong>kanal primlerinin toplamına</strong> oranlanır (merkez + acente + banka + broker +
-        diğer). Sektör satırı TSB toplam şirket kodları hariç tüm şirketlerin aynı filtredeki toplamıdır.
+        <strong>Şirket %</strong> ve <strong>Sektör %</strong>, seçilen kapsamda kanal primlerinin{" "}
+        <strong>kendi genel toplamlarına</strong> oranıdır. <strong>Kanalda sektör payı</strong>, aynı kanal için{" "}
+        şirket ₺ ÷ sektör ₺. Genel toplam satırında bu sütun, toplam şirket primi ÷ toplam sektör primidir (Son 12 ay
+        prim tablosundaki şirket payı ile aynı kavram). Sektör satırı TSB toplam şirket kodları hariç tüm şirketlerin aynı
+        filtredeki toplamıdır.
       </p>
     </div>
   );

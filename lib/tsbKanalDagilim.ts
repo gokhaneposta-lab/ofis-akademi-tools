@@ -60,6 +60,21 @@ export function kanalYuzdeleri(k: KanalDagilimKutu): Record<KanalDagilimSatirKey
   };
 }
 
+/** Aynı kanalda: şirket primi / sektör kanal primi (×100). Sektör kanalı 0 ise null. */
+export function kanalBazindaSirketSektorPayYuzde(
+  sirket: KanalDagilimKutu,
+  sektor: KanalDagilimKutu,
+): Record<KanalDagilimSatirKey, number | null> {
+  const pct = (s: number, t: number): number | null => (t > 0 ? (s / t) * 100 : null);
+  return {
+    merkez: pct(sirket.merkez, sektor.merkez),
+    acente: pct(sirket.acente, sektor.acente),
+    banka: pct(sirket.banka, sektor.banka),
+    broker: pct(sirket.broker, sektor.broker),
+    diger: pct(sirket.diger, sektor.diger),
+  };
+}
+
 export type KanalDagilimKiyas = {
   sirket: KanalDagilimKutu;
   sektor: KanalDagilimKutu;

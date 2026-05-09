@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { TSB_DASHBOARD_PANELS } from "@/lib/tsbDashboardPanels";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
 
 const BASE = getSiteUrl();
@@ -20,44 +21,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
-const PANELLER = [
-  {
-    href: "/sigorta/kanal-prim",
-    badge: "Kanal",
-    title: "Kanal bazlı prim",
-    subtitle: "Satış kanalı kırılımı · hayat dışı / hayat–emeklilik",
-    icon: "📊",
-  },
-  {
-    href: "/sigorta/kanal-dagilim",
-    badge: "Dağılım",
-    title: "Sektör kanal dağılımı",
-    subtitle: "Şirket vs sektör · kanal payları ve yüzdeler",
-    icon: "📈",
-  },
-  {
-    href: "/sigorta/brans-degisim",
-    badge: "Branş",
-    title: "Sektör branş değişim tablosu",
-    subtitle: "Şirket vs sektör · pazar payı · önceki yıl aynı ay",
-    icon: "📑",
-  },
-  {
-    href: "/sigorta/brans-sira",
-    badge: "Sıra",
-    title: "Branş sıra özeti",
-    subtitle: "Sıra · branş/sektör ağırlığı · önceki yıl Δ sıra",
-    icon: "🏅",
-  },
-  {
-    href: "/sigorta/prim-trend-12",
-    badge: "Trend",
-    title: "Son 12 ay prim",
-    subtitle: "Sektör vs şirket çizgisi · aylık üretim",
-    icon: "〰️",
-  },
-] as const;
 
 export default function SigortaTsbHubPage() {
   return (
@@ -93,7 +56,7 @@ export default function SigortaTsbHubPage() {
             TSB panelleri
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {PANELLER.map((p) => (
+            {TSB_DASHBOARD_PANELS.map((p) => (
               <Link
                 key={p.href}
                 href={p.href}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
 import TsbBransDegisimDashboard from "@/components/tsb/TsbBransDegisimDashboard";
+import TsbRelatedDashboards from "@/components/tsb/TsbRelatedDashboards";
 
 const BASE = getSiteUrl();
 
@@ -61,6 +62,7 @@ export default function SigortaBransDegisimPage() {
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <TsbBransDegisimDashboard />
+        <TsbRelatedDashboards currentHref="/sigorta/brans-degisim" />
       </main>
     </div>
   );

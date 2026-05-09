@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
 import TsbKanalDagilimDashboard from "@/components/tsb/TsbKanalDagilimDashboard";
+import TsbRelatedDashboards from "@/components/tsb/TsbRelatedDashboards";
 
 const BASE = getSiteUrl();
 
@@ -60,6 +61,7 @@ export default function SigortaKanalDagilimPage() {
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <TsbKanalDagilimDashboard />
+        <TsbRelatedDashboards currentHref="/sigorta/kanal-dagilim" />
       </main>
     </div>
   );

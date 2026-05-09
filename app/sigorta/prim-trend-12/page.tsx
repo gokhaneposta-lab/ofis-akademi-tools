@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
 import TsbPrimTrend12Dashboard from "@/components/tsb/TsbPrimTrend12Dashboard";
+import TsbRelatedDashboards from "@/components/tsb/TsbRelatedDashboards";
 
 const BASE = getSiteUrl();
 
@@ -62,6 +63,7 @@ export default function SigortaPrimTrend12Page() {
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <TsbPrimTrend12Dashboard />
+        <TsbRelatedDashboards currentHref="/sigorta/prim-trend-12" />
       </main>
     </div>
   );

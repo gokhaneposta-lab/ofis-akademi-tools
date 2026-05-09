@@ -248,6 +248,7 @@ export default function TsbBransDegisimDashboard() {
             {tablo.hayatdisiBranslar.map((s) => (
               <SatirHucresi key={`hd-${s.anaBransH}`} satir={s} />
             ))}
+            <SatirHucresi satir={tablo.hayatdisiTrafikHaricToplam} araToplam />
             <SatirHucresi satir={tablo.hayatdisiToplam} araToplam />
             <tr className="bg-sky-50">
               <td colSpan={10} className="px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-sky-900">

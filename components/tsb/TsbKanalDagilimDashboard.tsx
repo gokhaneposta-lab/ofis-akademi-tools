@@ -10,6 +10,8 @@ import {
 } from "@/lib/tsbKanalDagilim";
 import type { TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
+  ANA_BRANS_FILTER_TRAFIK_HARIC,
+  ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
   isTsbToplamSirketKodu,
   resolveDefaultSirketKodu,
   uniqueAnaBransForSegment,
@@ -19,43 +21,50 @@ import {
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
-const BAR_SIRKET: Record<KanalDagilimSatirKey, string> = {
+const KANAL_RENK: Record<KanalDagilimSatirKey, string> = {
   merkez: "bg-emerald-500",
   acente: "bg-sky-500",
   banka: "bg-violet-500",
   broker: "bg-amber-500",
-  diger: "bg-rose-400",
+  diger: "bg-rose-500",
 };
 
-const BAR_SEKTOR: Record<KanalDagilimSatirKey, string> = {
-  merkez: "bg-emerald-700/50",
-  acente: "bg-sky-700/50",
-  banka: "bg-violet-700/50",
-  broker: "bg-amber-700/50",
-  diger: "bg-rose-600/50",
-};
-
-function StackedBar({
-  yuzdeler,
-  barClass,
+/** Kanal başına yan yana iki sütun: sol şirket, sağ sektör; aynı kanal rengi (sektör daha soluk). */
+function KanalYuzdeGroupedBars({
+  ys,
+  yk,
 }: {
-  yuzdeler: Record<KanalDagilimSatirKey, number>;
-  barClass: Record<KanalDagilimSatirKey, string>;
+  ys: Record<KanalDagilimSatirKey, number>;
+  yk: Record<KanalDagilimSatirKey, number>;
 }) {
+  const H = 168;
   return (
-    <div className="flex h-8 w-full overflow-hidden rounded-lg ring-1 ring-gray-200 bg-gray-100">
-      {KANAL_DAGILIM_SATIRLARI.map(({ key }) => {
-        const w = Math.max(0, yuzdeler[key]);
-        if (w <= 0) return null;
-        return (
-          <div
-            key={key}
-            className={`${barClass[key]} h-full min-w-0 transition-[width]`}
-            style={{ width: `${w}%` }}
-            title={`${key}: ${pf.format(w)}%`}
-          />
-        );
-      })}
+    <div className="mt-4 flex flex-wrap justify-between gap-4 sm:flex-nowrap sm:gap-2">
+      {KANAL_DAGILIM_SATIRLARI.map(({ key, label }) => (
+        <div key={key} className="flex min-w-[4.75rem] flex-1 flex-col items-center">
+          <div className="flex h-[188px] w-full items-end justify-center gap-1.5 border-b border-gray-200 px-0.5 pb-0.5">
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
+              <span className="text-[10px] font-semibold tabular-nums text-gray-900">{pf.format(ys[key])}%</span>
+              <div
+                className={`w-full max-w-[2rem] rounded-t ${KANAL_RENK[key]}`}
+                style={{
+                  height: `${ys[key] <= 0 ? 0 : Math.max(4, (ys[key] / 100) * H)}px`,
+                }}
+              />
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
+              <span className="text-[10px] tabular-nums text-gray-500">{pf.format(yk[key])}%</span>
+              <div
+                className={`w-full max-w-[2rem] rounded-t ${KANAL_RENK[key]} opacity-[0.52]`}
+                style={{
+                  height: `${yk[key] <= 0 ? 0 : Math.max(4, (yk[key] / 100) * H)}px`,
+                }}
+              />
+            </div>
+          </div>
+          <p className="mt-2 max-w-[6.5rem] text-center text-[10px] font-medium leading-tight text-gray-800">{label}</p>
+        </div>
+      ))}
     </div>
   );
 }
@@ -218,6 +227,9 @@ export default function TsbKanalDagilimDashboard() {
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           >
             <option value="">{tumBransLabel}</option>
+            {segment === "hayatdisi" && (
+              <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
+            )}
             {anaBransSecenekleri.map((a) => (
               <option key={a} value={a}>
                 {a}
@@ -241,26 +253,23 @@ export default function TsbKanalDagilimDashboard() {
         </label>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-semibold text-gray-700">Şirket — kanal payları (%)</p>
-          <p className="mt-1 text-[11px] text-gray-500">{secilenAd}</p>
-          <div className="mt-3">
-            <StackedBar yuzdeler={ys} barClass={BAR_SIRKET} />
-          </div>
-          <p className="mt-2 text-[11px] text-gray-600">
-            Toplam prim: <strong>{nf.format(kiyas.sirket.genelToplam)}</strong> ₺
-          </p>
-        </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-semibold text-gray-700">Sektör — kanal payları (%)</p>
-          <p className="mt-1 text-[11px] text-gray-500">Aynı filtrede tüm şirketler toplamı</p>
-          <div className="mt-3">
-            <StackedBar yuzdeler={yk} barClass={BAR_SEKTOR} />
-          </div>
-          <p className="mt-2 text-[11px] text-gray-600">
-            Toplam prim: <strong>{nf.format(kiyas.sektor.genelToplam)}</strong> ₺
-          </p>
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <p className="text-xs font-semibold text-gray-800">Kanal payları — yüzde (yan yana)</p>
+        <p className="mt-1 text-[11px] leading-relaxed text-gray-600">
+          Her kanal için <strong>sol sütun</strong> seçilen şirket (<span className="text-gray-800">{secilenAd}</span>),
+          <strong className="ml-1">sağ sütun</strong> aynı filtredeki sektör toplamıdır. Aynı kanal her iki tarafta da{" "}
+          <strong>aynı renk</strong>; sektör sütunu daha soluktur.
+        </p>
+        <KanalYuzdeGroupedBars ys={ys} yk={yk} />
+        <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-t border-gray-100 pt-3 text-[11px] text-gray-600">
+          <span>
+            Şirket toplam prim: <strong className="tabular-nums text-gray-900">{nf.format(kiyas.sirket.genelToplam)}</strong>{" "}
+            ₺
+          </span>
+          <span>
+            Sektör toplam prim: <strong className="tabular-nums text-gray-900">{nf.format(kiyas.sektor.genelToplam)}</strong>{" "}
+            ₺
+          </span>
         </div>
       </div>
 

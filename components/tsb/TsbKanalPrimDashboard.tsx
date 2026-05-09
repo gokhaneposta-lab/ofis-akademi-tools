@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
+  ANA_BRANS_FILTER_TRAFIK_HARIC,
+  ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
   buildKiyaslamaTablosu,
   isTsbToplamSirketKodu,
   sektorToplamDegisimYuzde,
@@ -176,6 +178,9 @@ export default function TsbKanalPrimDashboard() {
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           >
             <option value="">{tumAnaBransLabel}</option>
+            {segment === "hayatdisi" && (
+              <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
+            )}
             {anaBransSecenekleri.map((a) => (
               <option key={a} value={a}>
                 {a}

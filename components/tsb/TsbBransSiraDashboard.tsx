@@ -234,6 +234,7 @@ export default function TsbBransSiraDashboard() {
             {tablo.hayatdisiBranslar.map((s) => (
               <Satir key={`hd-${s.anaBransH}`} satir={s} />
             ))}
+            <Satir satir={tablo.hayatdisiTrafikHaricPortfoy} portfoy />
             <Satir satir={tablo.hayatdisiPortfoy} portfoy />
             <tr className="bg-sky-50">
               <td colSpan={5} className="px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-sky-900">

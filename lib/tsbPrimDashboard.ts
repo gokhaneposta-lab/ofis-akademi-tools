@@ -22,6 +22,24 @@ export type TsbKanalField = "genelToplam" | "acente" | "banka" | "broker" | "dig
 /** Dashboard: hayat dışı (HD, kod 3… değil) · hayat-emeklilik (kod 3… veya tip H / E) */
 export type TsbSektorSegment = "hayatdisi" | "hayat";
 
+/** Zorunlu trafik (MTPL) ana branşı — TSB `anaBransH` */
+export const TSB_ANA_BRANS_TRAFIK_SORUMLULUK = "KARA ARAÇLARI SORUMLULUK";
+
+/** Ana branş seçim değeri: tüm ana branşlar bu satır hariç */
+export const ANA_BRANS_FILTER_TRAFIK_HARIC = "__trafikHaric";
+
+export const ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL =
+  "Trafik hariç toplam (Kara Araçları Sorumluluk dışında)";
+
+/** `anaBransH`: null/"" = tümü; `ANA_BRANS_FILTER_TRAFIK_HARIC` = trafik ana branşı hariç */
+export function rowMatchesAnaBransFilter(row: TsbPrimRow, anaBransH: string | null): boolean {
+  if (anaBransH === null || anaBransH === "") return true;
+  if (anaBransH === ANA_BRANS_FILTER_TRAFIK_HARIC) {
+    return row.anaBransH !== TSB_ANA_BRANS_TRAFIK_SORUMLULUK;
+  }
+  return row.anaBransH === anaBransH;
+}
+
 /** TSB Excel'deki sektör alt toplam şirket kodları */
 export const TSB_TOPLAM_SIRKET_KODLARI = new Set([9000, 9001, 9003]);
 
@@ -114,7 +132,7 @@ export function aggregateByCompany(
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
-    if (anaBransH && r.anaBransH !== anaBransH) continue;
+    if (!rowMatchesAnaBransFilter(r, anaBransH)) continue;
     const v = channelPremium(r, channel);
     if (v === 0) continue;
     const cur = m.get(r.sirketKodu);

@@ -1,5 +1,5 @@
 import type { TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
-import { isTsbToplamSirketKodu, rowMatchesSegment } from "./tsbPrimDashboard";
+import { isTsbToplamSirketKodu, rowMatchesAnaBransFilter, rowMatchesSegment } from "./tsbPrimDashboard";
 
 export type KanalDagilimKutu = {
   merkez: number;
@@ -36,7 +36,7 @@ export function aggregateKanalDagilim(
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
-    if (anaBransH && r.anaBransH !== anaBransH) continue;
+    if (!rowMatchesAnaBransFilter(r, anaBransH)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     if (sirketKodu !== null && r.sirketKodu !== sirketKodu) continue;
     merkez += r.merkez;
@@ -89,7 +89,7 @@ export function listSirketlerKanalDagilim(
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
-    if (anaBransH && r.anaBransH !== anaBransH) continue;
+    if (!rowMatchesAnaBransFilter(r, anaBransH)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     const v = r.genelToplam;
     const cur = m.get(r.sirketKodu);

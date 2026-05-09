@@ -1,10 +1,12 @@
 import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
 import {
+  ANA_BRANS_FILTER_TRAFIK_HARIC,
   channelPremium,
   isHayatEmeklilikSirket,
   isHayatdisiSirket,
   isTsbToplamSirketKodu,
   prevYearPeriod,
+  rowMatchesAnaBransFilter,
   rowMatchesSegment,
 } from "./tsbPrimDashboard";
 import { HAYAT_ANA_BRANS_SIRASI, HD_ANA_BRANS_SIRASI } from "./tsbBransDegisim";
@@ -51,17 +53,19 @@ function aggregateBranchByCompany(
   return m;
 }
 
-/** Segmentte tüm ana branşlar birleşik portföy primi (sıra özeti toplam satırı) */
+/** Segmentte birleşik portföy primi; `anaBransFilter` null ise tüm ana branşlar */
 function aggregatePortfolioByCompany(
   rows: TsbPrimRow[],
   donem: string,
   channel: TsbKanalField,
   segment: TsbSektorSegment,
+  anaBransFilter: string | null = null,
 ): Map<number, number> {
   const m = new Map<number, number>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
+    if (!rowMatchesAnaBransFilter(r, anaBransFilter)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     const v = channelPremium(r, channel);
     m.set(r.sirketKodu, (m.get(r.sirketKodu) ?? 0) + v);
@@ -85,6 +89,8 @@ export type BransSiraOzet = {
   donemBu: string;
   donemOnceki: string;
   hayatdisiBranslar: BransSiraSatir[];
+  /** Kara Araçları Sorumluluk hariç hayat dışı birleşik portföy */
+  hayatdisiTrafikHaricPortfoy: BransSiraSatir;
   hayatdisiPortfoy: BransSiraSatir;
   hayatBranslar: BransSiraSatir[];
   hayatPortfoy: BransSiraSatir;
@@ -152,18 +158,35 @@ export function buildBransSiraTablosu(
     return buildSatir(b, "hayat", bu, oc, sirketKodu);
   });
 
-  const portHdBu = aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi");
-  const portHdOc = aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi");
+  const portHdBuTh = aggregatePortfolioByCompany(
+    rows,
+    donemBu,
+    channel,
+    "hayatdisi",
+    ANA_BRANS_FILTER_TRAFIK_HARIC,
+  );
+  const portHdOcTh = aggregatePortfolioByCompany(
+    rows,
+    donemOnceki,
+    channel,
+    "hayatdisi",
+    ANA_BRANS_FILTER_TRAFIK_HARIC,
+  );
+  const hayatdisiTrafikHaricPortfoy = buildSatir("TRAFİK HARİÇ TOPLAM", "hayatdisi", portHdBuTh, portHdOcTh, sirketKodu);
+
+  const portHdBu = aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", null);
+  const portHdOc = aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", null);
   const hayatdisiPortfoy = buildSatir("HAYATDIŞI PORTFÖY (tüm branşlar)", "hayatdisi", portHdBu, portHdOc, sirketKodu);
 
-  const portHyBu = aggregatePortfolioByCompany(rows, donemBu, channel, "hayat");
-  const portHyOc = aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayat");
+  const portHyBu = aggregatePortfolioByCompany(rows, donemBu, channel, "hayat", null);
+  const portHyOc = aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayat", null);
   const hayatPortfoy = buildSatir("HAYAT & EMEKLİLİK PORTFÖY (tüm branşlar)", "hayat", portHyBu, portHyOc, sirketKodu);
 
   return {
     donemBu,
     donemOnceki,
     hayatdisiBranslar,
+    hayatdisiTrafikHaricPortfoy,
     hayatdisiPortfoy,
     hayatBranslar,
     hayatPortfoy,

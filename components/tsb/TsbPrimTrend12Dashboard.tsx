@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { buildSon12AyPrimTrend, type PrimTrend12Nokta } from "@/lib/tsbPrimTrend12";
+import {
+  buildSon12AyPrimTrend,
+  uniqueTarifeGruplariForSegment,
+  type PrimTrend12Nokta,
+  type PrimTrendFiltreModu,
+  type PrimTrendFilter,
+} from "@/lib/tsbPrimTrend12";
+import type { TsbBranchLookupMap } from "@/lib/tsbBranchLookup";
+import { parseBranchLookupJson } from "@/lib/tsbBranchLookup";
 import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
@@ -182,6 +190,9 @@ export default function TsbPrimTrend12Dashboard() {
   const [donemBitis, setDonemBitis] = useState("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
   const [anaBrans, setAnaBrans] = useState("");
+  const [filtreModu, setFiltreModu] = useState<PrimTrendFiltreModu>("anaBransH");
+  const [tarifeSecim, setTarifeSecim] = useState("");
+  const [branchLookup, setBranchLookup] = useState<TsbBranchLookupMap | null>(null);
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [logOlcek, setLogOlcek] = useState(true);
 
@@ -205,13 +216,37 @@ export default function TsbPrimTrend12Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/data/tsb/branch-lookup.json")
+      .then((r) => {
+        if (!r.ok) throw new Error("lookup");
+        return r.json();
+      })
+      .then((raw: Record<string, { anaBrans?: string; tarifeGrubu?: string }>) => {
+        if (!cancelled) setBranchLookup(parseBranchLookupJson(raw));
+      })
+      .catch(() => {
+        if (!cancelled) setBranchLookup(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const donemler = useMemo(() => (rows ? uniqueSortedPeriods(rows) : []), [rows]);
   const sonDonem = donemler.length ? donemler[donemler.length - 1] : "";
   const secilenBitis = donemBitis || sonDonem;
 
   useEffect(() => {
     setAnaBrans("");
+    setTarifeSecim("");
   }, [segment]);
+
+  useEffect(() => {
+    setAnaBrans("");
+    setTarifeSecim("");
+  }, [filtreModu]);
 
   const anaBransSecenekleri = useMemo(() => {
     if (!rows || !secilenBitis) return [];
@@ -219,6 +254,21 @@ export default function TsbPrimTrend12Dashboard() {
   }, [rows, secilenBitis, segment]);
 
   const anaFiltre = anaBrans === "" ? null : anaBrans;
+
+  const tarifeSecenekleri = useMemo(() => {
+    if (!rows || !secilenBitis) return [];
+    return uniqueTarifeGruplariForSegment(rows, secilenBitis, segment, branchLookup);
+  }, [rows, secilenBitis, segment, branchLookup]);
+
+  useEffect(() => {
+    if (filtreModu !== "tarifeGrubu" || tarifeSecim === "") return;
+    if (!tarifeSecenekleri.includes(tarifeSecim)) setTarifeSecim("");
+  }, [filtreModu, tarifeSecim, tarifeSecenekleri]);
+
+  const trendFilter = useMemo((): PrimTrendFilter => {
+    if (filtreModu === "anaBransH") return { kind: "anaBransH", anaBransH: anaFiltre };
+    return { kind: "tarifeGrubu", tarifeGrubu: tarifeSecim === "" ? null : tarifeSecim, lookup: branchLookup };
+  }, [filtreModu, anaFiltre, tarifeSecim, branchLookup]);
 
   const sirketler = useMemo(() => {
     if (!rows || !secilenBitis) return [];
@@ -246,11 +296,12 @@ export default function TsbPrimTrend12Dashboard() {
 
   const seri = useMemo(() => {
     if (!rows || effectiveSirket === null) return null;
-    return buildSon12AyPrimTrend(rows, donemler, secilenBitis, kanal, anaFiltre, segment, effectiveSirket);
-  }, [rows, donemler, secilenBitis, kanal, anaFiltre, segment, effectiveSirket]);
+    return buildSon12AyPrimTrend(rows, donemler, secilenBitis, kanal, segment, effectiveSirket, trendFilter);
+  }, [rows, donemler, secilenBitis, kanal, segment, effectiveSirket, trendFilter]);
 
   const tumBransLabel =
     segment === "hayatdisi" ? "Tüm ana branşlar (hayat dışı)" : "Tüm ana branşlar (hayat–emeklilik)";
+  const tumTarifeLabel = "Tüm tarife grupları";
 
   if (error) {
     return <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>;
@@ -291,6 +342,33 @@ export default function TsbPrimTrend12Dashboard() {
             }`}
           >
             Hayat &amp; emeklilik
+          </button>
+        </div>
+        <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Branş filtresi türü</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={filtreModu === "anaBransH"}
+            onClick={() => setFiltreModu("anaBransH")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              filtreModu === "anaBransH"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Ana branş (TSB)
+          </button>
+          <button
+            type="button"
+            aria-pressed={filtreModu === "tarifeGrubu"}
+            onClick={() => setFiltreModu("tarifeGrubu")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              filtreModu === "tarifeGrubu"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Tarife grubu
           </button>
         </div>
         <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Eksen</p>
@@ -355,22 +433,39 @@ export default function TsbPrimTrend12Dashboard() {
           </select>
         </label>
         <label className="block text-sm sm:col-span-2 lg:col-span-1">
-          <span className="mb-1.5 block font-medium text-gray-700">Ana branş filtresi</span>
-          <select
-            value={anaBrans}
-            onChange={(e) => setAnaBrans(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-          >
-            <option value="">{tumBransLabel}</option>
-            {segment === "hayatdisi" && (
-              <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
-            )}
-            {anaBransSecenekleri.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
+          <span className="mb-1.5 block font-medium text-gray-700">
+            {filtreModu === "anaBransH" ? "Ana branş filtresi" : "Tarife grubu filtresi"}
+          </span>
+          {filtreModu === "anaBransH" ? (
+            <select
+              value={anaBrans}
+              onChange={(e) => setAnaBrans(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            >
+              <option value="">{tumBransLabel}</option>
+              {segment === "hayatdisi" && (
+                <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
+              )}
+              {anaBransSecenekleri.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              value={tarifeSecim}
+              onChange={(e) => setTarifeSecim(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            >
+              <option value="">{tumTarifeLabel}</option>
+              {tarifeSecenekleri.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
         <label className="block text-sm sm:col-span-2 lg:col-span-3">
           <span className="mb-1.5 block font-medium text-gray-700">Şirket (yeşil çizgi)</span>

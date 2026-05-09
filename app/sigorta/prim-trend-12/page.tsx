@@ -8,13 +8,14 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Son 12 ay prim trendi (sektör vs şirket) — TSB",
   description:
-    "Seçilen bitiş ayına kadar geriye dönük en fazla 12 ay: sektör toplam prim ile tek şirket priminin çizgi grafiği; hayat dışı / hayat–emeklilik ve ana branş filtresi.",
+    "Seçilen bitiş ayına kadar geriye dönük en fazla 12 ay: sektör toplam prim (kırmızı) ile tek şirket priminin (yeşil) çizgi grafiği; hayat dışı / hayat–emeklilik, ana branş veya tarife grubu ve kanal filtresi.",
   alternates: {
     canonical: canonicalUrl("/sigorta/prim-trend-12"),
   },
   openGraph: {
     title: "Son 12 ay prim trendi (TSB) | Ofis Akademi",
-    description: "Sektör ve şirket aylık prim çizgisi.",
+    description:
+      "Sektör (kırmızı) ve şirket (yeşil) aylık prim çizgisi; ana branş veya tarife grubu ve kanalla daraltma.",
     url: `${BASE}/sigorta/prim-trend-12`,
     siteName: "Ofis Akademi",
     locale: "tr_TR",
@@ -39,9 +40,10 @@ export default function SigortaPrimTrend12Page() {
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Son 12 ay prim trendi</h1>
           <p className="mt-2 max-w-3xl text-sm text-gray-600">
             Belirlediğiniz <strong>bitiş ayına</strong> kadar geriye doğru en fazla <strong>12 ay</strong> için{" "}
-            <strong>sektör toplam prim</strong> (gri) ile seçtiğiniz <strong>şirket primi</strong> (yeşil; varsayılan
+            <strong>sektör toplam prim</strong> (kırmızı) ile seçtiğiniz <strong>şirket primi</strong> (yeşil; varsayılan
             Bereket) yan yana çizilir. Üstteki görünüm anahtarı ile hayat dışı veya hayat–emeklilik havuzunu seçebilir,
-            ana branş ve kanalla daraltabilirsiniz.
+            <strong> ana branş (TSB)</strong> veya <strong>tarife grubu</strong> ile daraltabilir ve <strong>kanal</strong>{" "}
+            seçebilirsiniz.
           </p>
           <aside className="mt-4 max-w-3xl rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[12px] text-gray-600">
             <strong>Kaynak:</strong> TSB kamuya açık prim istatistikleri —{" "}

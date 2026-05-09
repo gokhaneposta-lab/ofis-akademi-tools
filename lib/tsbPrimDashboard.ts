@@ -72,7 +72,8 @@ export function prevYearPeriod(ym: string): string | null {
   return `${y - 1}-${String(m).padStart(2, "0")}`;
 }
 
-function channelValue(row: TsbPrimRow, channel: TsbKanalField): number {
+/** Kanal alanından prim tutarı (aggregate fonksiyonları için ortak) */
+export function channelPremium(row: TsbPrimRow, channel: TsbKanalField): number {
   return channel === "genelToplam" ? row.genelToplam : row[channel];
 }
 
@@ -89,7 +90,7 @@ export function aggregateByCompany(
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
     if (anaBransH && r.anaBransH !== anaBransH) continue;
-    const v = channelValue(r, channel);
+    const v = channelPremium(r, channel);
     if (v === 0) continue;
     const cur = m.get(r.sirketKodu);
     if (!cur) {

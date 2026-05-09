@@ -19,7 +19,9 @@ const HUB_ROUTES = [
   "/egitimler/ileri",
   "/formul-kutuphanesi",
   "/finans-sigorta",
+  "/sigorta/tsb",
   "/sigorta/kanal-prim",
+  "/sigorta/brans-degisim",
   "/kaynaklar",
   "/gizlilik",
 ] as const;
@@ -35,7 +37,8 @@ function priorityFor(route: string): number {
   ) {
     return 0.9;
   }
-  if (route === "/sigorta/kanal-prim") return 0.82;
+  if (route === "/sigorta/tsb") return 0.84;
+  if (route === "/sigorta/kanal-prim" || route === "/sigorta/brans-degisim") return 0.82;
   if (route === "/kaynaklar") return 0.85;
   if (route === "/gizlilik") return 0.3;
   if (route.startsWith("/egitimler/")) return 0.8;

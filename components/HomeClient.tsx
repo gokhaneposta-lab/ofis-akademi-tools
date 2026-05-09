@@ -165,6 +165,15 @@ export default function HomeClient() {
               >
                 Finans &amp; Sigorta
               </Link>
+              <Link
+                href="/sigorta/tsb"
+                className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+              >
+                Sektör verileri (TSB)
+                <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">
+                  Dashboard
+                </span>
+              </Link>
             </div>
 
             <div className="flex flex-wrap gap-4 text-sm text-slate-600">

@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import BransPrimPayStrip from "@/components/tsb/BransPrimPayStrip";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import type { BransDegisimSatir } from "@/lib/tsbBransDegisim";
-import { buildBransDegisimTablosu, buildBransPaySnapshot, listSirketlerBransDashboard } from "@/lib/tsbBransDegisim";
+import { buildBransDegisimTablosu, listSirketlerBransDashboard } from "@/lib/tsbBransDegisim";
 import type { TsbKanalField, TsbPrimDaraltmaModu, TsbPrimRow } from "@/lib/tsbPrimDashboard";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
@@ -13,6 +12,8 @@ import {
   isTsbToplamSirketKodu,
   prevYearPeriod,
   resolveDefaultSirketKodu,
+  TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
+  TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL,
   uniqueAnaBransForSegment,
   uniqueSortedPeriods,
   uniqueTarifeGruplariDonem,
@@ -128,6 +129,7 @@ export default function TsbBransDegisimDashboard() {
 
   useEffect(() => {
     if (filtreModu !== "tarifeGrubu" || tarifeSecim === "") return;
+    if (tarifeSecim === TARIFE_GRUBU_FILTER_TRAFIK_HARIC) return;
     if (!tarifeSecenekleri.includes(tarifeSecim)) setTarifeSecim("");
   }, [filtreModu, tarifeSecim, tarifeSecenekleri]);
 
@@ -154,8 +156,6 @@ export default function TsbBransDegisimDashboard() {
     if (!rows || !secilenDonem || effectiveSirketKodu === null) return null;
     return buildBransDegisimTablosu(rows, secilenDonem, kanal, effectiveSirketKodu, daraltma);
   }, [rows, secilenDonem, kanal, effectiveSirketKodu, daraltma]);
-
-  const paySnapshot = useMemo(() => (tablo ? buildBransPaySnapshot(tablo) : []), [tablo]);
 
   if (error) {
     return (
@@ -222,7 +222,8 @@ export default function TsbBransDegisimDashboard() {
           </button>
         </div>
         <p className="mt-2 text-[11px] text-gray-600">
-          Tablo satırları seçtiğiniz kırılıma göre değişir; tarife modunda “trafik hariç ara toplam” satırı gösterilmez.
+          Tablo satırları seçtiğiniz kırılıma göre değişir; hayat dışı bölümünde{" "}
+          <strong>TRAFİK HARİÇ TOPLAM</strong> satırı hem ana branş hem tarife görünümünde listelenir.
         </p>
       </div>
 
@@ -302,6 +303,7 @@ export default function TsbBransDegisimDashboard() {
               className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
             >
               <option value="">Tüm tarife grupları</option>
+              <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
               {tarifeSecenekleri.map((t) => (
                 <option key={t} value={t}>
                   {t}
@@ -318,8 +320,6 @@ export default function TsbBransDegisimDashboard() {
         <strong className="ml-1">Pazar payı</strong> sütunları, şirket priminin o satırdaki sektör primine oranını (%)
         gösterir; son sütun iki dönem arasındaki yüzde puan (pp) farkıdır.
       </p>
-
-      <BransPrimPayStrip dilimler={paySnapshot} sirketAdi={secilenAd} />
 
       <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
         <table className="min-w-[920px] w-full border-collapse text-left text-[11px]">

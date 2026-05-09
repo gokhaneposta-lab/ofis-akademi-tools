@@ -34,6 +34,15 @@ export const ANA_BRANS_FILTER_TRAFIK_HARIC = "__trafikHaric";
 export const ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL =
   "Trafik hariç toplam (Kara Araçları Sorumluluk dışında)";
 
+/** Tarife grubu seçim değeri: TRAFİK satırı hariç (hayat dışı kırılımda) */
+export const TARIFE_GRUBU_FILTER_TRAFIK_HARIC = "__tarifeTrafikHaric";
+
+export const TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL =
+  "Trafik hariç toplam (TRAFİK tarife grubu dışında)";
+
+/** Prim tidy verisinde hayat dışı zorunlu trafik üretiminin tarife grubu adı */
+export const TSB_TARIFE_GRUBU_TRAFIK = "TRAFİK";
+
 /** `anaBransH`: null/"" = tümü; `ANA_BRANS_FILTER_TRAFIK_HARIC` = trafik ana branşı hariç */
 export function rowMatchesAnaBransFilter(row: TsbPrimRow, anaBransH: string | null): boolean {
   if (anaBransH === null || anaBransH === "") return true;
@@ -54,6 +63,9 @@ export function rowMatchesPrimDaraltma(r: TsbPrimRow, f: TsbPrimDaraltma): boole
   if (f.kind === "anaBransH") return rowMatchesAnaBransFilter(r, f.anaBransH);
   const tg = tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, f.lookup);
   if (f.tarifeGrubu === null) return true;
+  if (f.tarifeGrubu === TARIFE_GRUBU_FILTER_TRAFIK_HARIC) {
+    return tg !== TSB_TARIFE_GRUBU_TRAFIK;
+  }
   return tg === f.tarifeGrubu;
 }
 

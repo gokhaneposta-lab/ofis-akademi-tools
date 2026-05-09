@@ -11,7 +11,9 @@ import {
   prevYearPeriod,
   rowMatchesPrimDaraltma,
   rowMatchesSegment,
+  TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
   TSB_ANA_BRANS_TRAFIK_SORUMLULUK,
+  TSB_TARIFE_GRUBU_TRAFIK,
 } from "./tsbPrimDashboard";
 
 function sortAnaBransSirasi(mevcut: Set<string>, sabitSira: readonly string[]): string[] {
@@ -78,6 +80,9 @@ function narrowAnaKeys(keys: string[], daraltma: Extract<TsbPrimDaraltma, { kind
 
 function narrowTarifeKeys(keys: string[], daraltma: Extract<TsbPrimDaraltma, { kind: "tarifeGrubu" }>): string[] {
   if (daraltma.tarifeGrubu === null) return keys;
+  if (daraltma.tarifeGrubu === TARIFE_GRUBU_FILTER_TRAFIK_HARIC) {
+    return keys.filter((k) => k !== TSB_TARIFE_GRUBU_TRAFIK);
+  }
   return keys.filter((k) => k === daraltma.tarifeGrubu);
 }
 
@@ -140,7 +145,7 @@ export type BransSiraOzet = {
   donemBu: string;
   donemOnceki: string;
   hayatdisiBranslar: BransSiraSatir[];
-  hayatdisiTrafikHaricPortfoy: BransSiraSatir | null;
+  hayatdisiTrafikHaricPortfoy: BransSiraSatir;
   hayatdisiPortfoy: BransSiraSatir;
   hayatBranslar: BransSiraSatir[];
   hayatPortfoy: BransSiraSatir;
@@ -217,6 +222,12 @@ export function buildBransSiraTablosu(
 
   const trafikHaricDaraltma: TsbPrimDaraltma = { kind: "anaBransH", anaBransH: ANA_BRANS_FILTER_TRAFIK_HARIC };
 
+  const tarifeTrafikHaricDaraltma: TsbPrimDaraltma = {
+    kind: "tarifeGrubu",
+    tarifeGrubu: TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
+    lookup,
+  };
+
   const hayatdisiTrafikHaricPortfoy =
     grupModu === "anaBransH"
       ? buildSatir(
@@ -226,7 +237,13 @@ export function buildBransSiraTablosu(
           aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", trafikHaricDaraltma),
           sirketKodu,
         )
-      : null;
+      : buildSatir(
+          "TRAFİK HARİÇ TOPLAM",
+          "hayatdisi",
+          aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", tarifeTrafikHaricDaraltma),
+          aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", tarifeTrafikHaricDaraltma),
+          sirketKodu,
+        );
 
   const hayatdisiPortfoy = buildSatir(
     grupModu === "anaBransH" ? "HAYATDIŞI PORTFÖY (tüm branşlar)" : "HAYATDIŞI (daraltma kapsamı)",

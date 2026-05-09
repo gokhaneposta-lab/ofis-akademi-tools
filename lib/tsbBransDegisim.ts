@@ -8,7 +8,9 @@ import {
   prevYearPeriod,
   rowMatchesPrimDaraltma,
   rowMatchesSegment,
+  TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
   TSB_ANA_BRANS_TRAFIK_SORUMLULUK,
+  TSB_TARIFE_GRUBU_TRAFIK,
 } from "./tsbPrimDashboard";
 
 /** Klasik sektör raporu sırasına yakın hayat dışı ana branşlar (TSB `anaBransH`) */
@@ -88,6 +90,9 @@ function narrowAnaKeys(keys: string[], daraltma: Extract<TsbPrimDaraltma, { kind
 
 function narrowTarifeKeys(keys: string[], daraltma: Extract<TsbPrimDaraltma, { kind: "tarifeGrubu" }>): string[] {
   if (daraltma.tarifeGrubu === null) return keys;
+  if (daraltma.tarifeGrubu === TARIFE_GRUBU_FILTER_TRAFIK_HARIC) {
+    return keys.filter((k) => k !== TSB_TARIFE_GRUBU_TRAFIK);
+  }
   return keys.filter((k) => k === daraltma.tarifeGrubu);
 }
 
@@ -139,7 +144,7 @@ export type BransDegisimOzet = {
   donemBu: string;
   donemOnceki: string;
   hayatdisiBranslar: BransDegisimSatir[];
-  /** Yalnızca ana branş kırılımında anlamlı; tarife modunda null */
+  /** Hayat dışı: TRAFİK / MTPL hariç ara toplam (ana branş veya tarife kırılımı) */
   hayatdisiTrafikHaricToplam: BransDegisimSatir | null;
   hayatdisiToplam: BransDegisimSatir;
   hayatBranslar: BransDegisimSatir[];
@@ -257,7 +262,11 @@ export function buildBransDegisimTablosu(
           "hayatdisi",
           "TRAFİK HARİÇ TOPLAM",
         )
-      : null;
+      : aggregateToplam(
+          hayatdisiBranslar.filter((s) => s.anaBransH !== TSB_TARIFE_GRUBU_TRAFIK),
+          "hayatdisi",
+          "TRAFİK HARİÇ TOPLAM",
+        );
 
   const hayatdisiToplam = aggregateToplam(hayatdisiBranslar, "hayatdisi", "HAYATDIŞI TOPLAM");
   const hayatToplam = aggregateToplam(hayatBranslar, "hayat", "HAYAT & EMEKLİLİK TOPLAM");

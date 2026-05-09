@@ -12,6 +12,8 @@ import {
   isTsbToplamSirketKodu,
   prevYearPeriod,
   resolveDefaultSirketKodu,
+  TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
+  TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL,
   uniqueAnaBransForSegment,
   uniqueSortedPeriods,
   uniqueTarifeGruplariDonem,
@@ -131,6 +133,7 @@ export default function TsbBransSiraDashboard() {
 
   useEffect(() => {
     if (filtreModu !== "tarifeGrubu" || tarifeSecim === "") return;
+    if (tarifeSecim === TARIFE_GRUBU_FILTER_TRAFIK_HARIC) return;
     if (!tarifeSecenekleri.includes(tarifeSecim)) setTarifeSecim("");
   }, [filtreModu, tarifeSecim, tarifeSecenekleri]);
 
@@ -299,6 +302,7 @@ export default function TsbBransSiraDashboard() {
               className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
             >
               <option value="">Tüm tarife grupları</option>
+              <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
               {tarifeSecenekleri.map((t) => (
                 <option key={t} value={t}>
                   {t}
@@ -340,9 +344,7 @@ export default function TsbBransSiraDashboard() {
             {tablo.hayatdisiBranslar.map((s) => (
               <Satir key={`hd-${s.anaBransH}`} satir={s} />
             ))}
-            {tablo.hayatdisiTrafikHaricPortfoy && (
-              <Satir satir={tablo.hayatdisiTrafikHaricPortfoy} portfoy />
-            )}
+            <Satir satir={tablo.hayatdisiTrafikHaricPortfoy} portfoy />
             <Satir satir={tablo.hayatdisiPortfoy} portfoy />
             <tr className="bg-sky-50">
               <td colSpan={5} className="px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-sky-900">

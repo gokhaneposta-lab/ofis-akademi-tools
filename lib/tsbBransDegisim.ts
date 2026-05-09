@@ -6,7 +6,7 @@ import {
   rowMatchesSegment,
 } from "./tsbPrimDashboard";
 
-/** Excel / klasik sektör raporu sırasına yakın hayat dışı ana branşlar (TSB `anaBransH`) */
+/** Klasik sektör raporu sırasına yakın hayat dışı ana branşlar (TSB `anaBransH`) */
 export const HD_ANA_BRANS_SIRASI: string[] = [
   "KAZA",
   "HASTALIK SAĞLIK",

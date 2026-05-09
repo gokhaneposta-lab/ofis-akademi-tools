@@ -1,28 +1,28 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
-import TsbBransDegisimDashboard from "@/components/tsb/TsbBransDegisimDashboard";
+import TsbBransSiraDashboard from "@/components/tsb/TsbBransSiraDashboard";
 
 const BASE = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Sektör branş değişim tablosu (TSB) — Şirket vs sektör",
+  title: "Branş sıra özeti (TSB) — Şirket bazlı sektör sıralaması",
   description:
-    "Hayat dışı ve hayat–emeklilik ana branşlarında şirket–sektör prim karşılaştırması; seçilen ay ile önceki yılın aynı ayı arasında değişim ve pazar payı (TSB verisi).",
+    "Hayat dışı ve hayat–emeklilik ana branşlarında seçilen şirketin prim sırası; önceki yılın aynı ayı ile kıyas (TSB verisi).",
   alternates: {
-    canonical: canonicalUrl("/sigorta/brans-degisim"),
+    canonical: canonicalUrl("/sigorta/brans-sira"),
   },
   openGraph: {
-    title: "Sektör branş değişim tablosu | Ofis Akademi",
-    description: "TSB prim verisi · branş bazında şirket vs sektör.",
-    url: `${BASE}/sigorta/brans-degisim`,
+    title: "Branş sıra özeti | Ofis Akademi",
+    description: "TSB verisi · branş bazında sektör içi sıralama.",
+    url: `${BASE}/sigorta/brans-sira`,
     siteName: "Ofis Akademi",
     locale: "tr_TR",
     type: "website",
   },
 };
 
-export default function SigortaBransDegisimPage() {
+export default function SigortaBransSiraPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
       <header className="border-b border-gray-200 bg-white">
@@ -36,13 +36,13 @@ export default function SigortaBransDegisimPage() {
             </svg>
             Sektör verileri (TSB)
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Sektör branş değişim tablosu</h1>
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Branş sıra özeti</h1>
           <p className="mt-2 max-w-3xl text-sm text-gray-600">
-            Bu panel, <strong>TSB prim verisi</strong> üzerinden seçtiğiniz şirketi sektörle{" "}
-            <strong>ana branş bazında</strong> karşılaştırır. Üstte <strong>hayat dışı</strong> branşlar, altta{" "}
-            <strong>hayat ve emeklilik</strong> branşları listelenir; ara toplamlar ve genel toplam satırları özeti
-            verir. Gösterilen yüzde değişimleri, seçtiğiniz rapor ayına göre <strong>bir önceki yılın aynı ayı</strong> ile
-            kıyaslanarak hesaplanır.
+            Her ana branş için seçilen şirketin <strong>prim sırası</strong>, o branşta üretimi olan diğer şirketlere göre
+            hesaplanır. Karşılaştırma, seçtiğiniz dönem ile <strong>bir önceki yılın aynı ayı</strong> arasındaki sıra
+            farkını gösterir. Şirketi listeden değiştirebilirsiniz; sayfa açıldığında sık izlenen bir şirket önceliklidir
+            (ör. <strong>Bereket Sigorta AŞ</strong>, kod 1025). Hayat–emeklilik şirketleri için listeden uygun kodu
+            seçebilirsiniz (ör. <strong>Bereket Emeklilik ve Hayat AŞ</strong>, 3005).
           </p>
           <aside className="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[12px] text-gray-600 max-w-3xl">
             <strong>Kaynak:</strong> TSB kamuya açık prim istatistikleri (işlenmiş). Resmi tablo için{" "}
@@ -60,7 +60,7 @@ export default function SigortaBransDegisimPage() {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <TsbBransDegisimDashboard />
+        <TsbBransSiraDashboard />
       </main>
     </div>
   );

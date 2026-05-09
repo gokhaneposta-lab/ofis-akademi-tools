@@ -25,6 +25,31 @@ export type TsbSektorSegment = "hayatdisi" | "hayat";
 /** TSB Excel'deki sektör alt toplam şirket kodları */
 export const TSB_TOPLAM_SIRKET_KODLARI = new Set([9000, 9001, 9003]);
 
+/** Şirket seçicilerinde varsayılan: Bereket Sigorta AŞ (hayat dışı · HD) */
+export const DEFAULT_BEREKET_SIGORTA_HD_KOD = 1025;
+
+/** Hayat–emeklilik görünümünde varsayılan tercih: Bereket Emeklilik ve Hayat AŞ */
+export const DEFAULT_BEREKET_EMEKLILIK_KOD = 3005;
+
+export type TsbDefaultSirketMod = "hayatdisi" | "hayat" | "any";
+
+/** Şirket listesinde Bereket varsayılanını uygula; yoksa listenin ilki */
+export function resolveDefaultSirketKodu(liste: { kod: number }[], mod: TsbDefaultSirketMod): number | null {
+  if (liste.length === 0) return null;
+  if (mod === "hayatdisi") {
+    const x = liste.find((s) => s.kod === DEFAULT_BEREKET_SIGORTA_HD_KOD);
+    return x?.kod ?? liste[0].kod;
+  }
+  if (mod === "hayat") {
+    const x = liste.find((s) => s.kod === DEFAULT_BEREKET_EMEKLILIK_KOD);
+    return x?.kod ?? liste[0].kod;
+  }
+  const hd = liste.find((s) => s.kod === DEFAULT_BEREKET_SIGORTA_HD_KOD);
+  if (hd) return hd.kod;
+  const hy = liste.find((s) => s.kod === DEFAULT_BEREKET_EMEKLILIK_KOD);
+  return hy?.kod ?? liste[0].kod;
+}
+
 export function isTsbToplamSirketKodu(kod: number): boolean {
   return TSB_TOPLAM_SIRKET_KODLARI.has(kod);
 }

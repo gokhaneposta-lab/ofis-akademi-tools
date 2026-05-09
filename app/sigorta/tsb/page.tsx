@@ -30,11 +30,25 @@ const PANELLER = [
     icon: "📊",
   },
   {
+    href: "/sigorta/kanal-dagilim",
+    badge: "Dağılım",
+    title: "Sektör kanal dağılımı",
+    subtitle: "Şirket vs sektör · kanal payları ve yüzdeler",
+    icon: "📈",
+  },
+  {
     href: "/sigorta/brans-degisim",
     badge: "Branş",
     title: "Sektör branş değişim tablosu",
     subtitle: "Şirket vs sektör · pazar payı · önceki yıl aynı ay",
     icon: "📑",
+  },
+  {
+    href: "/sigorta/brans-sira",
+    badge: "Sıra",
+    title: "Branş sıra özeti",
+    subtitle: "Şirket bazlı branş sıralaması · önceki yıl ile Δ sıra",
+    icon: "🏅",
   },
 ] as const;
 
@@ -71,7 +85,7 @@ export default function SigortaTsbHubPage() {
           <h2 id="tsb-panels" className="sr-only">
             TSB panelleri
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {PANELLER.map((p) => (
               <Link
                 key={p.href}

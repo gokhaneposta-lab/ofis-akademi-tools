@@ -22,27 +22,53 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
   { value: "merkez", label: "Merkez" },
 ];
 
-const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
+const nfMn = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+
+function fmtMnLab(v: number): string {
+  return nfMn.format(v / 1e6);
+}
 
 function TrendSvg({
   seri,
   sirketAdi,
+  logOlcek,
 }: {
   seri: PrimTrend12Nokta[];
   sirketAdi: string;
+  logOlcek: boolean;
 }) {
-  const W = 760;
-  const H = 300;
-  const pad = { l: 58, r: 28, t: 36, b: 56 };
+  const W = 780;
+  const H = 380;
+  const pad = { l: 60, r: 32, t: 44, b: 62 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
 
-  const maxY = Math.max(...seri.flatMap((p) => [p.sektor, p.sirket]), 1);
-  const padY = maxY * 0.06;
-  const hi = maxY + padY;
+  const allRaw = seri.flatMap((p) => [p.sektor, p.sirket]);
+  const maxRaw = Math.max(...allRaw, 1);
+
+  let yAt: (v: number) => number;
+  let tickVals: number[];
+
+  if (!logOlcek) {
+    const hi = maxRaw * 1.08;
+    tickVals = [0, 0.25, 0.5, 0.75, 1].map((t) => hi * t);
+    yAt = (v: number) => pad.t + innerH - (Math.min(Math.max(v, 0), hi) / hi) * innerH;
+  } else {
+    const pos = allRaw.filter((x) => x > 0);
+    const floor = pos.length ? Math.min(...pos) * 0.32 : 1e6;
+    const ceil = Math.max(maxRaw, floor * 5);
+    const lo = Math.log10(Math.max(floor, 100));
+    const hiL = Math.log10(Math.max(ceil, floor + 1));
+    const span = hiL - lo || 1e-9;
+    yAt = (v: number) => {
+      const vv = v <= 0 ? floor * 0.45 : Math.max(v, floor * 0.45);
+      return pad.t + innerH - (Math.log10(vv) - lo) / span * innerH;
+    };
+    tickVals = [0, 0.25, 0.5, 0.75, 1].map((t) => Math.pow(10, lo + (hiL - lo) * t));
+  }
 
   const xAt = (i: number) => pad.l + (i / Math.max(seri.length - 1, 1)) * innerW;
-  const yAt = (v: number) => pad.t + innerH - (v / hi) * innerH;
 
   const ptsSektor = seri.map((p, i) => `${xAt(i)},${yAt(p.sektor)}`).join(" ");
   const ptsSirket = seri.map((p, i) => `${xAt(i)},${yAt(p.sirket)}`).join(" ");
@@ -50,25 +76,24 @@ function TrendSvg({
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full max-w-full" role="img" aria-label="Son dönem prim trendi">
       <rect width={W} height={H} fill="white" />
-      <text x={pad.l} y={22} fill="#374151" fontSize={12} fontWeight={600}>
-        Aylık prim (₺)
+      <text x={pad.l} y={24} fill="#374151" fontSize={12} fontWeight={600}>
+        Aylık prim (Mn ₺){logOlcek ? " · logaritmik eksen" : " · doğrusal eksen"}
       </text>
-      <text x={pad.l} y={38} fill="#6b7280" fontSize={10}>
-        Sektör toplamı vs {sirketAdi.slice(0, 48)}
-        {sirketAdi.length > 48 ? "…" : ""}
+      <text x={pad.l} y={40} fill="#6b7280" fontSize={10}>
+        Gri: sektör · Yeşil: {sirketAdi.slice(0, 42)}
+        {sirketAdi.length > 42 ? "…" : ""}
       </text>
 
       <line x1={pad.l} y1={pad.t + innerH} x2={pad.l + innerW} y2={pad.t + innerH} stroke="#cbd5e1" strokeWidth={1} />
       <line x1={pad.l} y1={pad.t} x2={pad.l} y2={pad.t + innerH} stroke="#cbd5e1" strokeWidth={1} />
 
-      {[0, 0.25, 0.5, 0.75, 1].map((t) => {
-        const v = hi * t;
-        const y = yAt(v);
+      {tickVals.map((tv, ti) => {
+        const y = yAt(tv);
         return (
-          <g key={t}>
+          <g key={`tg-${ti}`}>
             <line x1={pad.l} y1={y} x2={pad.l + innerW} y2={y} stroke="#f1f5f9" strokeWidth={1} />
             <text x={pad.l - 6} y={y + 4} textAnchor="end" fill="#94a3b8" fontSize={9}>
-              {nf.format(v)}
+              {fmtMnLab(tv)}
             </text>
           </g>
         );
@@ -79,26 +104,50 @@ function TrendSvg({
 
       {seri.map((p, i) => (
         <g key={p.donem}>
-          <circle cx={xAt(i)} cy={yAt(p.sektor)} r={3} fill="#64748b" />
-          <circle cx={xAt(i)} cy={yAt(p.sirket)} r={3} fill="#059669" />
+          <circle cx={xAt(i)} cy={yAt(p.sektor)} r={3.5} fill="#64748b" />
+          <circle cx={xAt(i)} cy={yAt(p.sirket)} r={3.5} fill="#059669" />
         </g>
       ))}
 
+      {seri.map((p, i) => {
+        const xs = xAt(i);
+        const ys = yAt(p.sektor);
+        const yk = yAt(p.sirket);
+        const stagger = i % 2 === 0 ? 1 : -1;
+        return (
+          <g key={`lab-${p.donem}`}>
+            <text x={xs} y={ys - 10} textAnchor="middle" fill="#475569" fontSize={8} fontWeight={600}>
+              {fmtMnLab(p.sektor)}
+            </text>
+            <text
+              x={xs + stagger * 22}
+              y={yk + 14 + stagger * 6}
+              textAnchor="middle"
+              fill="#047857"
+              fontSize={8}
+              fontWeight={600}
+            >
+              {`${fmtMnLab(p.sirket)} · %${pf.format(p.payYuzde)}`}
+            </text>
+          </g>
+        );
+      })}
+
       {seri.map((p, i) => (
-        <text key={`lx-${p.donem}`} x={xAt(i)} y={H - 22} textAnchor="middle" fill="#475569" fontSize={9}>
+        <text key={`lx-${p.donem}`} x={xAt(i)} y={H - 20} textAnchor="middle" fill="#475569" fontSize={9}>
           {p.donem}
         </text>
       ))}
 
-      <g transform={`translate(${pad.l + innerW - 168}, ${pad.t + 6})`}>
-        <rect width={160} height={44} rx={6} fill="#f8fafc" stroke="#e2e8f0" />
-        <line x1={10} y1={16} x2={28} y2={16} stroke="#64748b" strokeWidth={2.5} />
-        <text x={34} y={20} fill="#374151" fontSize={10}>
-          Sektör
+      <g transform={`translate(${pad.l + innerW - 172}, ${pad.t + 8})`}>
+        <rect width={164} height={52} rx={6} fill="#f8fafc" stroke="#e2e8f0" />
+        <line x1={10} y1={18} x2={30} y2={18} stroke="#64748b" strokeWidth={2.5} />
+        <text x={36} y={22} fill="#374151" fontSize={10}>
+          Sektör (etiket: Mn ₺)
         </text>
-        <line x1={10} y1={32} x2={28} y2={32} stroke="#059669" strokeWidth={2.5} />
-        <text x={34} y={36} fill="#374151" fontSize={10}>
-          Şirket
+        <line x1={10} y1={38} x2={30} y2={38} stroke="#059669" strokeWidth={2.5} />
+        <text x={36} y={42} fill="#374151" fontSize={10}>
+          Şirket (Mn · pay %)
         </text>
       </g>
     </svg>
@@ -113,6 +162,7 @@ export default function TsbPrimTrend12Dashboard() {
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
   const [anaBrans, setAnaBrans] = useState("");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
+  const [logOlcek, setLogOlcek] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -222,9 +272,33 @@ export default function TsbPrimTrend12Dashboard() {
             Hayat &amp; emeklilik
           </button>
         </div>
+        <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Eksen</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={logOlcek}
+            onClick={() => setLogOlcek(true)}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              logOlcek ? "bg-slate-700 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Logaritmik (önerilen)
+          </button>
+          <button
+            type="button"
+            aria-pressed={!logOlcek}
+            onClick={() => setLogOlcek(false)}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              !logOlcek ? "bg-slate-700 text-white shadow-sm" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Doğrusal
+          </button>
+        </div>
         <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
-          Seçtiğiniz <strong>bitiş ayına</strong> kadar geriye dönük en fazla <strong>12 ay</strong> gösterilir (veride daha az ay varsa otomatik kısalır).
-          Gri çizgi sektör toplamı, yeşil çizgi varsayılan olarak <strong>Bereket</strong> (veya seçtiğiniz şirket) primidir.
+          Seçtiğiniz <strong>bitiş ayına</strong> kadar geriye dönük en fazla <strong>12 ay</strong> gösterilir. Grafik ve etiketler{" "}
+          <strong>milyon TL</strong> üzerinden; şirket etiketinde <strong>sektör içi pay %</strong> de yer alır. Küçük primler sıfıra
+          yapışmasın diye varsayılan eksen <strong>logaritmik</strong>dir (Excel’deki log ölçeğe benzer).
         </p>
       </div>
 
@@ -294,23 +368,25 @@ export default function TsbPrimTrend12Dashboard() {
       {seri && seri.length > 0 && sirketAdi && (
         <>
           <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <TrendSvg seri={seri} sirketAdi={sirketAdi} />
+            <TrendSvg seri={seri} sirketAdi={sirketAdi} logOlcek={logOlcek} />
           </div>
           <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-            <table className="min-w-[520px] w-full border-collapse text-left text-[11px]">
+            <table className="min-w-[640px] w-full border-collapse text-left text-[11px]">
               <thead>
                 <tr className="border-b border-gray-300 bg-slate-800 text-white">
                   <th className="px-3 py-2 font-semibold">Dönem</th>
-                  <th className="px-3 py-2 text-right font-semibold">Sektör ₺</th>
-                  <th className="px-3 py-2 text-right font-semibold">Şirket ₺</th>
+                  <th className="px-3 py-2 text-right font-semibold">Sektör (Mn ₺)</th>
+                  <th className="px-3 py-2 text-right font-semibold">Şirket (Mn ₺)</th>
+                  <th className="px-3 py-2 text-right font-semibold">Şirket payı (%)</th>
                 </tr>
               </thead>
               <tbody>
                 {seri.map((p) => (
                   <tr key={p.donem} className="border-b border-gray-100 bg-white">
                     <td className="px-3 py-2 font-medium tabular-nums">{p.donem}</td>
-                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">{nf.format(p.sektor)}</td>
-                    <td className="px-3 py-2 text-right tabular-nums text-emerald-800">{nf.format(p.sirket)}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">{nfMn.format(p.sektor / 1e6)}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-emerald-800">{nfMn.format(p.sirket / 1e6)}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-gray-800">{pf.format(p.payYuzde)}</td>
                   </tr>
                 ))}
               </tbody>

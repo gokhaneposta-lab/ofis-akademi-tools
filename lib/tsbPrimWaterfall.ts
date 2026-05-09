@@ -1,3 +1,5 @@
+import type { TsbBranchLookupMap } from "./tsbBranchLookup";
+import { tarifeGrubuFromRow } from "./tsbBranchLookup";
 import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
 import {
   channelPremium,
@@ -6,15 +8,20 @@ import {
   rowMatchesSegment,
 } from "./tsbPrimDashboard";
 
-const BRIDGE_MAX_ETIKET = 14;
+const BRIDGE_MAX_ANA_BRANS = 14;
+const BRIDGE_MAX_TARIFE = 18;
 
-function sumCompanyPremiumByAnaBrans(
+export type PrimWaterfallGrup = "anaBransH" | "tarifeGrubu";
+
+function sumCompanyPremiumByGrup(
   rows: TsbPrimRow[],
   donem: string,
   channel: TsbKanalField,
   segment: TsbSektorSegment,
   anaBransH: string | null,
   sirketKodu: number,
+  grup: PrimWaterfallGrup,
+  lookup: TsbBranchLookupMap | null,
 ): Map<string, number> {
   const m = new Map<string, number>();
   for (const r of rows) {
@@ -24,7 +31,10 @@ function sumCompanyPremiumByAnaBrans(
     if (r.sirketKodu !== sirketKodu) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     const v = channelPremium(r, channel);
-    const k = r.anaBransH;
+    const k =
+      grup === "anaBransH"
+        ? r.anaBransH
+        : tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup);
     m.set(k, (m.get(k) ?? 0) + v);
   }
   return m;
@@ -49,14 +59,14 @@ export type PrimWaterfallModel = {
   donemBitis: string;
   kanal: TsbKanalField;
   segment: TsbSektorSegment;
+  grup: PrimWaterfallGrup;
   toplamBaslangic: number;
   toplamBitis: number;
   deltas: PrimWaterfallDelta[];
 };
 
 /**
- * Şirket toplam priminin iki dönem arasındaki farkını ana branş deltaslarına böler.
- * Grafik okunabilirliği için mutlak değere göre sıralanır; küçük kalemler "Diğer branşlar (net)" altında birleşir.
+ * Şirket toplam priminin iki dönem arasındaki farkını ana branş veya tarife grubu deltaslarına böler.
  */
 export function buildPrimWaterfall(
   rows: TsbPrimRow[],
@@ -66,11 +76,13 @@ export function buildPrimWaterfall(
   segment: TsbSektorSegment,
   anaBransH: string | null,
   sirketKodu: number,
+  grup: PrimWaterfallGrup,
+  lookup: TsbBranchLookupMap | null,
 ): PrimWaterfallModel | null {
   if (donemBaslangic === donemBitis) return null;
 
-  const mapO = sumCompanyPremiumByAnaBrans(rows, donemBaslangic, channel, segment, anaBransH, sirketKodu);
-  const mapB = sumCompanyPremiumByAnaBrans(rows, donemBitis, channel, segment, anaBransH, sirketKodu);
+  const mapO = sumCompanyPremiumByGrup(rows, donemBaslangic, channel, segment, anaBransH, sirketKodu, grup, lookup);
+  const mapB = sumCompanyPremiumByGrup(rows, donemBitis, channel, segment, anaBransH, sirketKodu, grup, lookup);
 
   let toplamBaslangic = 0;
   for (const v of mapO.values()) toplamBaslangic += v;
@@ -86,13 +98,17 @@ export function buildPrimWaterfall(
   }
   raw.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
 
+  const maxEtiket = grup === "tarifeGrubu" ? BRIDGE_MAX_TARIFE : BRIDGE_MAX_ANA_BRANS;
+  const digerEtiket =
+    grup === "tarifeGrubu" ? "Diğer tarife grupları (net)" : "Diğer ana branşlar (net)";
+
   let deltas: PrimWaterfallDelta[];
-  if (raw.length <= BRIDGE_MAX_ETIKET) {
+  if (raw.length <= maxEtiket) {
     deltas = raw;
   } else {
-    const head = raw.slice(0, BRIDGE_MAX_ETIKET);
-    const tailDelta = raw.slice(BRIDGE_MAX_ETIKET).reduce((s, x) => s + x.delta, 0);
-    deltas = tailDelta === 0 ? head : [...head, { label: "Diğer branşlar (net)", delta: tailDelta }];
+    const head = raw.slice(0, maxEtiket);
+    const tailDelta = raw.slice(maxEtiket).reduce((s, x) => s + x.delta, 0);
+    deltas = tailDelta === 0 ? head : [...head, { label: digerEtiket, delta: tailDelta }];
   }
 
   return {
@@ -102,6 +118,7 @@ export function buildPrimWaterfall(
     donemBitis,
     kanal: channel,
     segment,
+    grup,
     toplamBaslangic,
     toplamBitis,
     deltas,

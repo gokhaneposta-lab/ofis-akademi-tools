@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { buildPrimWaterfall, type PrimWaterfallModel } from "@/lib/tsbPrimWaterfall";
+import { buildPrimWaterfall, type PrimWaterfallGrup, type PrimWaterfallModel } from "@/lib/tsbPrimWaterfall";
+import type { TsbBranchLookupMap } from "@/lib/tsbBranchLookup";
+import { parseBranchLookupJson } from "@/lib/tsbBranchLookup";
 import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
@@ -25,11 +27,29 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 ];
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
+const nfMnTbl = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+
+const nfMnChart = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+
+function fmtMnShort(x: number): string {
+  return `${nfMnChart.format(x / 1e6)} Mn`;
+}
+
+function fmtMnDelta(delta: number): string {
+  const ab = nfMnChart.format(Math.abs(delta) / 1e6);
+  return delta >= 0 ? `+${ab}` : `−${ab}`;
+}
+
+function truncateLabel(s: string, max = 30): string {
+  const t = s.trim();
+  return t.length <= max ? t : `${t.slice(0, max - 1)}…`;
+}
 
 function WaterfallSvg({ model }: { model: PrimWaterfallModel }) {
-  const W = 760;
-  const H = 320;
-  const pad = { l: 56, r: 20, t: 28, b: 88 };
+  const colCount = model.deltas.length + 2;
+  const W = Math.min(1760, Math.max(880, colCount * 76));
+  const H = 430;
+  const pad = { l: 64, r: 26, t: 36, b: 138 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
 
@@ -50,7 +70,6 @@ function WaterfallSvg({ model }: { model: PrimWaterfallModel }) {
   const valToY = (v: number) => pad.t + innerH - ((v - lo) / rng) * innerH;
 
   const nFloat = model.deltas.length;
-  const colCount = nFloat + 2;
   const colW = innerW / colCount;
 
   const pillarFill = "#475569";
@@ -61,8 +80,9 @@ function WaterfallSvg({ model }: { model: PrimWaterfallModel }) {
 
   let cumBefore = model.toplamBaslangic;
 
-  const xLeft = (i: number) => pad.l + i * colW + 3;
-  const xRight = (i: number) => pad.l + (i + 1) * colW - 3;
+  const xLeft = (i: number) => pad.l + i * colW + 4;
+  const xRight = (i: number) => pad.l + (i + 1) * colW - 4;
+  const cx = (i: number) => pad.l + (i + 0.5) * colW;
 
   const pillar = (i: number, total: number, fill: string) => {
     const top = valToY(total);
@@ -73,7 +93,7 @@ function WaterfallSvg({ model }: { model: PrimWaterfallModel }) {
         key={`p-${i}`}
         x={xLeft(i)}
         y={top}
-        width={colW - 6}
+        width={colW - 8}
         height={Math.max(h, 1)}
         rx={4}
         fill={fill}
@@ -81,14 +101,8 @@ function WaterfallSvg({ model }: { model: PrimWaterfallModel }) {
       />,
     );
     els.push(
-      <text
-        key={`pt-${i}`}
-        x={pad.l + (i + 0.5) * colW}
-        y={top - 6}
-        textAnchor="middle"
-        className="fill-gray-800 text-[10px] font-semibold"
-      >
-        {nf.format(total)}
+      <text key={`pt-${i}`} x={cx(i)} y={top - 8} textAnchor="middle" fill="#0f172a" fontSize={10} fontWeight={600}>
+        {fmtMnShort(total)} ₺
       </text>,
     );
   };
@@ -115,29 +129,32 @@ function WaterfallSvg({ model }: { model: PrimWaterfallModel }) {
 
     const top = valToY(Math.max(cumBefore, cumAfter));
     const bot = valToY(Math.min(cumBefore, cumAfter));
-    const h = Math.max(bot - top, 2);
+    const barH = Math.max(bot - top, 2);
     els.push(
       <rect
         key={`f-${j}`}
         x={xLeft(i)}
         y={top}
-        width={colW - 6}
-        height={h}
+        width={colW - 8}
+        height={barH}
         rx={4}
         fill={delta >= 0 ? posFill : negFill}
         opacity={0.88}
       />,
     );
+
+    const labY = delta >= 0 ? top - 6 : bot + 14;
     els.push(
       <text
         key={`ft-${j}`}
-        x={pad.l + (i + 0.5) * colW}
-        y={top - 6}
+        x={cx(i)}
+        y={labY}
         textAnchor="middle"
-        className={`text-[9px] font-semibold ${delta >= 0 ? "fill-emerald-800" : "fill-rose-700"}`}
+        fill={delta >= 0 ? "#065f46" : "#9f1239"}
+        fontSize={9}
+        fontWeight={700}
       >
-        {delta >= 0 ? "+" : ""}
-        {nf.format(delta)}
+        {fmtMnDelta(delta)} ₺
       </text>,
     );
 
@@ -161,35 +178,36 @@ function WaterfallSvg({ model }: { model: PrimWaterfallModel }) {
   pillar(lastIdx, model.toplamBitis, "#1e40af");
 
   const labels = [
-    `Başlangıç\n${model.donemBaslangic}`,
-    ...model.deltas.map((d) => d.label),
-    `Bitiş\n${model.donemBitis}`,
+    `Başlangıç · ${model.donemBaslangic}`,
+    ...model.deltas.map((d) => truncateLabel(d.label, 34)),
+    `Bitiş · ${model.donemBitis}`,
   ];
 
   for (let i = 0; i < labels.length; i++) {
-    const lines = labels[i].split("\n");
+    const x = cx(i);
+    const y = H - 42;
     els.push(
       <text
         key={`lb-${i}`}
-        x={pad.l + (i + 0.5) * colW}
-        y={H - pad.b + 44}
-        textAnchor="middle"
-        className="fill-gray-700 text-[9px] leading-tight"
+        transform={`translate(${x},${y}) rotate(-52)`}
+        textAnchor="end"
+        dominantBaseline="middle"
+        fill="#334155"
+        fontSize={9}
       >
-        {lines.map((line, li) => (
-          <tspan key={li} x={pad.l + (i + 0.5) * colW} dy={li === 0 ? 0 : 11}>
-            {line.length > 22 ? `${line.slice(0, 20)}…` : line}
-          </tspan>
-        ))}
+        {labels[i]}
       </text>,
     );
   }
 
+  const grupBaslik =
+    model.grup === "tarifeGrubu" ? "Tarife grubu kırılımı · Mn ₺" : "Ana branş (TSB) kırılımı · Mn ₺";
+
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full max-w-full" role="img" aria-label="Prim köprü grafiği">
+    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto min-w-[880px] w-full max-w-none" role="img" aria-label="Prim köprü grafiği">
       <rect width={W} height={H} fill="white" />
-      <text x={pad.l} y={18} className="fill-gray-500 text-[11px]">
-        Ölçek: ₺ (seçilen kanal ve filtreler)
+      <text x={pad.l} y={22} fill="#64748b" fontSize={11}>
+        {grupBaslik} — rakamlar milyon TL
       </text>
       {els}
     </svg>
@@ -198,8 +216,10 @@ function WaterfallSvg({ model }: { model: PrimWaterfallModel }) {
 
 export default function TsbPrimWaterfallDashboard() {
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
+  const [branchLookup, setBranchLookup] = useState<TsbBranchLookupMap | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
+  const [grupMode, setGrupMode] = useState<PrimWaterfallGrup>("anaBransH");
   const [donemBitis, setDonemBitis] = useState("");
   const [donemBaslangic, setDonemBaslangic] = useState("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
@@ -221,6 +241,24 @@ export default function TsbPrimWaterfallDashboard() {
       })
       .catch((e: unknown) => {
         if (!cancelled) setError(e instanceof Error ? e.message : "Yükleme hatası");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/data/tsb/branch-lookup.json")
+      .then((r) => {
+        if (!r.ok) throw new Error("lookup");
+        return r.json();
+      })
+      .then((raw: Record<string, { anaBrans?: string; tarifeGrubu?: string }>) => {
+        if (!cancelled) setBranchLookup(parseBranchLookupJson(raw));
+      })
+      .catch(() => {
+        if (!cancelled) setBranchLookup(null);
       });
     return () => {
       cancelled = true;
@@ -278,8 +316,18 @@ export default function TsbPrimWaterfallDashboard() {
   const model = useMemo(() => {
     if (!rows || !donemBaslangic || !secilenBitis || effectiveSirket === null) return null;
     if (!donemler.includes(donemBaslangic) || !donemler.includes(secilenBitis)) return null;
-    return buildPrimWaterfall(rows, donemBaslangic, secilenBitis, kanal, segment, anaFiltre, effectiveSirket);
-  }, [rows, donemBaslangic, secilenBitis, kanal, segment, anaFiltre, effectiveSirket, donemler]);
+    return buildPrimWaterfall(
+      rows,
+      donemBaslangic,
+      secilenBitis,
+      kanal,
+      segment,
+      anaFiltre,
+      effectiveSirket,
+      grupMode,
+      branchLookup,
+    );
+  }, [rows, donemBaslangic, secilenBitis, kanal, segment, anaFiltre, effectiveSirket, donemler, grupMode, branchLookup]);
 
   const setBaslangicYoy = () => {
     const y = prevYearPeriod(secilenBitis);
@@ -334,6 +382,38 @@ export default function TsbPrimWaterfallDashboard() {
             Hayat &amp; emeklilik
           </button>
         </div>
+        <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Köprü kırılımı</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={grupMode === "anaBransH"}
+            onClick={() => setGrupMode("anaBransH")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              grupMode === "anaBransH"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Ana branş (TSB)
+          </button>
+          <button
+            type="button"
+            aria-pressed={grupMode === "tarifeGrubu"}
+            onClick={() => setGrupMode("tarifeGrubu")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              grupMode === "tarifeGrubu"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Tarife grubu
+          </button>
+        </div>
+        <p className="mt-2 text-[11px] leading-relaxed text-gray-600">
+          Tarife grubu: önce veri satırındaki <span className="font-medium">tarifeGrubu</span> alanı kullanılır; boşsa{" "}
+          <code className="rounded bg-gray-100 px-1 text-[10px]">branch-lookup.json</code> ile tamamlanır. Grafikte rakamlar{" "}
+          <strong>milyon TL</strong>; eksen etiketleri eğiktir.
+        </p>
         <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
           <strong>Başlangıç</strong> ve <strong>bitiş</strong> dönemini siz seçiyorsunuz; varsayılan yüklemede bitiş son ay,
           başlangıç ise aynı ayın bir önceki yılı (yoksa bir önceki ay). İsterseniz aşağıdan özelleştirin — bu, hem yıllık
@@ -445,29 +525,36 @@ export default function TsbPrimWaterfallDashboard() {
             <WaterfallSvg model={model} />
           </div>
           <p className="text-[11px] leading-relaxed text-gray-600">
-            Köprü sırası: etkiye göre (mutlak değişim büyükten küçüğe). Çok sayıda branşta grafik kalabalık olmasın diye en
-            fazla 14 kalem ayrı; kalanlar <strong>Diğer branşlar (net)</strong> altında birleştirilir. Başlangıç sütunu{" "}
-            <span className="text-slate-600 font-medium">gri</span>, artışlar <span className="text-emerald-700 font-medium">yeşil</span>,
-            azalışlar <span className="text-rose-700 font-medium">kırmızı</span>, bitiş{" "}
-            <span className="text-blue-900 font-medium">mavi</span>.
+            Köprü sırası: etkiye göre (mutlak değişim büyükten küçüğe). Ana branşta en fazla <strong>14</strong>, tarife
+            grubunda <strong>18</strong> kalem ayrı; kalanlar birleşik “Diğer … (net)” satırında. Başlangıç sütunu{" "}
+            <span className="font-medium text-slate-600">gri</span>, artışlar{" "}
+            <span className="font-medium text-emerald-700">yeşil</span>, azalışlar{" "}
+            <span className="font-medium text-rose-700">kırmızı</span>, bitiş{" "}
+            <span className="font-medium text-blue-900">mavi</span>.
           </p>
           <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-            <table className="min-w-[480px] w-full border-collapse text-left text-[11px]">
+            <table className="min-w-[560px] w-full border-collapse text-left text-[11px]">
               <thead>
                 <tr className="border-b border-gray-300 bg-slate-800 text-white">
                   <th className="px-3 py-2 font-semibold">Kalem</th>
-                  <th className="px-3 py-2 text-right font-semibold">Δ prim (₺)</th>
+                  <th className="px-3 py-2 text-right font-semibold">Mn ₺</th>
+                  <th className="px-3 py-2 text-right font-semibold">Tam ₺</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b border-gray-100 bg-white">
                   <td className="px-3 py-2 font-medium">Başlangıç toplamı ({model.donemBaslangic})</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{nf.format(model.toplamBaslangic)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums font-medium">{nfMnTbl.format(model.toplamBaslangic / 1e6)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-gray-600">{nf.format(model.toplamBaslangic)}</td>
                 </tr>
                 {model.deltas.map((d) => (
                   <tr key={d.label} className="border-b border-gray-100 bg-white">
                     <td className="px-3 py-2">{d.label}</td>
-                    <td className={`px-3 py-2 text-right tabular-nums font-medium ${d.delta >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
+                    <td className={`px-3 py-2 text-right tabular-nums font-semibold ${d.delta >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
+                      {d.delta >= 0 ? "+" : ""}
+                      {nfMnTbl.format(d.delta / 1e6)}
+                    </td>
+                    <td className={`px-3 py-2 text-right tabular-nums ${d.delta >= 0 ? "text-emerald-800/90" : "text-rose-800/90"}`}>
                       {d.delta >= 0 ? "+" : ""}
                       {nf.format(d.delta)}
                     </td>
@@ -475,6 +562,7 @@ export default function TsbPrimWaterfallDashboard() {
                 ))}
                 <tr className="border-t-2 border-gray-300 bg-slate-50 font-semibold">
                   <td className="px-3 py-2">Bitiş toplamı ({model.donemBitis})</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{nfMnTbl.format(model.toplamBitis / 1e6)}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{nf.format(model.toplamBitis)}</td>
                 </tr>
               </tbody>

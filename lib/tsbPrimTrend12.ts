@@ -48,6 +48,8 @@ export type PrimTrend12Nokta = {
   donem: string;
   sektor: number;
   sirket: number;
+  /** Şirket priminin sektör içindeki payı (%) */
+  payYuzde: number;
 };
 
 /** `donemBitis` dahil, geriye doğru en fazla 12 ay (veri yoksa daha kısa). */
@@ -64,9 +66,14 @@ export function buildSon12AyPrimTrend(
   if (idx < 0) return null;
   const start = Math.max(0, idx - 11);
   const slice = sortedDonemler.slice(start, idx + 1);
-  return slice.map((donem) => ({
-    donem,
-    sektor: sumSectorPremium(rows, donem, channel, anaBransH, segment),
-    sirket: sumCompanyPremium(rows, donem, channel, anaBransH, segment, sirketKodu),
-  }));
+  return slice.map((donem) => {
+    const sektor = sumSectorPremium(rows, donem, channel, anaBransH, segment);
+    const sirket = sumCompanyPremium(rows, donem, channel, anaBransH, segment, sirketKodu);
+    return {
+      donem,
+      sektor,
+      sirket,
+      payYuzde: sektor > 0 ? (sirket / sektor) * 100 : 0,
+    };
+  });
 }

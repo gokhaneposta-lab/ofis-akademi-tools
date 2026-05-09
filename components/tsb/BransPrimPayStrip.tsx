@@ -15,16 +15,6 @@ export function renkForEtiket(etiket: string): string {
   return `hsl(${hue} 58% 48%)`;
 }
 
-function normalizePaylar(items: BransPayDilim[]): { etiket: string; pay: number }[] {
-  const raw = items.map((x) => ({
-    etiket: x.etiket,
-    pay: Math.max(0, Number.isFinite(x.sektorPay) ? x.sektorPay : 0),
-  }));
-  const sum = raw.reduce((a, x) => a + x.pay, 0);
-  if (sum <= 0) return items.map((x) => ({ etiket: x.etiket, pay: 0 }));
-  return raw.map((x) => ({ etiket: x.etiket, pay: (x.pay / sum) * 100 }));
-}
-
 function stripFromPay(items: BransPayDilim[], key: "sirketPay" | "sektorPay"): { etiket: string; pay: number }[] {
   const raw = items.map((x) => ({
     etiket: x.etiket,
@@ -71,35 +61,42 @@ function PayStrip({
 export default function BransPrimPayStrip({
   dilimler,
   sirketAdi,
+  donemEtiket,
 }: {
   dilimler: BransPayDilim[];
   sirketAdi: string;
+  /** Gösterilen tek dönem (örn. 2024-06); verilmezse metinde “bu dönem” kullanılır */
+  donemEtiket?: string;
 }) {
   if (dilimler.length === 0) return null;
 
-  const sektorNorm = normalizePaylar(dilimler);
-  const siralı = [...sektorNorm].sort((a, b) => b.pay - a.pay);
+  const siralıDilim = [...dilimler].sort((a, b) => b.sektorPay - a.sektorPay);
+  const donemMetni = donemEtiket?.trim() ? donemEtiket.trim() : "bu dönem";
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Üretim payları (bu dönem)</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Üretim payları ({donemMetni})
+      </p>
       <p className="mt-1 text-[11px] leading-relaxed text-gray-600">
-        Tablodaki satırlara göre üretimin dağılımı. Solda <strong>{sirketAdi}</strong>, sağda <strong>sektör</strong>; aynı
-        kategori her iki şeritte <strong>aynı renk</strong>. Çok dilimde pasta yerine okunabilirlik için{" "}
-        <strong>%100 yığılmış şerit</strong> kullanıldı.
+        Solda <strong>{sirketAdi}</strong> portföyündeki dağılım, sağda aynı kırılımda <strong>sektör</strong>; aynı kategori
+        her iki şeritte <strong>aynı renk</strong>. Çok dilimde pasta yerine okunabilirlik için{" "}
+        <strong>%100 yığılmış şerit</strong> kullanıldı. Aşağıda her satır için şirket ve sektör yüzdeleri birlikte verilir.
       </p>
       <div className="mt-4 grid gap-6 lg:grid-cols-2">
         <PayStrip title={`Şirket — ${sirketAdi}`} items={dilimler} payKey="sirketPay" />
         <PayStrip title="Sektör" items={dilimler} payKey="sektorPay" />
       </div>
       <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-gray-100 pt-3 text-[10px] text-gray-700">
-        {siralı.map(({ etiket, pay }) => (
-          <li key={etiket} className="flex items-center gap-1.5">
+        {siralıDilim.map(({ etiket, sirketPay, sektorPay }) => (
+          <li key={etiket} className="flex max-w-full flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
             <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-sm" style={{ backgroundColor: renkForEtiket(etiket) }} />
             <span className="max-w-[14rem] truncate font-medium" title={etiket}>
               {etiket}
             </span>
-            <span className="tabular-nums text-gray-500">~%{pf.format(pay)}</span>
+            <span className="tabular-nums text-gray-500">
+              Şirket %{pf.format(sirketPay)} · Sektör %{pf.format(sektorPay)}
+            </span>
           </li>
         ))}
       </ul>

@@ -22,6 +22,7 @@ const HUB_ROUTES = [
   "/sigorta/tsb",
   "/sigorta/kanal-prim",
   "/sigorta/brans-degisim",
+  "/sigorta/brans-pay-dagilim",
   "/sigorta/brans-sira",
   "/sigorta/kanal-dagilim",
   "/sigorta/prim-trend-12",
@@ -45,6 +46,7 @@ function priorityFor(route: string): number {
     route === "/sigorta/kanal-prim" ||
     route === "/sigorta/kanal-dagilim" ||
     route === "/sigorta/brans-degisim" ||
+    route === "/sigorta/brans-pay-dagilim" ||
     route === "/sigorta/brans-sira" ||
     route === "/sigorta/prim-trend-12"
   )

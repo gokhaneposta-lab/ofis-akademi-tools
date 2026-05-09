@@ -8,7 +8,7 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Sektör branş değişim tablosu (TSB) — Şirket vs sektör",
   description:
-    "Hayat dışı ve hayat–emeklilik kırılımında şirket–sektör prim karşılaştırması; ana branş veya tarife grubu filtresi, seçilen ay ile önceki yılın aynı ayı arasında değişim ve pazar payı. Bu dönem üretim payı şerit grafiği (TSB verisi).",
+    "Hayat dışı ve hayat–emeklilik kırılımında şirket–sektör prim karşılaştırması; ana branş veya tarife grubu görünümü (daraltma türü), seçilen ay ile önceki yılın aynı ayı arasında değişim ve pazar payı. Branş üretim payı grafiği ayrı sayfada.",
   alternates: {
     canonical: canonicalUrl("/sigorta/brans-degisim"),
   },
@@ -39,10 +39,10 @@ export default function SigortaBransDegisimPage() {
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Sektör branş değişim tablosu</h1>
           <p className="mt-2 max-w-3xl text-sm text-gray-600">
             Bu panel, <strong>TSB prim verisi</strong> üzerinden seçtiğiniz şirketi sektörle{" "}
-            <strong>ana branş bazında</strong> karşılaştırır. Üstte <strong>hayat dışı</strong> branşlar, altta{" "}
-            <strong>hayat ve emeklilik</strong> branşları listelenir; ara toplamlar ve genel toplam satırları özeti
-            verir. Gösterilen yüzde değişimleri, seçtiğiniz rapor ayına göre <strong>bir önceki yılın aynı ayı</strong> ile
-            kıyaslanarak hesaplanır.
+            <strong>ana branş veya tarife grubu</strong> satırlarında karşılaştırır (üstteki daraltma türü ile seçilir).
+            Üstte <strong>hayat dışı</strong>, altta <strong>hayat ve emeklilik</strong> listelenir; ara toplamlar ve genel
+            toplam özeti verir. Yüzde değişimleri, seçtiğiniz rapor ayına göre{" "}
+            <strong>bir önceki yılın aynı ayı</strong> ile kıyaslanarak hesaplanır.
           </p>
           <aside className="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[12px] text-gray-600 max-w-3xl">
             <strong>Kaynak:</strong> TSB kamuya açık prim istatistikleri (işlenmiş). Resmi tablo için{" "}

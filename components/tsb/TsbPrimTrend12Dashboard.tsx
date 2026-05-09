@@ -14,6 +14,8 @@ import {
   isTsbToplamSirketKodu,
   listSirketlerSegmentDonem,
   resolveDefaultSirketKodu,
+  TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
+  TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL,
   uniqueAnaBransForSegment,
   uniqueSortedPeriods,
   uniqueTarifeGruplariForSegment,
@@ -243,6 +245,7 @@ export default function TsbPrimTrend12Dashboard() {
 
   useEffect(() => {
     if (filtreModu !== "tarifeGrubu" || tarifeSecim === "") return;
+    if (tarifeSecim === TARIFE_GRUBU_FILTER_TRAFIK_HARIC) return;
     if (!tarifeSecenekleri.includes(tarifeSecim)) setTarifeSecim("");
   }, [filtreModu, tarifeSecim, tarifeSecenekleri]);
 
@@ -440,6 +443,7 @@ export default function TsbPrimTrend12Dashboard() {
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
             >
               <option value="">{tumTarifeLabel}</option>
+              <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
               {tarifeSecenekleri.map((t) => (
                 <option key={t} value={t}>
                   {t}

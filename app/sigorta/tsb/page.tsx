@@ -51,13 +51,6 @@ const PANELLER = [
     icon: "🏅",
   },
   {
-    href: "/sigorta/prim-waterfall",
-    badge: "Köprü",
-    title: "Prim su şelalesi",
-    subtitle: "İki dönem arası toplam prim · ana branş katkıları",
-    icon: "🌊",
-  },
-  {
     href: "/sigorta/prim-trend-12",
     badge: "Trend",
     title: "Son 12 ay prim",

@@ -8,7 +8,7 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Sektör branş değişim tablosu (TSB) — Şirket vs sektör",
   description:
-    "Hayat dışı ve hayat–emeklilik ana branşlarında şirket–sektör prim karşılaştırması; seçilen ay ile önceki yılın aynı ayı arasında değişim ve pazar payı (TSB verisi).",
+    "Hayat dışı ve hayat–emeklilik kırılımında şirket–sektör prim karşılaştırması; ana branş veya tarife grubu filtresi, seçilen ay ile önceki yılın aynı ayı arasında değişim ve pazar payı. Bu dönem üretim payı şerit grafiği (TSB verisi).",
   alternates: {
     canonical: canonicalUrl("/sigorta/brans-degisim"),
   },

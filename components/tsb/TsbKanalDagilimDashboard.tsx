@@ -8,15 +8,18 @@ import {
   listSirketlerKanalDagilim,
   type KanalDagilimSatirKey,
 } from "@/lib/tsbKanalDagilim";
-import type { TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
+import type { TsbPrimDaraltmaModu, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
   ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
+  daraltmaFromUiState,
   isTsbToplamSirketKodu,
   resolveDefaultSirketKodu,
   uniqueAnaBransForSegment,
   uniqueSortedPeriods,
+  uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
+import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -75,7 +78,11 @@ export default function TsbKanalDagilimDashboard() {
   const [donem, setDonem] = useState("");
   const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
   const [anaBrans, setAnaBrans] = useState("");
+  const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
+  const [tarifeSecim, setTarifeSecim] = useState("");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
+
+  const branchLookup = useTsbBranchLookupFetch();
 
   useEffect(() => {
     let cancelled = false;
@@ -106,14 +113,35 @@ export default function TsbKanalDagilimDashboard() {
     return uniqueAnaBransForSegment(rows, secilenDonem, segment);
   }, [rows, secilenDonem, segment]);
 
-  const sirketler = useMemo(() => {
+  const tarifeSecenekleri = useMemo(() => {
     if (!rows || !secilenDonem) return [];
-    return listSirketlerKanalDagilim(rows, secilenDonem, segment, anaBrans || null);
-  }, [rows, secilenDonem, segment, anaBrans]);
+    return uniqueTarifeGruplariForSegment(rows, secilenDonem, segment, branchLookup);
+  }, [rows, secilenDonem, segment, branchLookup]);
+
+  const daraltma = useMemo(
+    () => daraltmaFromUiState(filtreModu, anaBrans, tarifeSecim, branchLookup),
+    [filtreModu, anaBrans, tarifeSecim, branchLookup],
+  );
 
   useEffect(() => {
     setAnaBrans("");
+    setTarifeSecim("");
   }, [segment]);
+
+  useEffect(() => {
+    setAnaBrans("");
+    setTarifeSecim("");
+  }, [filtreModu]);
+
+  useEffect(() => {
+    if (filtreModu !== "tarifeGrubu" || tarifeSecim === "") return;
+    if (!tarifeSecenekleri.includes(tarifeSecim)) setTarifeSecim("");
+  }, [filtreModu, tarifeSecim, tarifeSecenekleri]);
+
+  const sirketler = useMemo(() => {
+    if (!rows || !secilenDonem) return [];
+    return listSirketlerKanalDagilim(rows, secilenDonem, segment, daraltma);
+  }, [rows, secilenDonem, segment, daraltma]);
 
   useEffect(() => {
     if (sirketler.length === 0) return;
@@ -131,8 +159,8 @@ export default function TsbKanalDagilimDashboard() {
 
   const kiyas = useMemo(() => {
     if (!rows || !secilenDonem || effectiveSirketKodu === null) return null;
-    return buildKanalDagilimKiyas(rows, secilenDonem, segment, anaBrans || null, effectiveSirketKodu);
-  }, [rows, secilenDonem, segment, anaBrans, effectiveSirketKodu]);
+    return buildKanalDagilimKiyas(rows, secilenDonem, segment, daraltma, effectiveSirketKodu);
+  }, [rows, secilenDonem, segment, daraltma, effectiveSirketKodu]);
 
   if (error) {
     return (
@@ -199,6 +227,33 @@ export default function TsbKanalDagilimDashboard() {
             Hayat &amp; emeklilik
           </button>
         </div>
+        <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Daraltma türü</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={filtreModu === "anaBransH"}
+            onClick={() => setFiltreModu("anaBransH")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              filtreModu === "anaBransH"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Ana branş (TSB)
+          </button>
+          <button
+            type="button"
+            aria-pressed={filtreModu === "tarifeGrubu"}
+            onClick={() => setFiltreModu("tarifeGrubu")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              filtreModu === "tarifeGrubu"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Tarife grubu
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -209,6 +264,7 @@ export default function TsbKanalDagilimDashboard() {
             onChange={(e) => {
               setDonem(e.target.value);
               setAnaBrans("");
+              setTarifeSecim("");
             }}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           >
@@ -220,22 +276,39 @@ export default function TsbKanalDagilimDashboard() {
           </select>
         </label>
         <label className="block text-sm lg:col-span-2">
-          <span className="mb-1.5 block font-medium text-gray-700">Ana branş</span>
-          <select
-            value={anaBrans}
-            onChange={(e) => setAnaBrans(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-          >
-            <option value="">{tumBransLabel}</option>
-            {segment === "hayatdisi" && (
-              <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
-            )}
-            {anaBransSecenekleri.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
+          <span className="mb-1.5 block font-medium text-gray-700">
+            {filtreModu === "anaBransH" ? "Ana branş" : "Tarife grubu"}
+          </span>
+          {filtreModu === "anaBransH" ? (
+            <select
+              value={anaBrans}
+              onChange={(e) => setAnaBrans(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            >
+              <option value="">{tumBransLabel}</option>
+              {segment === "hayatdisi" && (
+                <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
+              )}
+              {anaBransSecenekleri.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              value={tarifeSecim}
+              onChange={(e) => setTarifeSecim(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            >
+              <option value="">Tüm tarife grupları</option>
+              {tarifeSecenekleri.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
         <label className="block text-sm lg:col-span-4">
           <span className="mb-1.5 block font-medium text-gray-700">Şirket</span>

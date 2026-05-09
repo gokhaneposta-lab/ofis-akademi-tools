@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
+import type { TsbKanalField, TsbPrimDaraltmaModu, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
   ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
   buildKiyaslamaTablosu,
+  daraltmaFromUiState,
   isTsbToplamSirketKodu,
   sektorToplamDegisimYuzde,
   uniqueAnaBransForSegment,
   uniqueSortedPeriods,
+  uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
+import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 
 const KANALLAR: { value: TsbKanalField; label: string }[] = [
   { value: "genelToplam", label: "Genel toplam (tüm kanallar)" },
@@ -39,7 +42,11 @@ export default function TsbKanalPrimDashboard() {
   const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
   const [donem, setDonem] = useState<string>("");
   const [anaBrans, setAnaBrans] = useState<string>("");
+  const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
+  const [tarifeSecim, setTarifeSecim] = useState("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
+
+  const branchLookup = useTsbBranchLookupFetch();
 
   useEffect(() => {
     let cancelled = false;
@@ -71,10 +78,35 @@ export default function TsbKanalPrimDashboard() {
     return uniqueAnaBransForSegment(rows, secilenDonem, segment);
   }, [rows, secilenDonem, segment]);
 
+  const tarifeSecenekleri = useMemo(() => {
+    if (!rows || !secilenDonem) return [];
+    return uniqueTarifeGruplariForSegment(rows, secilenDonem, segment, branchLookup);
+  }, [rows, secilenDonem, segment, branchLookup]);
+
+  useEffect(() => {
+    setAnaBrans("");
+    setTarifeSecim("");
+  }, [segment]);
+
+  useEffect(() => {
+    setAnaBrans("");
+    setTarifeSecim("");
+  }, [filtreModu]);
+
+  useEffect(() => {
+    if (filtreModu !== "tarifeGrubu" || tarifeSecim === "") return;
+    if (!tarifeSecenekleri.includes(tarifeSecim)) setTarifeSecim("");
+  }, [filtreModu, tarifeSecim, tarifeSecenekleri]);
+
+  const daraltma = useMemo(
+    () => daraltmaFromUiState(filtreModu, anaBrans, tarifeSecim, branchLookup),
+    [filtreModu, anaBrans, tarifeSecim, branchLookup],
+  );
+
   const tablo = useMemo(() => {
     if (!rows || !secilenDonem) return null;
-    return buildKiyaslamaTablosu(rows, secilenDonem, kanal, anaBrans || null, segment);
-  }, [rows, secilenDonem, kanal, anaBrans, segment]);
+    return buildKiyaslamaTablosu(rows, secilenDonem, kanal, daraltma, segment);
+  }, [rows, secilenDonem, kanal, daraltma, segment]);
 
   if (error) {
     return (
@@ -121,6 +153,7 @@ export default function TsbKanalPrimDashboard() {
             onClick={() => {
               setSegment("hayatdisi");
               setAnaBrans("");
+              setTarifeSecim("");
             }}
             className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
               segment === "hayatdisi"
@@ -136,6 +169,7 @@ export default function TsbKanalPrimDashboard() {
             onClick={() => {
               setSegment("hayat");
               setAnaBrans("");
+              setTarifeSecim("");
             }}
             className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
               segment === "hayat"
@@ -146,13 +180,40 @@ export default function TsbKanalPrimDashboard() {
             Hayat &amp; emeklilik
           </button>
         </div>
+        <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Daraltma türü</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={filtreModu === "anaBransH"}
+            onClick={() => setFiltreModu("anaBransH")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              filtreModu === "anaBransH"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Ana branş (TSB)
+          </button>
+          <button
+            type="button"
+            aria-pressed={filtreModu === "tarifeGrubu"}
+            onClick={() => setFiltreModu("tarifeGrubu")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              filtreModu === "tarifeGrubu"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Tarife grubu
+          </button>
+        </div>
         <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
-          Hayat ve hayat dışı şirketler ayrı gruplanmıştır; üstteki seçimle görünümü değiştirip aşağıdan dönem, branş ve
-          kanalla filtreleyebilirsiniz.
+          Hayat ve hayat dışı şirketler ayrı gruplanmıştır; <strong>ana branş</strong> veya <strong>tarife grubu</strong> ile
+          daraltıp dönem ve kanalla tabloyu güncelleyebilirsiniz.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <label className="block text-sm">
           <span className="mb-1.5 block font-medium text-gray-700">Dönem</span>
           <select
@@ -160,6 +221,7 @@ export default function TsbKanalPrimDashboard() {
             onChange={(e) => {
               setDonem(e.target.value);
               setAnaBrans("");
+              setTarifeSecim("");
             }}
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           >
@@ -170,23 +232,40 @@ export default function TsbKanalPrimDashboard() {
             ))}
           </select>
         </label>
-        <label className="block text-sm">
-          <span className="mb-1.5 block font-medium text-gray-700">Ana branş</span>
-          <select
-            value={anaBrans}
-            onChange={(e) => setAnaBrans(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-          >
-            <option value="">{tumAnaBransLabel}</option>
-            {segment === "hayatdisi" && (
-              <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
-            )}
-            {anaBransSecenekleri.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
+        <label className="block text-sm sm:col-span-2">
+          <span className="mb-1.5 block font-medium text-gray-700">
+            {filtreModu === "anaBransH" ? "Ana branş" : "Tarife grubu"}
+          </span>
+          {filtreModu === "anaBransH" ? (
+            <select
+              value={anaBrans}
+              onChange={(e) => setAnaBrans(e.target.value)}
+              className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            >
+              <option value="">{tumAnaBransLabel}</option>
+              {segment === "hayatdisi" && (
+                <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
+              )}
+              {anaBransSecenekleri.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              value={tarifeSecim}
+              onChange={(e) => setTarifeSecim(e.target.value)}
+              className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            >
+              <option value="">Tüm tarife grupları</option>
+              {tarifeSecenekleri.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
         <label className="block text-sm">
           <span className="mb-1.5 block font-medium text-gray-700">Kanal</span>

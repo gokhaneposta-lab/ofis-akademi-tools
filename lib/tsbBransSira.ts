@@ -1,4 +1,7 @@
-import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
+import type { TsbBranchLookupMap } from "./tsbBranchLookup";
+import { tarifeGrubuFromRow } from "./tsbBranchLookup";
+import { HAYAT_ANA_BRANS_SIRASI, HD_ANA_BRANS_SIRASI } from "./tsbBransDegisim";
+import type { TsbKanalField, TsbPrimDaraltma, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
   channelPremium,
@@ -6,10 +9,10 @@ import {
   isHayatdisiSirket,
   isTsbToplamSirketKodu,
   prevYearPeriod,
-  rowMatchesAnaBransFilter,
+  rowMatchesPrimDaraltma,
   rowMatchesSegment,
+  TSB_ANA_BRANS_TRAFIK_SORUMLULUK,
 } from "./tsbPrimDashboard";
-import { HAYAT_ANA_BRANS_SIRASI, HD_ANA_BRANS_SIRASI } from "./tsbBransDegisim";
 
 function sortAnaBransSirasi(mevcut: Set<string>, sabitSira: readonly string[]): string[] {
   const out: string[] = [];
@@ -21,7 +24,6 @@ function sortAnaBransSirasi(mevcut: Set<string>, sabitSira: readonly string[]): 
   return [...out, ...diger];
 }
 
-/** Prim > 0 olanlar arasında yarışma sıralaması (eşit primde aynı sıra, sonraki atlama) */
 function competitionRanks(primByKod: Map<number, number>): Map<number, number> {
   const ranked = [...primByKod.entries()].filter(([, p]) => p > 0).sort((a, b) => b[1] - a[1]);
   const ranks = new Map<number, number>();
@@ -34,18 +36,67 @@ function competitionRanks(primByKod: Map<number, number>): Map<number, number> {
   return ranks;
 }
 
-function aggregateBranchByCompany(
+function collectAnaBransKeys(
+  rows: TsbPrimRow[],
+  donemOnceki: string,
+  donemBu: string,
+  segment: TsbSektorSegment,
+): Set<string> {
+  const set = new Set<string>();
+  for (const r of rows) {
+    if (r.donem !== donemBu && r.donem !== donemOnceki) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    set.add(r.anaBransH);
+  }
+  return set;
+}
+
+function collectTarifeKeys(
+  rows: TsbPrimRow[],
+  donemOnceki: string,
+  donemBu: string,
+  segment: TsbSektorSegment,
+  lookup: TsbBranchLookupMap | null,
+): Set<string> {
+  const set = new Set<string>();
+  for (const r of rows) {
+    if (r.donem !== donemBu && r.donem !== donemOnceki) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    set.add(tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup));
+  }
+  return set;
+}
+
+function narrowAnaKeys(keys: string[], daraltma: Extract<TsbPrimDaraltma, { kind: "anaBransH" }>): string[] {
+  const f = daraltma.anaBransH;
+  if (f === null || f === "") return keys;
+  if (f === ANA_BRANS_FILTER_TRAFIK_HARIC) return keys.filter((k) => k !== TSB_ANA_BRANS_TRAFIK_SORUMLULUK);
+  return keys.filter((k) => k === f);
+}
+
+function narrowTarifeKeys(keys: string[], daraltma: Extract<TsbPrimDaraltma, { kind: "tarifeGrubu" }>): string[] {
+  if (daraltma.tarifeGrubu === null) return keys;
+  return keys.filter((k) => k === daraltma.tarifeGrubu);
+}
+
+function aggregateGrupKeyByCompany(
   rows: TsbPrimRow[],
   donem: string,
   channel: TsbKanalField,
-  anaBransH: string,
   segment: TsbSektorSegment,
+  key: string,
+  grupModu: "anaBransH" | "tarifeGrubu",
+  lookup: TsbBranchLookupMap | null,
 ): Map<number, number> {
   const m = new Map<number, number>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
-    if (r.anaBransH !== anaBransH) continue;
+    if (grupModu === "anaBransH") {
+      if (r.anaBransH !== key) continue;
+    } else if (tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup) !== key) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     const v = channelPremium(r, channel);
     m.set(r.sirketKodu, (m.get(r.sirketKodu) ?? 0) + v);
@@ -53,19 +104,18 @@ function aggregateBranchByCompany(
   return m;
 }
 
-/** Segmentte birleşik portföy primi; `anaBransFilter` null ise tüm ana branşlar */
 function aggregatePortfolioByCompany(
   rows: TsbPrimRow[],
   donem: string,
   channel: TsbKanalField,
   segment: TsbSektorSegment,
-  anaBransFilter: string | null = null,
+  daraltma: TsbPrimDaraltma,
 ): Map<number, number> {
   const m = new Map<number, number>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
-    if (!rowMatchesAnaBransFilter(r, anaBransFilter)) continue;
+    if (!rowMatchesPrimDaraltma(r, daraltma)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     const v = channelPremium(r, channel);
     m.set(r.sirketKodu, (m.get(r.sirketKodu) ?? 0) + v);
@@ -86,11 +136,11 @@ export type BransSiraSatir = {
 };
 
 export type BransSiraOzet = {
+  kirisumModu: "anaBransH" | "tarifeGrubu";
   donemBu: string;
   donemOnceki: string;
   hayatdisiBranslar: BransSiraSatir[];
-  /** Kara Araçları Sorumluluk hariç hayat dışı birleşik portföy */
-  hayatdisiTrafikHaricPortfoy: BransSiraSatir;
+  hayatdisiTrafikHaricPortfoy: BransSiraSatir | null;
   hayatdisiPortfoy: BransSiraSatir;
   hayatBranslar: BransSiraSatir[];
   hayatPortfoy: BransSiraSatir;
@@ -130,59 +180,72 @@ export function buildBransSiraTablosu(
   donemBu: string,
   channel: TsbKanalField,
   sirketKodu: number,
+  daraltma: TsbPrimDaraltma,
 ): BransSiraOzet | null {
   const donemOnceki = prevYearPeriod(donemBu);
   if (!donemOnceki) return null;
 
-  const hdSet = new Set<string>();
-  const haySet = new Set<string>();
-  for (const r of rows) {
-    if (r.donem !== donemBu && r.donem !== donemOnceki) continue;
-    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
-    if (rowMatchesSegment(r, "hayatdisi")) hdSet.add(r.anaBransH);
-    if (rowMatchesSegment(r, "hayat")) haySet.add(r.anaBransH);
+  const grupModu = daraltma.kind;
+  const lookup = daraltma.kind === "tarifeGrubu" ? daraltma.lookup : null;
+
+  let hdSirali: string[];
+  let haySirali: string[];
+
+  if (grupModu === "anaBransH") {
+    const hdSet = collectAnaBransKeys(rows, donemOnceki, donemBu, "hayatdisi");
+    const haySet = collectAnaBransKeys(rows, donemOnceki, donemBu, "hayat");
+    hdSirali = narrowAnaKeys(sortAnaBransSirasi(hdSet, HD_ANA_BRANS_SIRASI), daraltma);
+    haySirali = narrowAnaKeys(sortAnaBransSirasi(haySet, HAYAT_ANA_BRANS_SIRASI), daraltma);
+  } else {
+    const hdSet = collectTarifeKeys(rows, donemOnceki, donemBu, "hayatdisi", lookup);
+    const haySet = collectTarifeKeys(rows, donemOnceki, donemBu, "hayat", lookup);
+    hdSirali = narrowTarifeKeys([...hdSet].sort((a, b) => a.localeCompare(b, "tr")), daraltma);
+    haySirali = narrowTarifeKeys([...haySet].sort((a, b) => a.localeCompare(b, "tr")), daraltma);
   }
 
-  const hdSirali = sortAnaBransSirasi(hdSet, HD_ANA_BRANS_SIRASI);
-  const haySirali = sortAnaBransSirasi(haySet, HAYAT_ANA_BRANS_SIRASI);
-
   const hayatdisiBranslar = hdSirali.map((b) => {
-    const bu = aggregateBranchByCompany(rows, donemBu, channel, b, "hayatdisi");
-    const oc = aggregateBranchByCompany(rows, donemOnceki, channel, b, "hayatdisi");
+    const bu = aggregateGrupKeyByCompany(rows, donemBu, channel, "hayatdisi", b, grupModu, lookup);
+    const oc = aggregateGrupKeyByCompany(rows, donemOnceki, channel, "hayatdisi", b, grupModu, lookup);
     return buildSatir(b, "hayatdisi", bu, oc, sirketKodu);
   });
 
   const hayatBranslar = haySirali.map((b) => {
-    const bu = aggregateBranchByCompany(rows, donemBu, channel, b, "hayat");
-    const oc = aggregateBranchByCompany(rows, donemOnceki, channel, b, "hayat");
+    const bu = aggregateGrupKeyByCompany(rows, donemBu, channel, "hayat", b, grupModu, lookup);
+    const oc = aggregateGrupKeyByCompany(rows, donemOnceki, channel, "hayat", b, grupModu, lookup);
     return buildSatir(b, "hayat", bu, oc, sirketKodu);
   });
 
-  const portHdBuTh = aggregatePortfolioByCompany(
-    rows,
-    donemBu,
-    channel,
-    "hayatdisi",
-    ANA_BRANS_FILTER_TRAFIK_HARIC,
-  );
-  const portHdOcTh = aggregatePortfolioByCompany(
-    rows,
-    donemOnceki,
-    channel,
-    "hayatdisi",
-    ANA_BRANS_FILTER_TRAFIK_HARIC,
-  );
-  const hayatdisiTrafikHaricPortfoy = buildSatir("TRAFİK HARİÇ TOPLAM", "hayatdisi", portHdBuTh, portHdOcTh, sirketKodu);
+  const trafikHaricDaraltma: TsbPrimDaraltma = { kind: "anaBransH", anaBransH: ANA_BRANS_FILTER_TRAFIK_HARIC };
 
-  const portHdBu = aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", null);
-  const portHdOc = aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", null);
-  const hayatdisiPortfoy = buildSatir("HAYATDIŞI PORTFÖY (tüm branşlar)", "hayatdisi", portHdBu, portHdOc, sirketKodu);
+  const hayatdisiTrafikHaricPortfoy =
+    grupModu === "anaBransH"
+      ? buildSatir(
+          "TRAFİK HARİÇ TOPLAM",
+          "hayatdisi",
+          aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", trafikHaricDaraltma),
+          aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", trafikHaricDaraltma),
+          sirketKodu,
+        )
+      : null;
 
-  const portHyBu = aggregatePortfolioByCompany(rows, donemBu, channel, "hayat", null);
-  const portHyOc = aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayat", null);
-  const hayatPortfoy = buildSatir("HAYAT & EMEKLİLİK PORTFÖY (tüm branşlar)", "hayat", portHyBu, portHyOc, sirketKodu);
+  const hayatdisiPortfoy = buildSatir(
+    grupModu === "anaBransH" ? "HAYATDIŞI PORTFÖY (tüm branşlar)" : "HAYATDIŞI (daraltma kapsamı)",
+    "hayatdisi",
+    aggregatePortfolioByCompany(rows, donemBu, channel, "hayatdisi", daraltma),
+    aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayatdisi", daraltma),
+    sirketKodu,
+  );
+
+  const hayatPortfoy = buildSatir(
+    grupModu === "anaBransH" ? "HAYAT & EMEKLİLİK PORTFÖY (tüm branşlar)" : "HAYAT–EMEKLİLİK (daraltma kapsamı)",
+    "hayat",
+    aggregatePortfolioByCompany(rows, donemBu, channel, "hayat", daraltma),
+    aggregatePortfolioByCompany(rows, donemOnceki, channel, "hayat", daraltma),
+    sirketKodu,
+  );
 
   return {
+    kirisumModu: grupModu,
     donemBu,
     donemOnceki,
     hayatdisiBranslar,
@@ -193,17 +256,18 @@ export function buildBransSiraTablosu(
   };
 }
 
-/** Şirket seçici: seçilen dönemde HD veya hayat üretimi olan tüm şirketler, toplam prim sırası */
 export function listSirketlerSiraOzeti(
   rows: TsbPrimRow[],
   donem: string,
   channel: TsbKanalField,
+  daraltma: TsbPrimDaraltma,
 ): { kod: number; ad: string; toplam: number }[] {
   const m = new Map<number, { ad: string; toplam: number }>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     if (!isHayatdisiSirket(r) && !isHayatEmeklilikSirket(r)) continue;
+    if (!rowMatchesPrimDaraltma(r, daraltma)) continue;
     const v = channelPremium(r, channel);
     const cur = m.get(r.sirketKodu);
     if (!cur) {

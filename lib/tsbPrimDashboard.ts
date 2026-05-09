@@ -1,3 +1,6 @@
+import type { TsbBranchLookupMap } from "./tsbBranchLookup";
+import { tarifeGrubuFromRow } from "./tsbBranchLookup";
+
 /** TSB prim tidy JSON satırı (scripts/tsb-import-prim.mjs çıktısı ile uyumlu) */
 export type TsbPrimRow = {
   donem: string;
@@ -38,6 +41,61 @@ export function rowMatchesAnaBransFilter(row: TsbPrimRow, anaBransH: string | nu
     return row.anaBransH !== TSB_ANA_BRANS_TRAFIK_SORUMLULUK;
   }
   return row.anaBransH === anaBransH;
+}
+
+/** Tüm TSB panellerinde ortak: ana branş (TSB) veya tarife grubu ile daraltma */
+export type TsbPrimDaraltmaModu = "anaBransH" | "tarifeGrubu";
+
+export type TsbPrimDaraltma =
+  | { kind: "anaBransH"; anaBransH: string | null }
+  | { kind: "tarifeGrubu"; tarifeGrubu: string | null; lookup: TsbBranchLookupMap | null };
+
+export function rowMatchesPrimDaraltma(r: TsbPrimRow, f: TsbPrimDaraltma): boolean {
+  if (f.kind === "anaBransH") return rowMatchesAnaBransFilter(r, f.anaBransH);
+  const tg = tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, f.lookup);
+  if (f.tarifeGrubu === null) return true;
+  return tg === f.tarifeGrubu;
+}
+
+export function daraltmaFromUiState(
+  mod: TsbPrimDaraltmaModu,
+  anaSecim: string,
+  tarifeSecim: string,
+  lookup: TsbBranchLookupMap | null,
+): TsbPrimDaraltma {
+  if (mod === "anaBransH") return { kind: "anaBransH", anaBransH: anaSecim === "" ? null : anaSecim };
+  return { kind: "tarifeGrubu", tarifeGrubu: tarifeSecim === "" ? null : tarifeSecim, lookup };
+}
+
+/** Segmentte, ilgili dönemde görünen tarife grupları */
+export function uniqueTarifeGruplariForSegment(
+  rows: TsbPrimRow[],
+  donem: string,
+  segment: TsbSektorSegment,
+  lookup: TsbBranchLookupMap | null,
+): string[] {
+  const set = new Set<string>();
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    set.add(tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup));
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, "tr"));
+}
+
+/** Dönemde görünen tarife grupları (çok segmentli paneller için) */
+export function uniqueTarifeGruplariDonem(
+  rows: TsbPrimRow[],
+  donem: string,
+  lookup: TsbBranchLookupMap | null,
+): string[] {
+  const set = new Set<string>();
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    set.add(tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup));
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, "tr"));
 }
 
 /** TSB Excel'deki sektör alt toplam şirket kodları */
@@ -135,14 +193,14 @@ export function aggregateByCompany(
   rows: TsbPrimRow[],
   donem: string,
   channel: TsbKanalField,
-  anaBransH: string | null,
+  daraltma: TsbPrimDaraltma,
   segment: TsbSektorSegment,
 ): Map<number, { sirketAdi: string; toplam: number }> {
   const m = new Map<number, { sirketAdi: string; toplam: number }>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
-    if (!rowMatchesAnaBransFilter(r, anaBransH)) continue;
+    if (!rowMatchesPrimDaraltma(r, daraltma)) continue;
     const v = channelPremium(r, channel);
     if (v === 0) continue;
     const cur = m.get(r.sirketKodu);
@@ -172,12 +230,12 @@ export function buildKiyaslamaTablosu(
   rows: TsbPrimRow[],
   donemBu: string,
   channel: TsbKanalField,
-  anaBransH: string | null,
+  daraltma: TsbPrimDaraltma,
   segment: TsbSektorSegment,
 ): { donemOnceki: string | null; sektorToplamOnceki: number; sektorToplamBu: number; satirlar: SirketKiyaslama[] } {
   const donemOnceki = prevYearPeriod(donemBu);
-  const buMap = aggregateByCompany(rows, donemBu, channel, anaBransH, segment);
-  const oncekiMap = donemOnceki ? aggregateByCompany(rows, donemOnceki, channel, anaBransH, segment) : new Map();
+  const buMap = aggregateByCompany(rows, donemBu, channel, daraltma, segment);
+  const oncekiMap = donemOnceki ? aggregateByCompany(rows, donemOnceki, channel, daraltma, segment) : new Map();
 
   let sektorToplamBu = 0;
   for (const v of buMap.values()) sektorToplamBu += v.toplam;
@@ -255,11 +313,13 @@ export function listSirketlerSegmentDonem(
   donem: string,
   channel: TsbKanalField,
   segment: TsbSektorSegment,
+  daraltma: TsbPrimDaraltma,
 ): { kod: number; ad: string; toplam: number }[] {
   const m = new Map<number, { ad: string; toplam: number }>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
+    if (!rowMatchesPrimDaraltma(r, daraltma)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     const v = channelPremium(r, channel);
     const cur = m.get(r.sirketKodu);

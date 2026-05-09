@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
+      {
+        source: "/sigorta/prim-waterfall",
+        destination: "/sigorta/tsb",
+        permanent: true,
+      },
       // Slug yazım hatası düzeltmesi (Mart 2026'da oluşan eski URL → yeni doğru URL).
       // Google'da indexlendiyse 301 ile yeni URL'ye taşır.
       {

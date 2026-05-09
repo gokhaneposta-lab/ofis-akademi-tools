@@ -3,13 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   buildSon12AyPrimTrend,
-  uniqueTarifeGruplariForSegment,
   type PrimTrend12Nokta,
   type PrimTrendFiltreModu,
   type PrimTrendFilter,
 } from "@/lib/tsbPrimTrend12";
-import type { TsbBranchLookupMap } from "@/lib/tsbBranchLookup";
-import { parseBranchLookupJson } from "@/lib/tsbBranchLookup";
 import type { TsbKanalField, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
@@ -19,7 +16,9 @@ import {
   resolveDefaultSirketKodu,
   uniqueAnaBransForSegment,
   uniqueSortedPeriods,
+  uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
+import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 
 const KANALLAR: { value: TsbKanalField; label: string }[] = [
   { value: "genelToplam", label: "Tüm kanallar" },
@@ -192,7 +191,7 @@ export default function TsbPrimTrend12Dashboard() {
   const [anaBrans, setAnaBrans] = useState("");
   const [filtreModu, setFiltreModu] = useState<PrimTrendFiltreModu>("anaBransH");
   const [tarifeSecim, setTarifeSecim] = useState("");
-  const [branchLookup, setBranchLookup] = useState<TsbBranchLookupMap | null>(null);
+  const branchLookup = useTsbBranchLookupFetch();
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [logOlcek, setLogOlcek] = useState(true);
 
@@ -210,24 +209,6 @@ export default function TsbPrimTrend12Dashboard() {
       })
       .catch((e: unknown) => {
         if (!cancelled) setError(e instanceof Error ? e.message : "Yükleme hatası");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/data/tsb/branch-lookup.json")
-      .then((r) => {
-        if (!r.ok) throw new Error("lookup");
-        return r.json();
-      })
-      .then((raw: Record<string, { anaBrans?: string; tarifeGrubu?: string }>) => {
-        if (!cancelled) setBranchLookup(parseBranchLookupJson(raw));
-      })
-      .catch(() => {
-        if (!cancelled) setBranchLookup(null);
       });
     return () => {
       cancelled = true;
@@ -272,8 +253,8 @@ export default function TsbPrimTrend12Dashboard() {
 
   const sirketler = useMemo(() => {
     if (!rows || !secilenBitis) return [];
-    return listSirketlerSegmentDonem(rows, secilenBitis, kanal, segment);
-  }, [rows, secilenBitis, kanal, segment]);
+    return listSirketlerSegmentDonem(rows, secilenBitis, kanal, segment, trendFilter);
+  }, [rows, secilenBitis, kanal, segment, trendFilter]);
 
   useEffect(() => {
     if (sirketler.length === 0) return;

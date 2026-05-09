@@ -1,5 +1,5 @@
-import type { TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
-import { isTsbToplamSirketKodu, rowMatchesAnaBransFilter, rowMatchesSegment } from "./tsbPrimDashboard";
+import type { TsbPrimDaraltma, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
+import { isTsbToplamSirketKodu, rowMatchesPrimDaraltma, rowMatchesSegment } from "./tsbPrimDashboard";
 
 export type KanalDagilimKutu = {
   merkez: number;
@@ -25,7 +25,7 @@ export function aggregateKanalDagilim(
   rows: TsbPrimRow[],
   donem: string,
   segment: TsbSektorSegment,
-  anaBransH: string | null,
+  daraltma: TsbPrimDaraltma,
   sirketKodu: number | null,
 ): KanalDagilimKutu {
   let merkez = 0;
@@ -36,7 +36,7 @@ export function aggregateKanalDagilim(
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
-    if (!rowMatchesAnaBransFilter(r, anaBransH)) continue;
+    if (!rowMatchesPrimDaraltma(r, daraltma)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     if (sirketKodu !== null && r.sirketKodu !== sirketKodu) continue;
     merkez += r.merkez;
@@ -69,12 +69,12 @@ export function buildKanalDagilimKiyas(
   rows: TsbPrimRow[],
   donem: string,
   segment: TsbSektorSegment,
-  anaBransH: string | null,
+  daraltma: TsbPrimDaraltma,
   sirketKodu: number,
 ): KanalDagilimKiyas {
   return {
-    sirket: aggregateKanalDagilim(rows, donem, segment, anaBransH, sirketKodu),
-    sektor: aggregateKanalDagilim(rows, donem, segment, anaBransH, null),
+    sirket: aggregateKanalDagilim(rows, donem, segment, daraltma, sirketKodu),
+    sektor: aggregateKanalDagilim(rows, donem, segment, daraltma, null),
   };
 }
 
@@ -83,13 +83,13 @@ export function listSirketlerKanalDagilim(
   rows: TsbPrimRow[],
   donem: string,
   segment: TsbSektorSegment,
-  anaBransH: string | null,
+  daraltma: TsbPrimDaraltma,
 ): { kod: number; ad: string; toplam: number }[] {
   const m = new Map<number, { ad: string; toplam: number }>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
     if (!rowMatchesSegment(r, segment)) continue;
-    if (!rowMatchesAnaBransFilter(r, anaBransH)) continue;
+    if (!rowMatchesPrimDaraltma(r, daraltma)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     const v = r.genelToplam;
     const cur = m.get(r.sirketKodu);

@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import BransPrimPayStrip from "@/components/tsb/BransPrimPayStrip";
+import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import type { BransDegisimSatir } from "@/lib/tsbBransDegisim";
-import { buildBransDegisimTablosu, listSirketlerBransDashboard } from "@/lib/tsbBransDegisim";
-import type { TsbKanalField, TsbPrimRow } from "@/lib/tsbPrimDashboard";
+import { buildBransDegisimTablosu, buildBransPaySnapshot, listSirketlerBransDashboard } from "@/lib/tsbBransDegisim";
+import type { TsbKanalField, TsbPrimDaraltmaModu, TsbPrimRow } from "@/lib/tsbPrimDashboard";
 import {
+  ANA_BRANS_FILTER_TRAFIK_HARIC,
+  ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
+  daraltmaFromUiState,
   isTsbToplamSirketKodu,
   prevYearPeriod,
   resolveDefaultSirketKodu,
+  uniqueAnaBransForSegment,
   uniqueSortedPeriods,
+  uniqueTarifeGruplariDonem,
 } from "@/lib/tsbPrimDashboard";
 
 const KANALLAR: { value: TsbKanalField; label: string }[] = [
@@ -66,7 +73,12 @@ export default function TsbBransDegisimDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [donem, setDonem] = useState("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
+  const [anaBrans, setAnaBrans] = useState("");
+  const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
+  const [tarifeSecim, setTarifeSecim] = useState("");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
+
+  const branchLookup = useTsbBranchLookupFetch();
 
   useEffect(() => {
     let cancelled = false;
@@ -92,10 +104,37 @@ export default function TsbBransDegisimDashboard() {
   const sonDonem = donemler.length ? donemler[donemler.length - 1] : "";
   const secilenDonem = donem || sonDonem;
 
+  const daraltma = useMemo(
+    () => daraltmaFromUiState(filtreModu, anaBrans, tarifeSecim, branchLookup),
+    [filtreModu, anaBrans, tarifeSecim, branchLookup],
+  );
+
+  useEffect(() => {
+    setAnaBrans("");
+    setTarifeSecim("");
+  }, [filtreModu]);
+
+  const anaBransSecenekleri = useMemo(() => {
+    if (!rows || !secilenDonem) return [];
+    const hd = uniqueAnaBransForSegment(rows, secilenDonem, "hayatdisi");
+    const hy = uniqueAnaBransForSegment(rows, secilenDonem, "hayat");
+    return [...new Set([...hd, ...hy])].sort((a, b) => a.localeCompare(b, "tr"));
+  }, [rows, secilenDonem]);
+
+  const tarifeSecenekleri = useMemo(() => {
+    if (!rows || !secilenDonem) return [];
+    return uniqueTarifeGruplariDonem(rows, secilenDonem, branchLookup);
+  }, [rows, secilenDonem, branchLookup]);
+
+  useEffect(() => {
+    if (filtreModu !== "tarifeGrubu" || tarifeSecim === "") return;
+    if (!tarifeSecenekleri.includes(tarifeSecim)) setTarifeSecim("");
+  }, [filtreModu, tarifeSecim, tarifeSecenekleri]);
+
   const sirketler = useMemo(() => {
     if (!rows || !secilenDonem) return [];
-    return listSirketlerBransDashboard(rows, secilenDonem, kanal);
-  }, [rows, secilenDonem, kanal]);
+    return listSirketlerBransDashboard(rows, secilenDonem, kanal, daraltma);
+  }, [rows, secilenDonem, kanal, daraltma]);
 
   useEffect(() => {
     if (sirketler.length === 0) return;
@@ -113,8 +152,10 @@ export default function TsbBransDegisimDashboard() {
 
   const tablo = useMemo(() => {
     if (!rows || !secilenDonem || effectiveSirketKodu === null) return null;
-    return buildBransDegisimTablosu(rows, secilenDonem, kanal, effectiveSirketKodu);
-  }, [rows, secilenDonem, kanal, effectiveSirketKodu]);
+    return buildBransDegisimTablosu(rows, secilenDonem, kanal, effectiveSirketKodu, daraltma);
+  }, [rows, secilenDonem, kanal, effectiveSirketKodu, daraltma]);
+
+  const paySnapshot = useMemo(() => (tablo ? buildBransPaySnapshot(tablo) : []), [tablo]);
 
   if (error) {
     return (
@@ -147,9 +188,44 @@ export default function TsbBransDegisimDashboard() {
   }
 
   const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
+  const kolonBaslik =
+    tablo.kirisumModu === "anaBransH" ? "Branş" : "Tarife grubu";
 
   return (
     <div className="space-y-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-500">Daraltma türü</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={filtreModu === "anaBransH"}
+            onClick={() => setFiltreModu("anaBransH")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              filtreModu === "anaBransH"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Ana branş (TSB)
+          </button>
+          <button
+            type="button"
+            aria-pressed={filtreModu === "tarifeGrubu"}
+            onClick={() => setFiltreModu("tarifeGrubu")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              filtreModu === "tarifeGrubu"
+                ? "bg-slate-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Tarife grubu
+          </button>
+        </div>
+        <p className="mt-2 text-[11px] text-gray-600">
+          Tablo satırları seçtiğiniz kırılıma göre değişir; tarife modunda “trafik hariç ara toplam” satırı gösterilmez.
+        </p>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="block text-sm">
           <span className="mb-1.5 block font-medium text-gray-700">Kanal</span>
@@ -183,7 +259,11 @@ export default function TsbBransDegisimDashboard() {
           <span className="mb-1.5 block font-medium text-gray-700">Dönem (karşılaştırma ayı)</span>
           <select
             value={secilenDonem}
-            onChange={(e) => setDonem(e.target.value)}
+            onChange={(e) => {
+              setDonem(e.target.value);
+              setAnaBrans("");
+              setTarifeSecim("");
+            }}
             className="w-full max-w-xs rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           >
             {donemler.map((d) => (
@@ -193,25 +273,60 @@ export default function TsbBransDegisimDashboard() {
             ))}
           </select>
           <p className="mt-1 text-[11px] text-gray-500">
-            Tablo her zaman <strong>{tablo.donemOnceki}</strong> ile <strong>{tablo.donemBu}</strong> arasında
-            yıllık değişimi gösterir.
+            Tablo her zaman <strong>{tablo.donemOnceki}</strong> ile <strong>{tablo.donemBu}</strong> arasında yıllık
+            değişimi gösterir.
           </p>
+        </label>
+        <label className="block text-sm sm:col-span-3">
+          <span className="mb-1.5 block font-medium text-gray-700">
+            {filtreModu === "anaBransH" ? "Ana branş filtresi (tablo satırları)" : "Tarife grubu filtresi"}
+          </span>
+          {filtreModu === "anaBransH" ? (
+            <select
+              value={anaBrans}
+              onChange={(e) => setAnaBrans(e.target.value)}
+              className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            >
+              <option value="">Tüm ana branşlar</option>
+              <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
+              {anaBransSecenekleri.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              value={tarifeSecim}
+              onChange={(e) => setTarifeSecim(e.target.value)}
+              className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            >
+              <option value="">Tüm tarife grupları</option>
+              {tarifeSecenekleri.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
       </div>
 
       <p className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[11px] leading-relaxed text-gray-600">
-        <strong>Şirket değişim (%)</strong> hücreleri, aynı branşta <strong>sektörün yıllık değişim oranı</strong> ile
+        <strong>Şirket değişim (%)</strong> hücreleri, aynı satırda <strong>sektörün yıllık değişim oranı</strong> ile
         karşılaştırılarak renklendirilir: şirket oranı sektörün üstündeyse yeşil, altındaysa kırmızı.
-        <strong className="ml-1">Pazar payı</strong> sütunları, şirket priminin o branştaki sektör primine oranını (%)
+        <strong className="ml-1">Pazar payı</strong> sütunları, şirket priminin o satırdaki sektör primine oranını (%)
         gösterir; son sütun iki dönem arasındaki yüzde puan (pp) farkıdır.
       </p>
+
+      <BransPrimPayStrip dilimler={paySnapshot} sirketAdi={secilenAd} />
 
       <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
         <table className="min-w-[920px] w-full border-collapse text-left text-[11px]">
           <thead>
             <tr className="border-b border-gray-300 bg-slate-800 text-white">
               <th rowSpan={2} className="sticky left-0 z-20 border-r border-slate-600 px-2 py-2 font-semibold bg-slate-800">
-                Branş
+                {kolonBaslik}
               </th>
               <th colSpan={3} className="border-r border-slate-600 px-2 py-2 text-center font-semibold">
                 {secilenAd.slice(0, 42)}
@@ -242,17 +357,19 @@ export default function TsbBransDegisimDashboard() {
                 colSpan={10}
                 className="sticky left-0 bg-emerald-50 px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-emerald-900"
               >
-                Hayat dışı branşları
+                Hayat dışı {tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "branşları"}
               </td>
             </tr>
             {tablo.hayatdisiBranslar.map((s) => (
               <SatirHucresi key={`hd-${s.anaBransH}`} satir={s} />
             ))}
-            <SatirHucresi satir={tablo.hayatdisiTrafikHaricToplam} araToplam />
+            {tablo.hayatdisiTrafikHaricToplam && (
+              <SatirHucresi satir={tablo.hayatdisiTrafikHaricToplam} araToplam />
+            )}
             <SatirHucresi satir={tablo.hayatdisiToplam} araToplam />
             <tr className="bg-sky-50">
               <td colSpan={10} className="px-2 py-2 text-[11px] font-bold uppercase tracking-wide text-sky-900">
-                Hayat &amp; emeklilik branşları (TSB ana branş satırları)
+                Hayat &amp; emeklilik {tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "(TSB ana branş)"}
               </td>
             </tr>
             {tablo.hayatBranslar.map((s) => (

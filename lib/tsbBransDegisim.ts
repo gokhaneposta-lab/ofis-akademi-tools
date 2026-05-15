@@ -286,33 +286,6 @@ export function buildBransDegisimTablosu(
   };
 }
 
-/** Şirket seçimi: seçilen dönemde hayat dışı üretimi olan şirketler (kanal + daraltma) */
-export function listSirketlerBransDashboard(
-  rows: TsbPrimRow[],
-  donem: string,
-  channel: TsbKanalField,
-  daraltma: TsbPrimDaraltma,
-): { kod: number; ad: string; toplam: number }[] {
-  const m = new Map<number, { ad: string; toplam: number }>();
-  for (const r of rows) {
-    if (r.donem !== donem) continue;
-    if (!rowMatchesSegment(r, "hayatdisi")) continue;
-    if (!rowMatchesPrimDaraltma(r, daraltma)) continue;
-    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
-    const v = channelPremium(r, channel);
-    const cur = m.get(r.sirketKodu);
-    if (!cur) {
-      m.set(r.sirketKodu, { ad: r.sirketAdi, toplam: v });
-    } else {
-      cur.toplam += v;
-      if (r.sirketAdi) cur.ad = r.sirketAdi;
-    }
-  }
-  const arr = [...m.entries()].map(([kod, { ad, toplam }]) => ({ kod, ad, toplam }));
-  arr.sort((a, b) => b.toplam - a.toplam);
-  return arr;
-}
-
 export type BransPayDilim = { etiket: string; sirketPay: number; sektorPay: number };
 
 /** Tablodaki branş/tarife satırlarından “bu dönem” üretim payları (şirket portföyü vs sektör) */

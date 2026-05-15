@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import type { BransDegisimSatir } from "@/lib/tsbBransDegisim";
-import { buildBransDegisimTablosu, listSirketlerBransDashboard } from "@/lib/tsbBransDegisim";
-import type { TsbKanalField, TsbPrimDaraltmaModu, TsbPrimRow } from "@/lib/tsbPrimDashboard";
+import { buildBransDegisimTablosu } from "@/lib/tsbBransDegisim";
+import type { TsbKanalField, TsbPrimDaraltmaModu, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
   daraltmaFromUiState,
   isTsbToplamSirketKodu,
+  listSirketlerSegmentDonem,
   prevYearPeriod,
   resolveDefaultSirketKodu,
   uniqueSortedPeriods,
@@ -69,6 +70,7 @@ export default function TsbBransDegisimDashboard() {
   const [donem, setDonem] = useState("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
   const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
+  const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
 
   const branchLookup = useTsbBranchLookupFetch();
@@ -104,22 +106,22 @@ export default function TsbBransDegisimDashboard() {
 
   const sirketler = useMemo(() => {
     if (!rows || !secilenDonem) return [];
-    return listSirketlerBransDashboard(rows, secilenDonem, kanal, daraltma);
-  }, [rows, secilenDonem, kanal, daraltma]);
+    return listSirketlerSegmentDonem(rows, secilenDonem, kanal, segment, daraltma);
+  }, [rows, secilenDonem, kanal, segment, daraltma]);
 
   useEffect(() => {
     if (sirketler.length === 0) return;
     if (sirketKodu === "" || !sirketler.some((s) => s.kod === sirketKodu)) {
-      const kod = resolveDefaultSirketKodu(sirketler, "hayatdisi");
+      const kod = resolveDefaultSirketKodu(sirketler, segment === "hayatdisi" ? "hayatdisi" : "hayat");
       if (kod !== null) setSirketKodu(kod);
     }
-  }, [sirketler, sirketKodu]);
+  }, [sirketler, sirketKodu, segment]);
 
   const effectiveSirketKodu = useMemo(() => {
     if (sirketler.length === 0) return null;
     if (sirketKodu !== "" && sirketler.some((s) => s.kod === sirketKodu)) return sirketKodu as number;
-    return resolveDefaultSirketKodu(sirketler, "hayatdisi");
-  }, [sirketler, sirketKodu]);
+    return resolveDefaultSirketKodu(sirketler, segment === "hayatdisi" ? "hayatdisi" : "hayat");
+  }, [sirketler, sirketKodu, segment]);
 
   const tablo = useMemo(() => {
     if (!rows || !secilenDonem || effectiveSirketKodu === null) return null;
@@ -141,9 +143,10 @@ export default function TsbBransDegisimDashboard() {
   }
 
   if (sirketler.length === 0) {
+    const havuz = segment === "hayatdisi" ? "hayat dışı" : "hayat ve emeklilik";
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
-        Bu kanal ve dönem için hayat dışı şirket verisi bulunamadı; şirket seçilemiyor.
+        Bu kanal ve dönem için <strong>{havuz}</strong> şirket verisi bulunamadı; şirket seçilemiyor.
       </div>
     );
   }
@@ -163,7 +166,34 @@ export default function TsbBransDegisimDashboard() {
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-500">Daraltma türü</p>
+        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-500">Sektör görünümü (şirket listesi)</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            aria-pressed={segment === "hayatdisi"}
+            onClick={() => setSegment("hayatdisi")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              segment === "hayatdisi"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Hayat dışı
+          </button>
+          <button
+            type="button"
+            aria-pressed={segment === "hayat"}
+            onClick={() => setSegment("hayat")}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              segment === "hayat"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            Hayat &amp; emeklilik
+          </button>
+        </div>
+        <p className="mb-3 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Daraltma türü</p>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
@@ -191,9 +221,10 @@ export default function TsbBransDegisimDashboard() {
           </button>
         </div>
         <p className="mt-2 text-[11px] text-gray-600">
-          Tablo satırları yalnızca bu seçime göre <strong>ana branş</strong> veya <strong>tarife grubu</strong> listesine
-          döner; tek tek branş/tarife daraltması yoktur. Hayat dışı bölümünde{" "}
-          <strong>TRAFİK HARİÇ TOPLAM</strong> ara satırı her iki görünümde de yer alır.
+          <strong>Şirket</strong> açılır listesi seçilen görünüme göre filtrelenir (hayat dışı şirketler veya hayat–emeklilik
+          şirketleri). Tablo satırları yine hem hayat dışı hem hayat &amp; emeklilik bloklarını gösterir; üstteki seçim
+          yalnızca kıyaslanacak şirketi belirler. Daraltma: <strong>ana branş</strong> veya <strong>tarife grubu</strong>{" "}
+          listesi; hayat dışı bölümünde <strong>TRAFİK HARİÇ TOPLAM</strong> ara satırı her iki görünümde de yer alır.
         </p>
       </div>
 

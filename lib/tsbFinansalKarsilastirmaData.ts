@@ -6,6 +6,11 @@
  */
 
 import { GELIR_SYNTHETIC_HESAP_KODU } from "./tsbGelirSyntheticCodes";
+import {
+  hasarPrimOranlariFromLookup,
+  hasarPrimOranlariSektorFromLookup,
+  type HasarPrimOranlari,
+} from "./tsbHasarPrimOrani";
 import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
 import {
   buildGelirTidyDonemLookup,
@@ -50,7 +55,6 @@ export type FinansalKiyaslamaSatirFormat = "tl" | "yuzde" | "oran";
 export type FinansalKiyaslamaSatirTanim = {
   id: string;
   label: string;
-  kaynakNotu?: string;
   format: FinansalKiyaslamaSatirFormat;
 };
 
@@ -229,13 +233,38 @@ function sektorOranlarFromPeerHams(list: FinansalKiyaslamaHamOlcum[]): FinansalK
   };
 }
 
+export type FinansalKiyasHedef =
+  | { mod: "sektor" }
+  | { mod: "sirket"; sirketKodu: number };
+
+function oranlarFromSkorHam(
+  m: ReturnType<typeof hamMetrikFromLookup> | null,
+): FinansalKiyaslamaSektorOranlar | null {
+  if (!m) return null;
+  return {
+    safiPrim: m.oranSafiPrim,
+    vokOz: m.oranVokOzsermaye,
+    yatOz: m.oranYatirimOzsermaye,
+    ozAktif: m.oranOzAktif,
+    yukAktif: m.oranYukAktif,
+    finAktif: m.oranFinAktif,
+    cari: null,
+    nakitKisa: null,
+    vokYatirim: m.yatirimGeliriSegment !== 0 ? m.vok / m.yatirimGeliriSegment : null,
+  };
+}
+
 export type FinansalKiyaslamaDonemPaketi = {
   donem: string;
   pool: SegmentSkorPool;
   sirketHam: FinansalKiyaslamaHamOlcum | null;
-  sektorHam: FinansalKiyaslamaHamOlcum | null;
-  sektorOran: FinansalKiyaslamaSektorOranlar | null;
   sirketSkorHam: ReturnType<typeof hamMetrikFromLookup> | null;
+  sirketHp: HasarPrimOranlari;
+  kiyasHam: FinansalKiyaslamaHamOlcum | null;
+  kiyasSkorHam: ReturnType<typeof hamMetrikFromLookup> | null;
+  kiyasOran: FinansalKiyaslamaSektorOranlar | null;
+  kiyasHp: HasarPrimOranlari;
+  kiyasMod: FinansalKiyasHedef["mod"];
   peerSayisi: number;
 };
 
@@ -244,6 +273,7 @@ export function finansalKiyaslamaDonemPaketi(
   donem: string,
   sirketKodu: number,
   pool: SegmentSkorPool,
+  kiyasHedef: FinansalKiyasHedef = { mod: "sektor" },
 ): FinansalKiyaslamaDonemPaketi {
   const lookup = buildGelirTidyDonemLookup(rows, donem);
   const peers = segmentPeerSirketKodlari(rows, donem, pool).filter((k) => lookup.has(k));
@@ -252,15 +282,40 @@ export function finansalKiyaslamaDonemPaketi(
     .filter((x): x is FinansalKiyaslamaHamOlcum => x !== null);
   const sektorHam = aggregateSektorHamOlcumleri(peerHams);
   const sektorOran = peerHams.length > 0 ? sektorOranlarFromPeerHams(peerHams) : null;
+  const sektorHp = hasarPrimOranlariSektorFromLookup(lookup, peers);
+
   const sirketHam = hamOlcumFromLookup(lookup, sirketKodu);
   const sirketSkorHam = lookup.has(sirketKodu) ? hamMetrikFromLookup(lookup, sirketKodu) : null;
+  const sirketHp = hasarPrimOranlariFromLookup(lookup, sirketKodu);
+
+  const kiyasHam =
+    kiyasHedef.mod === "sektor"
+      ? sektorHam
+      : hamOlcumFromLookup(lookup, kiyasHedef.sirketKodu);
+  const kiyasSkorHam =
+    kiyasHedef.mod === "sektor"
+      ? null
+      : lookup.has(kiyasHedef.sirketKodu)
+        ? hamMetrikFromLookup(lookup, kiyasHedef.sirketKodu)
+        : null;
+  const kiyasOran =
+    kiyasHedef.mod === "sektor" ? sektorOran : oranlarFromSkorHam(kiyasSkorHam);
+  const kiyasHp =
+    kiyasHedef.mod === "sektor"
+      ? sektorHp
+      : hasarPrimOranlariFromLookup(lookup, kiyasHedef.sirketKodu);
+
   return {
     donem,
     pool,
     sirketHam,
-    sektorHam,
-    sektorOran,
     sirketSkorHam,
+    sirketHp,
+    kiyasHam,
+    kiyasSkorHam,
+    kiyasOran,
+    kiyasHp,
+    kiyasMod: kiyasHedef.mod,
     peerSayisi: peerHams.length,
   };
 }
@@ -288,107 +343,58 @@ export function finansalKiyaslamaDegisim(
 
 /** Tablo satırları (Excel Sektör Karşılaştırma sırasına yakın). */
 export const FINANSAL_KIYASLAMA_SATIRLARI: readonly FinansalKiyaslamaSatirTanim[] = [
-  {
-    id: "vergi_oncesi_kar",
-    label: "Vergi öncesi kar (yaklaşık)",
-    kaynakNotu: "GT · MALI · 690 — “Dönem karı veya zararı”",
-    format: "tl",
-  },
-  { id: "ozsermaye", label: "Özsermaye (dönem sonu)", kaynakNotu: "BL · Pasif · 5", format: "tl" },
-  { id: "prim", label: "Brüt prim", kaynakNotu: "GT · HAYATDISI · 60001", format: "tl" },
-  {
-    id: "tarsim_prim",
-    label: "TARSİM prim",
-    kaynakNotu: "prim-tidy / kanal kırılımı ile ileride",
-    format: "tl",
-  },
-  {
-    id: "prim_trafik_haric",
-    label: "Trafik hariç brüt prim",
-    kaynakNotu: "HAYATDISI 60001 − TRAFİK 60001 (`docs/tsb-kpi-tanimlari.md` §3.2)",
-    format: "tl",
-  },
-  { id: "faaliyet_gider", label: "Faaliyet giderleri", kaynakNotu: "GT · HAYATDISI · 614", format: "tl" },
-  {
-    id: "genel_gider",
-    label: "Genel giderler (özet kodlar toplamı)",
-    kaynakNotu: "§4 — 61402…65206",
-    format: "tl",
-  },
-  {
-    id: "personel_gider",
-    label: "Personel giderleri",
-    kaynakNotu: "61402 + 63602 + 65202",
-    format: "tl",
-  },
-  {
-    id: "personel_sayi",
-    label: "Personel sayısı",
-    kaynakNotu: "TSB ayrı tablo — yakında",
-    format: "tl",
-  },
-  {
-    id: "yatirim",
-    label: "Yatırım geliri (segment)",
-    kaynakNotu: "§4.3 — MALI",
-    format: "tl",
-  },
-  {
-    id: "teknik_kar_zarar",
-    label: "Teknik kar / zarar",
-    kaynakNotu: "Sentetik __SYN_TKN_KZ__ · HAYATDISI",
-    format: "tl",
-  },
-  { id: "safi_teknik", label: "Safî teknik kar / zarar", kaynakNotu: "§4.2", format: "tl" },
-  {
-    id: "teknik_karsilik",
-    label: "Teknik karşılıklar (üst grup)",
-    kaynakNotu: "BL · Pasif · 35 + 45",
-    format: "tl",
-  },
-  { id: "mali_kar", label: "Malî kar (sentetik)", kaynakNotu: "__SYN_MALI_KAR__ · MALI", format: "tl" },
-  { id: "vok", label: "VÖK", kaynakNotu: "§4.1", format: "tl" },
+  { id: "vergi_oncesi_kar", label: "Vergi öncesi kar", format: "tl" },
+  { id: "ozsermaye", label: "Özsermaye", format: "tl" },
+  { id: "prim", label: "Brüt prim", format: "tl" },
+  { id: "prim_trafik_haric", label: "Trafik hariç brüt prim", format: "tl" },
+  { id: "faaliyet_gider", label: "Faaliyet giderleri", format: "tl" },
+  { id: "genel_gider", label: "Genel giderler", format: "tl" },
+  { id: "personel_gider", label: "Personel giderleri", format: "tl" },
+  { id: "yatirim", label: "Yatırım geliri", format: "tl" },
+  { id: "teknik_kar_zarar", label: "Teknik kar / zarar", format: "tl" },
+  { id: "safi_teknik", label: "Safî teknik kar / zarar", format: "tl" },
+  { id: "teknik_karsilik", label: "Teknik karşılıklar", format: "tl" },
+  { id: "mali_kar", label: "Malî kar", format: "tl" },
+  { id: "vok", label: "VÖK", format: "tl" },
   { id: "oran_safi_prim", label: "Safî teknik / prim", format: "yuzde" },
   { id: "oran_vok_oz", label: "VÖK / özsermaye", format: "oran" },
-  { id: "oran_yat_oz", label: "Yatırım (segment) / özsermaye", format: "oran" },
+  { id: "oran_yat_oz", label: "Yatırım geliri / özsermaye", format: "oran" },
   { id: "oran_oz_aktif", label: "Özsermaye / toplam aktif", format: "yuzde" },
   { id: "oran_yuk_aktif", label: "Yükümlülük (3+4) / toplam aktif", format: "yuzde" },
-  { id: "oran_fin_aktif", label: "(Nakit 10 + Finansal 11) / toplam aktif", format: "yuzde" },
-  { id: "oran_cari", label: "Cari oran (kaba)", kaynakNotu: "Aktif 1 / Pasif 3", format: "oran" },
-  { id: "oran_nakit_kisa", label: "Nakit / kısa vadeli yük.", kaynakNotu: "Aktif 10 / Pasif 3", format: "oran" },
-  { id: "oran_vok_yatirim", label: "VÖK / yatırım (segment)", format: "oran" },
-  {
-    id: "hasar_prim",
-    label: "Hasar / prim",
-    kaynakNotu: "Hasar üretimi tidy ile ileride",
-    format: "yuzde",
-  },
-  {
-    id: "hp_brut",
-    label: "HP brüt (hayat)",
-    kaynakNotu: "Hayat havuzu — ayrı panel",
-    format: "tl",
-  },
-  {
-    id: "hp_net",
-    label: "HP net (hayat)",
-    kaynakNotu: "Hayat havuzu — ayrı panel",
-    format: "tl",
-  },
+  { id: "oran_fin_aktif", label: "Nakit + finansal varlık / toplam aktif", format: "yuzde" },
+  { id: "oran_cari", label: "Cari oran", format: "oran" },
+  { id: "oran_nakit_kisa", label: "Nakit / kısa vadeli yükümlülük", format: "oran" },
+  { id: "oran_vok_yatirim", label: "VÖK / yatırım geliri", format: "oran" },
+  { id: "brut_hp", label: "Brüt H/P", format: "yuzde" },
+  { id: "net_hp", label: "Net H/P", format: "yuzde" },
 ] as const;
 
 export function finansalKiyaslamaSatirSayisal(
   satirId: string,
   sirketHam: FinansalKiyaslamaHamOlcum | null,
-  sektorHam: FinansalKiyaslamaHamOlcum | null,
+  kiyasHam: FinansalKiyaslamaHamOlcum | null,
   sirketSkorHam: ReturnType<typeof hamMetrikFromLookup> | null,
-  sektorOran: FinansalKiyaslamaSektorOranlar | null,
-): { sirket: number | null; sektorHd: number | null } {
-  const yok = { sirket: null, sektorHd: null };
+  kiyasOran: FinansalKiyaslamaSektorOranlar | null,
+  kiyasSkorHam: ReturnType<typeof hamMetrikFromLookup> | null,
+  sirketHp: HasarPrimOranlari,
+  kiyasHp: HasarPrimOranlari,
+): { sirket: number | null; kiyas: number | null } {
+  const yok = { sirket: null, kiyas: null };
 
   const pickHam = (key: keyof FinansalKiyaslamaHamOlcum) => ({
     sirket: sirketHam ? sirketHam[key] : null,
-    sektorHd: sektorHam ? sektorHam[key] : null,
+    kiyas: kiyasHam ? kiyasHam[key] : null,
+  });
+
+  const pickSkorOran = (
+    skorKey: keyof ReturnType<typeof hamMetrikFromLookup>,
+    oranKey: keyof FinansalKiyaslamaSektorOranlar,
+  ) => ({
+    sirket: sirketSkorHam ? sirketSkorHam[skorKey] : null,
+    kiyas:
+      kiyasSkorHam != null
+        ? (kiyasSkorHam[skorKey] as number | null)
+        : (kiyasOran?.[oranKey] ?? null),
   });
 
   switch (satirId) {
@@ -398,12 +404,16 @@ export function finansalKiyaslamaSatirSayisal(
       return pickHam("ozsermaye");
     case "prim":
       return pickHam("brutPrim");
-    case "tarsim_prim":
-    case "personel_sayi":
-    case "hasar_prim":
-    case "hp_brut":
-    case "hp_net":
-      return yok;
+    case "brut_hp":
+      return {
+        sirket: sirketHp.brutHasarPrimOrani,
+        kiyas: kiyasHp.brutHasarPrimOrani,
+      };
+    case "net_hp":
+      return {
+        sirket: sirketHp.netHasarPrimOrani,
+        kiyas: kiyasHp.netHasarPrimOrani,
+      };
     case "prim_trafik_haric":
       return pickHam("primTrafikHaric");
     case "faaliyet_gider":
@@ -425,46 +435,38 @@ export function finansalKiyaslamaSatirSayisal(
     case "vok":
       return pickHam("vok");
     case "oran_safi_prim":
-      return {
-        sirket: sirketSkorHam?.oranSafiPrim ?? null,
-        sektorHd: sektorOran?.safiPrim ?? null,
-      };
+      return pickSkorOran("oranSafiPrim", "safiPrim");
     case "oran_vok_oz":
-      return {
-        sirket: sirketSkorHam?.oranVokOzsermaye ?? null,
-        sektorHd: sektorOran?.vokOz ?? null,
-      };
+      return pickSkorOran("oranVokOzsermaye", "vokOz");
     case "oran_yat_oz":
-      return {
-        sirket: sirketSkorHam?.oranYatirimOzsermaye ?? null,
-        sektorHd: sektorOran?.yatOz ?? null,
-      };
+      return pickSkorOran("oranYatirimOzsermaye", "yatOz");
     case "oran_oz_aktif":
-      return {
-        sirket: sirketSkorHam?.oranOzAktif ?? null,
-        sektorHd: sektorOran?.ozAktif ?? null,
-      };
+      return pickSkorOran("oranOzAktif", "ozAktif");
     case "oran_yuk_aktif":
-      return {
-        sirket: sirketSkorHam?.oranYukAktif ?? null,
-        sektorHd: sektorOran?.yukAktif ?? null,
-      };
+      return pickSkorOran("oranYukAktif", "yukAktif");
     case "oran_fin_aktif":
-      return {
-        sirket: sirketSkorHam?.oranFinAktif ?? null,
-        sektorHd: sektorOran?.finAktif ?? null,
-      };
+      return pickSkorOran("oranFinAktif", "finAktif");
     case "oran_cari":
       return {
         sirket:
           sirketHam && sirketHam.pasif3 !== 0 ? sirketHam.aktif1 / sirketHam.pasif3 : null,
-        sektorHd: sektorOran?.cari ?? null,
+        kiyas:
+          kiyasSkorHam != null
+            ? kiyasHam && kiyasHam.pasif3 !== 0
+              ? kiyasHam.aktif1 / kiyasHam.pasif3
+              : null
+            : (kiyasOran?.cari ?? null),
       };
     case "oran_nakit_kisa":
       return {
         sirket:
           sirketHam && sirketHam.pasif3 !== 0 ? sirketHam.nakit10 / sirketHam.pasif3 : null,
-        sektorHd: sektorOran?.nakitKisa ?? null,
+        kiyas:
+          kiyasSkorHam != null
+            ? kiyasHam && kiyasHam.pasif3 !== 0
+              ? kiyasHam.nakit10 / kiyasHam.pasif3
+              : null
+            : (kiyasOran?.nakitKisa ?? null),
       };
     case "oran_vok_yatirim":
       return {
@@ -472,7 +474,12 @@ export function finansalKiyaslamaSatirSayisal(
           sirketHam && sirketHam.yatirimSegment !== 0
             ? sirketHam.vok / sirketHam.yatirimSegment
             : null,
-        sektorHd: sektorOran?.vokYatirim ?? null,
+        kiyas:
+          kiyasSkorHam != null
+            ? kiyasHam && kiyasHam.yatirimSegment !== 0
+              ? kiyasHam.vok / kiyasHam.yatirimSegment
+              : null
+            : (kiyasOran?.vokYatirim ?? null),
       };
     default:
       return yok;

@@ -17,6 +17,7 @@ import {
   formatFinansalHucre,
   listSirketleriGelirDonemForPool,
   oncekiYilDonem,
+  type FinansalKiyasHedef,
   type FinansalKiyaslamaDonemPaketi,
 } from "@/lib/tsbFinansalKarsilastirmaData";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
@@ -37,6 +38,8 @@ export default function TsbFinansalKarsilastirmaDashboard() {
   const [pool, setPool] = useState<SegmentSkorPool>("HD");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [donem, setDonem] = useState<string>("");
+  const [kiyasModu, setKiyasModu] = useState<"sektor" | "sirket">("sektor");
+  const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
 
   useEffect(() => {
     let cancelled = false;
@@ -93,19 +96,46 @@ export default function TsbFinansalKarsilastirmaDashboard() {
 
   const onceYilVarMi = !!(donemOnceki && tumDonemler.includes(donemOnceki));
 
+  const kiyasListe = useMemo(
+    () => sirketListesi.filter((s) => s.kod !== sirketKodu),
+    [sirketListesi, sirketKodu],
+  );
+
+  const kiyasHedef: FinansalKiyasHedef = useMemo(() => {
+    if (kiyasModu === "sektor") return { mod: "sektor" };
+    if (kiyasSirketKodu === "") return { mod: "sektor" };
+    return { mod: "sirket", sirketKodu: kiyasSirketKodu };
+  }, [kiyasModu, kiyasSirketKodu]);
+
+  useEffect(() => {
+    if (kiyasModu !== "sirket" || kiyasListe.length === 0) return;
+    if (kiyasListe.some((s) => s.kod === kiyasSirketKodu)) return;
+    setKiyasSirketKodu(kiyasListe[0].kod);
+  }, [kiyasModu, kiyasListe, kiyasSirketKodu]);
+
   const paketBu: FinansalKiyaslamaDonemPaketi | null = useMemo(() => {
     if (!rows || !donem || sirketKodu === "") return null;
-    return finansalKiyaslamaDonemPaketi(rows, donem, sirketKodu, pool);
-  }, [rows, donem, sirketKodu, pool]);
+    return finansalKiyaslamaDonemPaketi(rows, donem, sirketKodu, pool, kiyasHedef);
+  }, [rows, donem, sirketKodu, pool, kiyasHedef]);
 
   const paketOnceki: FinansalKiyaslamaDonemPaketi | null = useMemo(() => {
     if (!rows || !donemOnceki || sirketKodu === "" || !onceYilVarMi) return null;
-    return finansalKiyaslamaDonemPaketi(rows, donemOnceki, sirketKodu, pool);
-  }, [rows, donemOnceki, sirketKodu, pool, onceYilVarMi]);
+    return finansalKiyaslamaDonemPaketi(rows, donemOnceki, sirketKodu, pool, kiyasHedef);
+  }, [rows, donemOnceki, sirketKodu, pool, onceYilVarMi, kiyasHedef]);
 
   const secilenAd =
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
     (sirketKodu === "" ? "" : `Şirket ${sirketKodu}`);
+
+  const kiyasBaslik = useMemo(() => {
+    if (kiyasModu === "sektor") {
+      return paketBu
+        ? `${POOL_LABELS[pool]} sektör (n = ${paketBu.peerSayisi})`
+        : `${POOL_LABELS[pool]} sektör`;
+    }
+    const ad = kiyasListe.find((s) => s.kod === kiyasSirketKodu)?.ad;
+    return ad ?? "Kıyas şirketi";
+  }, [kiyasModu, pool, paketBu, kiyasListe, kiyasSirketKodu]);
 
   if (error) {
     return (
@@ -159,7 +189,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
           })}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label htmlFor="fk-donem" className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
               Dönem
@@ -207,13 +237,69 @@ export default function TsbFinansalKarsilastirmaDashboard() {
               {pool === "HD" ? DEFAULT_BEREKET_SIGORTA_HD_KOD : DEFAULT_BEREKET_EMEKLILIK_KOD}).
             </p>
           </div>
+          <div>
+            <span className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Kıyas
+            </span>
+            <div className="mt-1 flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => setKiyasModu("sektor")}
+                className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
+                  kiyasModu === "sektor"
+                    ? "border-slate-600 bg-slate-700 text-white"
+                    : "border-gray-300 bg-white text-gray-700 hover:border-slate-400"
+                }`}
+              >
+                Sektör (Σ)
+              </button>
+              <button
+                type="button"
+                onClick={() => setKiyasModu("sirket")}
+                className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
+                  kiyasModu === "sirket"
+                    ? "border-slate-600 bg-slate-700 text-white"
+                    : "border-gray-300 bg-white text-gray-700 hover:border-slate-400"
+                }`}
+              >
+                Şirket
+              </button>
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="fk-kiyas-sirket"
+              className="block text-xs font-semibold uppercase tracking-wide text-gray-500"
+            >
+              Kıyas şirketi
+            </label>
+            <select
+              id="fk-kiyas-sirket"
+              className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:bg-gray-100 disabled:text-gray-400"
+              value={kiyasSirketKodu === "" ? "" : String(kiyasSirketKodu)}
+              disabled={kiyasModu === "sektor" || kiyasListe.length === 0}
+              onChange={(e) =>
+                setKiyasSirketKodu(e.target.value === "" ? "" : Number(e.target.value))
+              }
+            >
+              {kiyasListe.map((s) => (
+                <option key={s.kod} value={s.kod}>
+                  {s.ad} ({s.kod})
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-[11px] text-gray-500">
+              {kiyasModu === "sektor"
+                ? "Sağ blok: havuzdaki şirketlerin toplamı (oranlarda Σ pay / Σ payda)."
+                : "Sağ blok: seçilen şirketle bire bir kıyas."}
+            </p>
+          </div>
         </div>
 
         <p className="text-xs leading-relaxed text-gray-600">
           Sol blok: <strong className="text-gray-800">{secilenAd || "Şirket"}</strong> · Sağ blok:{" "}
-          <strong className="text-gray-800">{POOL_LABELS[pool]} sektör ortalaması</strong>
-          {paketBu ? <> · n = {paketBu.peerSayisi} şirket</> : null}. Δ sütunu: TL kalemlerinde yüzde değişim,
-          yüzde/oran satırlarında <em>puan farkı</em> (pp).
+          <strong className="text-gray-800">{kiyasBaslik}</strong>. Δ: TL satırlarında yüzde değişim; oran
+          satırlarında puan farkı (pp).
         </p>
       </div>
 
@@ -240,11 +326,11 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                 colSpan={3}
                 className="border-l border-gray-200 bg-slate-100 px-2 py-2 text-center text-[11px] font-bold uppercase tracking-wide text-slate-800"
               >
-                {POOL_LABELS[pool]} sektör
+                {kiyasBaslik}
               </th>
             </tr>
             <tr className="border-b border-gray-200 bg-gray-50/90">
-              {(["sirket", "sektor"] as const).map((blok) => (
+              {(["sirket", "kiyas"] as const).map((blok) => (
                 <Fragment key={`hdr-${blok}`}>
                   <th
                     scope="col"
@@ -280,22 +366,28 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                 ? finansalKiyaslamaSatirSayisal(
                     satir.id,
                     paketBu.sirketHam,
-                    paketBu.sektorHam,
+                    paketBu.kiyasHam,
                     paketBu.sirketSkorHam,
-                    paketBu.sektorOran,
+                    paketBu.kiyasOran,
+                    paketBu.kiyasSkorHam,
+                    paketBu.sirketHp,
+                    paketBu.kiyasHp,
                   )
-                : { sirket: null, sektorHd: null };
+                : { sirket: null, kiyas: null };
               const oncDeg = paketOnceki
                 ? finansalKiyaslamaSatirSayisal(
                     satir.id,
                     paketOnceki.sirketHam,
-                    paketOnceki.sektorHam,
+                    paketOnceki.kiyasHam,
                     paketOnceki.sirketSkorHam,
-                    paketOnceki.sektorOran,
+                    paketOnceki.kiyasOran,
+                    paketOnceki.kiyasSkorHam,
+                    paketOnceki.sirketHp,
+                    paketOnceki.kiyasHp,
                   )
-                : { sirket: null, sektorHd: null };
+                : { sirket: null, kiyas: null };
               const sirketDelta = finansalKiyaslamaDegisim(buDeg.sirket, oncDeg.sirket, satir.format);
-              const sektorDelta = finansalKiyaslamaDegisim(buDeg.sektorHd, oncDeg.sektorHd, satir.format);
+              const kiyasDelta = finansalKiyaslamaDegisim(buDeg.kiyas, oncDeg.kiyas, satir.format);
 
               return (
                 <tr
@@ -307,11 +399,6 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                     className="sticky left-0 z-10 max-w-[16rem] border-r border-gray-200 bg-white px-3 py-2 text-left align-top font-medium leading-snug text-gray-800 group-even:bg-gray-50/40"
                   >
                     {satir.label}
-                    {satir.kaynakNotu ? (
-                      <span className="mt-0.5 block text-[10px] font-normal leading-tight text-gray-500">
-                        {satir.kaynakNotu}
-                      </span>
-                    ) : null}
                   </th>
 
                   <td className="border-l border-gray-100 px-2 py-1.5 text-right tabular-nums text-gray-900">
@@ -335,23 +422,23 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                   </td>
 
                   <td className="border-l border-gray-200 px-2 py-1.5 text-right tabular-nums text-slate-800">
-                    {formatFinansalHucre(buDeg.sektorHd, satir.format)}
+                    {formatFinansalHucre(buDeg.kiyas, satir.format)}
                   </td>
                   <td className="border-l border-gray-100 px-2 py-1.5 text-right tabular-nums text-slate-700">
-                    {formatFinansalHucre(oncDeg.sektorHd, satir.format)}
+                    {formatFinansalHucre(oncDeg.kiyas, satir.format)}
                   </td>
                   <td
                     className={`border-l border-gray-100 px-2 py-1.5 text-right tabular-nums font-semibold ${
-                      sektorDelta.deger === null
+                      kiyasDelta.deger === null
                         ? "text-gray-400"
-                        : sektorDelta.deger > 0
+                        : kiyasDelta.deger > 0
                           ? "text-emerald-700"
-                          : sektorDelta.deger < 0
+                          : kiyasDelta.deger < 0
                             ? "text-rose-700"
                             : "text-gray-700"
                     }`}
                   >
-                    {formatFinansalDegisim(sektorDelta.deger, sektorDelta.format)}
+                    {formatFinansalDegisim(kiyasDelta.deger, kiyasDelta.format)}
                   </td>
                 </tr>
               );

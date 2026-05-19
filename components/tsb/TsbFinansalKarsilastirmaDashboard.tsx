@@ -21,6 +21,18 @@ import {
   type FinansalKiyaslamaDonemPaketi,
 } from "@/lib/tsbFinansalKarsilastirmaData";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
+import {
+  cn,
+  tsb,
+  TsbError,
+  TsbFilterBar,
+  TsbFilterField,
+  TsbFilterGrid,
+  TsbLoading,
+  TsbSelect,
+  TsbTableShell,
+  TsbToggleButton,
+} from "@/components/tsb/tsbDashboardUi";
 
 const POOL_LABELS: Record<SegmentSkorPool, string> = {
   HD: "Hayat dışı (HD)",
@@ -137,92 +149,66 @@ export default function TsbFinansalKarsilastirmaDashboard() {
     return ad ?? "Kıyas şirketi";
   }, [kiyasModu, pool, paketBu, kiyasListe, kiyasSirketKodu]);
 
-  if (error) {
-    return (
-      <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
-        {error}
-      </p>
-    );
-  }
-
-  if (tumDonemler.length === 0 && !error) {
-    return (
-      <p className="rounded-lg border border-gray-200 bg-white px-4 py-8 text-center text-sm text-gray-600">
-        Dönem listesi yükleniyor…
-      </p>
-    );
-  }
-
+  if (error) return <TsbError message={error} />;
+  if (tumDonemler.length === 0 && !error) return <TsbLoading message="Dönem listesi yükleniyor…" />;
   if (!rows || !donem || sirketKodu === "") {
-    return (
-      <p className="rounded-lg border border-gray-200 bg-white px-4 py-8 text-center text-sm text-gray-600">
-        {donem ? `${donem} verisi yükleniyor…` : "Gelir verisi yükleniyor…"}
-      </p>
-    );
+    return <TsbLoading message={donem ? `${donem} verisi yükleniyor…` : "Gelir verisi yükleniyor…"} />;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <div role="tablist" aria-label="Sektör havuzu" className="flex flex-wrap gap-1.5">
-          {(["HD", "HAYAT_EMEKLILIK"] as const).map((p) => {
-            const aktif = pool === p;
-            return (
-              <button
-                key={p}
-                type="button"
-                role="tab"
-                aria-selected={aktif}
-                onClick={() => {
-                  setPool(p);
-                  setSirketKodu("");
-                }}
-                className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
-                  aktif
-                    ? "border-emerald-600 bg-emerald-600 text-white shadow-sm"
-                    : "border-gray-300 bg-white text-gray-700 hover:border-emerald-300 hover:text-emerald-800"
-                }`}
-              >
-                {POOL_LABELS[p]}
-              </button>
-            );
-          })}
+    <div className={tsb.dashboardStack}>
+      <TsbFilterBar>
+        <p className={tsb.filterSectionLabel}>Sektör havuzu</p>
+        <div role="tablist" aria-label="Sektör havuzu" className={cn(tsb.btnGroup, "mb-3")}>
+          {(["HD", "HAYAT_EMEKLILIK"] as const).map((p) => (
+            <TsbToggleButton
+              key={p}
+              pressed={pool === p}
+              variant="segment"
+              onClick={() => {
+                setPool(p);
+                setSirketKodu("");
+              }}
+            >
+              {POOL_LABELS[p]}
+            </TsbToggleButton>
+          ))}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <label htmlFor="fk-donem" className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Dönem
-            </label>
-            <select
-              id="fk-donem"
-              className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              value={donem}
-              onChange={(e) => setDonem(e.target.value)}
-            >
+        <TsbFilterGrid>
+          <TsbFilterField
+            label="Dönem"
+            hint={
+              <>
+                Karşılaştırma: <strong>{donem}</strong>{" "}
+                {donemOnceki ? (
+                  <>
+                    vs <strong>{donemOnceki}</strong>{" "}
+                    {onceYilVarMi ? "" : "(önceki yıl verisi yok — “—” gösterilir)"}
+                  </>
+                ) : null}
+              </>
+            }
+          >
+            <TsbSelect id="fk-donem" value={donem} onChange={(e) => setDonem(e.target.value)}>
               {[...tumDonemler].reverse().map((d) => (
                 <option key={d} value={d}>
                   {d}
                 </option>
               ))}
-            </select>
-            <p className="mt-1 text-[11px] text-gray-500">
-              Karşılaştırma: <strong>{donem}</strong>{" "}
-              {donemOnceki ? (
-                <>
-                  vs <strong>{donemOnceki}</strong>{" "}
-                  {onceYilVarMi ? "" : "(önceki yıl verisi yok — “—” gösterilir)"}
-                </>
-              ) : null}
-            </p>
-          </div>
-          <div>
-            <label htmlFor="fk-sirket" className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Şirket
-            </label>
-            <select
+            </TsbSelect>
+          </TsbFilterField>
+          <TsbFilterField
+            label="Şirket"
+            hint={
+              <>
+                Varsayılan: {pool === "HD" ? "Bereket Sigorta AŞ" : "Bereket Emeklilik ve Hayat AŞ"} (
+                {pool === "HD" ? DEFAULT_BEREKET_SIGORTA_HD_KOD : DEFAULT_BEREKET_EMEKLILIK_KOD}).
+              </>
+            }
+          >
+            <TsbSelect
               id="fk-sirket"
-              className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               value={String(sirketKodu)}
               onChange={(e) => setSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
             >
@@ -231,86 +217,55 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                   {s.ad} ({s.kod})
                 </option>
               ))}
-            </select>
-            <p className="mt-1 text-[11px] text-gray-500">
-              Varsayılan: {pool === "HD" ? "Bereket Sigorta AŞ" : "Bereket Emeklilik ve Hayat AŞ"} (
-              {pool === "HD" ? DEFAULT_BEREKET_SIGORTA_HD_KOD : DEFAULT_BEREKET_EMEKLILIK_KOD}).
-            </p>
-          </div>
-          <div>
-            <span className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Kıyas
-            </span>
-            <div className="mt-1 flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() => setKiyasModu("sektor")}
-                className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
-                  kiyasModu === "sektor"
-                    ? "border-slate-600 bg-slate-700 text-white"
-                    : "border-gray-300 bg-white text-gray-700 hover:border-slate-400"
-                }`}
-              >
+            </TsbSelect>
+          </TsbFilterField>
+          <TsbFilterField label="Kıyas">
+            <div className={tsb.btnGroup}>
+              <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
                 Sektör (Σ)
-              </button>
-              <button
-                type="button"
-                onClick={() => setKiyasModu("sirket")}
-                className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
-                  kiyasModu === "sirket"
-                    ? "border-slate-600 bg-slate-700 text-white"
-                    : "border-gray-300 bg-white text-gray-700 hover:border-slate-400"
-                }`}
-              >
+              </TsbToggleButton>
+              <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => setKiyasModu("sirket")}>
                 Şirket
-              </button>
+              </TsbToggleButton>
             </div>
-          </div>
-          <div>
-            <label
-              htmlFor="fk-kiyas-sirket"
-              className="block text-xs font-semibold uppercase tracking-wide text-gray-500"
-            >
-              Kıyas şirketi
-            </label>
-            <select
+          </TsbFilterField>
+          <TsbFilterField
+            label="Kıyas şirketi"
+            hint={
+              kiyasModu === "sektor"
+                ? "Sağ blok: havuzdaki şirketlerin toplamı (oranlarda Σ pay / Σ payda)."
+                : "Sağ blok: seçilen şirketle bire bir kıyas."
+            }
+          >
+            <TsbSelect
               id="fk-kiyas-sirket"
-              className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:bg-gray-100 disabled:text-gray-400"
               value={kiyasSirketKodu === "" ? "" : String(kiyasSirketKodu)}
               disabled={kiyasModu === "sektor" || kiyasListe.length === 0}
-              onChange={(e) =>
-                setKiyasSirketKodu(e.target.value === "" ? "" : Number(e.target.value))
-              }
+              onChange={(e) => setKiyasSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
             >
               {kiyasListe.map((s) => (
                 <option key={s.kod} value={s.kod}>
                   {s.ad} ({s.kod})
                 </option>
               ))}
-            </select>
-            <p className="mt-1 text-[11px] text-gray-500">
-              {kiyasModu === "sektor"
-                ? "Sağ blok: havuzdaki şirketlerin toplamı (oranlarda Σ pay / Σ payda)."
-                : "Sağ blok: seçilen şirketle bire bir kıyas."}
-            </p>
-          </div>
-        </div>
+            </TsbSelect>
+          </TsbFilterField>
+        </TsbFilterGrid>
 
-        <p className="text-xs leading-relaxed text-gray-600">
-          Sol blok: <strong className="text-gray-800">{secilenAd || "Şirket"}</strong> · Sağ blok:{" "}
-          <strong className="text-gray-800">{kiyasBaslik}</strong>. Δ: TL satırlarında yüzde değişim; oran
-          satırlarında puan farkı (pp).
+        <p className={tsb.filterHint}>
+          Sol blok: <strong>{secilenAd || "Şirket"}</strong> · Sağ blok: <strong>{kiyasBaslik}</strong>. Δ: TL
+          satırlarında yüzde değişim; oran satırlarında puan farkı (pp).
         </p>
-      </div>
+      </TsbFilterBar>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-        <table className="min-w-[820px] w-full border-collapse text-left text-xs">
-          <thead>
-            <tr className="border-b border-gray-200 bg-slate-50">
+      <TsbTableShell>
+        <table className={cn(tsb.table, "min-w-[820px]")}>
+          <thead className={tsb.thead}>
+            <tr>
               <th
                 scope="col"
                 rowSpan={2}
-                className="sticky left-0 z-20 min-w-[15rem] border-r border-gray-200 bg-slate-50 px-3 py-2 text-left font-bold text-gray-800"
+                className={cn(tsb.thSticky, "min-w-[15rem]")}
               >
                 KPI
               </th>
@@ -329,7 +284,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                 {kiyasBaslik}
               </th>
             </tr>
-            <tr className="border-b border-gray-200 bg-gray-50/90">
+            <tr>
               {(["sirket", "kiyas"] as const).map((blok) => (
                 <Fragment key={`hdr-${blok}`}>
                   <th
@@ -364,7 +319,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
             {FINANSAL_KIYASLAMA_SATIRLARI.map((satir) => {
               if (satir.kind === "spacer") {
                 return (
-                  <tr key={satir.id} aria-hidden className="border-b border-gray-200 bg-gray-100/60">
+                  <tr key={satir.id} aria-hidden className="border-b border-slate-100 bg-slate-100/50">
                     <td colSpan={7} className="h-2 p-0" />
                   </tr>
                 );
@@ -398,53 +353,50 @@ export default function TsbFinansalKarsilastirmaDashboard() {
               const kiyasDelta = finansalKiyaslamaDegisim(buDeg.kiyas, oncDeg.kiyas, satir.format);
 
               return (
-                <tr
-                  key={satir.id}
-                  className="group border-b border-gray-100 odd:bg-white even:bg-gray-50/40"
-                >
+                <tr key={satir.id} className={tsb.tbodyRow}>
                   <th
                     scope="row"
-                    className="sticky left-0 z-10 max-w-[18rem] border-r border-gray-200 bg-white px-3 py-2 text-left align-top text-[11px] font-semibold uppercase leading-snug tracking-wide text-gray-800 group-even:bg-gray-50/40"
+                    className={cn(tsb.tdSticky, "max-w-[18rem] text-left align-top text-[10px] font-semibold uppercase leading-snug tracking-wide")}
                   >
                     {satir.label}
                   </th>
 
-                  <td className="border-l border-gray-100 px-2 py-1.5 text-right tabular-nums text-gray-900">
-                    {formatFinansalHucre(buDeg.sirket, satir.format)}
-                  </td>
-                  <td className="border-l border-gray-100 px-2 py-1.5 text-right tabular-nums text-gray-700">
+                  <td className={cn(tsb.td, "text-right")}>{formatFinansalHucre(buDeg.sirket, satir.format)}</td>
+                  <td className={cn(tsb.td, "text-right text-slate-600")}>
                     {formatFinansalHucre(oncDeg.sirket, satir.format)}
                   </td>
                   <td
-                    className={`border-l border-gray-100 px-2 py-1.5 text-right tabular-nums font-semibold ${
+                    className={cn(
+                      tsb.td,
+                      "text-right font-semibold",
                       sirketDelta.deger === null
                         ? "text-gray-400"
                         : sirketDelta.deger > 0
                           ? "text-emerald-700"
                           : sirketDelta.deger < 0
                             ? "text-rose-700"
-                            : "text-gray-700"
-                    }`}
+                            : "text-gray-700",
+                    )}
                   >
                     {formatFinansalDegisim(sirketDelta.deger, sirketDelta.format)}
                   </td>
 
-                  <td className="border-l border-gray-200 px-2 py-1.5 text-right tabular-nums text-slate-800">
-                    {formatFinansalHucre(buDeg.kiyas, satir.format)}
-                  </td>
-                  <td className="border-l border-gray-100 px-2 py-1.5 text-right tabular-nums text-slate-700">
+                  <td className={cn(tsb.td, "text-right")}>{formatFinansalHucre(buDeg.kiyas, satir.format)}</td>
+                  <td className={cn(tsb.td, "text-right text-slate-600")}>
                     {formatFinansalHucre(oncDeg.kiyas, satir.format)}
                   </td>
                   <td
-                    className={`border-l border-gray-100 px-2 py-1.5 text-right tabular-nums font-semibold ${
+                    className={cn(
+                      tsb.td,
+                      "text-right font-semibold",
                       kiyasDelta.deger === null
                         ? "text-gray-400"
                         : kiyasDelta.deger > 0
                           ? "text-emerald-700"
                           : kiyasDelta.deger < 0
                             ? "text-rose-700"
-                            : "text-gray-700"
-                    }`}
+                            : "text-gray-700",
+                    )}
                   >
                     {formatFinansalDegisim(kiyasDelta.deger, kiyasDelta.format)}
                   </td>
@@ -453,7 +405,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
             })}
           </tbody>
         </table>
-      </div>
+      </TsbTableShell>
     </div>
   );
 }

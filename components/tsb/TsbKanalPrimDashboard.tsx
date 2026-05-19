@@ -16,6 +16,18 @@ import {
   uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
+import {
+  cn,
+  tsb,
+  TsbError,
+  TsbFilterBar,
+  TsbFilterField,
+  TsbFilterGrid,
+  TsbLoading,
+  TsbSelect,
+  TsbTableShell,
+  TsbToggleButton,
+} from "@/components/tsb/tsbDashboardUi";
 
 const KANALLAR: { value: TsbKanalField; label: string }[] = [
   { value: "genelToplam", label: "Genel toplam (tüm kanallar)" },
@@ -111,28 +123,10 @@ export default function TsbKanalPrimDashboard() {
     return buildKiyaslamaTablosu(rows, secilenDonem, kanal, daraltma, segment);
   }, [rows, secilenDonem, kanal, daraltma, segment]);
 
-  if (error) {
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-        {error}
-      </div>
-    );
-  }
-
-  if (!rows) {
-    return (
-      <div className="rounded-xl border border-gray-200 bg-white px-4 py-8 text-center text-sm text-gray-600">
-        Veri yükleniyor…
-      </div>
-    );
-  }
-
+  if (error) return <TsbError message={error} />;
+  if (!rows) return <TsbLoading />;
   if (rows.length === 0) {
-    return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
-        Gösterilecek prim verisi bulunamadı.
-      </div>
-    );
+    return <p className={tsb.alertWarn}>Gösterilecek prim verisi bulunamadı.</p>;
   }
 
   const tumAnaBransLabel =
@@ -146,157 +140,116 @@ export default function TsbKanalPrimDashboard() {
       : null;
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-500">Sektör görünümü</p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            aria-pressed={segment === "hayatdisi"}
+    <div className={tsb.dashboardStack}>
+      <TsbFilterBar>
+        <p className={tsb.filterSectionLabel}>Sektör görünümü</p>
+        <div className={cn(tsb.btnGroup, "mb-3")}>
+          <TsbToggleButton
+            pressed={segment === "hayatdisi"}
+            variant="segment"
             onClick={() => {
               setSegment("hayatdisi");
               setAnaBrans("");
               setTarifeSecim("");
             }}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              segment === "hayatdisi"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
           >
             Hayat dışı
-          </button>
-          <button
-            type="button"
-            aria-pressed={segment === "hayat"}
+          </TsbToggleButton>
+          <TsbToggleButton
+            pressed={segment === "hayat"}
+            variant="segment"
             onClick={() => {
               setSegment("hayat");
               setAnaBrans("");
               setTarifeSecim("");
             }}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              segment === "hayat"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
           >
             Hayat &amp; emeklilik
-          </button>
+          </TsbToggleButton>
         </div>
-        <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Daraltma türü</p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            aria-pressed={filtreModu === "anaBransH"}
-            onClick={() => setFiltreModu("anaBransH")}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              filtreModu === "anaBransH"
-                ? "bg-slate-700 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
+        <p className={tsb.filterSectionLabel}>Daraltma türü</p>
+        <div className={cn(tsb.btnGroup, "mb-2")}>
+          <TsbToggleButton pressed={filtreModu === "anaBransH"} onClick={() => setFiltreModu("anaBransH")}>
             Ana branş (TSB)
-          </button>
-          <button
-            type="button"
-            aria-pressed={filtreModu === "tarifeGrubu"}
-            onClick={() => setFiltreModu("tarifeGrubu")}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              filtreModu === "tarifeGrubu"
-                ? "bg-slate-700 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
+          </TsbToggleButton>
+          <TsbToggleButton pressed={filtreModu === "tarifeGrubu"} onClick={() => setFiltreModu("tarifeGrubu")}>
             Tarife grubu
-          </button>
+          </TsbToggleButton>
         </div>
-        <p className="mt-3 text-[12px] leading-relaxed text-gray-600">
-          Hayat ve hayat dışı şirketler ayrı gruplanmıştır; <strong>ana branş</strong> veya <strong>tarife grubu</strong> ile
-          daraltıp dönem ve kanalla tabloyu güncelleyebilirsiniz.
+        <p className={tsb.filterHint}>
+          Hayat ve hayat dışı şirketler ayrı gruplanmıştır; <strong>ana branş</strong> veya{" "}
+          <strong>tarife grubu</strong> ile daraltıp dönem ve kanalla tabloyu güncelleyebilirsiniz.
         </p>
-      </div>
+      </TsbFilterBar>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm">
-          <span className="mb-1.5 block font-medium text-gray-700">Dönem</span>
-          <select
-            value={secilenDonem}
-            onChange={(e) => {
-              setDonem(e.target.value);
-              setAnaBrans("");
-              setTarifeSecim("");
-            }}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-          >
-            {donemler.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block text-sm sm:col-span-2">
-          <span className="mb-1.5 block font-medium text-gray-700">
-            {filtreModu === "anaBransH" ? "Ana branş" : "Tarife grubu"}
-          </span>
-          {filtreModu === "anaBransH" ? (
-            <select
-              value={anaBrans}
-              onChange={(e) => setAnaBrans(e.target.value)}
-              className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+      <TsbFilterBar>
+        <TsbFilterGrid>
+          <TsbFilterField label="Dönem">
+            <TsbSelect
+              value={secilenDonem}
+              onChange={(e) => {
+                setDonem(e.target.value);
+                setAnaBrans("");
+                setTarifeSecim("");
+              }}
             >
-              <option value="">{tumAnaBransLabel}</option>
-              {segment === "hayatdisi" && (
-                <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
-              )}
-              {anaBransSecenekleri.map((a) => (
-                <option key={a} value={a}>
-                  {a}
+              {donemler.map((d) => (
+                <option key={d} value={d}>
+                  {d}
                 </option>
               ))}
-            </select>
-          ) : (
-            <select
-              value={tarifeSecim}
-              onChange={(e) => setTarifeSecim(e.target.value)}
-              className="w-full max-w-xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-            >
-              <option value="">Tüm tarife grupları</option>
-              {segment === "hayatdisi" && (
-                <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
-              )}
-              {tarifeSecenekleri.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+            </TsbSelect>
+          </TsbFilterField>
+          <TsbFilterField
+            label={filtreModu === "anaBransH" ? "Ana branş" : "Tarife grubu"}
+            className="sm:col-span-2"
+          >
+            {filtreModu === "anaBransH" ? (
+              <TsbSelect className={tsb.selectWide} value={anaBrans} onChange={(e) => setAnaBrans(e.target.value)}>
+                <option value="">{tumAnaBransLabel}</option>
+                {segment === "hayatdisi" && (
+                  <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
+                )}
+                {anaBransSecenekleri.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </TsbSelect>
+            ) : (
+              <TsbSelect className={tsb.selectWide} value={tarifeSecim} onChange={(e) => setTarifeSecim(e.target.value)}>
+                <option value="">Tüm tarife grupları</option>
+                {segment === "hayatdisi" && (
+                  <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
+                )}
+                {tarifeSecenekleri.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </TsbSelect>
+            )}
+          </TsbFilterField>
+          <TsbFilterField label="Kanal">
+            <TsbSelect value={kanal} onChange={(e) => setKanal(e.target.value as TsbKanalField)}>
+              {KANALLAR.map((k) => (
+                <option key={k.value} value={k.value}>
+                  {k.label}
                 </option>
               ))}
-            </select>
-          )}
-        </label>
-        <label className="block text-sm">
-          <span className="mb-1.5 block font-medium text-gray-700">Kanal</span>
-          <select
-            value={kanal}
-            onChange={(e) => setKanal(e.target.value as TsbKanalField)}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-          >
-            {KANALLAR.map((k) => (
-              <option key={k.value} value={k.value}>
-                {k.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+            </TsbSelect>
+          </TsbFilterField>
+        </TsbFilterGrid>
+      </TsbFilterBar>
 
       {tablo && (
         <>
-          <p className="text-xs text-gray-500">
+          <p className={tsb.caption}>
             Önceki yıl: <strong>{tablo.donemOnceki ?? "—"}</strong>. Alt satırda seçili filtrelere göre toplam prim;
             pay sütunları en fazla %100.
           </p>
-          <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-            <table className="min-w-[800px] w-full table-fixed border-collapse text-left text-[13px]">
+          <TsbTableShell>
+            <table className={tsb.tableDense}>
               <colgroup>
                 <col className="w-[4.75rem]" />
                 <col className="w-[4.75rem]" />
@@ -308,111 +261,97 @@ export default function TsbKanalPrimDashboard() {
                 <col className="w-[4.5rem]" />
                 <col className="min-w-[5.25rem]" />
               </colgroup>
-              <thead>
-                <tr className="min-h-11 border-b border-gray-200 bg-gray-50 text-[10px] font-semibold uppercase tracking-wide text-gray-600">
-                  <th className="px-2 py-2 align-middle text-center leading-snug whitespace-normal">
+              <thead className={tsb.thead}>
+                <tr className="min-h-11">
+                  <th className={cn(tsb.thCenter, "leading-snug whitespace-normal")}>
                     Önceki yıl
                     <br />
                     sıra
                   </th>
-                  <th className="px-2 py-2 align-middle text-center leading-snug whitespace-normal">
+                  <th className={cn(tsb.thCenter, "leading-snug whitespace-normal")}>
                     Bu yıl
                     <br />
                     sıra
                   </th>
-                  <th className="px-2 py-2 align-middle text-center whitespace-normal">Şirket kodu</th>
-                  <th className="px-2 py-2 align-middle leading-snug">Şirket adı</th>
-                  <th className="px-2 py-2 text-right align-middle whitespace-nowrap leading-snug">
+                  <th className={cn(tsb.thCenter, "whitespace-normal")}>Şirket kodu</th>
+                  <th className={cn(tsb.th, "leading-snug")}>Şirket adı</th>
+                  <th className={cn(tsb.thRight, "whitespace-nowrap leading-snug")}>
                     {tablo.donemOnceki ?? "Önceki"} prim
                   </th>
-                  <th className="px-1.5 py-2 text-right align-middle whitespace-normal leading-snug">
+                  <th className={cn(tsb.thRight, "whitespace-normal leading-snug")}>
                     Önceki
                     <br />
                     pay %
                   </th>
-                  <th className="px-2 py-2 text-right align-middle whitespace-nowrap leading-snug">
-                    {secilenDonem} prim
-                  </th>
-                  <th className="px-1.5 py-2 text-right align-middle whitespace-normal leading-snug">
+                  <th className={cn(tsb.thRight, "whitespace-nowrap leading-snug")}>{secilenDonem} prim</th>
+                  <th className={cn(tsb.thRight, "whitespace-normal leading-snug")}>
                     Bu yıl
                     <br />
                     pay %
                   </th>
-                  <th className="px-2 py-2 text-right align-middle whitespace-nowrap leading-snug">Değişim %</th>
+                  <th className={cn(tsb.thRight, "whitespace-nowrap leading-snug")}>Değişim %</th>
                 </tr>
               </thead>
               <tbody>
                 {tablo.satirlar.map((s) => (
-                  <tr key={s.sirketKodu} className="h-11 border-b border-gray-100 hover:bg-gray-50/80">
-                    <td className="px-2 align-middle text-center tabular-nums text-gray-600">{s.siraOnceki}</td>
-                    <td className={`px-2 align-middle text-center tabular-nums ${buYilSiraRenk(s.siraOnceki, s.siraBu)}`}>
-                      {s.siraBu}
-                    </td>
-                    <td className="px-2 align-middle tabular-nums whitespace-nowrap text-center">{s.sirketKodu}</td>
-                    <td className="max-w-[135px] px-2 align-middle">
-                      <div className="truncate text-gray-900" title={s.sirketAdi}>
+                  <tr key={s.sirketKodu} className={tsb.tbodyRowDense}>
+                    <td className={cn(tsb.td, "text-center text-slate-600")}>{s.siraOnceki}</td>
+                    <td className={cn(tsb.td, "text-center", buYilSiraRenk(s.siraOnceki, s.siraBu))}>{s.siraBu}</td>
+                    <td className={cn(tsb.td, "text-center whitespace-nowrap")}>{s.sirketKodu}</td>
+                    <td className={cn(tsb.td, "max-w-[135px]")}>
+                      <div className="truncate" title={s.sirketAdi}>
                         {s.sirketAdi}
                       </div>
                     </td>
-                    <td className="px-2 align-middle text-right tabular-nums whitespace-nowrap">
-                      {nf.format(s.primOnceki)}
-                    </td>
-                    <td className="px-1.5 align-middle text-right tabular-nums text-gray-600 whitespace-nowrap">
+                    <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{nf.format(s.primOnceki)}</td>
+                    <td className={cn(tsb.td, "text-right text-slate-600 whitespace-nowrap")}>
                       {pf.format(s.payOncekiYuzde)}
                     </td>
-                    <td className="px-2 align-middle text-right tabular-nums font-medium whitespace-nowrap">
-                      {nf.format(s.primBu)}
-                    </td>
-                    <td className="px-1.5 align-middle text-right tabular-nums whitespace-nowrap">
-                      {pf.format(s.payBuYuzde)}
-                    </td>
+                    <td className={cn(tsb.td, "text-right font-medium whitespace-nowrap")}>{nf.format(s.primBu)}</td>
+                    <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{pf.format(s.payBuYuzde)}</td>
                     <td
-                      className={`px-2 align-middle text-right tabular-nums font-medium whitespace-nowrap ${
+                      className={cn(
+                        tsb.td,
+                        "text-right font-medium whitespace-nowrap",
                         s.degisimYuzde === null
-                          ? "text-gray-500"
+                          ? "text-slate-500"
                           : s.degisimYuzde < 0
                             ? "text-red-600"
-                            : "text-emerald-700"
-                      }`}
+                            : "text-emerald-700",
+                      )}
                     >
                       {s.degisimYuzde === null ? "—" : `${pf.format(s.degisimYuzde)}`}
                     </td>
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
-                <tr className="h-11 border-t-2 border-emerald-600 bg-emerald-50/95 font-semibold text-gray-900">
-                  <td className="px-2 align-middle text-center text-gray-500">—</td>
-                  <td className="px-2 align-middle text-center text-gray-500">—</td>
-                  <td className="px-2 align-middle text-center text-gray-500">—</td>
-                  <td className="px-2 align-middle">TOPLAM</td>
-                  <td className="px-2 align-middle text-right tabular-nums whitespace-nowrap">
-                    {nf.format(tablo.sektorToplamOnceki)}
-                  </td>
-                  <td className="px-1.5 align-middle text-right tabular-nums text-emerald-900 whitespace-nowrap">
-                    {pf.format(100)}
-                  </td>
-                  <td className="px-2 align-middle text-right tabular-nums whitespace-nowrap">
-                    {nf.format(tablo.sektorToplamBu)}
-                  </td>
-                  <td className="px-1.5 align-middle text-right tabular-nums text-emerald-900 whitespace-nowrap">
-                    {pf.format(100)}
-                  </td>
+              <tfoot className={tsb.tfoot}>
+                <tr className={tsb.tbodyRowDense}>
+                  <td className={cn(tsb.td, "text-center text-slate-500")}>—</td>
+                  <td className={cn(tsb.td, "text-center text-slate-500")}>—</td>
+                  <td className={cn(tsb.td, "text-center text-slate-500")}>—</td>
+                  <td className={tsb.td}>TOPLAM</td>
+                  <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{nf.format(tablo.sektorToplamOnceki)}</td>
+                  <td className={cn(tsb.td, "text-right text-emerald-900 whitespace-nowrap")}>{pf.format(100)}</td>
+                  <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{nf.format(tablo.sektorToplamBu)}</td>
+                  <td className={cn(tsb.td, "text-right text-emerald-900 whitespace-nowrap")}>{pf.format(100)}</td>
                   <td
-                    className={`px-2 align-middle text-right tabular-nums whitespace-nowrap ${
+                    className={cn(
+                      tsb.td,
+                      "text-right whitespace-nowrap",
                       toplamDegisim === null
-                        ? "text-gray-600"
+                        ? "text-slate-600"
                         : toplamDegisim < 0
                           ? "text-red-700"
-                          : "text-emerald-800"
-                    }`}
+                          : "text-emerald-800",
+                    )}
                   >
                     {toplamDegisim === null ? "—" : pf.format(toplamDegisim)}
                   </td>
                 </tr>
               </tfoot>
             </table>
-          </div>
+          </TsbTableShell>
         </>
       )}
     </div>

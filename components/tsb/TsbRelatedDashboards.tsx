@@ -4,6 +4,7 @@ import {
   tsbDashboardPanelByHref,
   tsbDashboardPanelsForGroup,
 } from "@/lib/tsbDashboardPanels";
+import { cn, tsb } from "@/components/tsb/tsbDashboardUi";
 
 type Props = {
   /** Örn. `/sigorta/kanal-dagilim` — bu sayfa pill listesinden çıkarılır */
@@ -30,30 +31,29 @@ export default function TsbRelatedDashboards({ currentHref }: Props) {
         ? "Diğer aylık prim panelleri ve çeyreklik finansal karşılaştırma."
         : "TSB gösterge panelleri arasında gezinmek için aşağıdaki bağlantıları kullanın.";
 
+  const pillCls =
+    "rounded-md border border-slate-200/80 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50/40 hover:text-emerald-900";
+
   return (
-    <section className="mt-12 border-t border-gray-200 pt-10" aria-labelledby="tsb-related-dashboards-heading">
+    <section className="mt-10 border-t border-slate-200/90 pt-8" aria-labelledby="tsb-related-dashboards-heading">
       <h2
         id="tsb-related-dashboards-heading"
-        className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-emerald-800"
+        className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-800"
       >
-        <span className="h-1 w-5 shrink-0 rounded-full bg-emerald-500" aria-hidden />
+        <span className="h-0.5 w-4 shrink-0 rounded-full bg-emerald-500" aria-hidden />
         İlgili dashboardlar
       </h2>
-      <p className="mb-4 max-w-2xl text-xs leading-relaxed text-gray-600">{intro}</p>
+      <p className={cn(tsb.caption, "mb-4 max-w-2xl")}>{intro}</p>
 
       {sameGroupPanels.length > 0 && (
-        <div className="mb-6">
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+        <div className="mb-5">
+          <p className={cn(tsb.filterSectionLabel, "mb-2")}>
             {current?.group === "finansal" ? "Finansal" : "Prim ve üretim"}
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {sameGroupPanels.map((p) => (
-              <Link
-                key={p.href}
-                href={p.href}
-                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800 hover:shadow"
-              >
-                <span className="mr-1.5" aria-hidden>
+              <Link key={p.href} href={p.href} className={pillCls}>
+                <span className="mr-1" aria-hidden>
                   {p.icon}
                 </span>
                 {p.title}
@@ -65,17 +65,11 @@ export default function TsbRelatedDashboards({ currentHref }: Props) {
 
       {otherGroupMeta && otherGroupPanels.length > 0 && (
         <div>
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-            {otherGroupMeta.title}
-          </p>
-          <div className="flex flex-wrap gap-2">
+          <p className={cn(tsb.filterSectionLabel, "mb-2")}>{otherGroupMeta.title}</p>
+          <div className="flex flex-wrap gap-1.5">
             {otherGroupPanels.map((p) => (
-              <Link
-                key={p.href}
-                href={p.href}
-                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800 hover:shadow"
-              >
-                <span className="mr-1.5" aria-hidden>
+              <Link key={p.href} href={p.href} className={pillCls}>
+                <span className="mr-1" aria-hidden>
                   {p.icon}
                 </span>
                 {p.title}
@@ -85,12 +79,12 @@ export default function TsbRelatedDashboards({ currentHref }: Props) {
         </div>
       )}
 
-      <div className="mt-8 flex flex-wrap gap-3">
+      <div className="mt-6 flex flex-wrap gap-2">
         <Link
           href="/sigorta/tsb"
-          className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+          className="inline-flex items-center gap-1.5 rounded-md bg-emerald-800 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-900"
         >
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -101,9 +95,9 @@ export default function TsbRelatedDashboards({ currentHref }: Props) {
         </Link>
         <Link
           href="/finans-sigorta"
-          className="inline-flex items-center gap-2 rounded-full border border-emerald-600 bg-white px-5 py-2.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50"
+          className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-emerald-800 shadow-sm transition hover:bg-slate-50"
         >
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

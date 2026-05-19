@@ -23,6 +23,18 @@ import {
   uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
+import {
+  cn,
+  tsb,
+  TsbError,
+  TsbFilterBar,
+  TsbFilterField,
+  TsbFilterGrid,
+  TsbLoading,
+  TsbSelect,
+  TsbTableShell,
+  TsbToggleButton,
+} from "@/components/tsb/tsbDashboardUi";
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -176,26 +188,10 @@ export default function TsbKanalDagilimDashboard() {
     return buildKanalDagilimKiyas(rows, secilenDonem, segment, daraltma, effectiveSirketKodu);
   }, [rows, secilenDonem, segment, daraltma, effectiveSirketKodu]);
 
-  if (error) {
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>
-    );
-  }
-
-  if (!rows) {
-    return (
-      <div className="rounded-xl border border-gray-200 bg-white px-4 py-8 text-center text-sm text-gray-600">
-        Veri yükleniyor…
-      </div>
-    );
-  }
-
+  if (error) return <TsbError message={error} />;
+  if (!rows) return <TsbLoading />;
   if (sirketler.length === 0) {
-    return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-900">
-        Bu dönem ve filtreye göre şirket bulunamadı.
-      </div>
-    );
+    return <p className={tsb.alertWarn}>Bu dönem ve filtreye göre şirket bulunamadı.</p>;
   }
 
   if (!kiyas) {
@@ -215,170 +211,124 @@ export default function TsbKanalDagilimDashboard() {
       : "Tüm ana branşlar (hayat–emeklilik)";
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-500">Görünüm</p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            aria-pressed={segment === "hayatdisi"}
-            onClick={() => setSegment("hayatdisi")}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              segment === "hayatdisi"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
+    <div className={tsb.dashboardStack}>
+      <TsbFilterBar>
+        <p className={tsb.filterSectionLabel}>Görünüm</p>
+        <div className={cn(tsb.btnGroup, "mb-3")}>
+          <TsbToggleButton pressed={segment === "hayatdisi"} variant="segment" onClick={() => setSegment("hayatdisi")}>
             Hayat dışı
-          </button>
-          <button
-            type="button"
-            aria-pressed={segment === "hayat"}
-            onClick={() => setSegment("hayat")}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              segment === "hayat"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
+          </TsbToggleButton>
+          <TsbToggleButton pressed={segment === "hayat"} variant="segment" onClick={() => setSegment("hayat")}>
             Hayat &amp; emeklilik
-          </button>
+          </TsbToggleButton>
         </div>
-        <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-gray-500">Daraltma türü</p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            aria-pressed={filtreModu === "anaBransH"}
-            onClick={() => setFiltreModu("anaBransH")}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              filtreModu === "anaBransH"
-                ? "bg-slate-700 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
+        <p className={tsb.filterSectionLabel}>Daraltma türü</p>
+        <div className={tsb.btnGroup}>
+          <TsbToggleButton pressed={filtreModu === "anaBransH"} onClick={() => setFiltreModu("anaBransH")}>
             Ana branş (TSB)
-          </button>
-          <button
-            type="button"
-            aria-pressed={filtreModu === "tarifeGrubu"}
-            onClick={() => setFiltreModu("tarifeGrubu")}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-              filtreModu === "tarifeGrubu"
-                ? "bg-slate-700 text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
+          </TsbToggleButton>
+          <TsbToggleButton pressed={filtreModu === "tarifeGrubu"} onClick={() => setFiltreModu("tarifeGrubu")}>
             Tarife grubu
-          </button>
+          </TsbToggleButton>
         </div>
-      </div>
+      </TsbFilterBar>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="block text-sm lg:col-span-2">
-          <span className="mb-1.5 block font-medium text-gray-700">Dönem</span>
-          <select
-            value={secilenDonem}
-            onChange={(e) => {
-              setDonem(e.target.value);
-              setAnaBrans("");
-              setTarifeSecim("");
-            }}
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-          >
-            {donemler.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block text-sm lg:col-span-2">
-          <span className="mb-1.5 block font-medium text-gray-700">
-            {filtreModu === "anaBransH" ? "Ana branş" : "Tarife grubu"}
-          </span>
-          {filtreModu === "anaBransH" ? (
-            <select
-              value={anaBrans}
-              onChange={(e) => setAnaBrans(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+      <TsbFilterBar>
+        <TsbFilterGrid>
+          <TsbFilterField label="Dönem" className="sm:col-span-2">
+            <TsbSelect
+              value={secilenDonem}
+              onChange={(e) => {
+                setDonem(e.target.value);
+                setAnaBrans("");
+                setTarifeSecim("");
+              }}
             >
-              <option value="">{tumBransLabel}</option>
-              {segment === "hayatdisi" && (
-                <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
-              )}
-              {anaBransSecenekleri.map((a) => (
-                <option key={a} value={a}>
-                  {a}
+              {donemler.map((d) => (
+                <option key={d} value={d}>
+                  {d}
                 </option>
               ))}
-            </select>
-          ) : (
-            <select
-              value={tarifeSecim}
-              onChange={(e) => setTarifeSecim(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            </TsbSelect>
+          </TsbFilterField>
+          <TsbFilterField
+            label={filtreModu === "anaBransH" ? "Ana branş" : "Tarife grubu"}
+            className="sm:col-span-2"
+          >
+            {filtreModu === "anaBransH" ? (
+              <TsbSelect value={anaBrans} onChange={(e) => setAnaBrans(e.target.value)}>
+                <option value="">{tumBransLabel}</option>
+                {segment === "hayatdisi" && (
+                  <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
+                )}
+                {anaBransSecenekleri.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </TsbSelect>
+            ) : (
+              <TsbSelect value={tarifeSecim} onChange={(e) => setTarifeSecim(e.target.value)}>
+                <option value="">Tüm tarife grupları</option>
+                {segment === "hayatdisi" && (
+                  <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
+                )}
+                {tarifeSecenekleri.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </TsbSelect>
+            )}
+          </TsbFilterField>
+          <TsbFilterField label="Şirket" className="sm:col-span-2 lg:col-span-4">
+            <TsbSelect
+              className={tsb.selectWide}
+              value={effectiveSirketKodu !== null ? String(effectiveSirketKodu) : ""}
+              onChange={(e) => setSirketKodu(Number(e.target.value))}
             >
-              <option value="">Tüm tarife grupları</option>
-              {segment === "hayatdisi" && (
-                <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
-              )}
-              {tarifeSecenekleri.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {sirketler.map((s) => (
+                <option key={s.kod} value={s.kod}>
+                  {s.ad} ({s.kod})
                 </option>
               ))}
-            </select>
-          )}
-        </label>
-        <label className="block text-sm lg:col-span-4">
-          <span className="mb-1.5 block font-medium text-gray-700">Şirket</span>
-          <select
-            value={effectiveSirketKodu !== null ? String(effectiveSirketKodu) : ""}
-            onChange={(e) => setSirketKodu(Number(e.target.value))}
-            className="w-full max-w-2xl rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
-          >
-            {sirketler.map((s) => (
-              <option key={s.kod} value={s.kod}>
-                {s.ad} ({s.kod})
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+            </TsbSelect>
+          </TsbFilterField>
+        </TsbFilterGrid>
+      </TsbFilterBar>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <p className="text-xs font-semibold text-gray-800">Kanal payları — yüzde (yan yana)</p>
-        <p className="mt-1 text-[11px] leading-relaxed text-gray-600">
-          Her kanal için <strong>sol sütun</strong> seçilen şirket (<span className="text-gray-800">{secilenAd}</span>),
-          <strong className="ml-1">sağ sütun</strong> aynı filtredeki sektör toplamıdır (ikisi de kendi genel toplamlarına
-          göre yüzde). Çubukların altındaki <strong>Kanalda %</strong>, o kanaldaki şirket priminin sektörün aynı kanaldaki
-          primine oranıdır (şirket ₺ ÷ sektör ₺). Aynı değer tabloda <strong>Kanalda sektör payı</strong> sütununda da
-          vardır.
+      <div className={tsb.chartPanel}>
+        <p className="text-xs font-semibold text-slate-800">Kanal payları — yüzde (yan yana)</p>
+        <p className={cn(tsb.caption, "mt-1")}>
+          Her kanal için <strong>sol sütun</strong> seçilen şirket (<span className="text-slate-800">{secilenAd}</span>),
+          <strong className="ml-1">sağ sütun</strong> aynı filtredeki sektör toplamıdır (ikisi de kendi genel
+          toplamlarına göre yüzde). Çubukların altındaki <strong>Kanalda %</strong>, o kanaldaki şirket priminin
+          sektörün aynı kanaldaki primine oranıdır (şirket ₺ ÷ sektör ₺).
         </p>
         <KanalYuzdeGroupedBars ys={ys} yk={yk} kanalSektorPayi={kanalSektorPayi} />
-        <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-t border-gray-100 pt-3 text-[11px] text-gray-600">
+        <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-t border-slate-100 pt-3 text-[11px] text-slate-600">
           <span>
-            Şirket toplam prim: <strong className="tabular-nums text-gray-900">{nf.format(kiyas.sirket.genelToplam)}</strong>{" "}
-            ₺
+            Şirket toplam prim:{" "}
+            <strong className="tabular-nums text-slate-900">{nf.format(kiyas.sirket.genelToplam)}</strong> ₺
           </span>
           <span>
-            Sektör toplam prim: <strong className="tabular-nums text-gray-900">{nf.format(kiyas.sektor.genelToplam)}</strong>{" "}
-            ₺
+            Sektör toplam prim:{" "}
+            <strong className="tabular-nums text-slate-900">{nf.format(kiyas.sektor.genelToplam)}</strong> ₺
           </span>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-        <table className="min-w-[820px] w-full border-collapse text-left text-[11px]">
-          <thead>
-            <tr className="border-b border-gray-300 bg-slate-800 text-white">
-              <th className="px-3 py-2 font-semibold">Kanal</th>
-              <th className="px-3 py-2 text-right font-semibold">Şirket ₺</th>
-              <th className="px-3 py-2 text-right font-semibold">Şirket %</th>
-              <th className="px-3 py-2 text-right font-semibold">Sektör ₺</th>
-              <th className="px-3 py-2 text-right font-semibold">Sektör %</th>
-              <th className="px-3 py-2 text-right font-semibold">Kanalda sektör payı</th>
-              <th className="px-3 py-2 text-right font-semibold">Fark (pp)</th>
+      <TsbTableShell>
+        <table className={cn(tsb.table, "min-w-[820px]")}>
+          <thead className={tsb.thead}>
+            <tr>
+              <th className={tsb.th}>Kanal</th>
+              <th className={tsb.thRight}>Şirket ₺</th>
+              <th className={tsb.thRight}>Şirket %</th>
+              <th className={tsb.thRight}>Sektör ₺</th>
+              <th className={tsb.thRight}>Sektör %</th>
+              <th className={tsb.thRight}>Kanalda sektör payı</th>
+              <th className={tsb.thRight}>Fark (pp)</th>
             </tr>
           </thead>
           <tbody>
@@ -388,40 +338,38 @@ export default function TsbKanalDagilimDashboard() {
               const pp = ps - pk;
               const kp = kanalSektorPayi[key];
               return (
-                <tr key={key} className="border-b border-gray-100 bg-white">
-                  <td className="px-3 py-2 font-medium text-gray-900">{label}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-gray-800">{nf.format(kiyas.sirket[key])}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-gray-700">{pf.format(ps)}%</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-gray-700">{nf.format(kiyas.sektor[key])}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-gray-600">{pf.format(pk)}%</td>
-                  <td className="px-3 py-2 text-right tabular-nums font-medium text-emerald-900">
+                <tr key={key} className={tsb.tbodyRow}>
+                  <td className={cn(tsb.td, "font-medium")}>{label}</td>
+                  <td className={cn(tsb.td, "text-right")}>{nf.format(kiyas.sirket[key])}</td>
+                  <td className={cn(tsb.td, "text-right text-slate-600")}>{pf.format(ps)}%</td>
+                  <td className={cn(tsb.td, "text-right text-slate-600")}>{nf.format(kiyas.sektor[key])}</td>
+                  <td className={cn(tsb.td, "text-right text-slate-500")}>{pf.format(pk)}%</td>
+                  <td className={cn(tsb.td, "text-right font-medium text-emerald-900")}>
                     {kp !== null ? `${pf.format(kp)}%` : "—"}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums font-medium text-gray-900">{pf.format(pp)}</td>
+                  <td className={cn(tsb.td, "text-right font-medium")}>{pf.format(pp)}</td>
                 </tr>
               );
             })}
-            <tr className="border-t-2 border-gray-300 bg-slate-50 font-semibold">
-              <td className="px-3 py-2">Genel toplam</td>
-              <td className="px-3 py-2 text-right tabular-nums">{nf.format(kiyas.sirket.genelToplam)}</td>
-              <td className="px-3 py-2 text-right tabular-nums">100,00%</td>
-              <td className="px-3 py-2 text-right tabular-nums">{nf.format(kiyas.sektor.genelToplam)}</td>
-              <td className="px-3 py-2 text-right tabular-nums">100,00%</td>
-              <td className="px-3 py-2 text-right tabular-nums text-emerald-900">
+            <tr className={cn(tsb.tbodyRow, "border-t-2 border-slate-200 bg-slate-50/80 font-semibold")}>
+              <td className={tsb.td}>Genel toplam</td>
+              <td className={cn(tsb.td, "text-right")}>{nf.format(kiyas.sirket.genelToplam)}</td>
+              <td className={cn(tsb.td, "text-right")}>100,00%</td>
+              <td className={cn(tsb.td, "text-right")}>{nf.format(kiyas.sektor.genelToplam)}</td>
+              <td className={cn(tsb.td, "text-right")}>100,00%</td>
+              <td className={cn(tsb.td, "text-right text-emerald-900")}>
                 {genelKanalPayi !== null ? `${pf.format(genelKanalPayi)}%` : "—"}
               </td>
-              <td className="px-3 py-2 text-right tabular-nums">—</td>
+              <td className={cn(tsb.td, "text-right")}>—</td>
             </tr>
           </tbody>
         </table>
-      </div>
+      </TsbTableShell>
 
-      <p className="text-[11px] leading-relaxed text-gray-500">
+      <p className={tsb.caption}>
         <strong>Şirket %</strong> ve <strong>Sektör %</strong>, seçilen kapsamda kanal primlerinin{" "}
-        <strong>kendi genel toplamlarına</strong> oranıdır. <strong>Kanalda sektör payı</strong>, aynı kanal için{" "}
-        şirket ₺ ÷ sektör ₺. Genel toplam satırında bu sütun, toplam şirket primi ÷ toplam sektör primidir (Son 12 ay
-        prim tablosundaki şirket payı ile aynı kavram). Sektör satırı TSB toplam şirket kodları hariç tüm şirketlerin aynı
-        filtredeki toplamıdır.
+        <strong>kendi genel toplamlarına</strong> oranıdır. <strong>Kanalda sektör payı</strong>, aynı kanal için şirket
+        ₺ ÷ sektör ₺.
       </p>
     </div>
   );

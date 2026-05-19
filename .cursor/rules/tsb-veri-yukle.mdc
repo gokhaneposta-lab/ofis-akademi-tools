@@ -1,9 +1,11 @@
 ---
-description: "TSB verisi geldi yükle" — ham Excel → prim-tidy.json içe aktarma
+description: "TSB verisi geldi yükle" — ham Excel → prim-tidy.json / gelir-tidy.json içe aktarma
 alwaysApply: false
 ---
 
 # TSB prim verisi içe aktarma (ofis-akademi)
+
+Gelir tidy şeması ve sentetik kodlar için sohbette **`@tsb-gelir-tidy`** kuralını ekle.
 
 Bu kural **yalnızca** sohbette **`@tsb-veri-yukle`** ile eklendiğinde uygulanır (her oturumda otomatik yüklenmez).
 
@@ -24,3 +26,5 @@ Kullanıcı **dosyayı önceden** `data/tsb/incoming/` klasörüne koyduğunu ve
 
 - Bu akış **TSB ham** “satış kanalı bazında primler” Excel’i içindir (`scripts/tsb-import-prim.mjs`).
 - Kullanıcının **tidy `.xlsb`** çalışma kitabını birleştirmesi gerekiyorsa komut: `npm run tsb:import-tidy-xlsb -- "yol.xlsb"` — kullanıcı özellikle xlsb/tidy dediyse onu kullan.
+- **Gelir tablosu (çeyrek) tidy:** Dosyayı `data/tsb/incoming/` altına koy; dosya adında çeyrek olsun (örn. `... 2026 1...` → `2026-1`). `npm run tsb:import-gelir-tidy -- "data/tsb/incoming/<dosya>.xlsx"` → `public/data/tsb/gelir-tidy.json` içinde aynı `donem`+`GT` satırları yenilenir, diğer çeyrekler kalır; **aynı anda** `data/tsb/out/gelir-tidy-review.xlsx` Excel inceleme dosyası da yazılır (ayrı komut gerekmez).
+- **Bilanço tidy:** `npm run tsb:import-bilanco-tidy -- "data/tsb/incoming/<bilanço>.xlsx"` → aynı `gelir-tidy.json` dosyasına `tabloTip: "BL"` satırları eklenir / aynı `donem`+`BL` yenilenir (`Aktif Detay`, `Pasif Detay` sayfaları).

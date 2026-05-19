@@ -42,3 +42,6 @@ next-env.d.ts
 
 # scratch / temp commit messages used by agent
 .commit-msg.txt
+
+# TSB birleşik gelir-tidy (171MB+); site `public/data/tsb/gelir-tidy/*.json` kullanır
+/public/data/tsb/gelir-tidy.json

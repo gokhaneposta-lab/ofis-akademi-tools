@@ -9,6 +9,13 @@ export type TsbDashboardPanel = {
 
 export const TSB_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
+    href: "/sigorta/finansal-karsilastirma",
+    badge: "Finansal",
+    title: "Finansal karşılaştırma",
+    subtitle: "KPI satırları · çeyrekler · şirket vs HD sektör (gelir-tidy)",
+    icon: "📋",
+  },
+  {
     href: "/sigorta/kanal-prim",
     badge: "Kanal",
     title: "Kanal bazlı prim",

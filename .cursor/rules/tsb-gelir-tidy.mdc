@@ -1,0 +1,33 @@
+---
+description: "TSB gelir + bilanço tidy" — gelir-tidy/ dönem dosyaları (GT + BL), import, split
+alwaysApply: false
+---
+
+# TSB gelir + bilanço tidy (`gelir-tidy.json`)
+
+Sohbette bu kuralı **@** ile ekleyebilirsin (ör. **`@tsb-gelir-tidy`** — dosya adı kural seçicide görünür).
+
+## Tek kaynak dosya
+
+- **`public/data/tsb/gelir-tidy.json`** — çeyrek birleşik tidy (alanlar: `donem`, `tabloTip`, `bransAp`, `sirketTipi`, `sirketKodu`, `sirketAdi`, `hesapKodu`, `hesapAdi`, `deger`).
+- **`tabloTip`:** `GT` = gelir tablosu (branş sayfası adı `bransAp` içinde). `BL` = bilanço; `bransAp` yalnızca **`Aktif`** veya **`Pasif`** (`Aktif Detay` / `Pasif Detay` sayfalarından).
+- Gelir ham Excel: `npm run tsb:import-gelir-tidy -- "data/tsb/incoming/<dosya>.xlsx"` (dosya adında çeyrek, örn. `2026 1` → `donem` `2026-1`). Aynı `donem` + **`GT`** satırları yenilenir.
+- Bilanço ham Excel: `npm run tsb:import-bilanco-tidy -- "data/tsb/incoming/<bilanço>.xlsx"`. Aynı `donem` + **`BL`** satırları yenilenir; **GT satırları dokunulmaz.**
+- Import bitince otomatik: **`data/tsb/out/gelir-tidy-review.xlsx`** (GT + BL birlikte; ayrıca `npm run tsb:export-gelir-tidy-xlsx` isteğe bağlı).
+
+## Sentetik hesap kodları (TSB kodu yok)
+
+- `__SYN_TKN_KZ__` — Teknik Kar Zarar  
+- `__SYN_TOP_TKN_KZ__` — Toplam Teknik Kar Zarar (MALI)  
+- `__SYN_MALI_KAR__` — Mali Kar  
+
+Tanımlar: `lib/tsbGelirSyntheticCodes.ts` · import: `scripts/tsb-import-gelir-tidy.mjs`  
+KPI özeti (segment yıllık Q4, iki pool, Excel): `docs/tsb-kpi-tanimlari.md` §6 · `npm run tsb:segment-xlsx` · `lib/tsbYatirimGeliriKpi.ts` · `lib/tsbSafiTeknikKpi.ts` · `lib/tsbSirketSegmentSkor.ts`
+
+## Sohbette dosya eklemek
+
+Büyük JSON’u doğrudan eklemek yerine genelde yeterli olanlar: bu kural + gerekirse `gelir-tidy-review.xlsx` veya küçük bir örnek satır. Sohbette tam JSON yerine `index.json` veya tek bir `{donem}.json` yeterli.
+
+## İlişkili kural
+
+- **`@tsb-veri-yukle`** — prim (`prim-tidy.json`) + gelir import akışı özeti.

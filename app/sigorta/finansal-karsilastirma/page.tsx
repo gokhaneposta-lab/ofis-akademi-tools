@@ -42,9 +42,8 @@ export default function SigortaFinansalKarsilastirmaPage() {
             Excel’deki <strong>Sektör Karşılaştırma</strong> düzenine benzer tablo: satırlarda KPI’lar, sütunlarda son{" "}
             <strong>10 çeyrek</strong>; her dönemde yan yana <strong>seçilen şirket</strong> ve{" "}
             <strong>HD sektör</strong> (hayat dışı peer havuzu). Varsayılan şirket{" "}
-            <strong>Bereket Sigorta AŞ</strong> (kod 1025); listeden başka bir HD şirketi seçebilirsiniz. Veri:{" "}
-            <code className="rounded bg-gray-100 px-1 py-0.5 text-[11px]">gelir-tidy/</code> (dönem dosyaları) — tanımlar{" "}
-            <code className="rounded bg-gray-100 px-1 py-0.5 text-[11px]">docs/tsb-kpi-tanimlari.md</code>.
+            <strong>Bereket Sigorta AŞ</strong> (kod 1025); listeden başka bir HD şirketi veya sektör ortalaması ile kıyas
+            yapabilirsiniz. Güncelleme <strong>çeyrek</strong> bazındadır (gelir tablosu ve bilanço özeti).
           </p>
         </div>
       </header>

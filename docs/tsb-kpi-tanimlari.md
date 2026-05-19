@@ -207,4 +207,18 @@ Aynı havuz içinde skora göre sıralama: **üst üçte birlik → A**, **orta 
 
 ---
 
-*Son güncelleme: Segment §6 — yıllık Q4, iki `pool`, tertile segment adı, Excel `npm run tsb:segment-xlsx`; `lib/tsbSirketSegmentSkor.ts`.*
+## 7. Finansal karşılaştırma tablosu (görünen etiketler)
+
+Sayfa: `/sigorta/finansal-karsilastirma` — satır tanımları `lib/tsbFinansalKarsilastirmaData.ts` → `FINANSAL_KIYASLAMA_SATIRLARI`.
+
+**Gelir tablosu (GT, MALI):** BRÜT PRİM · TRAFİK HARİÇ BRÜT PRİM · SAFÎ TEKNİK KAR / ZARAR · FAALİYET GİDERLERİ · GENEL GİDERLER · PERSONEL GİDERLERİ · YATIRIM GELİRİ · MALÎ KAR · TEKNİK KAR / ZARAR · VERGİ ÖNCESİ KAR (`690`) · **NET KAR** (`692`).
+
+*(ayırıcı satır)*
+
+**Bilanço ve oranlar:** ÖZSERMAYE · TEKNİK KARŞILIKLAR · SAFİ TEKNİK / PRİM · VÖK / ÖZSERMAYE · YATIRIM GELİRİ / ÖZSERMAYE · ÖZSERMAYE / TOPLAM AKTİF · YÜKÜMLÜLÜK (3+4) / TOPLAM AKTİF · NAKİT + FİNANSAL VARLIK / TOPLAM AKTİF · CARİ ORAN · NAKİT ORAN · VÖK / YATIRIM GELİRİ · BRÜT H/P · NET H/P.
+
+**Not:** Ayrı **VÖK** (TL) satırı yoktur. Oran satırlarındaki VÖK paydası `lib/tsbSirketSegmentSkor.ts` → `vokFromRows` ile uyumludur.
+
+---
+
+*Son güncelleme: Finansal karşılaştırma §7; segment §6 — `lib/tsbSirketSegmentSkor.ts`.*

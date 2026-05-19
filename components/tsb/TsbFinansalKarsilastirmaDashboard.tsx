@@ -362,6 +362,14 @@ export default function TsbFinansalKarsilastirmaDashboard() {
           </thead>
           <tbody>
             {FINANSAL_KIYASLAMA_SATIRLARI.map((satir) => {
+              if (satir.kind === "spacer") {
+                return (
+                  <tr key={satir.id} aria-hidden className="border-b border-gray-200 bg-gray-100/60">
+                    <td colSpan={7} className="h-2 p-0" />
+                  </tr>
+                );
+              }
+
               const buDeg = paketBu
                 ? finansalKiyaslamaSatirSayisal(
                     satir.id,
@@ -396,7 +404,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                 >
                   <th
                     scope="row"
-                    className="sticky left-0 z-10 max-w-[16rem] border-r border-gray-200 bg-white px-3 py-2 text-left align-top font-medium leading-snug text-gray-800 group-even:bg-gray-50/40"
+                    className="sticky left-0 z-10 max-w-[18rem] border-r border-gray-200 bg-white px-3 py-2 text-left align-top text-[11px] font-semibold uppercase leading-snug tracking-wide text-gray-800 group-even:bg-gray-50/40"
                   >
                     {satir.label}
                   </th>

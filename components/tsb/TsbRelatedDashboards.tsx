@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { tsbDashboardPanelsExcept } from "@/lib/tsbDashboardPanels";
+import {
+  TSB_DASHBOARD_GROUPS,
+  tsbDashboardPanelByHref,
+  tsbDashboardPanelsForGroup,
+} from "@/lib/tsbDashboardPanels";
 
 type Props = {
   /** Örn. `/sigorta/kanal-dagilim` — bu sayfa pill listesinden çıkarılır */
@@ -11,7 +15,20 @@ type Props = {
  * SEO (iç bağlantı ağı) ve kullanıcıların diğer TSB panellerini keşfi.
  */
 export default function TsbRelatedDashboards({ currentHref }: Props) {
-  const related = tsbDashboardPanelsExcept(currentHref);
+  const current = tsbDashboardPanelByHref(currentHref);
+  const otherGroupId = current?.group === "finansal" ? "prim" : "finansal";
+  const sameGroupPanels = current
+    ? tsbDashboardPanelsForGroup(current.group).filter((p) => p.href !== currentHref)
+    : [];
+  const otherGroupPanels = tsbDashboardPanelsForGroup(otherGroupId);
+  const otherGroupMeta = TSB_DASHBOARD_GROUPS.find((g) => g.id === otherGroupId);
+
+  const intro =
+    current?.group === "finansal"
+      ? "Aynı çeyreklik finansal veri setinden başka panel yok; aşağıda aylık prim panellerine geçebilirsiniz."
+      : current?.group === "prim"
+        ? "Diğer aylık prim panelleri ve çeyreklik finansal karşılaştırma."
+        : "TSB gösterge panelleri arasında gezinmek için aşağıdaki bağlantıları kullanın.";
 
   return (
     <section className="mt-12 border-t border-gray-200 pt-10" aria-labelledby="tsb-related-dashboards-heading">
@@ -22,24 +39,51 @@ export default function TsbRelatedDashboards({ currentHref }: Props) {
         <span className="h-1 w-5 shrink-0 rounded-full bg-emerald-500" aria-hidden />
         İlgili dashboardlar
       </h2>
-      <p className="mb-4 max-w-2xl text-xs leading-relaxed text-gray-600">
-        Aynı TSB prim veri seti üzerinden hazırlanan diğer paneller; filtreler benzer mantıkla çalışır. İç bağlantılar,
-        güncellenen aylık verilerle birlikte hem kullanım hem arama motorları için sayfalar arası geçişi güçlendirir.
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {related.map((p) => (
-          <Link
-            key={p.href}
-            href={p.href}
-            className="rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800 hover:shadow"
-          >
-            <span className="mr-1.5" aria-hidden>
-              {p.icon}
-            </span>
-            {p.title}
-          </Link>
-        ))}
-      </div>
+      <p className="mb-4 max-w-2xl text-xs leading-relaxed text-gray-600">{intro}</p>
+
+      {sameGroupPanels.length > 0 && (
+        <div className="mb-6">
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+            {current?.group === "finansal" ? "Finansal" : "Prim ve üretim"}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {sameGroupPanels.map((p) => (
+              <Link
+                key={p.href}
+                href={p.href}
+                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800 hover:shadow"
+              >
+                <span className="mr-1.5" aria-hidden>
+                  {p.icon}
+                </span>
+                {p.title}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {otherGroupMeta && otherGroupPanels.length > 0 && (
+        <div>
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+            {otherGroupMeta.title}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {otherGroupPanels.map((p) => (
+              <Link
+                key={p.href}
+                href={p.href}
+                className="rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-800 hover:shadow"
+              >
+                <span className="mr-1.5" aria-hidden>
+                  {p.icon}
+                </span>
+                {p.title}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 flex flex-wrap gap-3">
         <Link

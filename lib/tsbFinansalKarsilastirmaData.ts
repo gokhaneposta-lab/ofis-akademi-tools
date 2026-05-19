@@ -52,14 +52,49 @@ const PERSONEL_GIDER_HESAP_KODLARI = ["61402", "63602", "65202"] as const;
 
 export type FinansalKiyaslamaSatirFormat = "tl" | "yuzde" | "oran";
 
-export type FinansalKiyaslamaSatirTanim = {
-  id: string;
-  label: string;
-  format: FinansalKiyaslamaSatirFormat;
-};
+export type FinansalKiyaslamaSatirTanim =
+  | {
+      kind?: "kpi";
+      id: string;
+      label: string;
+      format: FinansalKiyaslamaSatirFormat;
+    }
+  | {
+      kind: "spacer";
+      id: string;
+    };
+
+/** Finansal karşılaştırma tablosu — görünen etiketler ve sıra. */
+export const FINANSAL_KIYASLAMA_SATIRLARI: readonly FinansalKiyaslamaSatirTanim[] = [
+  { id: "prim", label: "BRÜT PRİM", format: "tl" },
+  { id: "prim_trafik_haric", label: "TRAFİK HARİÇ BRÜT PRİM", format: "tl" },
+  { id: "safi_teknik", label: "SAFÎ TEKNİK KAR / ZARAR", format: "tl" },
+  { id: "faaliyet_gider", label: "FAALİYET GİDERLERİ", format: "tl" },
+  { id: "genel_gider", label: "GENEL GİDERLER", format: "tl" },
+  { id: "personel_gider", label: "PERSONEL GİDERLERİ", format: "tl" },
+  { id: "yatirim", label: "YATIRIM GELİRİ", format: "tl" },
+  { id: "mali_kar", label: "MALÎ KAR", format: "tl" },
+  { id: "teknik_kar_zarar", label: "TEKNİK KAR / ZARAR", format: "tl" },
+  { id: "vergi_oncesi_kar", label: "VERGİ ÖNCESİ KAR", format: "tl" },
+  { kind: "spacer", id: "__spacer_gelir_bilanco" },
+  { id: "ozsermaye", label: "ÖZSERMAYE", format: "tl" },
+  { id: "teknik_karsilik", label: "TEKNİK KARŞILIKLAR", format: "tl" },
+  { id: "oran_safi_prim", label: "SAFİ TEKNİK / PRİM", format: "yuzde" },
+  { id: "oran_vok_oz", label: "VÖK / ÖZSERMAYE", format: "oran" },
+  { id: "oran_yat_oz", label: "YATIRIM GELİRİ / ÖZSERMAYE", format: "oran" },
+  { id: "oran_oz_aktif", label: "ÖZSERMAYE / TOPLAM AKTİF", format: "yuzde" },
+  { id: "oran_yuk_aktif", label: "YÜKÜMLÜLÜK (3+4) / TOPLAM AKTİF", format: "yuzde" },
+  { id: "oran_fin_aktif", label: "NAKİT + FİNANSAL VARLIK / TOPLAM AKTİF", format: "yuzde" },
+  { id: "oran_cari", label: "CARİ ORAN", format: "oran" },
+  { id: "oran_nakit_kisa", label: "NAKİT ORAN", format: "oran" },
+  { id: "oran_vok_yatirim", label: "VÖK / YATIRIM GELİRİ", format: "oran" },
+  { id: "brut_hp", label: "BRÜT H/P", format: "yuzde" },
+  { id: "net_hp", label: "NET H/P", format: "yuzde" },
+] as const;
 
 export type FinansalKiyaslamaHamOlcum = {
   donemKar690: number;
+  donemNetKar692: number;
   ozsermaye: number;
   brutPrim: number;
   primTrafikHaric: number;
@@ -151,9 +186,11 @@ function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): FinansalK
   const teknikKarsilik3545 = bl(PASIF, "35") + bl(PASIF, "45");
   const faaliyet614 = g(HAYATDISI, "614");
   const donemKar690 = g(MALI, "690");
+  const donemNetKar692 = g(MALI, "692");
 
   return {
     donemKar690,
+    donemNetKar692,
     ozsermaye: h.ozsermaye,
     brutPrim: h.brutPrim,
     primTrafikHaric,
@@ -186,6 +223,7 @@ function aggregateSektorHamOlcumleri(list: FinansalKiyaslamaHamOlcum[]): Finansa
   const m = (fn: (x: FinansalKiyaslamaHamOlcum) => number) => meanFinite(list.map(fn)) ?? 0;
   return {
     donemKar690: m((x) => x.donemKar690),
+    donemNetKar692: m((x) => x.donemNetKar692),
     ozsermaye: m((x) => x.ozsermaye),
     brutPrim: m((x) => x.brutPrim),
     primTrafikHaric: m((x) => x.primTrafikHaric),
@@ -341,34 +379,6 @@ export function finansalKiyaslamaDegisim(
   return { deger: (bu - onceki) / Math.abs(onceki), format: "yuzdeDegisim" };
 }
 
-/** Tablo satırları (Excel Sektör Karşılaştırma sırasına yakın). */
-export const FINANSAL_KIYASLAMA_SATIRLARI: readonly FinansalKiyaslamaSatirTanim[] = [
-  { id: "vergi_oncesi_kar", label: "Vergi öncesi kar", format: "tl" },
-  { id: "ozsermaye", label: "Özsermaye", format: "tl" },
-  { id: "prim", label: "Brüt prim", format: "tl" },
-  { id: "prim_trafik_haric", label: "Trafik hariç brüt prim", format: "tl" },
-  { id: "faaliyet_gider", label: "Faaliyet giderleri", format: "tl" },
-  { id: "genel_gider", label: "Genel giderler", format: "tl" },
-  { id: "personel_gider", label: "Personel giderleri", format: "tl" },
-  { id: "yatirim", label: "Yatırım geliri", format: "tl" },
-  { id: "teknik_kar_zarar", label: "Teknik kar / zarar", format: "tl" },
-  { id: "safi_teknik", label: "Safî teknik kar / zarar", format: "tl" },
-  { id: "teknik_karsilik", label: "Teknik karşılıklar", format: "tl" },
-  { id: "mali_kar", label: "Malî kar", format: "tl" },
-  { id: "vok", label: "VÖK", format: "tl" },
-  { id: "oran_safi_prim", label: "Safî teknik / prim", format: "yuzde" },
-  { id: "oran_vok_oz", label: "VÖK / özsermaye", format: "oran" },
-  { id: "oran_yat_oz", label: "Yatırım geliri / özsermaye", format: "oran" },
-  { id: "oran_oz_aktif", label: "Özsermaye / toplam aktif", format: "yuzde" },
-  { id: "oran_yuk_aktif", label: "Yükümlülük (3+4) / toplam aktif", format: "yuzde" },
-  { id: "oran_fin_aktif", label: "Nakit + finansal varlık / toplam aktif", format: "yuzde" },
-  { id: "oran_cari", label: "Cari oran", format: "oran" },
-  { id: "oran_nakit_kisa", label: "Nakit / kısa vadeli yükümlülük", format: "oran" },
-  { id: "oran_vok_yatirim", label: "VÖK / yatırım geliri", format: "oran" },
-  { id: "brut_hp", label: "Brüt H/P", format: "yuzde" },
-  { id: "net_hp", label: "Net H/P", format: "yuzde" },
-] as const;
-
 export function finansalKiyaslamaSatirSayisal(
   satirId: string,
   sirketHam: FinansalKiyaslamaHamOlcum | null,
@@ -400,6 +410,8 @@ export function finansalKiyaslamaSatirSayisal(
   switch (satirId) {
     case "vergi_oncesi_kar":
       return pickHam("donemKar690");
+    case "net_kar":
+      return pickHam("donemNetKar692");
     case "ozsermaye":
       return pickHam("ozsermaye");
     case "prim":
@@ -432,8 +444,6 @@ export function finansalKiyaslamaSatirSayisal(
       return pickHam("teknikKarsilik3545");
     case "mali_kar":
       return pickHam("maliKarSentetik");
-    case "vok":
-      return pickHam("vok");
     case "oran_safi_prim":
       return pickSkorOran("oranSafiPrim", "safiPrim");
     case "oran_vok_oz":

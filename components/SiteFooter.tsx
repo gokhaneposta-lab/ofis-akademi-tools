@@ -5,11 +5,12 @@ import { BLOG_CATEGORIES, getPopularPosts } from "@/lib/blog-posts";
 const ACCENT = "#217346";
 
 const quickLinks = [
+  { label: "Sektör verileri (TSB)", href: "/sigorta/tsb" },
+  { label: "Finans & Sigorta KPI", href: "/finans-sigorta" },
   { label: "Excel Araçları", href: "/excel-araclari" },
   { label: "Eğitimler", href: "/egitimler" },
   { label: "Blog", href: "/blog" },
   { label: "Formül Kütüphanesi", href: "/formul-kutuphanesi" },
-  { label: "Finans & Sigorta", href: "/finans-sigorta" },
   { label: "Ücretsiz Kaynaklar", href: "/kaynaklar" },
 ];
 

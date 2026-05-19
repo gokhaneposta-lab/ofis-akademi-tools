@@ -73,7 +73,7 @@ export default function EmailListeTemizlemePage() {
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-gray-50/90 p-3 text-xs">
-          <p className="mb-2 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="mb-2 font-semibold text-gray-800">Örnek veri</p>
           <p className="space-y-1 text-gray-700">
             <span className="block font-mono">ahmet@gmail.com</span>
             <span className="block font-mono">mehmet@gmail.com</span>

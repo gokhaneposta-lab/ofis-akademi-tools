@@ -34,8 +34,8 @@ export default function FinansSigortaPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
-      <header className="border-b border-gray-200 bg-white">
+    <div className="min-h-screen bg-[#f4f6f9]">
+      <header className="border-b border-slate-200/90 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)]">
         <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
           <Link
             href="/"

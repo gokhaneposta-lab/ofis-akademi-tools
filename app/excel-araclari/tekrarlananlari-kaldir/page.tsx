@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -81,13 +81,13 @@ export default function TekrarlananlariKaldirPage() {
       </p>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
-          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Örnek veri</p>
           <p className="text-gray-700">
             ornek@mail.com ↵ ornek@mail.com ↵ farkli@mail.com
           </p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
-          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Beklenen sonuç</p>
           <p className="text-gray-700">ornek@mail.com ↵ farkli@mail.com</p>
         </div>
       </div>

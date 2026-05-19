@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { site } from "@/components/siteUi";
 
 const ACCENT = "#217346";
 
@@ -238,7 +239,7 @@ function ToolCard({ tool }: { tool: Tool }) {
   return (
     <Link
       href={tool.href}
-      className="group flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
+      className="group flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.05)] transition hover:border-emerald-400/60 hover:shadow-[0_2px_8px_rgba(15,23,42,0.06)] active:scale-[0.99]"
     >
       <div className="flex-1 min-w-0">
         <h3 className="text-[15px] font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors leading-snug">
@@ -261,24 +262,24 @@ export default function ToolsHub() {
   const totalTools = SECTIONS.reduce((sum, s) => sum + s.tools.length, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
-      {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3 sm:px-6">
+    <div className={site.toolPageBg}>
+      <header className={site.toolHeader}>
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-2.5 sm:px-6">
           <Link
             href="/"
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-500 transition hover:bg-gray-200"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/80 bg-white text-slate-500 shadow-sm transition hover:border-slate-300 hover:bg-slate-50"
             aria-label="Ana Sayfa"
           >
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold text-gray-900 truncate">Excel Araçları</h1>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-base font-semibold text-slate-900">Excel Araçları</h1>
+            <p className="truncate text-xs text-slate-500">Tarayıcıda çalışan ücretsiz veri araçları</p>
           </div>
           <span
-            className="flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+            className="flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm"
             style={{ background: ACCENT }}
           >
             {totalTools} araç
@@ -288,7 +289,7 @@ export default function ToolsHub() {
 
       <main className="mx-auto max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
         {/* SEO description */}
-        <p className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-[13px] leading-relaxed text-slate-600">
+        <p className="mb-6 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm leading-relaxed text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.05)]">
           Ücretsiz Excel araçları: hızlı işlem (ad soyad ayırma, CSV kolonlara ayırma, liste birleştirme, sayıyı yazıya çevirme, boşluk temizleme, büyük/küçük harf, tarih farkı, tarih format dönüştürme, Excel dosya birleştirme); mantık & formül (formül asistanı, DÜŞEYARA ve EĞER oluşturucu, formül açıklayıcı); finans (IBAN doğrulama, faiz, kredi taksit, yüzde); istatistik (betimsel istatistik, çeyrek-yüzdelik, korelasyon, z skor, regresyon); database & veri dönüştürme (Excel → SQL INSERT, Excel → JSON, iki listeyi karşılaştır, e-posta temizleme, telefon formatlama). Tarayıcıda çalışır, kurulum gerekmez.
         </p>
 

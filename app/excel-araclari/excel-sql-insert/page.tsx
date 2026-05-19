@@ -90,7 +90,7 @@ export default function ExcelSqlInsertPage() {
       </p>
       <div className="mt-4 space-y-3 text-sm text-gray-700">
         <p>
-          <span className="font-semibold text-gray-900">Örnek girdi:</span> ilk satır kolon
+          <span className="font-semibold text-gray-900">Örnek veri:</span> ilk satır kolon
           adları, alt satırlar veri (örn.{" "}
           <span className="font-mono text-gray-800">id | ad | soyad</span>).
         </p>

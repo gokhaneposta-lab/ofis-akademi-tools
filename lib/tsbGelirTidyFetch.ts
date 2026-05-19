@@ -21,7 +21,7 @@ export async function fetchGelirTidyDonemIndex(): Promise<string[]> {
   const r = await fetch(`${GELIR_TIDY_BASE}/index.json`);
   if (!r.ok) {
     throw new Error(
-      `Dönem listesi yüklenemedi (${r.status}). Yerelde: npm run tsb:split-gelir-tidy`,
+      `Dönem listesi yüklenemedi (${r.status}). Lütfen daha sonra tekrar deneyin.`,
     );
   }
   const data: unknown = await r.json();

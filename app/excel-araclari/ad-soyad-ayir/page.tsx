@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
@@ -239,11 +239,11 @@ export default function AdSoyadAyirici() {
             </p>
             <div className="mt-3 grid grid-cols-2 gap-2">
               <div className="rounded-lg bg-gray-50 p-3">
-                <p className="mb-1 text-[11px] font-semibold text-gray-500">Örnek girdi</p>
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Örnek veri</p>
                 <p className="text-xs text-gray-800">MELİHA ELVİN GÜZEL YILDIRIM</p>
               </div>
               <div className="rounded-lg p-3" style={{ background: ACCENT_LIGHT }}>
-                <p className="mb-1 text-[11px] font-semibold text-gray-500">Örnek çıktı</p>
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Beklenen sonuç</p>
                 <p className="text-xs text-gray-800">
                   Ad: MELİHA ELVİN GÜZEL<br />Soyad: YILDIRIM
                 </p>

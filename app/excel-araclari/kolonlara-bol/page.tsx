@@ -125,7 +125,7 @@ export default function KolonlaraBolPage() {
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <div className="rounded-xl border border-gray-200 bg-gray-50/90 p-3 text-sm text-gray-800">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Örnek girdi</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Örnek veri</p>
               <p className="font-mono text-[13px] text-gray-700">Ali,Yılmaz,İstanbul</p>
             </div>
             <div className="rounded-xl border border-gray-200 bg-gray-50/90 p-3 text-sm text-gray-800">

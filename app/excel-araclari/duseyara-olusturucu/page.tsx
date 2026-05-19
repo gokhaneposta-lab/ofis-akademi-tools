@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -58,14 +58,14 @@ export default function DuseyaraOlusturucuPage() {
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
-          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Örnek veri</p>
           <p className="text-gray-700">
             Aranan: <span className="font-mono">A2</span> · Tablo: <span className="font-mono">Sheet2!A:B</span> · Sütun:{" "}
             <span className="font-mono">2</span>
           </p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
-          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Beklenen sonuç</p>
           <p className="text-gray-700">
             <span className="font-mono">=DÜŞEYARA(A2;Sheet2!A:B;2;0)</span>
           </p>

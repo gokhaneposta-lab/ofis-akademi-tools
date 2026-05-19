@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
@@ -75,11 +75,11 @@ export default function KrediTaksitPage() {
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
-          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Örnek veri</p>
           <p className="text-gray-700">Kredi: 100.000 · Faiz: %24 · Vade: 36 ay</p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
-          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Beklenen sonuç</p>
           <p className="text-gray-700">Aylık taksit + toplam geri ödeme + toplam faiz</p>
         </div>
       </div>

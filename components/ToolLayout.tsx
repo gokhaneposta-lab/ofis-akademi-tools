@@ -7,8 +7,9 @@ import ToolJsonLd from "@/components/ToolJsonLd";
 import BenzerExcelAraclari from "@/components/BenzerExcelAraclari";
 import RelatedBlogForTool from "@/components/RelatedBlogForTool";
 import Accordion from "@/components/Accordion";
+import { site } from "@/components/siteUi";
 
-const ACCENT = "#217346";
+export const ACCENT = "#166534";
 
 type FAQItem = { question: string; answer: string };
 
@@ -41,7 +42,7 @@ export default function ToolLayout({
   const hasAccordions = hasHowTo || hasFaq || hasAbout;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={site.toolPageBg}>
       <JsonLdTool
         name={`${title} — Ücretsiz Excel Aracı`}
         description={description}
@@ -49,87 +50,86 @@ export default function ToolLayout({
         keywords={keywords}
       />
       {(hasHowTo || hasFaq) && (
-        <ToolJsonLd
-          name={title}
-          description={description}
-          path={path}
-          howToSteps={howToSteps}
-          faq={faq}
-        />
+        <ToolJsonLd name={title} description={description} path={path} howToSteps={howToSteps} faq={faq} />
       )}
 
-      <header className="sticky top-0 z-20 border-b border-gray-200/80 bg-white/80 backdrop-blur-lg print:hidden">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
+      <header className={site.toolHeader}>
+        <div className={site.toolHeaderInner}>
           <Link
             href="/excel-araclari"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-600 transition-all hover:bg-gray-200 active:scale-90"
-            aria-label="Geri"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 transition hover:border-slate-300 hover:bg-white active:scale-95"
+            aria-label="Excel araçlarına dön"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <div className="min-w-0">
-            <h1 className="truncate text-base font-bold text-gray-900">{title}</h1>
-            <p className="truncate text-xs text-gray-500">{description}</p>
+          <div className="min-w-0 flex-1">
+            <h1 className={site.toolTitle}>{title}</h1>
+            <p className={site.toolDesc}>{description}</p>
           </div>
         </div>
       </header>
 
-      <main className="pb-10 pt-5">
-        {children}
+      <main>
+        <div className={site.toolMain}>
+          <p className={site.toolPrivacy}>
+            Verileriniz tarayıcınızda işlenir; bu araç için sunucuya gönderilmez. Sonucu Excel&apos;e kopyalayıp
+            yapıştırabilirsiniz.
+          </p>
 
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          {children}
+
           {hasAccordions && (
-            <div className="mt-6 flex flex-col gap-3">
+            <div className="flex flex-col gap-3 pt-2">
               {hasHowTo && (
                 <Accordion title="Nasıl kullanılır?">
-                  <ol className="list-inside list-decimal space-y-2 text-gray-700">
+                  <ol className="list-inside list-decimal space-y-2 text-sm leading-relaxed text-slate-700">
                     {howToSteps.map((step, i) => (
                       <li key={i}>{step}</li>
                     ))}
                   </ol>
                 </Accordion>
               )}
-              {hasAbout && (
-                <Accordion title="Bu araç ne işe yarar?">
-                  {aboutContent}
-                </Accordion>
-              )}
+              {hasAbout && <Accordion title="Bu araç ne işe yarar?">{aboutContent}</Accordion>}
               {hasFaq && (
                 <Accordion title="Sık sorulan sorular">
-                  <div className="space-y-4">
+                  <div className="space-y-4 text-sm">
                     {faq.map((f, i) => (
-                      <div key={i}>
-                        <p className="font-semibold text-gray-900">{f.question}</p>
-                        <p className="mt-0.5 text-gray-600">{f.answer}</p>
-                      </div>
+                      <FaqItem key={i} q={f.question} a={f.answer} />
                     ))}
                   </div>
-                  {relatedLinks && (
-                    <div className="mt-4 flex flex-wrap gap-2 text-xs">
-                      {relatedLinks}
-                    </div>
-                  )}
+                  {relatedLinks && <div className="mt-4 flex flex-wrap gap-2 text-xs">{relatedLinks}</div>}
                 </Accordion>
               )}
             </div>
           )}
 
-          {/* Bu araçla ilgili blog rehberleri */}
           <RelatedBlogForTool toolHref={path} limit={3} />
-
-          <div className="mt-6">
-            <BenzerExcelAraclari currentHref={path} />
-          </div>
-
-          <p className="mt-4 text-center text-xs text-gray-400">
-            Ofis Akademi · Excel &amp; Veri Analizi
-          </p>
+          <BenzerExcelAraclari currentHref={path} />
+          <p className="pt-2 text-center text-[11px] text-slate-400">Ofis Akademi · Excel &amp; veri analizi</p>
         </div>
       </main>
     </div>
   );
 }
 
-export { ACCENT };
+function FaqItem({ q, a }: { q: string; a: string }) {
+  return (
+    <div>
+      <p className="font-semibold text-slate-900">{q}</p>
+      <p className="mt-0.5 leading-relaxed text-slate-600">{a}</p>
+    </div>
+  );
+}
+
+/** Araç gövdesi — girdi, buton ve sonuç alanı için ortak kart. */
+export function ToolWorkbench({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <div className={`${site.toolWorkbench} ${className ?? ""}`.trim()}>{children}</div>;
+}

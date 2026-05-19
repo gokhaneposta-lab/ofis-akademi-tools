@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -80,7 +80,7 @@ export default function IcIceEgerOlusturucuPage() {
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
-          <p className="mb-1 font-semibold text-gray-800">Örnek girdi</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Örnek veri</p>
           <p className="text-gray-700">
             Satırlar: <span className="font-mono">A1&gt;90 → AA</span>, <span className="font-mono">A1&gt;80 → BA</span>,{" "}
             <span className="font-mono">A1&gt;70 → BB</span>
@@ -90,7 +90,7 @@ export default function IcIceEgerOlusturucuPage() {
           </p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
-          <p className="mb-1 font-semibold text-gray-800">Örnek çıktı</p>
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Beklenen sonuç</p>
           <p className="text-gray-700">
             <span className="font-mono break-all">
               =EĞER(A1&gt;90;&quot;AA&quot;;EĞER(A1&gt;80;&quot;BA&quot;;EĞER(A1&gt;70;&quot;BB&quot;;&quot;CC&quot;))))

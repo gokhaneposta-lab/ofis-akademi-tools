@@ -359,6 +359,56 @@ export default function HomeClient() {
           </div>
         </section>
 
+        {/* Veri & sektör */}
+        <section
+          id="data"
+          className="border-t border-slate-800/80 py-10 sm:py-14"
+        >
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                Veri &amp; sektör analizi
+              </p>
+              <h2 className="mt-1 text-xl font-semibold sm:text-2xl">TSB sektör panelleri</h2>
+              <p className="mt-2 max-w-2xl text-base text-slate-700">
+                Sigorta sektörü için çeyreklik finansal karşılaştırma ve aylık prim üretim tabloları. Detaylı kırılım,
+                şirket–sektör kıyası ve Excel&apos;e aktarılabilir yoğun veri yapısı.
+              </p>
+              <p className="mt-2">
+                <Link
+                  href="/sigorta/tsb"
+                  className="text-sm font-semibold text-emerald-600 hover:text-emerald-500 underline underline-offset-2"
+                >
+                  Tüm sektör panelleri →
+                </Link>
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 grid gap-3 md:grid-cols-2">
+            <Link
+              href="/sigorta/finansal-karsilastirma"
+              className="group flex flex-col gap-2 rounded-xl border border-slate-700/60 bg-slate-950/90 p-5 transition hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-900/20"
+            >
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Çeyreklik · GT + BL</span>
+              <h3 className="text-sm font-semibold text-slate-50 group-hover:text-emerald-100">Finansal karşılaştırma</h3>
+              <p className="text-xs leading-relaxed text-slate-400">
+                Gelir tablosu ve bilanço KPI satırları; şirket vs sektör, dönem ve yıllık değişim.
+              </p>
+            </Link>
+            <Link
+              href="/sigorta/kanal-prim"
+              className="group flex flex-col gap-2 rounded-xl border border-slate-700/60 bg-slate-950/90 p-5 transition hover:border-emerald-500/50"
+            >
+              <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400">Aylık · Prim</span>
+              <h3 className="text-sm font-semibold text-slate-50">Prim &amp; kanal panelleri</h3>
+              <p className="text-xs leading-relaxed text-slate-400">
+                Kanal, branş, sıra ve 12 ay trend; hayat dışı ve hayat–emeklilik kırılımı.
+              </p>
+            </Link>
+          </div>
+        </section>
+
         {/* Excel tools */}
         <section
           id="tools"

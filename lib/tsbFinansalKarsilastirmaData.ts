@@ -76,6 +76,7 @@ export const FINANSAL_KIYASLAMA_SATIRLARI: readonly FinansalKiyaslamaSatirTanim[
   { id: "mali_kar", label: "MALÎ KAR", format: "tl" },
   { id: "teknik_kar_zarar", label: "TEKNİK KAR / ZARAR", format: "tl" },
   { id: "vergi_oncesi_kar", label: "VERGİ ÖNCESİ KAR", format: "tl" },
+  { id: "net_kar", label: "NET KAR", format: "tl" },
   { kind: "spacer", id: "__spacer_gelir_bilanco" },
   { id: "ozsermaye", label: "ÖZSERMAYE", format: "tl" },
   { id: "teknik_karsilik", label: "TEKNİK KARŞILIKLAR", format: "tl" },

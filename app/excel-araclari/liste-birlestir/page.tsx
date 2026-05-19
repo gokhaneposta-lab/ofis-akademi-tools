@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -18,6 +18,19 @@ export default function ListeBirlestirici() {
   const [lineCount, setLineCount] = useState(0);
   const [copied, setCopied] = useState(false);
   const [sqlInFormat, setSqlInFormat] = useState(false);
+  const [wrapQuotes, setWrapQuotes] = useState(false);
+
+  /** SQL / sistem girişi için tek tırnak; içteki ' karakterini kaçırır. */
+  function quoteValue(raw: string): string {
+    const v = raw.trim();
+    if (
+      v.length >= 2 &&
+      ((v.startsWith("'") && v.endsWith("'")) || (v.startsWith('"') && v.endsWith('"')))
+    ) {
+      return v;
+    }
+    return `'${v.replace(/'/g, "''")}'`;
+  }
 
   function handleJoin() {
     const lines = input
@@ -33,10 +46,12 @@ export default function ListeBirlestirici() {
       return;
     }
 
+    const values = wrapQuotes ? lines.map(quoteValue) : lines;
+
     let joined: string;
 
     if (sqlInFormat) {
-      const inner = lines.join(",");
+      const inner = values.join(",");
       joined = `IN (${inner})`;
     } else {
       let sep = ";";
@@ -60,7 +75,7 @@ export default function ListeBirlestirici() {
         default:
           sep = ";";
       }
-      joined = lines.join(sep);
+      joined = values.join(sep);
     }
 
     setResult(joined);
@@ -94,7 +109,9 @@ export default function ListeBirlestirici() {
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-xs">
           <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">Beklenen sonuç</p>
-          <p className="text-gray-700">12345;23456;34567 veya IN (12345,23456,34567)</p>
+          <p className="text-gray-700 font-mono text-[11px]">
+            12345;23456 veya &apos;12345678901&apos;;&apos;23456789012&apos; (tek tırnak)
+          </p>
         </div>
       </div>
     </>
@@ -114,7 +131,11 @@ export default function ListeBirlestirici() {
       faq={[
         {
           question: "SQL IN formatı ne zaman?",
-          answer: "WHERE id IN (...) kullanacaksanız bu modu açın.",
+          answer: "WHERE kolon IN (...) sorgusu için bu modu açın. TC kimlik gibi string değerlerde “Tek tırnak ekle” ile birlikte kullanın.",
+        },
+        {
+          question: "Tek tırnak (TC kimlik) ne işe yarar?",
+          answer: "Her satırı '12345678901' biçimine çevirir; sistem veya SQL string listelerinde manuel tırnak eklemenize gerek kalmaz.",
         },
         {
           question: "Özel ayraç?",
@@ -241,21 +262,41 @@ export default function ListeBirlestirici() {
             )}
           </div>
 
-          <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-sm text-gray-800">
-            <input
-              type="checkbox"
-              checked={sqlInFormat}
-              onChange={(e) => setSqlInFormat(e.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
-              style={{ accentColor: ACCENT }}
-            />
-            <span className="font-medium">SQL IN formatı</span>
-          </label>
+          <div className="mt-3 space-y-2.5">
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm text-gray-800">
+              <input
+                type="checkbox"
+                checked={wrapQuotes}
+                onChange={(e) => setWrapQuotes(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                style={{ accentColor: ACCENT }}
+              />
+              <span>
+                <span className="font-medium">Tek tırnak ekle</span>
+                <span className="mt-0.5 block text-xs font-normal text-gray-600">
+                  Her satırı string olarak sarar — örn. TC kimlik:{" "}
+                  <span className="font-mono text-gray-800">&apos;12345678901&apos;</span>
+                </span>
+              </span>
+            </label>
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm text-gray-800">
+              <input
+                type="checkbox"
+                checked={sqlInFormat}
+                onChange={(e) => setSqlInFormat(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
+                style={{ accentColor: ACCENT }}
+              />
+              <span className="font-medium">SQL IN formatı</span>
+            </label>
+          </div>
           {sqlInFormat && (
             <p className="mt-2 text-xs text-gray-600">
-              Bu modda değerler virgül ile birleştirilir ve{" "}
-              <span className="font-semibold text-gray-800">IN (...)</span> şeklinde
-              sarılır.
+              Sonuç{" "}
+              <span className="font-mono font-semibold text-gray-800">
+                IN (değer1,değer2,…)
+              </span>{" "}
+              biçiminde üretilir. String listeler için &quot;Tek tırnak ekle&quot;yi işaretleyin.
             </p>
           )}
 

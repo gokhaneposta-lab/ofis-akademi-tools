@@ -33,10 +33,10 @@ export default function SigortaPrimTrend12Page() {
       description={
         <>
           Belirlediğiniz <strong>bitiş ayına</strong> kadar geriye doğru en fazla <strong>12 ay</strong> için{" "}
-          <strong>sektör toplam prim</strong> (kırmızı) ile seçtiğiniz <strong>şirket primi</strong> (yeşil; varsayılan
-          Bereket) yan yana çizilir. Üstteki görünüm anahtarı ile hayat dışı veya hayat–emeklilik havuzunu seçebilir,{" "}
-          <strong> ana branş (TSB)</strong> veya <strong>tarife grubu</strong> ile daraltabilir ve{" "}
-          <strong>kanal</strong> seçebilirsiniz.
+          <strong>sektör toplam prim</strong> (kırmızı) ile seçtiğiniz <strong>şirket primi</strong> (yeşil) gösterilir.
+          Üst grafik <strong>yıl içi kümülatif</strong> prim çizgisidir; alt grafik <strong>aylık üretimi</strong> (ardışık
+          aylar arası fark) logaritmik sütunlarla verir. Hayat dışı / hayat–emeklilik, ana branş veya tarife grubu ve kanal
+          ile daraltabilirsiniz.
         </>
       }
       sourceNote={<TsbSourceNote />}

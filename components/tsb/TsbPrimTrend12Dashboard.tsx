@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   buildSon12AyPrimTrend,
+  kumulatifSeridenAylikUretim,
   type PrimTrend12Nokta,
+  type PrimTrendAylikNokta,
   type PrimTrendFiltreModu,
   type PrimTrendFilter,
 } from "@/lib/tsbPrimTrend12";
@@ -49,8 +51,35 @@ const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFra
 const COL_SEKTOR = "#dc2626";
 const COL_SIRKET = "#059669";
 
+const CHART_W = 800;
+const CHART_H = 400;
+
 function fmtMnLab(v: number): string {
   return nfMn.format(v / 1e6);
+}
+
+function logYScale(
+  values: number[],
+  innerH: number,
+  padT: number,
+): { yAt: (v: number) => number; tickVals: number[] } {
+  const pos = values.filter((x) => x > 0);
+  const maxRaw = Math.max(...values, 1);
+  const floor = pos.length ? Math.min(...pos) * 0.28 : 1e6;
+  const ceil = Math.max(maxRaw, floor * 5);
+  const lo = Math.log10(Math.max(floor, 100));
+  const hiL = Math.log10(Math.max(ceil, floor + 1));
+  const span = hiL - lo || 1e-9;
+  const yAt = (v: number) => {
+    const vv = v <= 0 ? floor * 0.45 : Math.max(v, floor * 0.45);
+    return padT + innerH - ((Math.log10(vv) - lo) / span) * innerH;
+  };
+  const tickVals = [0, 1 / 3, 2 / 3, 1].map((t) => Math.pow(10, lo + (hiL - lo) * t));
+  return { yAt, tickVals };
+}
+
+function labelYAbove(y: number, padT: number, preferredOffset = 9): number {
+  return y - preferredOffset < padT + 4 ? y + 13 : y - preferredOffset;
 }
 
 function TrendSvg({
@@ -62,11 +91,9 @@ function TrendSvg({
   sirketAdi: string;
   logOlcek: boolean;
 }) {
-  const W = 780;
-  const H = 380;
-  const pad = { l: 60, r: 28, t: 44, b: 62 };
-  const innerW = W - pad.l - pad.r;
-  const innerH = H - pad.t - pad.b;
+  const pad = { l: 76, r: 20, t: 56, b: 72 };
+  const innerW = CHART_W - pad.l - pad.r;
+  const innerH = CHART_H - pad.t - pad.b;
 
   const allRaw = seri.flatMap((p) => [p.sektor, p.sirket]);
   const maxRaw = Math.max(...allRaw, 1);
@@ -75,21 +102,11 @@ function TrendSvg({
   let tickVals: number[];
 
   if (!logOlcek) {
-    const hi = maxRaw * 1.08;
+    const hi = maxRaw * 1.1;
     tickVals = [0, 1 / 3, 2 / 3, 1].map((t) => hi * t);
     yAt = (v: number) => pad.t + innerH - (Math.min(Math.max(v, 0), hi) / hi) * innerH;
   } else {
-    const pos = allRaw.filter((x) => x > 0);
-    const floor = pos.length ? Math.min(...pos) * 0.28 : 1e6;
-    const ceil = Math.max(maxRaw, floor * 5);
-    const lo = Math.log10(Math.max(floor, 100));
-    const hiL = Math.log10(Math.max(ceil, floor + 1));
-    const span = hiL - lo || 1e-9;
-    yAt = (v: number) => {
-      const vv = v <= 0 ? floor * 0.45 : Math.max(v, floor * 0.45);
-      return pad.t + innerH - (Math.log10(vv) - lo) / span * innerH;
-    };
-    tickVals = [0, 1 / 3, 2 / 3, 1].map((t) => Math.pow(10, lo + (hiL - lo) * t));
+    ({ yAt, tickVals } = logYScale(allRaw, innerH, pad.t));
   }
 
   const n = seri.length;
@@ -107,22 +124,33 @@ function TrendSvg({
   const ptsSirket = seri.map((p, i) => `${xAt(i)},${yAt(p.sirket)}`).join(" ");
 
   const adKisa = sirketAdi.length > 40 ? `${sirketAdi.slice(0, 38)}…` : sirketAdi;
+  const plotClip = "prim-trend-plot-clip";
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full max-w-full" role="img" aria-label="Son dönem prim trendi">
-      <rect width={W} height={H} fill="#fafafa" />
-      <text x={pad.l} y={24} fill="#374151" fontSize={14} fontWeight={600}>
-        Aylık prim (Mn ₺){logOlcek ? " · logaritmik eksen" : " · doğrusal eksen"}
+    <svg
+      viewBox={`0 0 ${CHART_W} ${CHART_H}`}
+      className="h-auto w-full max-w-full overflow-hidden"
+      role="img"
+      aria-label="Kümülatif prim trendi"
+    >
+      <defs>
+        <clipPath id={plotClip}>
+          <rect x={pad.l} y={pad.t} width={innerW} height={innerH} />
+        </clipPath>
+      </defs>
+      <rect width={CHART_W} height={CHART_H} fill="#fafafa" />
+      <text x={pad.l} y={22} fill="#374151" fontSize={12} fontWeight={600}>
+        Kümülatif prim (Mn ₺){logOlcek ? " · logaritmik eksen" : " · doğrusal eksen"}
       </text>
-      <text x={pad.l} y={40} fontSize={11}>
+      <text x={pad.l} y={38} fontSize={9}>
         <tspan fill={COL_SEKTOR} fontWeight={700}>
           Sektör
         </tspan>
-        <tspan fill="#64748b"> — kırmızı çizgi · </tspan>
+        <tspan fill="#64748b"> — kırmızı · </tspan>
         <tspan fill={COL_SIRKET} fontWeight={700}>
           {adKisa}
         </tspan>
-        <tspan fill="#64748b"> — yeşil çizgi (üstte Mn ₺, altta pay %)</tspan>
+        <tspan fill="#64748b"> — yeşil (üstte Mn ₺, altta pay %). Yıl içi kümülatif.</tspan>
       </text>
 
       {seri.map((p, i) => {
@@ -151,36 +179,38 @@ function TrendSvg({
         return (
           <g key={`tg-${ti}`}>
             <line x1={pad.l} y1={y} x2={pad.l + innerW} y2={y} stroke="#eef2f6" strokeWidth={1} />
-            <text x={pad.l - 6} y={y + 4} textAnchor="end" fill="#64748b" fontSize={11}>
+            <text x={pad.l - 8} y={y + 3} textAnchor="end" fill="#64748b" fontSize={9}>
               {fmtMnLab(tv)}
             </text>
           </g>
         );
       })}
 
-      <polyline fill="none" stroke={COL_SEKTOR} strokeWidth={2.35} points={ptsSektor} strokeLinejoin="round" />
-      <polyline fill="none" stroke={COL_SIRKET} strokeWidth={2.35} points={ptsSirket} strokeLinejoin="round" />
-
-      {seri.map((p, i) => (
-        <g key={p.donem}>
-          <circle cx={xAt(i)} cy={yAt(p.sektor)} r={3.5} fill={COL_SEKTOR} stroke="#fff" strokeWidth={1} />
-          <circle cx={xAt(i)} cy={yAt(p.sirket)} r={3.5} fill={COL_SIRKET} stroke="#fff" strokeWidth={1} />
-        </g>
-      ))}
+      <g clipPath={`url(#${plotClip})`}>
+        <polyline fill="none" stroke={COL_SEKTOR} strokeWidth={2.2} points={ptsSektor} strokeLinejoin="round" />
+        <polyline fill="none" stroke={COL_SIRKET} strokeWidth={2.2} points={ptsSirket} strokeLinejoin="round" />
+        {seri.map((p, i) => (
+          <g key={p.donem}>
+            <circle cx={xAt(i)} cy={yAt(p.sektor)} r={3.25} fill={COL_SEKTOR} stroke="#fff" strokeWidth={1} />
+            <circle cx={xAt(i)} cy={yAt(p.sirket)} r={3.25} fill={COL_SIRKET} stroke="#fff" strokeWidth={1} />
+          </g>
+        ))}
+      </g>
 
       {seri.map((p, i) => {
         const xs = xAt(i);
         const ys = yAt(p.sektor);
         const yk = yAt(p.sirket);
+        const payY = Math.min(yk + 16, pad.t + innerH + 28);
         return (
           <g key={`lab-${p.donem}`}>
-            <text x={xs} y={ys - 11} textAnchor="middle" fill={COL_SEKTOR} fontSize={10} fontWeight={700}>
+            <text x={xs} y={labelYAbove(ys, pad.t)} textAnchor="middle" fill={COL_SEKTOR} fontSize={9} fontWeight={700}>
               {fmtMnLab(p.sektor)}
             </text>
-            <text x={xs} y={yk - 11} textAnchor="middle" fill={COL_SIRKET} fontSize={10} fontWeight={700}>
+            <text x={xs} y={labelYAbove(yk, pad.t)} textAnchor="middle" fill={COL_SIRKET} fontSize={9} fontWeight={700}>
               {fmtMnLab(p.sirket)}
             </text>
-            <text x={xs} y={yk + 15} textAnchor="middle" fill="#065f46" fontSize={10} fontWeight={600}>
+            <text x={xs} y={payY} textAnchor="middle" fill="#065f46" fontSize={9} fontWeight={600}>
               %{pf.format(p.payYuzde)}
             </text>
           </g>
@@ -188,10 +218,94 @@ function TrendSvg({
       })}
 
       {seri.map((p, i) => (
-        <text key={`lx-${p.donem}`} x={xAt(i)} y={H - 18} textAnchor="middle" fill="#334155" fontSize={10} fontWeight={600}>
+        <text key={`lx-${p.donem}`} x={xAt(i)} y={CHART_H - 16} textAnchor="middle" fill="#334155" fontSize={9} fontWeight={600}>
           {p.donem}
         </text>
       ))}
+    </svg>
+  );
+}
+
+function AylikUretimBarSvg({ seri, sirketAdi }: { seri: PrimTrendAylikNokta[]; sirketAdi: string }) {
+  const pad = { l: 76, r: 20, t: 52, b: 56 };
+  const innerW = CHART_W - pad.l - pad.r;
+  const innerH = CHART_H - pad.t - pad.b;
+  const n = seri.length;
+  const bandW = innerW / Math.max(n, 1);
+  const barW = Math.min(bandW * 0.32, 22);
+  const gap = 3;
+
+  const allRaw = seri.flatMap((p) => [Math.max(p.sektorAylik, 0), Math.max(p.sirketAylik, 0)]);
+  const { yAt, tickVals } = logYScale(allRaw, innerH, pad.t);
+  const baseline = pad.t + innerH;
+
+  const adKisa = sirketAdi.length > 40 ? `${sirketAdi.slice(0, 38)}…` : sirketAdi;
+
+  return (
+    <svg
+      viewBox={`0 0 ${CHART_W} ${CHART_H}`}
+      className="h-auto w-full max-w-full overflow-hidden"
+      role="img"
+      aria-label="Aylık prim üretimi"
+    >
+      <rect width={CHART_W} height={CHART_H} fill="#fafafa" />
+      <text x={pad.l} y={22} fill="#374151" fontSize={12} fontWeight={600}>
+        Aylık üretim (Mn ₺) · logaritmik eksen
+      </text>
+      <text x={pad.l} y={38} fontSize={9}>
+        <tspan fill={COL_SEKTOR} fontWeight={700}>
+          Sektör
+        </tspan>
+        <tspan fill="#64748b"> — kırmızı sütun · </tspan>
+        <tspan fill={COL_SIRKET} fontWeight={700}>
+          {adKisa}
+        </tspan>
+        <tspan fill="#64748b"> — yeşil sütun. Kümülatif fark = o ayın primi (Ocak / yıl başı ayrı).</tspan>
+      </text>
+
+      <line x1={pad.l} y1={baseline} x2={pad.l + innerW} y2={baseline} stroke="#94a3b8" strokeWidth={1} />
+      <line x1={pad.l} y1={pad.t} x2={pad.l} y2={baseline} stroke="#94a3b8" strokeWidth={1} />
+
+      {tickVals.map((tv, ti) => {
+        const y = yAt(tv);
+        return (
+          <g key={`tg-bar-${ti}`}>
+            <line x1={pad.l} y1={y} x2={pad.l + innerW} y2={y} stroke="#eef2f6" strokeWidth={1} />
+            <text x={pad.l - 8} y={y + 3} textAnchor="end" fill="#64748b" fontSize={9}>
+              {fmtMnLab(tv)}
+            </text>
+          </g>
+        );
+      })}
+
+      {seri.map((p, i) => {
+        const cx = pad.l + bandW * i + bandW / 2;
+        const xSek = cx - barW - gap / 2;
+        const xSir = cx + gap / 2;
+        const hSek = Math.max(baseline - yAt(Math.max(p.sektorAylik, 0)), p.sektorAylik > 0 ? 2 : 0);
+        const hSir = Math.max(baseline - yAt(Math.max(p.sirketAylik, 0)), p.sirketAylik > 0 ? 2 : 0);
+        const ySek = baseline - hSek;
+        const ySir = baseline - hSir;
+        return (
+          <g key={p.donem}>
+            <rect x={xSek} y={ySek} width={barW} height={hSek} fill={COL_SEKTOR} rx={1.5} opacity={0.92} />
+            <rect x={xSir} y={ySir} width={barW} height={hSir} fill={COL_SIRKET} rx={1.5} opacity={0.92} />
+            {p.sektorAylik > 0 && hSek > 14 && (
+              <text x={xSek + barW / 2} y={ySek - 4} textAnchor="middle" fill={COL_SEKTOR} fontSize={8} fontWeight={700}>
+                {fmtMnLab(p.sektorAylik)}
+              </text>
+            )}
+            {p.sirketAylik > 0 && hSir > 14 && (
+              <text x={xSir + barW / 2} y={ySir - 4} textAnchor="middle" fill={COL_SIRKET} fontSize={8} fontWeight={700}>
+                {fmtMnLab(p.sirketAylik)}
+              </text>
+            )}
+            <text x={cx} y={CHART_H - 16} textAnchor="middle" fill="#334155" fontSize={9} fontWeight={600}>
+              {p.donem}
+            </text>
+          </g>
+        );
+      })}
     </svg>
   );
 }
@@ -295,6 +409,8 @@ export default function TsbPrimTrend12Dashboard() {
     return buildSon12AyPrimTrend(rows, donemler, secilenBitis, kanal, segment, effectiveSirket, trendFilter);
   }, [rows, donemler, secilenBitis, kanal, segment, effectiveSirket, trendFilter]);
 
+  const seriAylik = useMemo(() => (seri && seri.length > 0 ? kumulatifSeridenAylikUretim(seri) : null), [seri]);
+
   const tumBransLabel =
     segment === "hayatdisi" ? "Tüm ana branşlar (hayat dışı)" : "Tüm ana branşlar (hayat–emeklilik)";
   const tumTarifeLabel = "Tüm tarife grupları";
@@ -333,8 +449,10 @@ export default function TsbPrimTrend12Dashboard() {
           </TsbToggleButton>
         </div>
         <p className={tsb.filterHint}>
-          Seçtiğiniz <strong>bitiş ayına</strong> kadar geriye dönük en fazla <strong>12 ay</strong>. Sektör{" "}
-          <strong className="text-red-600">kırmızı</strong>, şirket <strong className="text-emerald-700">yeşil</strong>.
+          Seçtiğiniz <strong>bitiş ayına</strong> kadar geriye dönük en fazla <strong>12 ay</strong>. Üst grafik{" "}
+          <strong>yıl içi kümülatif</strong> prim; alt grafik <strong>aylık üretim</strong> (ardışık aylar arası fark).
+          Sektör <strong className="text-red-600">kırmızı</strong>, şirket{" "}
+          <strong className="text-emerald-700">yeşil</strong>.
         </p>
       </TsbFilterBar>
 
@@ -401,30 +519,42 @@ export default function TsbPrimTrend12Dashboard() {
         </TsbFilterGrid>
       </TsbFilterBar>
 
-      {seri && seri.length > 0 && sirketAdi && (
+      {seri && seri.length > 0 && seriAylik && sirketAdi && (
         <>
           <div className={tsb.chartPanel}>
             <TrendSvg seri={seri} sirketAdi={sirketAdi} logOlcek={logOlcek} />
           </div>
+          <div className={tsb.chartPanel}>
+            <AylikUretimBarSvg seri={seriAylik} sirketAdi={sirketAdi} />
+          </div>
           <TsbTableShell>
-            <table className={tsb.table}>
+            <table className={cn(tsb.table, "min-w-[720px]")}>
               <thead className={tsb.thead}>
                 <tr>
                   <th className={tsb.th}>Dönem</th>
-                  <th className={tsb.thRight}>Sektör (Mn ₺)</th>
-                  <th className={tsb.thRight}>Şirket (Mn ₺)</th>
-                  <th className={tsb.thRight}>Şirket payı (%)</th>
+                  <th className={tsb.thRight}>Sektör küm. (Mn ₺)</th>
+                  <th className={tsb.thRight}>Şirket küm. (Mn ₺)</th>
+                  <th className={tsb.thRight}>Pay % (küm.)</th>
+                  <th className={tsb.thRight}>Sektör aylık (Mn ₺)</th>
+                  <th className={tsb.thRight}>Şirket aylık (Mn ₺)</th>
+                  <th className={tsb.thRight}>Pay % (aylık)</th>
                 </tr>
               </thead>
               <tbody>
-                {seri.map((p) => (
-                  <tr key={p.donem} className={tsb.tbodyRow}>
-                    <td className={cn(tsb.td, "font-medium")}>{p.donem}</td>
-                    <td className={cn(tsb.td, "text-right text-slate-600")}>{nfMn.format(p.sektor / 1e6)}</td>
-                    <td className={cn(tsb.td, "text-right text-emerald-800")}>{nfMn.format(p.sirket / 1e6)}</td>
-                    <td className={cn(tsb.td, "text-right")}>{pf.format(p.payYuzde)}</td>
-                  </tr>
-                ))}
+                {seri.map((p, i) => {
+                  const a = seriAylik[i];
+                  return (
+                    <tr key={p.donem} className={tsb.tbodyRow}>
+                      <td className={cn(tsb.td, "font-medium")}>{p.donem}</td>
+                      <td className={cn(tsb.td, "text-right text-slate-600")}>{nfMn.format(p.sektor / 1e6)}</td>
+                      <td className={cn(tsb.td, "text-right text-emerald-800")}>{nfMn.format(p.sirket / 1e6)}</td>
+                      <td className={cn(tsb.td, "text-right")}>{pf.format(p.payYuzde)}</td>
+                      <td className={cn(tsb.td, "text-right text-slate-600")}>{nfMn.format(a.sektorAylik / 1e6)}</td>
+                      <td className={cn(tsb.td, "text-right text-emerald-800")}>{nfMn.format(a.sirketAylik / 1e6)}</td>
+                      <td className={cn(tsb.td, "text-right")}>{pf.format(a.payYuzde)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </TsbTableShell>

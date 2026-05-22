@@ -59,12 +59,29 @@ export function gelirTidyCell(
   return lookup.get(sirketKodu)?.get(cellKey(tabloTip, bransAp, hesapKodu)) ?? 0;
 }
 
+function sumGtHayat62001Lookup(lookup: GelirTidyDonemLookup, sirketKodu: number): number {
+  const inner = lookup.get(sirketKodu);
+  if (!inner) return 0;
+  let s = 0;
+  for (const [key, val] of inner) {
+    if (!key.startsWith(`${GT}|`)) continue;
+    const parts = key.split("|");
+    if (parts[2] === "62001") s += val;
+  }
+  return s;
+}
+
 function sumGtHayatdisiLookup(
   lookup: GelirTidyDonemLookup,
   sirketKodu: number,
   hesapKodu: string,
 ): number {
   return gelirTidyCell(lookup, sirketKodu, GT, HAYATDISI, hesapKodu);
+}
+
+/** Brüt prim: `GT`+`HAYATDISI`+`60001` + (varsa) tüm branşlarda `62001` — H/E şirketlerinde hayat üretimi dahil. */
+export function brutPrimFromLookup(lookup: GelirTidyDonemLookup, sirketKodu: number): number {
+  return sumGtHayatdisiLookup(lookup, sirketKodu, "60001") + sumGtHayat62001Lookup(lookup, sirketKodu);
 }
 
 function sumGtMaliLookup(lookup: GelirTidyDonemLookup, sirketKodu: number, hesapKodu: string): number {
@@ -100,7 +117,7 @@ function blTekLookup(
 
 export type SirketSegmentHamMetrik = {
   sirketKodu: number;
-  /** HAYATDISI `60001` */
+  /** `60001` (HAYATDISI) + `62001` (hayat branşları) */
   brutPrim: number;
   /** §4.3 */
   yatirimGeliriSegment: number;
@@ -127,7 +144,7 @@ export type SirketSegmentHamMetrik = {
 
 export function hamMetrikFromLookup(lookup: GelirTidyDonemLookup, sirketKodu: number): SirketSegmentHamMetrik {
   const c = (tt: string, br: string, hk: string) => gelirTidyCell(lookup, sirketKodu, tt, br, hk);
-  const brutPrim = c(GT, HAYATDISI, "60001");
+  const brutPrim = brutPrimFromLookup(lookup, sirketKodu);
   const yatirimGeliriSegment =
     (c(GT, MALI, "66") - c(GT, MALI, "664") - c(GT, MALI, "665") - c(GT, MALI, "666")) +
     (c(GT, MALI, "671") +

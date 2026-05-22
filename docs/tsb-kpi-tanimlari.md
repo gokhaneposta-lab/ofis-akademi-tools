@@ -75,8 +75,9 @@ Sohbette hatırlatmak için: **`@docs/tsb-kpi-tanimlari.md`**
 
 ### 3.1 Brüt yazılan primler (toplam)
 
-- `hesapKodu === "60001"` ve **`bransAp === "HAYATDISI"`** → **tek satır** (HD hayat dışı özet brüt prim).
-- **Tüm branşlarda `60001` toplanmaz** (HAYATDISI ile birlikte kullanılmaz).
+- **Hayat dışı (HD):** `hesapKodu === "60001"` ve **`bransAp === "HAYATDISI"`** → **tek satır** (HD hayat dışı özet brüt prim).
+- **Hayat / emeklilik (H, E):** yukarıdaki **`60001` (HAYATDISI)** + tüm branşlarda **`62001`** (hayat üretimi; örn. `bransAp === "HAYAT"`). Uygulama: `lib/tsbSirketSegmentSkor.ts` → `brutPrimFromLookup`.
+- **Tüm branşlarda `60001` toplanmaz** (HAYATDISI satırı ile branş `60001` satırları birlikte kullanılmaz).
 
 ### 3.2 Trafik hariç prim (özet mantığı)
 
@@ -95,7 +96,7 @@ Sohbette hatırlatmak için: **`@docs/tsb-kpi-tanimlari.md`**
 | KPI | Kaynak |
 |-----|--------|
 | VÖK | Üst gelir tablosu kalemlerinin toplamı: **`hesapKodu` `60`–`65`** → **`bransAp === "HAYATDISI"`**; **`66`, `67`, `68`** → **`bransAp === "MALI"`** (bu üç kod özet sayfada değil, **MALI**’dadır). Her kod için varsa tek satır `deger` toplanır; sıfır olan satırlar tidy’de yoktur. Uygulama: `lib/tsbSirketSegmentSkor.ts` → `vokFromRows`. |
-| PRİM (brüt toplam) | `60001` + **`HAYATDISI`** (Bölüm 3.1) |
+| PRİM (brüt toplam) | HD: `60001` + **`HAYATDISI`** · H/E: + tüm branşlarda `62001` (Bölüm 3.1) |
 | Faaliyet giderleri (kom. dahil) | `614` + **`HAYATDISI`** |
 | Personel giderleri | `61402`, `63602`, `65202` toplamı, hepsi **`HAYATDISI`** |
 | Genel giderler | `61402,63602,65202,61403,63603,65203,61404,63604,65204,61405,63605,65205,61406,63606,65206` toplamı, **`HAYATDISI`** |
@@ -217,7 +218,7 @@ Sayfa: `/sigorta/finansal-karsilastirma` — satır tanımları `lib/tsbFinansal
 
 **Bilanço ve oranlar:** ÖZSERMAYE · TEKNİK KARŞILIKLAR · SAFİ TEKNİK / PRİM · VÖK / ÖZSERMAYE · YATIRIM GELİRİ / ÖZSERMAYE · ÖZSERMAYE / TOPLAM AKTİF · YÜKÜMLÜLÜK (3+4) / TOPLAM AKTİF · NAKİT + FİNANSAL VARLIK / TOPLAM AKTİF · CARİ ORAN · NAKİT ORAN · VÖK / YATIRIM GELİRİ · BRÜT H/P · NET H/P.
 
-**Not:** Ayrı **VÖK** (TL) satırı yoktur. Oran satırlarındaki VÖK paydası `lib/tsbSirketSegmentSkor.ts` → `vokFromRows` ile uyumludur.
+**Not:** Sağ blok (kıyas) varsayılan modda **sektör toplamı**dır: TL satırlarında havuzdaki tüm şirketlerin Σ'si; oran satırlarında Σ pay / Σ payda. Ayrı **VÖK** (TL) satırı yoktur. Oran satırlarındaki VÖK paydası `lib/tsbSirketSegmentSkor.ts` → `vokFromRows` ile uyumludur.
 
 ---
 

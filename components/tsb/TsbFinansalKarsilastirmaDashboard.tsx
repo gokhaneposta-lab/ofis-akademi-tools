@@ -142,8 +142,8 @@ export default function TsbFinansalKarsilastirmaDashboard() {
   const kiyasBaslik = useMemo(() => {
     if (kiyasModu === "sektor") {
       return paketBu
-        ? `${POOL_LABELS[pool]} sektör (n = ${paketBu.peerSayisi})`
-        : `${POOL_LABELS[pool]} sektör`;
+        ? `Sektör toplamı (n = ${paketBu.peerSayisi})`
+        : "Sektör toplamı";
     }
     const ad = kiyasListe.find((s) => s.kod === kiyasSirketKodu)?.ad;
     return ad ?? "Kıyas şirketi";
@@ -222,7 +222,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
           <TsbFilterField label="Kıyas">
             <div className={tsb.btnGroup}>
               <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
-                Sektör (Σ)
+                Sektör toplamı
               </TsbToggleButton>
               <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => setKiyasModu("sirket")}>
                 Şirket
@@ -233,7 +233,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
             label="Kıyas şirketi"
             hint={
               kiyasModu === "sektor"
-                ? "Sağ blok: havuzdaki şirketlerin toplamı (oranlarda Σ pay / Σ payda)."
+                ? "Sağ blok: havuzdaki tüm şirketlerin toplamı (TL satırları Σ; oranlarda Σ pay / Σ payda)."
                 : "Sağ blok: seçilen şirketle bire bir kıyas."
             }
           >
@@ -253,8 +253,8 @@ export default function TsbFinansalKarsilastirmaDashboard() {
         </TsbFilterGrid>
 
         <p className={tsb.filterHint}>
-          Sol blok: <strong>{secilenAd || "Şirket"}</strong> · Sağ blok: <strong>{kiyasBaslik}</strong>. Δ: TL
-          satırlarında yüzde değişim; oran satırlarında puan farkı (pp).
+          Sol blok: <strong>{secilenAd || "Şirket"}</strong> · Sağ blok: <strong>{kiyasBaslik}</strong> (
+          {POOL_LABELS[pool]} havuzu). Δ: TL satırlarında yüzde değişim; oran satırlarında puan farkı (pp).
         </p>
       </TsbFilterBar>
 

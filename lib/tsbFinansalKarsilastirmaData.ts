@@ -1,6 +1,6 @@
 /**
  * Excel “Sektör Karşılaştırma” yapısına yakın tablo:
- * satırlar = KPI, sütunlar = (bu dönem · 1 yıl önce · Δ) × (şirket · sektör).
+ * satırlar = KPI, sütunlar = (bu dönem · 1 yıl önce · Δ) × (şirket · sektör toplamı).
  * Üstte havuz seçici: HD (hayat dışı) veya hayat–emeklilik.
  * Kaynak: `public/data/tsb/gelir-tidy/{donem}.json` (+ `index.json`) — tanımlar `docs/tsb-kpi-tanimlari.md`.
  */
@@ -213,36 +213,34 @@ function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): FinansalK
   };
 }
 
-function meanFinite(xs: number[]): number | null {
-  const ok = xs.filter((x) => Number.isFinite(x));
-  if (ok.length === 0) return null;
-  return ok.reduce((a, b) => a + b, 0) / ok.length;
+function sumFinite(xs: number[]): number {
+  return xs.filter((x) => Number.isFinite(x)).reduce((a, b) => a + b, 0);
 }
 
 function aggregateSektorHamOlcumleri(list: FinansalKiyaslamaHamOlcum[]): FinansalKiyaslamaHamOlcum | null {
   if (list.length === 0) return null;
-  const m = (fn: (x: FinansalKiyaslamaHamOlcum) => number) => meanFinite(list.map(fn)) ?? 0;
+  const s = (fn: (x: FinansalKiyaslamaHamOlcum) => number) => sumFinite(list.map(fn));
   return {
-    donemKar690: m((x) => x.donemKar690),
-    donemNetKar692: m((x) => x.donemNetKar692),
-    ozsermaye: m((x) => x.ozsermaye),
-    brutPrim: m((x) => x.brutPrim),
-    primTrafikHaric: m((x) => x.primTrafikHaric),
-    faaliyet614: m((x) => x.faaliyet614),
-    personelGider: m((x) => x.personelGider),
-    genelGider: m((x) => x.genelGider),
-    yatirimSegment: m((x) => x.yatirimSegment),
-    teknikKarZarar: m((x) => x.teknikKarZarar),
-    safiTeknikKz: m((x) => x.safiTeknikKz),
-    teknikKarsilik3545: m((x) => x.teknikKarsilik3545),
-    maliKarSentetik: m((x) => x.maliKarSentetik),
-    vok: m((x) => x.vok),
-    toplamAktif: m((x) => x.toplamAktif),
-    yuk34: m((x) => x.yuk34),
-    aktif1: m((x) => x.aktif1),
-    pasif3: m((x) => x.pasif3),
-    nakit10: m((x) => x.nakit10),
-    finansal11: m((x) => x.finansal11),
+    donemKar690: s((x) => x.donemKar690),
+    donemNetKar692: s((x) => x.donemNetKar692),
+    ozsermaye: s((x) => x.ozsermaye),
+    brutPrim: s((x) => x.brutPrim),
+    primTrafikHaric: s((x) => x.primTrafikHaric),
+    faaliyet614: s((x) => x.faaliyet614),
+    personelGider: s((x) => x.personelGider),
+    genelGider: s((x) => x.genelGider),
+    yatirimSegment: s((x) => x.yatirimSegment),
+    teknikKarZarar: s((x) => x.teknikKarZarar),
+    safiTeknikKz: s((x) => x.safiTeknikKz),
+    teknikKarsilik3545: s((x) => x.teknikKarsilik3545),
+    maliKarSentetik: s((x) => x.maliKarSentetik),
+    vok: s((x) => x.vok),
+    toplamAktif: s((x) => x.toplamAktif),
+    yuk34: s((x) => x.yuk34),
+    aktif1: s((x) => x.aktif1),
+    pasif3: s((x) => x.pasif3),
+    nakit10: s((x) => x.nakit10),
+    finansal11: s((x) => x.finansal11),
   };
 }
 

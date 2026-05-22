@@ -1,5 +1,5 @@
 /** TSB gösterge panelleri — hub ve çapraz linkler için tek kaynak */
-export type TsbDashboardGroupId = "finansal" | "prim";
+export type TsbDashboardGroupId = "finansal" | "prim" | "teknik";
 
 export type TsbDashboardPanel = {
   href: string;
@@ -24,6 +24,11 @@ export const TSB_DASHBOARD_GROUPS: readonly TsbDashboardGroupMeta[] = [
       "Çeyrek bazında gelir tablosu (GT) ve bilanço (BL) özet KPI’ları; şirket, sektör veya başka bir şirketle kıyas.",
   },
   {
+    id: "teknik",
+    title: "Teknik karlılık",
+    description: "Gelir tablosu hasar/prim oranları; branş seçimi ve DERK dahil/hariç kırılımı.",
+  },
+  {
     id: "prim",
     title: "Prim ve üretim",
     description:
@@ -39,6 +44,17 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
     subtitle: "KPI satırları · çeyrekler · şirket vs sektör",
     icon: "📋",
     group: "finansal",
+  },
+] as const;
+
+export const TSB_TEKNIK_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
+  {
+    href: "/sigorta/hasar-prim-orani",
+    badge: "H/P",
+    title: "Hasar / Prim oranı",
+    subtitle: "Branş bazlı · DERK dahil/hariç · sektör sırası",
+    icon: "📉",
+    group: "teknik",
   },
 ] as const;
 
@@ -85,9 +101,10 @@ export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   },
 ] as const;
 
-/** Tüm paneller (finansal + prim), hub sırası */
+/** Tüm paneller (finansal + teknik + prim), hub sırası */
 export const TSB_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   ...TSB_FINANSAL_DASHBOARD_PANELS,
+  ...TSB_TEKNIK_DASHBOARD_PANELS,
   ...TSB_PRIM_DASHBOARD_PANELS,
 ] as const;
 

@@ -1,5 +1,6 @@
 /**
  * Brüt / Net Hasar–Prim oranı — Excel Gelir Tablosu satır 185–186 (TSB özet).
+ * DERK dahil / hariç dörtlüsü: TSB H/P pivot (GENEL + branş sayfaları).
  * `docs/tsb-kpi-tanimlari.md` §5
  */
 
@@ -71,8 +72,44 @@ const NET_PRIM_KODLARI = [
   "622022",
 ] as const;
 
-/** 62… / 63… hayat bloğu: tüm `bransAp`; diğer kodlar yalnız `HAYATDISI`. */
-function sumGtKodHp(lookup: GelirTidyDonemLookup, sirketKodu: number, hesapKodu: string): number {
+/** DERK (devam eden riskler) — paydadan çıkarılarak “DERK hariç” H/P üretilir. */
+export const DERK_PRIM_KODLARI = ["602011", "602012", "602021", "602022"] as const;
+
+export type HasarPrimBransAp = string;
+
+export type HasarPrimOranlari = {
+  brutHasarPrimOrani: number | null;
+  netHasarPrimOrani: number | null;
+};
+
+export type HasarPrimOranlariDetay = HasarPrimOranlari & {
+  brutDerkHaric: number | null;
+  netDerkHaric: number | null;
+  kazanilmisPrimBrut: number;
+  kazanilmisPrimNet: number;
+  gerceklesenHasarBrut: number;
+  gerceklesenHasarNet: number;
+};
+
+export type HasarPrimOranOpts = {
+  /** `HAYATDISI` = Excel GENEL; belirli branş adı = o branş sayfası (tek `bransAp` dilimi). */
+  bransAp?: HasarPrimBransAp;
+};
+
+function isOzetHayatdisi(bransAp: HasarPrimBransAp | undefined): boolean {
+  return !bransAp || bransAp === HAYATDISI;
+}
+
+/** 62… / 63… hayat bloğu: özet modda tüm `bransAp`; branş modunda yalnız seçilen dilim. */
+function sumGtKodHp(
+  lookup: GelirTidyDonemLookup,
+  sirketKodu: number,
+  hesapKodu: string,
+  bransAp?: HasarPrimBransAp,
+): number {
+  if (!isOzetHayatdisi(bransAp)) {
+    return gelirTidyCell(lookup, sirketKodu, GT, bransAp!, hesapKodu);
+  }
   if (hesapKodu.startsWith("62") || hesapKodu.startsWith("63")) {
     const inner = lookup.get(sirketKodu);
     if (!inner) return 0;
@@ -87,9 +124,14 @@ function sumGtKodHp(lookup: GelirTidyDonemLookup, sirketKodu: number, hesapKodu:
   return gelirTidyCell(lookup, sirketKodu, GT, HAYATDISI, hesapKodu);
 }
 
-function sumKodList(lookup: GelirTidyDonemLookup, sk: number, kodlar: readonly string[]): number {
+function sumKodList(
+  lookup: GelirTidyDonemLookup,
+  sk: number,
+  kodlar: readonly string[],
+  bransAp?: HasarPrimBransAp,
+): number {
   let s = 0;
-  for (const k of kodlar) s += sumGtKodHp(lookup, sk, k);
+  for (const k of kodlar) s += sumGtKodHp(lookup, sk, k, bransAp);
   return s;
 }
 
@@ -99,46 +141,122 @@ function hpOran(pay: number, payda: number): number | null {
   return (pay / payda) * -1;
 }
 
-export type HasarPrimOranlari = {
-  brutHasarPrimOrani: number | null;
-  netHasarPrimOrani: number | null;
-};
+function hasarPrimHam(
+  lookup: GelirTidyDonemLookup,
+  sk: number,
+  bransAp?: HasarPrimBransAp,
+): {
+  brutPay: number;
+  brutPayda: number;
+  netPay: number;
+  netPayda: number;
+} {
+  const brutPay = sumKodList(lookup, sk, BRUT_HASAR_KODLARI, bransAp);
+  const brutPayda = sumKodList(lookup, sk, BRUT_PRIM_KODLARI, bransAp);
+  const netPay = sumKodList(lookup, sk, NET_HASAR_KODLARI, bransAp);
+  const netPayda = sumKodList(lookup, sk, NET_PRIM_KODLARI, bransAp);
+  return { brutPay, brutPayda, netPay, netPayda };
+}
+
+export function hasarPrimOranlariDetayFromLookup(
+  lookup: GelirTidyDonemLookup,
+  sirketKodu: number,
+  opts: HasarPrimOranOpts = {},
+): HasarPrimOranlariDetay {
+  const bransAp = opts.bransAp;
+  if (!lookup.has(sirketKodu)) {
+    return {
+      brutHasarPrimOrani: null,
+      netHasarPrimOrani: null,
+      brutDerkHaric: null,
+      netDerkHaric: null,
+      kazanilmisPrimBrut: 0,
+      kazanilmisPrimNet: 0,
+      gerceklesenHasarBrut: 0,
+      gerceklesenHasarNet: 0,
+    };
+  }
+  const { brutPay, brutPayda, netPay, netPayda } = hasarPrimHam(lookup, sirketKodu, bransAp);
+  const derkBrut = sumKodList(lookup, sirketKodu, DERK_PRIM_KODLARI.filter((k) =>
+    (BRUT_PRIM_KODLARI as readonly string[]).includes(k),
+  ), bransAp);
+  const derkNet = sumKodList(lookup, sirketKodu, DERK_PRIM_KODLARI, bransAp);
+  const brutPaydaDerkHaric = brutPayda - derkBrut;
+  const netPaydaDerkHaric = netPayda - derkNet;
+
+  return {
+    kazanilmisPrimBrut: brutPayda,
+    kazanilmisPrimNet: netPayda,
+    gerceklesenHasarBrut: brutPay,
+    gerceklesenHasarNet: netPay,
+    brutHasarPrimOrani: hpOran(brutPay, brutPayda),
+    netHasarPrimOrani: hpOran(netPay, netPayda),
+    brutDerkHaric: hpOran(brutPay, brutPaydaDerkHaric),
+    netDerkHaric: hpOran(netPay, netPaydaDerkHaric),
+  };
+}
 
 export function hasarPrimOranlariFromLookup(
   lookup: GelirTidyDonemLookup,
   sirketKodu: number,
+  opts: HasarPrimOranOpts = {},
 ): HasarPrimOranlari {
-  if (!lookup.has(sirketKodu)) {
-    return { brutHasarPrimOrani: null, netHasarPrimOrani: null };
-  }
-  const brutPay = sumKodList(lookup, sirketKodu, BRUT_HASAR_KODLARI);
-  const brutPayda = sumKodList(lookup, sirketKodu, BRUT_PRIM_KODLARI);
-  const netPay = sumKodList(lookup, sirketKodu, NET_HASAR_KODLARI);
-  const netPayda = sumKodList(lookup, sirketKodu, NET_PRIM_KODLARI);
+  const d = hasarPrimOranlariDetayFromLookup(lookup, sirketKodu, opts);
   return {
-    brutHasarPrimOrani: hpOran(brutPay, brutPayda),
-    netHasarPrimOrani: hpOran(netPay, netPayda),
+    brutHasarPrimOrani: d.brutHasarPrimOrani,
+    netHasarPrimOrani: d.netHasarPrimOrani,
   };
 }
 
 /** Sektör: tüm peer’larda pay ve payda ayrı toplanır (Σ/Σ), şirket ortalaması değil. */
-export function hasarPrimOranlariSektorFromLookup(
+export function hasarPrimOranlariDetaySektorFromLookup(
   lookup: GelirTidyDonemLookup,
   peerKodlari: number[],
-): HasarPrimOranlari {
+  opts: HasarPrimOranOpts = {},
+): HasarPrimOranlariDetay {
   let brutPay = 0;
   let brutPayda = 0;
   let netPay = 0;
   let netPayda = 0;
+  let derkBrut = 0;
+  let derkNet = 0;
   for (const sk of peerKodlari) {
     if (!lookup.has(sk)) continue;
-    brutPay += sumKodList(lookup, sk, BRUT_HASAR_KODLARI);
-    brutPayda += sumKodList(lookup, sk, BRUT_PRIM_KODLARI);
-    netPay += sumKodList(lookup, sk, NET_HASAR_KODLARI);
-    netPayda += sumKodList(lookup, sk, NET_PRIM_KODLARI);
+    const h = hasarPrimHam(lookup, sk, opts.bransAp);
+    brutPay += h.brutPay;
+    brutPayda += h.brutPayda;
+    netPay += h.netPay;
+    netPayda += h.netPayda;
+    derkBrut += sumKodList(
+      lookup,
+      sk,
+      DERK_PRIM_KODLARI.filter((k) => (BRUT_PRIM_KODLARI as readonly string[]).includes(k)),
+      opts.bransAp,
+    );
+    derkNet += sumKodList(lookup, sk, DERK_PRIM_KODLARI, opts.bransAp);
   }
+  const brutPaydaDerkHaric = brutPayda - derkBrut;
+  const netPaydaDerkHaric = netPayda - derkNet;
   return {
+    kazanilmisPrimBrut: brutPayda,
+    kazanilmisPrimNet: netPayda,
+    gerceklesenHasarBrut: brutPay,
+    gerceklesenHasarNet: netPay,
     brutHasarPrimOrani: hpOran(brutPay, brutPayda),
     netHasarPrimOrani: hpOran(netPay, netPayda),
+    brutDerkHaric: hpOran(brutPay, brutPaydaDerkHaric),
+    netDerkHaric: hpOran(netPay, netPaydaDerkHaric),
+  };
+}
+
+export function hasarPrimOranlariSektorFromLookup(
+  lookup: GelirTidyDonemLookup,
+  peerKodlari: number[],
+  opts: HasarPrimOranOpts = {},
+): HasarPrimOranlari {
+  const d = hasarPrimOranlariDetaySektorFromLookup(lookup, peerKodlari, opts);
+  return {
+    brutHasarPrimOrani: d.brutHasarPrimOrani,
+    netHasarPrimOrani: d.netHasarPrimOrani,
   };
 }

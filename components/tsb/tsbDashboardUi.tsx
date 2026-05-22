@@ -94,27 +94,47 @@ export function cn(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(" ");
 }
 
-/** Δ sütunları: artış yeşil, düşüş kırmızı (TSB dashboard standartı). */
+/** YoY değişim hücreleri: artış yeşil, düşüş kırmızı, sıfır amber (belirgin arka plan). */
 export function tsbDeltaRenk(v: number | null | undefined): string {
   if (v === null || v === undefined || !Number.isFinite(v)) return "text-slate-400";
-  if (v > 0) return "text-emerald-700 font-semibold";
-  if (v < 0) return "text-red-600 font-semibold";
-  return "text-slate-600 font-medium";
+  if (v > 0) return "text-emerald-800 font-semibold bg-emerald-50";
+  if (v < 0) return "text-red-700 font-semibold bg-red-50";
+  return "text-amber-700 font-semibold bg-amber-50";
 }
 
-/** Sıra değişimi: sıra numarası düştüyse (iyileşme) yeşil, yükseldiyse kırmızı. */
+/** Sıra Δ sütunu: iyileşme yeşil, aynı sarı, kötüleşme kırmızı. */
 export function tsbSiraDeltaRenk(v: number | null | undefined): string {
   if (v === null || v === undefined || !Number.isFinite(v)) return "text-slate-500";
-  if (v < 0) return "text-emerald-700 font-semibold";
-  if (v > 0) return "text-red-600 font-semibold";
-  return "text-slate-600 font-medium";
+  if (v < 0) return "text-emerald-800 font-semibold bg-emerald-50";
+  if (v > 0) return "text-red-700 font-semibold bg-red-50";
+  return "text-amber-600 font-semibold bg-amber-50";
 }
 
-/** Bu yıl sıra hücresi: geçen yıla göre iyileşme yeşil, kötüleşme kırmızı. */
+/**
+ * Bu yıl sıra hücresi (kanal-prim): düşük sıra daha iyi.
+ * İyileşme (2→1) yeşil, aynı sırada sarı, düşüş kırmızı.
+ */
 export function tsbSiraIyilestirmeRenk(onceki: number, bu: number): string {
-  if (bu > onceki) return "text-red-600 font-semibold tabular-nums";
-  if (bu < onceki) return "text-emerald-600 font-semibold tabular-nums";
-  return "text-slate-700 tabular-nums";
+  if (onceki <= 0 || bu <= 0) return "text-slate-700 font-medium tabular-nums";
+  if (bu < onceki) return "text-emerald-800 font-semibold tabular-nums bg-emerald-50";
+  if (bu > onceki) return "text-red-700 font-semibold tabular-nums bg-red-50";
+  return "text-amber-600 font-semibold tabular-nums bg-amber-50";
+}
+
+const degisimPf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+
+/** Önceki yıla göre yüzde değişim metni (+ / − işaretli). */
+export function tsbFormatDegisimYuzde(v: number | null | undefined): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return "—";
+  const sign = v > 0 ? "+" : "";
+  return `${sign}${degisimPf.format(v)}%`;
+}
+
+/** Puan farkı metni (+ / − işaretli). */
+export function tsbFormatPp(v: number | null | undefined): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return "—";
+  const sign = v > 0 ? "+" : "";
+  return `${sign}${degisimPf.format(v)} pp`;
 }
 
 type TsbPageLayoutProps = {

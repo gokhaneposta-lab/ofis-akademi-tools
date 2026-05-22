@@ -28,6 +28,7 @@ import {
   TsbTableShell,
   TsbToggleButton,
   tsbDeltaRenk,
+  tsbFormatDegisimYuzde,
   tsbSiraIyilestirmeRenk,
 } from "@/components/tsb/tsbDashboardUi";
 
@@ -240,7 +241,9 @@ export default function TsbKanalPrimDashboard() {
         <>
           <p className={tsb.caption}>
             Önceki yıl: <strong>{tablo.donemOnceki ?? "—"}</strong>. Alt satırda seçili filtrelere göre toplam prim;
-            pay sütunları en fazla %100.
+            pay sütunları en fazla %100.{" "}
+            <strong className="text-emerald-800">Bu yıl sıra:</strong> iyileşme yeşil, aynı sırada sarı, düşüş kırmızı.{" "}
+            <strong>Değişim %:</strong> artış yeşil, düşüş kırmızı.
           </p>
           <TsbTableShell>
             <table className={tsb.tableDense}>
@@ -304,7 +307,7 @@ export default function TsbKanalPrimDashboard() {
                     <td className={cn(tsb.td, "text-right font-medium whitespace-nowrap")}>{nf.format(s.primBu)}</td>
                     <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{pf.format(s.payBuYuzde)}</td>
                     <td className={cn(tsb.td, "text-right font-medium whitespace-nowrap", tsbDeltaRenk(s.degisimYuzde))}>
-                      {s.degisimYuzde === null ? "—" : `${pf.format(s.degisimYuzde)}`}
+                      {tsbFormatDegisimYuzde(s.degisimYuzde)}
                     </td>
                   </tr>
                 ))}
@@ -320,7 +323,7 @@ export default function TsbKanalPrimDashboard() {
                   <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{nf.format(tablo.sektorToplamBu)}</td>
                   <td className={cn(tsb.td, "text-right text-emerald-900 whitespace-nowrap")}>{pf.format(100)}</td>
                   <td className={cn(tsb.td, "text-right whitespace-nowrap", tsbDeltaRenk(toplamDegisim))}>
-                    {toplamDegisim === null ? "—" : pf.format(toplamDegisim)}
+                    {tsbFormatDegisimYuzde(toplamDegisim)}
                   </td>
                 </tr>
               </tfoot>

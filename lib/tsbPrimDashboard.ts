@@ -173,6 +173,32 @@ export function rowMatchesSegment(row: TsbPrimRow, segment: TsbSektorSegment): b
   return segment === "hayat" ? isHayatEmeklilikSirket(row) : isHayatdisiSirket(row);
 }
 
+/** Prim tidy satırlarından şirket havuzu (HD / hayat–emeklilik). */
+export function sirketSegmentFromKodu(rows: Iterable<TsbPrimRow>, kod: number): TsbSektorSegment {
+  for (const r of rows) {
+    if (r.sirketKodu !== kod) continue;
+    if (isHayatEmeklilikSirket(r)) return "hayat";
+    if (isHayatdisiSirket(r)) return "hayatdisi";
+  }
+  return sirketKoduHayatEmeklilikPrefix(kod) ? "hayat" : "hayatdisi";
+}
+
+/** Havuzdaki benzersiz şirket sayısı (sektör toplamı n). */
+export function countSirketlerSegmentDonem(
+  rows: Iterable<TsbPrimRow>,
+  donem: string,
+  segment: TsbSektorSegment,
+): number {
+  const kodlar = new Set<number>();
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    kodlar.add(r.sirketKodu);
+  }
+  return kodlar.size;
+}
+
 /** Tablo alt toplam satırı için yüzde değişim */
 export function sektorToplamDegisimYuzde(primOnceki: number, primBu: number): number | null {
   if (primOnceki === 0) return primBu === 0 ? 0 : null;

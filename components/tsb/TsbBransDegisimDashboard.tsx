@@ -14,8 +14,10 @@ import {
   TsbTableShell,
   TsbToggleButton,
   tsbDeltaRenk,
+  tsbFormatDegisimYuzde,
+  tsbFormatPp,
 } from "@/components/tsb/tsbDashboardUi";
-import type { BransDegisimSatir } from "@/lib/tsbBransDegisim";
+import type { BransDegisimKiyasHedef, BransDegisimSatir } from "@/lib/tsbBransDegisim";
 import { buildBransDegisimTablosu } from "@/lib/tsbBransDegisim";
 import type { TsbKanalField, TsbPrimDaraltmaModu, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import {
@@ -24,6 +26,7 @@ import {
   listSirketlerSegmentDonem,
   prevYearPeriod,
   resolveDefaultSirketKodu,
+  sirketSegmentFromKodu,
   uniqueSortedPeriods,
 } from "@/lib/tsbPrimDashboard";
 
@@ -36,15 +39,22 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
   { value: "merkez", label: "Merkez" },
 ];
 
+const HAVUZ_LABEL: Record<TsbSektorSegment, string> = {
+  hayatdisi: "Hayat dışı (HD)",
+  hayat: "Hayat / Emeklilik",
+};
+
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
 function SatirHucresi({
   satir,
   araToplam,
+  kiyasBaslik,
 }: {
   satir: BransDegisimSatir;
   araToplam?: boolean;
+  kiyasBaslik: string;
 }) {
   const rowCls = araToplam ? "bg-slate-100/90 font-semibold" : "";
   return (
@@ -55,16 +65,22 @@ function SatirHucresi({
       <td className={cn(tsb.td, "text-right")}>{nf.format(satir.sirketPrimOnceki)}</td>
       <td className={cn(tsb.td, "text-right")}>{nf.format(satir.sirketPrimBu)}</td>
       <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.sirketDegisim))}>
-        {satir.sirketDegisim === null ? "—" : `${pf.format(satir.sirketDegisim)}%`}
+        {tsbFormatDegisimYuzde(satir.sirketDegisim)}
       </td>
       <td className={cn(tsb.td, "text-right text-slate-600")}>{nf.format(satir.sektorPrimOnceki)}</td>
       <td className={cn(tsb.td, "text-right text-slate-600")}>{nf.format(satir.sektorPrimBu)}</td>
       <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.sektorDegisim))}>
-        {satir.sektorDegisim === null ? "—" : `${pf.format(satir.sektorDegisim)}%`}
+        {tsbFormatDegisimYuzde(satir.sektorDegisim)}
       </td>
-      <td className={cn(tsb.td, "text-right text-slate-600")}>{pf.format(satir.payOncekiYuzde)}%</td>
-      <td className={cn(tsb.td, "text-right text-slate-600")}>{pf.format(satir.payBuYuzde)}%</td>
-      <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.payDegisimPp))}>{pf.format(satir.payDegisimPp)} pp</td>
+      <td className={cn(tsb.td, "text-right text-slate-600")} title={`Sol şirket payı · ${HAVUZ_LABEL[satir.grup]} sektör toplamı`}>
+        {pf.format(satir.payOncekiYuzde)}%
+      </td>
+      <td className={cn(tsb.td, "text-right text-slate-600")} title={`Sol şirket payı · ${HAVUZ_LABEL[satir.grup]} sektör toplamı`}>
+        {pf.format(satir.payBuYuzde)}%
+      </td>
+      <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.payDegisimPp))} title={`Pazar payı değişimi (sol şirket · sektör); sağ blok: ${kiyasBaslik}`}>
+        {tsbFormatPp(satir.payDegisimPp)}
+      </td>
     </tr>
   );
 }
@@ -77,6 +93,8 @@ export default function TsbBransDegisimDashboard() {
   const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
   const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
+  const [kiyasModu, setKiyasModu] = useState<"sektor" | "sirket">("sektor");
+  const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
 
   const branchLookup = useTsbBranchLookupFetch();
 
@@ -128,10 +146,33 @@ export default function TsbBransDegisimDashboard() {
     return resolveDefaultSirketKodu(sirketler, segment === "hayatdisi" ? "hayatdisi" : "hayat");
   }, [sirketler, sirketKodu, segment]);
 
+  useEffect(() => {
+    if (!rows || effectiveSirketKodu === null) return;
+    const havuz = sirketSegmentFromKodu(rows, effectiveSirketKodu);
+    if (havuz !== segment) setSegment(havuz);
+  }, [rows, effectiveSirketKodu, segment]);
+
+  const kiyasListe = useMemo(
+    () => sirketler.filter((s) => s.kod !== effectiveSirketKodu),
+    [sirketler, effectiveSirketKodu],
+  );
+
+  useEffect(() => {
+    if (kiyasModu !== "sirket" || kiyasListe.length === 0) return;
+    if (kiyasListe.some((s) => s.kod === kiyasSirketKodu)) return;
+    setKiyasSirketKodu(kiyasListe[0].kod);
+  }, [kiyasModu, kiyasListe, kiyasSirketKodu]);
+
+  const kiyasHedef: BransDegisimKiyasHedef = useMemo(() => {
+    if (kiyasModu === "sektor") return { mod: "sektor" };
+    if (kiyasSirketKodu === "") return { mod: "sektor" };
+    return { mod: "sirket", sirketKodu: kiyasSirketKodu };
+  }, [kiyasModu, kiyasSirketKodu]);
+
   const tablo = useMemo(() => {
     if (!rows || !secilenDonem || effectiveSirketKodu === null) return null;
-    return buildBransDegisimTablosu(rows, secilenDonem, kanal, effectiveSirketKodu, daraltma);
-  }, [rows, secilenDonem, kanal, effectiveSirketKodu, daraltma]);
+    return buildBransDegisimTablosu(rows, secilenDonem, kanal, effectiveSirketKodu, daraltma, kiyasHedef);
+  }, [rows, secilenDonem, kanal, effectiveSirketKodu, daraltma, kiyasHedef]);
 
   if (error) return <TsbError message={error} />;
   if (!rows) return <TsbLoading />;
@@ -152,18 +193,46 @@ export default function TsbBransDegisimDashboard() {
   }
 
   const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
-  const kolonBaslik =
-    tablo.kirisumModu === "anaBransH" ? "Branş" : "Tarife grubu";
+  const kolonBaslik = tablo.kirisumModu === "anaBransH" ? "Branş" : "Tarife grubu";
+
+  const kiyasBaslik =
+    tablo.kiyasMod === "sektor"
+      ? `Sektör toplamı (n = ${tablo.peerSayisi})`
+      : (kiyasListe.find((s) => s.kod === kiyasSirketKodu)?.ad ?? "Kıyas şirketi");
+
+  const kiyasBaslikKisa =
+    tablo.kiyasMod === "sektor" ? "Sektör toplamı" : kiyasBaslik.slice(0, 42) + (kiyasBaslik.length > 42 ? "…" : "");
+
+  const blokBaslik =
+    tablo.tabloHavuzu === "hayatdisi"
+      ? `Hayat dışı ${tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "branşları"}`
+      : `Hayat & emeklilik ${tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "(TSB ana branş)"}`;
 
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
-        <p className={tsb.filterSectionLabel}>Sektör görünümü (şirket listesi)</p>
+        <p className={tsb.filterSectionLabel}>Sektör havuzu (şirket listesi)</p>
         <div className={cn(tsb.btnGroup, "mb-3")}>
-          <TsbToggleButton pressed={segment === "hayatdisi"} variant="segment" onClick={() => setSegment("hayatdisi")}>
+          <TsbToggleButton
+            pressed={segment === "hayatdisi"}
+            variant="segment"
+            onClick={() => {
+              setSegment("hayatdisi");
+              setSirketKodu("");
+              setKiyasModu("sektor");
+            }}
+          >
             Hayat dışı
           </TsbToggleButton>
-          <TsbToggleButton pressed={segment === "hayat"} variant="segment" onClick={() => setSegment("hayat")}>
+          <TsbToggleButton
+            pressed={segment === "hayat"}
+            variant="segment"
+            onClick={() => {
+              setSegment("hayat");
+              setSirketKodu("");
+              setKiyasModu("sektor");
+            }}
+          >
             Hayat &amp; emeklilik
           </TsbToggleButton>
         </div>
@@ -177,13 +246,13 @@ export default function TsbBransDegisimDashboard() {
           </TsbToggleButton>
         </div>
         <p className={tsb.filterHint}>
-          <strong>Şirket</strong> listesi seçilen görünüme göre filtrelenir. Tablo hem hayat dışı hem hayat–emeklilik
-          bloklarını gösterir.
+          Tablo yalnızca <strong>seçili şirketin havuzuna</strong> ({HAVUZ_LABEL[tablo.tabloHavuzu]}) ait branşları
+          gösterir.
         </p>
       </TsbFilterBar>
 
       <TsbFilterBar>
-        <TsbFilterGrid className="sm:grid-cols-3">
+        <TsbFilterGrid>
           <TsbFilterField label="Kanal">
             <TsbSelect value={kanal} onChange={(e) => setKanal(e.target.value as TsbKanalField)}>
               {KANALLAR.map((k) => (
@@ -193,28 +262,15 @@ export default function TsbBransDegisimDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
-          <TsbFilterField label="Şirket" className="sm:col-span-2">
-            <TsbSelect
-              value={effectiveSirketKodu !== null ? String(effectiveSirketKodu) : ""}
-              onChange={(e) => setSirketKodu(Number(e.target.value))}
-            >
-              {sirketler.map((s) => (
-                <option key={s.kod} value={s.kod}>
-                  {s.ad} ({s.kod})
-                </option>
-              ))}
-            </TsbSelect>
-          </TsbFilterField>
           <TsbFilterField
             label="Dönem (karşılaştırma ayı)"
-            className="sm:col-span-3"
             hint={
               <>
                 Tablo: <strong>{tablo.donemOnceki}</strong> vs <strong>{tablo.donemBu}</strong>
               </>
             }
           >
-            <TsbSelect className="max-w-xs" value={secilenDonem} onChange={(e) => setDonem(e.target.value)}>
+            <TsbSelect value={secilenDonem} onChange={(e) => setDonem(e.target.value)}>
               {donemler.map((d) => (
                 <option key={d} value={d}>
                   {d} · önceki yıl {prevYearPeriod(d) ?? "—"}
@@ -222,12 +278,84 @@ export default function TsbBransDegisimDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
+
+          <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
+            <span className={tsb.filterLabel}>Tablo karşılaştırması</span>
+            <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
+              Sol blok seçili şirket; sağ blok sektör toplamı veya başka bir şirket. Pazar payı her zaman sol şirketin
+              sektör içindeki payıdır.
+            </p>
+            <div className="mt-2 flex flex-col gap-3 rounded-lg border border-slate-200/90 bg-white/80 p-3 sm:flex-row sm:items-end">
+              <div className="min-w-0 flex-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+                  Sol blok — şirket
+                </span>
+                <TsbSelect
+                  className="mt-1"
+                  value={effectiveSirketKodu !== null ? String(effectiveSirketKodu) : ""}
+                  onChange={(e) => setSirketKodu(Number(e.target.value))}
+                >
+                  {sirketler.map((s) => (
+                    <option key={s.kod} value={s.kod}>
+                      {s.ad} ({s.kod})
+                    </option>
+                  ))}
+                </TsbSelect>
+              </div>
+
+              <div
+                className="hidden shrink-0 self-center px-1 text-sm font-semibold text-slate-400 sm:block sm:pb-2"
+                aria-hidden
+              >
+                vs
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+                  Sağ blok — kıyas
+                </span>
+                <div className={cn(tsb.btnGroup, "mt-1")}>
+                  <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
+                    Sektör toplamı
+                  </TsbToggleButton>
+                  <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => setKiyasModu("sirket")}>
+                    Diğer şirket
+                  </TsbToggleButton>
+                </div>
+                {kiyasModu === "sektor" ? (
+                  <p className="mt-1.5 rounded-md border border-slate-200/80 bg-slate-50 px-3 py-2 text-xs text-slate-700">
+                    <strong>Sektör toplamı</strong> (n = {tablo.peerSayisi})
+                    <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">
+                      {HAVUZ_LABEL[tablo.tabloHavuzu]} havuzundaki tüm şirketlerin Σ primi.
+                    </span>
+                  </p>
+                ) : kiyasListe.length === 0 ? (
+                  <p className="mt-1.5 rounded-md border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                    Bu havuzda kıyaslanacak başka şirket yok.
+                  </p>
+                ) : (
+                  <TsbSelect
+                    className="mt-1.5"
+                    value={kiyasSirketKodu === "" ? "" : String(kiyasSirketKodu)}
+                    onChange={(e) => setKiyasSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
+                  >
+                    {kiyasListe.map((s) => (
+                      <option key={s.kod} value={s.kod}>
+                        {s.ad} ({s.kod})
+                      </option>
+                    ))}
+                  </TsbSelect>
+                )}
+              </div>
+            </div>
+          </div>
         </TsbFilterGrid>
       </TsbFilterBar>
 
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>
-        <strong>Şirket değişim (%)</strong> hücreleri sektörün yıllık değişim oranı ile karşılaştırılarak
-        renklendirilir. <strong>Pazar payı</strong> sütunları pp farkını gösterir.
+        <strong>{blokBaslik}</strong> · <strong>Değişim %</strong> ve <strong>Δ pp</strong> önceki yıla göre:{" "}
+        <span className="text-emerald-800">artış yeşil</span>, <span className="text-red-700">düşüş kırmızı</span>.
+        Pazar payı: <strong>{secilenAd.slice(0, 36)}{secilenAd.length > 36 ? "…" : ""}</strong> · sektör.
       </p>
 
       <TsbTableShell>
@@ -241,11 +369,15 @@ export default function TsbBransDegisimDashboard() {
                 {secilenAd.slice(0, 42)}
                 {secilenAd.length > 42 ? "…" : ""}
               </th>
-              <th colSpan={3} className={cn(tsb.thCenter, "border-l border-slate-200")}>
-                Sektör prim
+              <th colSpan={3} className={cn(tsb.thCenter, "border-l border-slate-200 bg-slate-100/80 text-slate-800")}>
+                {kiyasBaslikKisa}
               </th>
-              <th colSpan={3} className={cn(tsb.thCenter, "border-l border-slate-200")}>
-                Pazar payı
+              <th
+                colSpan={3}
+                className={cn(tsb.thCenter, "border-l border-slate-200 bg-slate-50 text-slate-700")}
+                title="Sol şirketin sektör içindeki branş payı"
+              >
+                Pazar payı · sektör
               </th>
             </tr>
             <tr>
@@ -261,31 +393,24 @@ export default function TsbBransDegisimDashboard() {
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-emerald-50/70">
+            <tr className={tablo.tabloHavuzu === "hayatdisi" ? "bg-emerald-50/70" : "bg-sky-50/70"}>
               <td
                 colSpan={10}
-                className="sticky left-0 bg-emerald-50/70 px-2.5 py-2 text-[10px] font-bold uppercase tracking-wide text-emerald-900"
+                className={cn(
+                  "sticky left-0 px-2.5 py-2 text-[10px] font-bold uppercase tracking-wide",
+                  tablo.tabloHavuzu === "hayatdisi" ? "bg-emerald-50/70 text-emerald-900" : "bg-sky-50/70 text-sky-900",
+                )}
               >
-                Hayat dışı {tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "branşları"}
+                {blokBaslik}
               </td>
             </tr>
-            {tablo.hayatdisiBranslar.map((s) => (
-              <SatirHucresi key={`hd-${s.anaBransH}`} satir={s} />
+            {tablo.branslar.map((s) => (
+              <SatirHucresi key={s.anaBransH} satir={s} kiyasBaslik={kiyasBaslik} />
             ))}
-            {tablo.hayatdisiTrafikHaricToplam && (
-              <SatirHucresi satir={tablo.hayatdisiTrafikHaricToplam} araToplam />
+            {tablo.trafikHaricToplam && (
+              <SatirHucresi satir={tablo.trafikHaricToplam} araToplam kiyasBaslik={kiyasBaslik} />
             )}
-            <SatirHucresi satir={tablo.hayatdisiToplam} araToplam />
-            <tr className="bg-sky-50/70">
-              <td colSpan={10} className="px-2.5 py-2 text-[10px] font-bold uppercase tracking-wide text-sky-900">
-                Hayat &amp; emeklilik {tablo.kirisumModu === "tarifeGrubu" ? "(tarife)" : "(TSB ana branş)"}
-              </td>
-            </tr>
-            {tablo.hayatBranslar.map((s) => (
-              <SatirHucresi key={`hy-${s.anaBransH}`} satir={s} />
-            ))}
-            <SatirHucresi satir={tablo.hayatToplam} araToplam />
-            <SatirHucresi satir={tablo.genelToplam} araToplam />
+            <SatirHucresi satir={tablo.toplam} araToplam kiyasBaslik={kiyasBaslik} />
           </tbody>
         </table>
       </TsbTableShell>

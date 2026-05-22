@@ -31,11 +31,11 @@ export default function SigortaBransDegisimPage() {
       title="Sektör branş değişim tablosu"
       description={
         <>
-          Bu panel, <strong>TSB prim verisi</strong> üzerinden seçtiğiniz şirketi sektörle{" "}
-          <strong>ana branş veya tarife grubu</strong> satırlarında karşılaştırır (üstteki daraltma türü ile seçilir).
-          Üstte <strong>hayat dışı</strong>, altta <strong>hayat ve emeklilik</strong> listelenir; ara toplamlar ve genel
-          toplam özeti verir. Yüzde değişimleri, seçtiğiniz rapor ayına göre{" "}
-          <strong>bir önceki yılın aynı ayı</strong> ile kıyaslanarak hesaplanır.
+          Bu panel, <strong>TSB prim verisi</strong> üzerinden seçtiğiniz şirketi sektör toplamı veya başka bir şirketle{" "}
+          <strong>ana branş veya tarife grubu</strong> satırlarında karşılaştırır. Tablo yalnızca seçili şirketin
+          havuzuna (hayat dışı veya hayat–emeklilik) ait branşları listeler; pazar payı sol şirketin sektör içindeki
+          dağılımını gösterir. Yüzde değişimleri, seçtiğiniz rapor ayına göre{" "}
+          <strong>bir önceki yılın aynı ayı</strong> ile kıyaslanır.
         </>
       }
       sourceNote={<TsbSourceNote />}

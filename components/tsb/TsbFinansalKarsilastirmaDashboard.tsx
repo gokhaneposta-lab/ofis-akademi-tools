@@ -278,7 +278,8 @@ export default function TsbFinansalKarsilastirmaDashboard() {
         </TsbFilterGrid>
 
         <p className={tsb.filterHint}>
-          {POOL_LABELS[pool]} havuzu · Δ: TL satırlarında yüzde değişim; oran satırlarında puan farkı (pp).
+          {POOL_LABELS[pool]} havuzu · Δ: TL satırlarında yüzde değişim; oran satırlarında puan farkı (pp).{" "}
+          <span className="text-emerald-800">Artış yeşil</span>, <span className="text-red-700">düşüş kırmızı</span>.
         </p>
       </TsbFilterBar>
 

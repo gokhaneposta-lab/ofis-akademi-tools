@@ -4,10 +4,12 @@ import type { TsbKanalField, TsbPrimDaraltma, TsbPrimRow, TsbSektorSegment } fro
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
   channelPremium,
+  countSirketlerSegmentDonem,
   isTsbToplamSirketKodu,
   prevYearPeriod,
   rowMatchesPrimDaraltma,
   rowMatchesSegment,
+  sirketSegmentFromKodu,
   TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
   TSB_ANA_BRANS_TRAFIK_SORUMLULUK,
   TSB_TARIFE_GRUBU_TRAFIK,
@@ -37,6 +39,10 @@ export const HD_ANA_BRANS_SIRASI: string[] = [
 
 /** Hayat–emeklilik segmentinde önce ana “HAYAT” satırı, sonra diğer ana branşlar */
 export const HAYAT_ANA_BRANS_SIRASI: string[] = ["HAYAT", "HASTALIK SAĞLIK", "KAZA"];
+
+export type BransDegisimKiyasHedef =
+  | { mod: "sektor" }
+  | { mod: "sirket"; sirketKodu: number };
 
 function sortAnaBransSirasi(mevcut: Set<string>, sabitSira: readonly string[]): string[] {
   const out: string[] = [];
@@ -131,9 +137,11 @@ export type BransDegisimSatir = {
   sirketPrimOnceki: number;
   sirketPrimBu: number;
   sirketDegisim: number | null;
+  /** Sağ blok: sektör toplamı veya kıyas şirketi primi */
   sektorPrimOnceki: number;
   sektorPrimBu: number;
   sektorDegisim: number | null;
+  /** Sol şirketin tam sektör havuzundaki branş payı (%) */
   payOncekiYuzde: number;
   payBuYuzde: number;
   payDegisimPp: number;
@@ -143,13 +151,13 @@ export type BransDegisimOzet = {
   kirisumModu: "anaBransH" | "tarifeGrubu";
   donemBu: string;
   donemOnceki: string;
-  hayatdisiBranslar: BransDegisimSatir[];
-  /** Hayat dışı: TRAFİK / MTPL hariç ara toplam (ana branş veya tarife kırılımı) */
-  hayatdisiTrafikHaricToplam: BransDegisimSatir | null;
-  hayatdisiToplam: BransDegisimSatir;
-  hayatBranslar: BransDegisimSatir[];
-  hayatToplam: BransDegisimSatir;
-  genelToplam: BransDegisimSatir;
+  tabloHavuzu: TsbSektorSegment;
+  kiyasMod: "sektor" | "sirket";
+  peerSayisi: number;
+  branslar: BransDegisimSatir[];
+  /** Yalnızca hayat dışı havuzunda */
+  trafikHaricToplam: BransDegisimSatir | null;
+  toplam: BransDegisimSatir;
 };
 
 function buildSatir(
@@ -162,15 +170,17 @@ function buildSatir(
   sirketKodu: number,
   grupModu: "anaBransH" | "tarifeGrubu",
   lookup: TsbBranchLookupMap | null,
+  kiyasKodu: number | null,
 ): BransDegisimSatir {
-  const sektorPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, null);
-  const sektorPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, null);
+  const sektorPayOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, null);
+  const sektorPayBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, null);
   const sirketPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, sirketKodu);
   const sirketPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, sirketKodu);
+  const kiyasPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, kiyasKodu);
+  const kiyasPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, kiyasKodu);
 
-  const payOncekiYuzde =
-    sektorPrimOnceki > 0 ? (sirketPrimOnceki / sektorPrimOnceki) * 100 : 0;
-  const payBuYuzde = sektorPrimBu > 0 ? (sirketPrimBu / sektorPrimBu) * 100 : 0;
+  const payOncekiYuzde = sektorPayOnceki > 0 ? (sirketPrimOnceki / sektorPayOnceki) * 100 : 0;
+  const payBuYuzde = sektorPayBu > 0 ? (sirketPrimBu / sektorPayBu) * 100 : 0;
 
   return {
     anaBransH: etiket,
@@ -178,9 +188,9 @@ function buildSatir(
     sirketPrimOnceki,
     sirketPrimBu,
     sirketDegisim: degisimYuzde(sirketPrimOnceki, sirketPrimBu),
-    sektorPrimOnceki,
-    sektorPrimBu,
-    sektorDegisim: degisimYuzde(sektorPrimOnceki, sektorPrimBu),
+    sektorPrimOnceki: kiyasPrimOnceki,
+    sektorPrimBu: kiyasPrimBu,
+    sektorDegisim: degisimYuzde(kiyasPrimOnceki, kiyasPrimBu),
     payOncekiYuzde,
     payBuYuzde,
     payDegisimPp: payBuYuzde - payOncekiYuzde,
@@ -191,29 +201,44 @@ function aggregateToplam(
   satirlar: BransDegisimSatir[],
   grup: TsbSektorSegment,
   etiket: string,
+  rows: TsbPrimRow[],
+  donemOnceki: string,
+  donemBu: string,
+  channel: TsbKanalField,
+  grupModu: "anaBransH" | "tarifeGrubu",
+  lookup: TsbBranchLookupMap | null,
+  keys: string[],
 ): BransDegisimSatir {
   let sirketPrimOnceki = 0;
   let sirketPrimBu = 0;
-  let sektorPrimOnceki = 0;
-  let sektorPrimBu = 0;
+  let kiyasPrimOnceki = 0;
+  let kiyasPrimBu = 0;
   for (const s of satirlar) {
     sirketPrimOnceki += s.sirketPrimOnceki;
     sirketPrimBu += s.sirketPrimBu;
-    sektorPrimOnceki += s.sektorPrimOnceki;
-    sektorPrimBu += s.sektorPrimBu;
+    kiyasPrimOnceki += s.sektorPrimOnceki;
+    kiyasPrimBu += s.sektorPrimBu;
   }
-  const payOncekiYuzde =
-    sektorPrimOnceki > 0 ? (sirketPrimOnceki / sektorPrimOnceki) * 100 : 0;
-  const payBuYuzde = sektorPrimBu > 0 ? (sirketPrimBu / sektorPrimBu) * 100 : 0;
+
+  let sektorPayOnceki = 0;
+  let sektorPayBu = 0;
+  for (const key of keys) {
+    sektorPayOnceki += sumGrupKey(rows, donemOnceki, channel, grup, key, grupModu, lookup, null);
+    sektorPayBu += sumGrupKey(rows, donemBu, channel, grup, key, grupModu, lookup, null);
+  }
+
+  const payOncekiYuzde = sektorPayOnceki > 0 ? (sirketPrimOnceki / sektorPayOnceki) * 100 : 0;
+  const payBuYuzde = sektorPayBu > 0 ? (sirketPrimBu / sektorPayBu) * 100 : 0;
+
   return {
     anaBransH: etiket,
     grup,
     sirketPrimOnceki,
     sirketPrimBu,
     sirketDegisim: degisimYuzde(sirketPrimOnceki, sirketPrimBu),
-    sektorPrimOnceki,
-    sektorPrimBu,
-    sektorDegisim: degisimYuzde(sektorPrimOnceki, sektorPrimBu),
+    sektorPrimOnceki: kiyasPrimOnceki,
+    sektorPrimBu: kiyasPrimBu,
+    sektorDegisim: degisimYuzde(kiyasPrimOnceki, kiyasPrimBu),
     payOncekiYuzde,
     payBuYuzde,
     payDegisimPp: payBuYuzde - payOncekiYuzde,
@@ -226,63 +251,88 @@ export function buildBransDegisimTablosu(
   channel: TsbKanalField,
   sirketKodu: number,
   daraltma: TsbPrimDaraltma,
+  kiyasHedef: BransDegisimKiyasHedef = { mod: "sektor" },
 ): BransDegisimOzet | null {
   const donemOnceki = prevYearPeriod(donemBu);
   if (!donemOnceki) return null;
 
+  const tabloHavuzu = sirketSegmentFromKodu(rows, sirketKodu);
+  const kiyasKodu = kiyasHedef.mod === "sirket" ? kiyasHedef.sirketKodu : null;
+  const peerSayisi = countSirketlerSegmentDonem(rows, donemBu, tabloHavuzu);
+
   const grupModu = daraltma.kind;
   const lookup = daraltma.kind === "tarifeGrubu" ? daraltma.lookup : null;
 
-  let hdSirali: string[];
-  let haySirali: string[];
+  let sirali: string[];
 
   if (grupModu === "anaBransH") {
-    const hdSet = collectAnaBransKeys(rows, donemOnceki, donemBu, "hayatdisi");
-    const haySet = collectAnaBransKeys(rows, donemOnceki, donemBu, "hayat");
-    hdSirali = narrowAnaKeys(sortAnaBransSirasi(hdSet, HD_ANA_BRANS_SIRASI), daraltma);
-    haySirali = narrowAnaKeys(sortAnaBransSirasi(haySet, HAYAT_ANA_BRANS_SIRASI), daraltma);
+    const keySet = collectAnaBransKeys(rows, donemOnceki, donemBu, tabloHavuzu);
+    const sabitSira = tabloHavuzu === "hayatdisi" ? HD_ANA_BRANS_SIRASI : HAYAT_ANA_BRANS_SIRASI;
+    sirali = narrowAnaKeys(sortAnaBransSirasi(keySet, sabitSira), daraltma);
   } else {
-    const hdSet = collectTarifeKeys(rows, donemOnceki, donemBu, "hayatdisi", lookup);
-    const haySet = collectTarifeKeys(rows, donemOnceki, donemBu, "hayat", lookup);
-    hdSirali = narrowTarifeKeys([...hdSet].sort((a, b) => a.localeCompare(b, "tr")), daraltma);
-    haySirali = narrowTarifeKeys([...haySet].sort((a, b) => a.localeCompare(b, "tr")), daraltma);
+    const keySet = collectTarifeKeys(rows, donemOnceki, donemBu, tabloHavuzu, lookup);
+    sirali = narrowTarifeKeys([...keySet].sort((a, b) => a.localeCompare(b, "tr")), daraltma);
   }
 
-  const hayatdisiBranslar = hdSirali.map((b) =>
-    buildSatir(b, "hayatdisi", rows, donemOnceki, donemBu, channel, sirketKodu, grupModu, lookup),
-  );
-  const hayatBranslar = haySirali.map((b) =>
-    buildSatir(b, "hayat", rows, donemOnceki, donemBu, channel, sirketKodu, grupModu, lookup),
+  const branslar = sirali.map((b) =>
+    buildSatir(b, tabloHavuzu, rows, donemOnceki, donemBu, channel, sirketKodu, grupModu, lookup, kiyasKodu),
   );
 
-  const hayatdisiTrafikHaricToplam =
-    grupModu === "anaBransH"
-      ? aggregateToplam(
-          hayatdisiBranslar.filter((s) => s.anaBransH !== TSB_ANA_BRANS_TRAFIK_SORUMLULUK),
-          "hayatdisi",
-          "TRAFİK HARİÇ TOPLAM",
-        )
-      : aggregateToplam(
-          hayatdisiBranslar.filter((s) => s.anaBransH !== TSB_TARIFE_GRUBU_TRAFIK),
-          "hayatdisi",
-          "TRAFİK HARİÇ TOPLAM",
-        );
+  const trafikHaricToplam =
+    tabloHavuzu === "hayatdisi"
+      ? grupModu === "anaBransH"
+        ? aggregateToplam(
+            branslar.filter((s) => s.anaBransH !== TSB_ANA_BRANS_TRAFIK_SORUMLULUK),
+            "hayatdisi",
+            "TRAFİK HARİÇ TOPLAM",
+            rows,
+            donemOnceki,
+            donemBu,
+            channel,
+            grupModu,
+            lookup,
+            branslar.filter((s) => s.anaBransH !== TSB_ANA_BRANS_TRAFIK_SORUMLULUK).map((s) => s.anaBransH),
+          )
+        : aggregateToplam(
+            branslar.filter((s) => s.anaBransH !== TSB_TARIFE_GRUBU_TRAFIK),
+            "hayatdisi",
+            "TRAFİK HARİÇ TOPLAM",
+            rows,
+            donemOnceki,
+            donemBu,
+            channel,
+            grupModu,
+            lookup,
+            branslar.filter((s) => s.anaBransH !== TSB_TARIFE_GRUBU_TRAFIK).map((s) => s.anaBransH),
+          )
+      : null;
 
-  const hayatdisiToplam = aggregateToplam(hayatdisiBranslar, "hayatdisi", "HAYATDIŞI TOPLAM");
-  const hayatToplam = aggregateToplam(hayatBranslar, "hayat", "HAYAT & EMEKLİLİK TOPLAM");
-  const tum = [...hayatdisiBranslar, ...hayatBranslar];
-  const genelToplam = aggregateToplam(tum, "hayatdisi", "GENEL TOPLAM");
+  const toplamEtiket =
+    tabloHavuzu === "hayatdisi" ? "HAYATDIŞI TOPLAM" : "HAYAT & EMEKLİLİK TOPLAM";
+
+  const toplam = aggregateToplam(
+    branslar,
+    tabloHavuzu,
+    toplamEtiket,
+    rows,
+    donemOnceki,
+    donemBu,
+    channel,
+    grupModu,
+    lookup,
+    branslar.map((s) => s.anaBransH),
+  );
 
   return {
     kirisumModu: grupModu,
     donemBu,
     donemOnceki,
-    hayatdisiBranslar,
-    hayatdisiTrafikHaricToplam,
-    hayatdisiToplam,
-    hayatBranslar,
-    hayatToplam,
-    genelToplam,
+    tabloHavuzu,
+    kiyasMod: kiyasHedef.mod,
+    peerSayisi,
+    branslar,
+    trafikHaricToplam,
+    toplam,
   };
 }
 
@@ -290,7 +340,7 @@ export type BransPayDilim = { etiket: string; sirketPay: number; sektorPay: numb
 
 /** Tablodaki branş/tarife satırlarından “bu dönem” üretim payları (şirket portföyü vs sektör) */
 export function buildBransPaySnapshot(tablo: BransDegisimOzet): BransPayDilim[] {
-  const detay = [...tablo.hayatdisiBranslar, ...tablo.hayatBranslar];
+  const detay = tablo.branslar;
   const ts = detay.reduce((a, x) => a + x.sektorPrimBu, 0);
   const tk = detay.reduce((a, x) => a + x.sirketPrimBu, 0);
   if (ts <= 0 && tk <= 0) return [];

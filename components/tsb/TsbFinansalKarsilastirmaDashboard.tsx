@@ -2,8 +2,6 @@
 
 import { Fragment, useEffect, useMemo, useState } from "react";
 import {
-  DEFAULT_BEREKET_EMEKLILIK_KOD,
-  DEFAULT_BEREKET_SIGORTA_HD_KOD,
   resolveDefaultSirketKodu,
 } from "@/lib/tsbPrimDashboard";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
@@ -198,63 +196,88 @@ export default function TsbFinansalKarsilastirmaDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
-          <TsbFilterField
-            label="Şirket"
-            hint={
-              <>
-                Varsayılan: {pool === "HD" ? "Bereket Sigorta AŞ" : "Bereket Emeklilik ve Hayat AŞ"} (
-                {pool === "HD" ? DEFAULT_BEREKET_SIGORTA_HD_KOD : DEFAULT_BEREKET_EMEKLILIK_KOD}).
-              </>
-            }
-          >
-            <TsbSelect
-              id="fk-sirket"
-              value={String(sirketKodu)}
-              onChange={(e) => setSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
-            >
-              {sirketListesi.map((s) => (
-                <option key={s.kod} value={s.kod}>
-                  {s.ad} ({s.kod})
-                </option>
-              ))}
-            </TsbSelect>
-          </TsbFilterField>
-          <TsbFilterField label="Kıyas">
-            <div className={tsb.btnGroup}>
-              <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
-                Sektör toplamı
-              </TsbToggleButton>
-              <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => setKiyasModu("sirket")}>
-                Şirket
-              </TsbToggleButton>
+
+          <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
+            <span className={tsb.filterLabel}>Tablo karşılaştırması</span>
+            <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
+              Sol ve sağ blok tabloda yan yana görünür; Δ satırları bu iki blok arasındaki farktır.
+            </p>
+            <div className="mt-2 flex flex-col gap-3 rounded-lg border border-slate-200/90 bg-white/80 p-3 sm:flex-row sm:items-end">
+              <div className="min-w-0 flex-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+                  Sol blok — şirket
+                </span>
+                <TsbSelect
+                  id="fk-sirket"
+                  className="mt-1"
+                  value={String(sirketKodu)}
+                  onChange={(e) => setSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
+                >
+                  {sirketListesi.map((s) => (
+                    <option key={s.kod} value={s.kod}>
+                      {s.ad} ({s.kod})
+                    </option>
+                  ))}
+                </TsbSelect>
+              </div>
+
+              <div
+                className="hidden shrink-0 self-center px-1 text-sm font-semibold text-slate-400 sm:block sm:pb-2"
+                aria-hidden
+              >
+                vs
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
+                  Sağ blok — kıyas
+                </span>
+                <div className={cn(tsb.btnGroup, "mt-1")}>
+                  <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
+                    Sektör toplamı
+                  </TsbToggleButton>
+                  <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => setKiyasModu("sirket")}>
+                    Diğer şirket
+                  </TsbToggleButton>
+                </div>
+                {kiyasModu === "sektor" ? (
+                  <p className="mt-1.5 rounded-md border border-slate-200/80 bg-slate-50 px-3 py-2 text-xs text-slate-700">
+                    {paketBu ? (
+                      <>
+                        <strong>Sektör toplamı</strong> (n = {paketBu.peerSayisi})
+                      </>
+                    ) : (
+                      <strong>Sektör toplamı</strong>
+                    )}
+                    <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">
+                      Havuzdaki tüm şirketlerin Σ&apos;si — TL satırları toplam; oranlarda Σ pay / Σ payda.
+                    </span>
+                  </p>
+                ) : kiyasListe.length === 0 ? (
+                  <p className="mt-1.5 rounded-md border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                    Bu havuzda kıyaslanacak başka şirket yok.
+                  </p>
+                ) : (
+                  <TsbSelect
+                    id="fk-kiyas-sirket"
+                    className="mt-1.5"
+                    value={kiyasSirketKodu === "" ? "" : String(kiyasSirketKodu)}
+                    onChange={(e) => setKiyasSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
+                  >
+                    {kiyasListe.map((s) => (
+                      <option key={s.kod} value={s.kod}>
+                        {s.ad} ({s.kod})
+                      </option>
+                    ))}
+                  </TsbSelect>
+                )}
+              </div>
             </div>
-          </TsbFilterField>
-          <TsbFilterField
-            label="Kıyas şirketi"
-            hint={
-              kiyasModu === "sektor"
-                ? "Sağ blok: havuzdaki tüm şirketlerin toplamı (TL satırları Σ; oranlarda Σ pay / Σ payda)."
-                : "Sağ blok: seçilen şirketle bire bir kıyas."
-            }
-          >
-            <TsbSelect
-              id="fk-kiyas-sirket"
-              value={kiyasSirketKodu === "" ? "" : String(kiyasSirketKodu)}
-              disabled={kiyasModu === "sektor" || kiyasListe.length === 0}
-              onChange={(e) => setKiyasSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
-            >
-              {kiyasListe.map((s) => (
-                <option key={s.kod} value={s.kod}>
-                  {s.ad} ({s.kod})
-                </option>
-              ))}
-            </TsbSelect>
-          </TsbFilterField>
+          </div>
         </TsbFilterGrid>
 
         <p className={tsb.filterHint}>
-          Sol blok: <strong>{secilenAd || "Şirket"}</strong> · Sağ blok: <strong>{kiyasBaslik}</strong> (
-          {POOL_LABELS[pool]} havuzu). Δ: TL satırlarında yüzde değişim; oran satırlarında puan farkı (pp).
+          {POOL_LABELS[pool]} havuzu · Δ: TL satırlarında yüzde değişim; oran satırlarında puan farkı (pp).
         </p>
       </TsbFilterBar>
 

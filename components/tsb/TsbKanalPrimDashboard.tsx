@@ -27,6 +27,8 @@ import {
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
+  tsbDeltaRenk,
+  tsbSiraIyilestirmeRenk,
 } from "@/components/tsb/tsbDashboardUi";
 
 const KANALLAR: { value: TsbKanalField; label: string }[] = [
@@ -40,14 +42,6 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
-
-/** Düşük sıra numarası = daha iyi. Bu yıl sırası önceki yıla göre kötüleştiyse kırmızı, iyileştiyse yeşil, aynıysa sarı. */
-function buYilSiraRenk(siraOnceki: number, siraBu: number): string {
-  if (siraOnceki <= 0 || siraBu <= 0) return "text-gray-900 font-medium tabular-nums";
-  if (siraBu > siraOnceki) return "text-red-600 font-semibold tabular-nums";
-  if (siraBu < siraOnceki) return "text-emerald-600 font-semibold tabular-nums";
-  return "text-amber-500 font-semibold tabular-nums";
-}
 
 export default function TsbKanalPrimDashboard() {
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
@@ -296,7 +290,7 @@ export default function TsbKanalPrimDashboard() {
                 {tablo.satirlar.map((s) => (
                   <tr key={s.sirketKodu} className={tsb.tbodyRowDense}>
                     <td className={cn(tsb.td, "text-center text-slate-600")}>{s.siraOnceki}</td>
-                    <td className={cn(tsb.td, "text-center", buYilSiraRenk(s.siraOnceki, s.siraBu))}>{s.siraBu}</td>
+                    <td className={cn(tsb.td, "text-center", tsbSiraIyilestirmeRenk(s.siraOnceki, s.siraBu))}>{s.siraBu}</td>
                     <td className={cn(tsb.td, "text-center whitespace-nowrap")}>{s.sirketKodu}</td>
                     <td className={cn(tsb.td, "max-w-[135px]")}>
                       <div className="truncate" title={s.sirketAdi}>
@@ -309,17 +303,7 @@ export default function TsbKanalPrimDashboard() {
                     </td>
                     <td className={cn(tsb.td, "text-right font-medium whitespace-nowrap")}>{nf.format(s.primBu)}</td>
                     <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{pf.format(s.payBuYuzde)}</td>
-                    <td
-                      className={cn(
-                        tsb.td,
-                        "text-right font-medium whitespace-nowrap",
-                        s.degisimYuzde === null
-                          ? "text-slate-500"
-                          : s.degisimYuzde < 0
-                            ? "text-red-600"
-                            : "text-emerald-700",
-                      )}
-                    >
+                    <td className={cn(tsb.td, "text-right font-medium whitespace-nowrap", tsbDeltaRenk(s.degisimYuzde))}>
                       {s.degisimYuzde === null ? "—" : `${pf.format(s.degisimYuzde)}`}
                     </td>
                   </tr>
@@ -335,17 +319,7 @@ export default function TsbKanalPrimDashboard() {
                   <td className={cn(tsb.td, "text-right text-emerald-900 whitespace-nowrap")}>{pf.format(100)}</td>
                   <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{nf.format(tablo.sektorToplamBu)}</td>
                   <td className={cn(tsb.td, "text-right text-emerald-900 whitespace-nowrap")}>{pf.format(100)}</td>
-                  <td
-                    className={cn(
-                      tsb.td,
-                      "text-right whitespace-nowrap",
-                      toplamDegisim === null
-                        ? "text-slate-600"
-                        : toplamDegisim < 0
-                          ? "text-red-700"
-                          : "text-emerald-800",
-                    )}
-                  >
+                  <td className={cn(tsb.td, "text-right whitespace-nowrap", tsbDeltaRenk(toplamDegisim))}>
                     {toplamDegisim === null ? "—" : pf.format(toplamDegisim)}
                   </td>
                 </tr>

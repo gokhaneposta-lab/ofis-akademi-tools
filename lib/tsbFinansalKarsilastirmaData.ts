@@ -484,16 +484,13 @@ export function formatFinansalHucre(
   if (format === "tl") {
     return new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 }).format(v);
   }
-  if (format === "yuzde") {
+  if (format === "yuzde" || format === "oran") {
     return `${new Intl.NumberFormat("tr-TR", {
       maximumFractionDigits: 2,
       minimumFractionDigits: 2,
     }).format(v * 100)}%`;
   }
-  return new Intl.NumberFormat("tr-TR", {
-    maximumFractionDigits: 3,
-    minimumFractionDigits: 3,
-  }).format(v);
+  return "—";
 }
 
 export function formatFinansalDegisim(
@@ -508,14 +505,11 @@ export function formatFinansalDegisim(
       minimumFractionDigits: 1,
     }).format(v * 100)}%`;
   }
-  if (degisimFormat === "puanFark") {
+  if (degisimFormat === "puanFark" || degisimFormat === "oranFark") {
     return `${sign}${new Intl.NumberFormat("tr-TR", {
       maximumFractionDigits: 2,
       minimumFractionDigits: 2,
     }).format(v * 100)} pp`;
   }
-  return `${sign}${new Intl.NumberFormat("tr-TR", {
-    maximumFractionDigits: 3,
-    minimumFractionDigits: 3,
-  }).format(v)}`;
+  return "—";
 }

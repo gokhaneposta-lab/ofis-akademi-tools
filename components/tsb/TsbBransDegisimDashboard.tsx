@@ -13,6 +13,7 @@ import {
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
+  tsbDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
 import type { BransDegisimSatir } from "@/lib/tsbBransDegisim";
 import { buildBransDegisimTablosu } from "@/lib/tsbBransDegisim";
@@ -38,14 +39,6 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
-function sirketDegisimRenk(satir: BransDegisimSatir): string {
-  const a = satir.sirketDegisim;
-  const b = satir.sektorDegisim;
-  if (a === null || b === null) return "text-gray-900";
-  if (a >= b) return "text-emerald-700 font-semibold";
-  return "text-red-600 font-semibold";
-}
-
 function SatirHucresi({
   satir,
   araToplam,
@@ -61,17 +54,17 @@ function SatirHucresi({
       </td>
       <td className={cn(tsb.td, "text-right")}>{nf.format(satir.sirketPrimOnceki)}</td>
       <td className={cn(tsb.td, "text-right")}>{nf.format(satir.sirketPrimBu)}</td>
-      <td className={cn(tsb.td, "text-right", sirketDegisimRenk(satir))}>
+      <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.sirketDegisim))}>
         {satir.sirketDegisim === null ? "—" : `${pf.format(satir.sirketDegisim)}%`}
       </td>
       <td className={cn(tsb.td, "text-right text-slate-600")}>{nf.format(satir.sektorPrimOnceki)}</td>
       <td className={cn(tsb.td, "text-right text-slate-600")}>{nf.format(satir.sektorPrimBu)}</td>
-      <td className={cn(tsb.td, "text-right text-slate-600")}>
+      <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.sektorDegisim))}>
         {satir.sektorDegisim === null ? "—" : `${pf.format(satir.sektorDegisim)}%`}
       </td>
       <td className={cn(tsb.td, "text-right text-slate-600")}>{pf.format(satir.payOncekiYuzde)}%</td>
       <td className={cn(tsb.td, "text-right text-slate-600")}>{pf.format(satir.payBuYuzde)}%</td>
-      <td className={cn(tsb.td, "text-right text-slate-600")}>{pf.format(satir.payDegisimPp)} pp</td>
+      <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.payDegisimPp))}>{pf.format(satir.payDegisimPp)} pp</td>
     </tr>
   );
 }

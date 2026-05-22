@@ -13,6 +13,7 @@ import {
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
+  tsbSiraDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
 import type { BransSiraSatir } from "@/lib/tsbBransSira";
 import { buildBransSiraTablosu, listSirketlerSiraOzeti } from "@/lib/tsbBransSira";
@@ -36,13 +37,6 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
-
-function deltaRenk(delta: number | null): string {
-  if (delta === null) return "text-gray-600";
-  if (delta < 0) return "text-emerald-700 font-semibold";
-  if (delta > 0) return "text-red-600 font-semibold";
-  return "text-gray-800 font-medium";
-}
 
 function deltaMetin(delta: number | null): string {
   if (delta === null) return "—";
@@ -78,7 +72,7 @@ function Satir({
       <td className={cn(tsb.td, "text-right text-slate-600")}>{agirlikHucre(satir.sektorAgirlikBuYuzde)}</td>
       <td className={cn(tsb.td, "text-center font-medium")}>{siraBuStr}</td>
       <td className={cn(tsb.td, "text-center text-slate-600")}>{siraOcStr}</td>
-      <td className={cn(tsb.td, "text-center", deltaRenk(satir.siraDelta))}>{deltaMetin(satir.siraDelta)}</td>
+      <td className={cn(tsb.td, "text-center", tsbSiraDeltaRenk(satir.siraDelta))}>{deltaMetin(satir.siraDelta)}</td>
     </tr>
   );
 }

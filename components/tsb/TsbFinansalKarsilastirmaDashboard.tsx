@@ -30,6 +30,7 @@ import {
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
+  tsbDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
 
 const POOL_LABELS: Record<SegmentSkorPool, string> = {
@@ -388,19 +389,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                   <td className={cn(tsb.td, "text-right text-slate-600")}>
                     {formatFinansalHucre(oncDeg.sirket, satir.format)}
                   </td>
-                  <td
-                    className={cn(
-                      tsb.td,
-                      "text-right font-semibold",
-                      sirketDelta.deger === null
-                        ? "text-gray-400"
-                        : sirketDelta.deger > 0
-                          ? "text-emerald-700"
-                          : sirketDelta.deger < 0
-                            ? "text-rose-700"
-                            : "text-gray-700",
-                    )}
-                  >
+                  <td className={cn(tsb.td, "text-right font-semibold", tsbDeltaRenk(sirketDelta.deger))}>
                     {formatFinansalDegisim(sirketDelta.deger, sirketDelta.format)}
                   </td>
 
@@ -408,19 +397,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                   <td className={cn(tsb.td, "text-right text-slate-600")}>
                     {formatFinansalHucre(oncDeg.kiyas, satir.format)}
                   </td>
-                  <td
-                    className={cn(
-                      tsb.td,
-                      "text-right font-semibold",
-                      kiyasDelta.deger === null
-                        ? "text-gray-400"
-                        : kiyasDelta.deger > 0
-                          ? "text-emerald-700"
-                          : kiyasDelta.deger < 0
-                            ? "text-rose-700"
-                            : "text-gray-700",
-                    )}
-                  >
+                  <td className={cn(tsb.td, "text-right font-semibold", tsbDeltaRenk(kiyasDelta.deger))}>
                     {formatFinansalDegisim(kiyasDelta.deger, kiyasDelta.format)}
                   </td>
                 </tr>

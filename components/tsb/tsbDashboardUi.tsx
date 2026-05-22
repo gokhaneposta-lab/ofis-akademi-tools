@@ -94,6 +94,29 @@ export function cn(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(" ");
 }
 
+/** Δ sütunları: artış yeşil, düşüş kırmızı (TSB dashboard standartı). */
+export function tsbDeltaRenk(v: number | null | undefined): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return "text-slate-400";
+  if (v > 0) return "text-emerald-700 font-semibold";
+  if (v < 0) return "text-red-600 font-semibold";
+  return "text-slate-600 font-medium";
+}
+
+/** Sıra değişimi: sıra numarası düştüyse (iyileşme) yeşil, yükseldiyse kırmızı. */
+export function tsbSiraDeltaRenk(v: number | null | undefined): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return "text-slate-500";
+  if (v < 0) return "text-emerald-700 font-semibold";
+  if (v > 0) return "text-red-600 font-semibold";
+  return "text-slate-600 font-medium";
+}
+
+/** Bu yıl sıra hücresi: geçen yıla göre iyileşme yeşil, kötüleşme kırmızı. */
+export function tsbSiraIyilestirmeRenk(onceki: number, bu: number): string {
+  if (bu > onceki) return "text-red-600 font-semibold tabular-nums";
+  if (bu < onceki) return "text-emerald-600 font-semibold tabular-nums";
+  return "text-slate-700 tabular-nums";
+}
+
 type TsbPageLayoutProps = {
   title: string;
   description: ReactNode;

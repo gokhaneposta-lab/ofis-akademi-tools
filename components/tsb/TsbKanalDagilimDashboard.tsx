@@ -34,6 +34,7 @@ import {
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
+  tsbDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
@@ -347,7 +348,7 @@ export default function TsbKanalDagilimDashboard() {
                   <td className={cn(tsb.td, "text-right font-medium text-emerald-900")}>
                     {kp !== null ? `${pf.format(kp)}%` : "—"}
                   </td>
-                  <td className={cn(tsb.td, "text-right font-medium")}>{pf.format(pp)}</td>
+                  <td className={cn(tsb.td, "text-right font-medium", tsbDeltaRenk(pp))}>{pf.format(pp)}</td>
                 </tr>
               );
             })}

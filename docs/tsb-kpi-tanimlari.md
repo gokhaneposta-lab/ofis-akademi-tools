@@ -91,15 +91,15 @@ Sohbette hatırlatmak için: **`@docs/tsb-kpi-tanimlari.md`**
 
 ## 4. Gelir tablosu — diğer GT KPI kodları (özet)
 
-**Ortak filtre:** Aşağıdaki kalemlerde (Trafik hariç prim formülü hariç) **`bransAp === "HAYATDISI"`** — her kod için **en fazla bir satır** toplanır; branş sayfaları **ayrıca eklenmez**.
+**Ortak filtre:** Aşağıdaki kalemlerde (Trafik hariç prim formülü hariç) yalnızca **özet sayfalar** kullanılır — `HAYATDISI` (61x), `HAYAT` (63x), `EMEKLİLİK` (65x); branş sayfaları (KAZA, KASKO …) **eklenmez**. Uygulama: `lib/tsbGelirGtOzet.ts`.
 
 | KPI | Kaynak |
 |-----|--------|
-| VÖK | Üst gelir tablosu kalemlerinin toplamı: **`hesapKodu` `60`–`65`** → **`bransAp === "HAYATDISI"`**; **`66`, `67`, `68`** → **`bransAp === "MALI"`** (bu üç kod özet sayfada değil, **MALI**’dadır). Her kod için varsa tek satır `deger` toplanır; sıfır olan satırlar tidy’de yoktur. Uygulama: `lib/tsbSirketSegmentSkor.ts` → `vokFromRows`. |
+| VÖK | `60`,`61`→**HAYATDISI**; `62`,`63`→**HAYAT**; `64`,`65`→**EMEKLİLİK**; `66`,`67`,`68`→**MALI**. `vokGtOzetFromLookup`. |
 | PRİM (brüt toplam) | HD: `60001` + **`HAYATDISI`** · H/E: + tüm branşlarda `62001` (Bölüm 3.1) |
-| Faaliyet giderleri (kom. dahil) | `614` + **`HAYATDISI`** |
-| Personel giderleri | `61402`, `63602`, `65202` toplamı, hepsi **`HAYATDISI`** |
-| Genel giderler | `61402,63602,65202,61403,63603,65203,61404,63604,65204,61405,63605,65205,61406,63606,65206` toplamı, **`HAYATDISI`** |
+| Faaliyet giderleri (kom. dahil) | `614`→HAYATDISI + `636`→HAYAT + `652`→EMEKLİLİK |
+| Personel giderleri | `61402`→HAYATDISI + `63602`→HAYAT + `65202`→EMEKLİLİK (ayrı KPI satırı) |
+| Genel giderler | 15 kod (Bölüm 4.4) — `61401`/`61408` **dahil değil**; her kod kendi özet sayfasından |
 | Yatırım geliri (Excel özet / HAYATDISI) | `660,661,662,663,667,668,669,671,672,674,675,677` toplamı — **varsayılan `HAYATDISI`** (Excel ile fark varsa branş kuralı gözden geçirilir). *Segment skoru için asıl tanım aşağıdaki MALI KPI’dır.* |
 | **Yatırım geliri (segment KPI)** | **`bransAp === "MALI"`** üzerinden **Bölüm 4.3** formülü. Uygulama: `lib/tsbYatirimGeliriKpi.ts` → `yatirimGeliriSegmentKpiFromRows`. |
 | T. kar / zarar (teknik) | Sentetik `__SYN_TKN_KZ__` + **`HAYATDISI`** (`lib/tsbGelirSyntheticCodes.ts`) |
@@ -108,8 +108,10 @@ Sohbette hatırlatmak için: **`@docs/tsb-kpi-tanimlari.md`**
 ### 4.1 VÖK (özet formül)
 
 ```
-VÖK = Σ deger (GT ∧ bransAp=HAYATDISI ∧ hesapKodu ∈ {60,61,62,63,64,65})
-    + Σ deger (GT ∧ bransAp=MALI     ∧ hesapKodu ∈ {66,67,68})
+VÖK = Σ deger (GT ∧ bransAp=HAYATDISI ∧ hesapKodu ∈ {60,61})
+    + Σ deger (GT ∧ bransAp=HAYAT      ∧ hesapKodu ∈ {62,63})
+    + Σ deger (GT ∧ bransAp=EMEKLİLİK  ∧ hesapKodu ∈ {64,65})
+    + Σ deger (GT ∧ bransAp=MALI       ∧ hesapKodu ∈ {66,67,68})
 ```
 
 ### 4.2 SAFİ TEKNİK KAR/ZARAR
@@ -119,16 +121,18 @@ VÖK = Σ deger (GT ∧ bransAp=HAYATDISI ∧ hesapKodu ∈ {60,61,62,63,64,65})
 - **MALI `673`** — “Hayat Dışı Teknik Bölümüne Aktarılan Yatırım Gelirleri (-);” (mali → teknik köprüsü; kontrol / mutabakat için).
 - **`603`** — “Teknik Olmayan Bölümden Aktarılan Yatırım Gelirleri” (aktarılan tutarın teknik taraftaki karşılığı). **KPI formülünde doğrudan `603` kullanılır.**
 
-**Hesaplama** (`deger` olduğu gibi; satır yoksa **0**):
+**Hesaplama** (`deger` olduğu gibi; satır yoksa **0**) — üç teknik blok toplamı:
 
 ```
-SAFİ_TEKNİK = ( deger(60) − deger(603) ) + ( deger(61) − deger(61402) − deger(61403) − deger(61404) − deger(61405) − deger(61406) )
+SAFİ_HD  = (60 − 603) + (61 − 61402 − 61403 − 61404 − 61405 − 61406)   [HAYATDISI]
+SAFİ_H   = (62 − 603) + (63 − 63602 − 63603 − 63604 − 63605 − 63606)   [HAYAT]
+SAFİ_E   = (64 − 603) + (65 − 65202 − 65203 − 65204 − 65205 − 65206)   [EMEKLİLİK]
+SAFİ_TEKNİK = SAFİ_HD + SAFİ_H + SAFİ_E
 ```
 
-**`bransAp`:** Bu KPI için **`60`, `61`, `603`, `61402`…`61406`** satırları **`HAYATDISI`** özet sayfasından alınır (her kod **en fazla bir satır**; branş sayfaları eklenmez).  
-`603` bazen branş sayfalarında da görünebilir; **özet KPI’da yalnızca `HAYATDISI` satırı** kullanılır.
+**`bransAp`:** Her blok yalnızca ilgili **özet sayfadan**; branş sayfaları eklenmez. `603` yalnızca HD özetinde görünebilir; diğer bloklarda satır yoksa **0**.
 
-**Örnek (Bereket 1025, 2025-3, `gelir-tidy`):** **−389.933.894,40** TL (verdiğiniz **−389.933.894** ile aynı; kuruş farkı yuvarlama).
+**Örnek (Bereket 1025, 2025-3, `gelir-tidy`):** HD blok ≈ **−389.933.894** TL (verdiğiniz **−389.933.894** ile aynı; kuruş farkı yuvarlama).
 
 ### 4.3 Yatırım geliri (segment KPI — MALI)
 
@@ -149,6 +153,10 @@ YATIRIM_GELIRI_SEGMENT = ( deger(66) − deger(664) − deger(665) − deger(666
 - **`675`**, **`677`** vb. tidy’de genelde **negatif** gelir; toplama dahil oldukları için KPI otomatik olarak düşer.
 
 **Örnek (2025-3, `gelir-tidy`):** Allianz 1004 ≈ **19.119.717.594,73** TL; Aksigorta 1003 ≈ **3.959.665.606,67** TL; Bereket 1025 ≈ **1.499.939.740,24** TL (`yatirimGeliriSegmentKpiFromRows` ile aynı).
+
+### 4.4 Genel giderler (15 kod)
+
+Personel (**61402/63602/65202**) + yönetim + AR-GE + pazarlama + dış hizmet. **Dahil değil:** üretim (`61401`/`63601`/`65201`), reasürans komisyon geliri (`61407`/`63607`), diğer faaliyet (`61408`/`63699`). Personel ayrıca dashboard’da **PERSONEL GİDERLERİ** satırında gösterilir.
 
 ---
 

@@ -7,6 +7,7 @@
  */
 
 import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
+import { safiTeknikKzFromLookup, vokGtOzetFromLookup } from "./tsbGelirGtOzet";
 import { isTsbToplamSirketKodu, sirketKoduHayatEmeklilikPrefix } from "./tsbPrimDashboard";
 
 const GT = "GT";
@@ -88,14 +89,9 @@ function sumGtMaliLookup(lookup: GelirTidyDonemLookup, sirketKodu: number, hesap
   return gelirTidyCell(lookup, sirketKodu, GT, MALI, hesapKodu);
 }
 
-/** VÖK: HAYATDISI 60–65 + MALI 66–68 (`docs/tsb-kpi-tanimlari.md` §4.1) */
+/** VÖK: §4.1 — özet sayfalar (60–61 HD, 62–63 Hayat, 64–65 Emeklilik, 66–68 MALI). */
 export function vokFromLookup(lookup: GelirTidyDonemLookup, sirketKodu: number): number {
-  const h60 = ["60", "61", "62", "63", "64", "65"] as const;
-  const m66 = ["66", "67", "68"] as const;
-  let s = 0;
-  for (const k of h60) s += sumGtHayatdisiLookup(lookup, sirketKodu, k);
-  for (const k of m66) s += sumGtMaliLookup(lookup, sirketKodu, k);
-  return s;
+  return vokGtOzetFromLookup(lookup, sirketKodu);
 }
 
 export function vokFromRows(
@@ -152,14 +148,7 @@ export function hamMetrikFromLookup(lookup: GelirTidyDonemLookup, sirketKodu: nu
       c(GT, MALI, "674") +
       c(GT, MALI, "675") +
       c(GT, MALI, "677"));
-  const safiTeknikKz =
-    (c(GT, HAYATDISI, "60") - c(GT, HAYATDISI, "603")) +
-    (c(GT, HAYATDISI, "61") -
-      c(GT, HAYATDISI, "61402") -
-      c(GT, HAYATDISI, "61403") -
-      c(GT, HAYATDISI, "61404") -
-      c(GT, HAYATDISI, "61405") -
-      c(GT, HAYATDISI, "61406"));
+  const safiTeknikKz = safiTeknikKzFromLookup(lookup, sirketKodu);
   const vok = vokFromLookup(lookup, sirketKodu);
   const ozsermaye = blTekLookup(lookup, sirketKodu, PASIF, "5");
   const toplamAktif =

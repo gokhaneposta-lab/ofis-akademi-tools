@@ -29,26 +29,13 @@ const PASIF = "Pasif";
 const AKTIF = "Aktif";
 const TRAFIK = "TRAFİK";
 
-/** `docs/tsb-kpi-tanimlari.md` §4 — genel gider kalemleri (HAYATDISI) */
-const GENEL_GIDER_HESAP_KODLARI = [
-  "61402",
-  "63602",
-  "65202",
-  "61403",
-  "63603",
-  "65203",
-  "61404",
-  "63604",
-  "65204",
-  "61405",
-  "63605",
-  "65205",
-  "61406",
-  "63606",
-  "65206",
-] as const;
-
-const PERSONEL_GIDER_HESAP_KODLARI = ["61402", "63602", "65202"] as const;
+import {
+  faaliyetGiderFromLookup,
+  genelGiderFromLookup,
+  personelGiderFromLookup,
+  safiTeknikKzFromLookup,
+  teknikKarZararFromLookup,
+} from "./tsbGelirGtOzet";
 
 export type FinansalKiyaslamaSatirFormat = "tl" | "yuzde" | "oran";
 
@@ -173,21 +160,15 @@ function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): FinansalK
   const brutTrafik = g(TRAFIK, "60001");
   const primTrafikHaric = h.brutPrim - brutTrafik;
 
-  let personelGider = 0;
-  for (const kod of PERSONEL_GIDER_HESAP_KODLARI) {
-    personelGider += g(HAYATDISI, kod);
-  }
-  let genelGider = 0;
-  for (const kod of GENEL_GIDER_HESAP_KODLARI) {
-    genelGider += g(HAYATDISI, kod);
-  }
-
-  const teknikKarZarar = g(HAYATDISI, GELIR_SYNTHETIC_HESAP_KODU.teknikKarZarar);
+  const personelGider = personelGiderFromLookup(lookup, sk);
+  const genelGider = genelGiderFromLookup(lookup, sk);
+  const teknikKarZarar = teknikKarZararFromLookup(lookup, sk);
   const maliKarSentetik = g(MALI, GELIR_SYNTHETIC_HESAP_KODU.maliKar);
   const teknikKarsilik3545 = bl(PASIF, "35") + bl(PASIF, "45");
-  const faaliyet614 = g(HAYATDISI, "614");
+  const faaliyet614 = faaliyetGiderFromLookup(lookup, sk);
   const donemKar690 = g(MALI, "690");
   const donemNetKar692 = g(MALI, "692");
+  const safiTeknikKz = safiTeknikKzFromLookup(lookup, sk);
 
   return {
     donemKar690,
@@ -200,7 +181,7 @@ function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): FinansalK
     genelGider,
     yatirimSegment: h.yatirimGeliriSegment,
     teknikKarZarar,
-    safiTeknikKz: h.safiTeknikKz,
+    safiTeknikKz,
     teknikKarsilik3545,
     maliKarSentetik,
     vok: h.vok,

@@ -12,9 +12,15 @@ import {
   hpPpFark,
   listHpBransApForPool,
   sonNCeyrekDonemler,
+  type HasarPrimKirisum,
   type HasarPrimKiyasHedef,
   type HasarPrimTabloSatir,
 } from "@/lib/tsbHasarPrimHpDashboard";
+import {
+  hpTarifeNotu,
+  listHpTarifeGrubuForPool,
+  type HpKirisumModu,
+} from "@/lib/tsbHpTarifeBrans";
 import { hasarPrimOranlariDetayFromLookup } from "@/lib/tsbHasarPrimOrani";
 import { buildGelirTidyDonemLookup } from "@/lib/tsbSirketSegmentSkor";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
@@ -61,7 +67,9 @@ function fmtHp(v: number | null | undefined): string {
 
 function HpHucre({ v, vurgu }: { v: number | null; vurgu?: boolean }) {
   return (
-    <td className={cn(tsb.td, "text-right tabular-nums", vurgu && "font-semibold text-slate-900")}>{fmtHp(v)}</td>
+    <td className={cn(tsb.td, "text-right tabular-nums whitespace-nowrap", vurgu && "font-semibold text-slate-900")}>
+      {fmtHp(v)}
+    </td>
   );
 }
 
@@ -147,7 +155,9 @@ export default function TsbHasarPrimDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [pool, setPool] = useState<SegmentSkorPool>("HD");
   const [donem, setDonem] = useState("");
+  const [kirisumModu, setKirisumModu] = useState<HpKirisumModu>("bransAp");
   const [bransAp, setBransAp] = useState(HAYATDISI);
+  const [tarifeSecim, setTarifeSecim] = useState("");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [kiyasModu, setKiyasModu] = useState<"sektor" | "sirket">("sektor");
   const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
@@ -197,6 +207,11 @@ export default function TsbHasarPrimDashboard() {
     return listHpBransApForPool(rows, donem, pool);
   }, [rows, donem, pool]);
 
+  const tarifeSecenekleri = useMemo(() => {
+    if (!rows || !donem) return [];
+    return listHpTarifeGrubuForPool(rows, donem, pool);
+  }, [rows, donem, pool]);
+
   useEffect(() => {
     if (bransSecenekleri.length === 0) return;
     if (bransSecenekleri.some((b) => b.value === bransAp)) return;
@@ -205,8 +220,35 @@ export default function TsbHasarPrimDashboard() {
   }, [bransSecenekleri, bransAp, pool]);
 
   useEffect(() => {
+    if (tarifeSecenekleri.length === 0) return;
+    if (tarifeSecenekleri.some((t) => t.value === tarifeSecim)) return;
+    const varsayilan =
+      tarifeSecenekleri.find((t) => t.value === "KASKO")?.value ?? tarifeSecenekleri[0].value;
+    setTarifeSecim(varsayilan);
+  }, [tarifeSecenekleri, tarifeSecim, pool]);
+
+  useEffect(() => {
     setBransAp(pool === "HD" ? HAYATDISI : "HAYAT");
+    setTarifeSecim("");
   }, [pool]);
+
+  const kirisum: HasarPrimKirisum = useMemo(() => {
+    if (kirisumModu === "bransAp") {
+      const label = bransSecenekleri.find((b) => b.value === bransAp)?.label ?? bransAp;
+      return { mod: "bransAp", bransAp, gorunenAd: label };
+    }
+    const sec = tarifeSecenekleri.find((t) => t.value === tarifeSecim);
+    return {
+      mod: "tarifeGrubu",
+      bransAp: sec?.bransAp ?? bransAp,
+      gorunenAd: sec?.label ?? tarifeSecim,
+    };
+  }, [kirisumModu, bransAp, bransSecenekleri, tarifeSecim, tarifeSecenekleri]);
+
+  const tarifeNot = useMemo(
+    () => (kirisumModu === "tarifeGrubu" ? hpTarifeNotu(tarifeSecim) : null),
+    [kirisumModu, tarifeSecim],
+  );
 
   const sirketListesi = useMemo(() => {
     if (!rows || !donem) return [];
@@ -240,8 +282,8 @@ export default function TsbHasarPrimDashboard() {
 
   const tablo = useMemo(() => {
     if (!rows || !donem) return [];
-    return buildHasarPrimTablosu(rows, donem, pool, bransAp);
-  }, [rows, donem, pool, bransAp]);
+    return buildHasarPrimTablosu(rows, donem, pool, kirisum.bransAp);
+  }, [rows, donem, pool, kirisum.bransAp]);
 
   const secilenSatir = useMemo(
     () => tablo.find((s) => s.sirketKodu === sirketKodu),
@@ -250,8 +292,8 @@ export default function TsbHasarPrimDashboard() {
 
   const kiyasOzet = useMemo(() => {
     if (!rows || !donem) return null;
-    return hasarPrimKiyasOzet(rows, donem, pool, bransAp, kiyasHedef, sirketListesi);
-  }, [rows, donem, pool, bransAp, kiyasHedef, sirketListesi]);
+    return hasarPrimKiyasOzet(rows, donem, pool, kirisum.bransAp, kiyasHedef, sirketListesi);
+  }, [rows, donem, pool, kirisum.bransAp, kiyasHedef, sirketListesi]);
 
   const secilenAd =
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
@@ -261,8 +303,8 @@ export default function TsbHasarPrimDashboard() {
 
   const trend = useMemo(() => {
     if (!rows || sirketKodu === "" || trendDonemler.length === 0) return [];
-    return buildHasarPrimTrend(rows, trendDonemler, sirketKodu, bransAp);
-  }, [rows, sirketKodu, trendDonemler, bransAp]);
+    return buildHasarPrimTrend(rows, trendDonemler, sirketKodu, kirisum.bransAp);
+  }, [rows, sirketKodu, trendDonemler, kirisum.bransAp]);
 
   if (error) return <TsbError message={error} />;
   if (!rows || !donem || sirketKodu === "") return <TsbLoading message="Hasar / prim verisi yükleniyor…" />;
@@ -289,15 +331,37 @@ export default function TsbHasarPrimDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
-          <TsbFilterField label="Branş">
-            <TsbSelect className={tsb.selectWide} value={bransAp} onChange={(e) => setBransAp(e.target.value)}>
-              {bransSecenekleri.map((b) => (
-                <option key={b.value} value={b.value}>
-                  {b.label}
-                </option>
-              ))}
-            </TsbSelect>
+          <TsbFilterField label="Kırılım">
+            <div className={tsb.btnGroup}>
+              <TsbToggleButton pressed={kirisumModu === "bransAp"} onClick={() => setKirisumModu("bransAp")}>
+                Branş (GT)
+              </TsbToggleButton>
+              <TsbToggleButton pressed={kirisumModu === "tarifeGrubu"} onClick={() => setKirisumModu("tarifeGrubu")}>
+                Tarife grubu
+              </TsbToggleButton>
+            </div>
           </TsbFilterField>
+          {kirisumModu === "bransAp" ? (
+            <TsbFilterField label="Branş">
+              <TsbSelect className={tsb.selectWide} value={bransAp} onChange={(e) => setBransAp(e.target.value)}>
+                {bransSecenekleri.map((b) => (
+                  <option key={b.value} value={b.value}>
+                    {b.label}
+                  </option>
+                ))}
+              </TsbSelect>
+            </TsbFilterField>
+          ) : (
+            <TsbFilterField label="Tarife grubu">
+              <TsbSelect className={tsb.selectWide} value={tarifeSecim} onChange={(e) => setTarifeSecim(e.target.value)}>
+                {tarifeSecenekleri.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </TsbSelect>
+            </TsbFilterField>
+          )}
           <TsbFilterField label="Odak şirket">
             <TsbSelect className={tsb.selectWide} value={String(sirketKodu)} onChange={(e) => setSirketKodu(Number(e.target.value))}>
               {sirketListesi.map((s) => (
@@ -309,8 +373,10 @@ export default function TsbHasarPrimDashboard() {
           </TsbFilterField>
         </TsbFilterGrid>
         <p className={tsb.filterHint}>
-          TSB H/P pivotu ile uyumlu: <strong>Genel (hayat dışı)</strong> = Excel GENEL sayfası; branş seçimi tek{" "}
-          <code className="text-[10px]">bransAp</code> dilimidir (branşları toplamayın). Dört oran: brüt/net × DERK dahil/hariç.
+          TSB H/P pivotu ile uyumlu: <strong>Genel (hayat dışı)</strong> = Excel GENEL sayfası.{" "}
+          <strong>Tarife grubu</strong> seçimi, prim panellerindeki gibi tarife adını GT branş dilimine eşler (ör. KASKO →
+          KASKO sayfası). Dört oran: brüt/net × DERK dahil/hariç.
+          {tarifeNot ? <> <span className="text-amber-800">{tarifeNot}</span></> : null}
         </p>
       </TsbFilterBar>
 
@@ -376,19 +442,20 @@ export default function TsbHasarPrimDashboard() {
       <div className={tsb.dataPanel}>
         <div className={tsb.dataPanelHeader}>
           <h3 className={tsb.dataPanelTitle}>
-            Sektör sıralaması — {POOL_LABELS[pool]} ·{" "}
-            {bransSecenekleri.find((b) => b.value === bransAp)?.label ?? bransAp} · {donem}
+            Sektör sıralaması — {POOL_LABELS[pool]} · {kirisum.gorunenAd}
+            {kirisum.mod === "tarifeGrubu" ? " (tarife)" : ""} · {donem}
           </h3>
           <p className={tsb.caption}>Sıra brüt H/P (DERK dahil), düşükten yükseğe.</p>
         </div>
         <TsbTableShell>
-        <table className={tsb.tableDense}>
+        <table className={cn(tsb.table, "min-w-[960px]")}>
           <thead className={tsb.thead}>
             <tr>
-              <th className={cn(tsb.thSticky, "w-10")}>Sıra</th>
-              <th className={cn(tsb.thSticky, "min-w-[11rem]")}>Şirket</th>
-              <th className={tsb.thRight}>Kaz. prim (brüt)</th>
-              <th className={tsb.thRight}>Gerç. hasar (brüt)</th>
+              <th className={cn(tsb.th, "w-9 text-center")}>Sıra</th>
+              <th className={cn(tsb.th, "w-12 text-center")}>Kod</th>
+              <th className={cn(tsb.th, "min-w-[7rem] max-w-[8.5rem]")}>Şirket</th>
+              <th className={cn(tsb.thRight, "min-w-[6.5rem] whitespace-nowrap")}>Kaz. prim (brüt)</th>
+              <th className={cn(tsb.thRight, "min-w-[6.5rem] whitespace-nowrap")}>Gerç. hasar (brüt)</th>
               <th className={tsb.thRight} colSpan={2}>
                 DERK dahil
               </th>
@@ -396,17 +463,17 @@ export default function TsbHasarPrimDashboard() {
                 DERK hariç
               </th>
               {onceYilVarMi && (
-                <th className={tsb.thRight} title="Önceki yıl aynı çeyrek · brüt DERK dahil">
+                <th className={cn(tsb.thRight, "min-w-[4rem]")} title="Önceki yıl aynı çeyrek · brüt DERK dahil">
                   YoY Δ
                 </th>
               )}
             </tr>
             <tr className="border-b border-slate-200 bg-slate-50/80">
-              <th className={tsb.thSticky} colSpan={4} />
-              <th className={tsb.thRight}>Brüt</th>
-              <th className={tsb.thRight}>Net</th>
-              <th className={tsb.thRight}>Brüt</th>
-              <th className={tsb.thRight}>Net</th>
+              <th className={tsb.th} colSpan={5} />
+              <th className={cn(tsb.thRight, "whitespace-nowrap")}>Brüt</th>
+              <th className={cn(tsb.thRight, "whitespace-nowrap")}>Net</th>
+              <th className={cn(tsb.thRight, "whitespace-nowrap")}>Brüt</th>
+              <th className={cn(tsb.thRight, "whitespace-nowrap")}>Net</th>
               {onceYilVarMi && <th className={tsb.thRight}>pp</th>}
             </tr>
           </thead>
@@ -419,7 +486,7 @@ export default function TsbHasarPrimDashboard() {
                 onceYilVarMi={onceYilVarMi}
                 rows={rows}
                 donemOnceki={donemOnceki}
-                bransAp={bransAp}
+                bransAp={kirisum.bransAp}
               />
             ))}
           </tbody>
@@ -456,18 +523,25 @@ function TabloSatiri({
 
   return (
     <tr className={cn(tsb.tbodyRowDense, rowCls)}>
-      <td className={cn(tsb.tdSticky, "tabular-nums", vurgu && "bg-emerald-50/60")}>{satir.sira}</td>
-      <td className={cn(tsb.tdSticky, "whitespace-nowrap", vurgu && "bg-emerald-50/60 font-medium")}>
-        <span className="text-slate-500">{satir.sirketKodu}</span> {satir.sirketAdi}
+      <td className={cn(tsb.td, "text-center tabular-nums text-slate-600")}>{satir.sira}</td>
+      <td className={cn(tsb.td, "text-center tabular-nums whitespace-nowrap text-slate-600")}>{satir.sirketKodu}</td>
+      <td className={cn(tsb.td, "max-w-[8.5rem]", vurgu && "font-medium")}>
+        <div className="truncate" title={satir.sirketAdi}>
+          {satir.sirketAdi}
+        </div>
       </td>
-      <td className={cn(tsb.td, "text-right tabular-nums text-slate-600")}>{nf.format(satir.hp.kazanilmisPrimBrut)}</td>
-      <td className={cn(tsb.td, "text-right tabular-nums text-slate-600")}>{nf.format(-satir.hp.gerceklesenHasarBrut)}</td>
+      <td className={cn(tsb.td, "text-right tabular-nums whitespace-nowrap text-slate-600")}>
+        {nf.format(satir.hp.kazanilmisPrimBrut)}
+      </td>
+      <td className={cn(tsb.td, "text-right tabular-nums whitespace-nowrap text-slate-600")}>
+        {nf.format(-satir.hp.gerceklesenHasarBrut)}
+      </td>
       <HpHucre v={satir.hp.brutHasarPrimOrani} vurgu={vurgu} />
       <HpHucre v={satir.hp.netHasarPrimOrani} />
       <HpHucre v={satir.hp.brutDerkHaric} />
       <HpHucre v={satir.hp.netDerkHaric} />
       {onceYilVarMi && (
-        <td className={cn(tsb.td, "text-right tabular-nums", hpDeltaRenk(yoy))}>{tsbFormatPp(yoy)}</td>
+        <td className={cn(tsb.td, "text-right tabular-nums whitespace-nowrap", hpDeltaRenk(yoy))}>{tsbFormatPp(yoy)}</td>
       )}
     </tr>
   );

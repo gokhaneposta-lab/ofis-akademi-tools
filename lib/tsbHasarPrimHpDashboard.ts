@@ -14,6 +14,7 @@ import {
   type SegmentSkorPool,
 } from "./tsbSirketSegmentSkor";
 import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
+import type { HpKirisumModu } from "./tsbHpTarifeBrans";
 
 const GT = "GT";
 const MALI = "MALI";
@@ -51,6 +52,13 @@ const BRANS_SIRASI_HAYAT = [HAYAT, EMEKLILIK] as const;
 export type HasarPrimKiyasHedef = { mod: "sektor" } | { mod: "sirket"; sirketKodu: number };
 
 export type HasarPrimBransSecenek = { value: string; label: string };
+
+export type HasarPrimKirisum = {
+  mod: HpKirisumModu;
+  bransAp: string;
+  /** Tarife modunda görünen etiket */
+  gorunenAd: string;
+};
 
 export type HasarPrimTabloSatir = {
   sirketKodu: number;

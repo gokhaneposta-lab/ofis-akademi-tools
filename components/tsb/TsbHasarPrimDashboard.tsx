@@ -142,46 +142,81 @@ function HpTrendGrafik({
 
   const rawMin = Math.min(...tumDegerler);
   const rawMax = Math.max(...tumDegerler);
-  const padY = Math.max(4, (rawMax - rawMin) * 0.12 || 4);
-  const minV = rawMin - padY;
+  const padY = Math.max(3, (rawMax - rawMin) * 0.1 || 3);
+  const minV = Math.max(0, rawMin - padY);
   const maxV = rawMax + padY;
   const span = maxV - minV || 1;
 
-  const perCol = 96;
-  const w = Math.max(720, n * perCol + 72);
-  const h = 248;
-  const pad = { l: 48, r: 24, t: 40, b: 32 };
+  const perGroup = 88;
+  const w = Math.max(720, n * perGroup + 72);
+  const h = 260;
+  const pad = { l: 48, r: 24, t: 24, b: 36 };
   const innerW = w - pad.l - pad.r;
   const innerH = h - pad.t - pad.b;
+  const yBase = pad.t + innerH;
 
-  const xAt = (i: number) => pad.l + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
-  const yAt = (v: number) => pad.t + innerH - ((v * 100 - minV) / span) * innerH;
+  const groupW = innerW / n;
+  const barW = Math.min(30, Math.max(14, groupW * 0.32));
+  const barGap = 4;
+  const pairW = barW * 2 + barGap;
+
+  const groupCenterX = (i: number) => pad.l + (i + 0.5) * groupW;
+  const yAtPct = (pct: number) => pad.t + innerH - ((pct - minV) / span) * innerH;
+  const yAt = (v: number) => yAtPct(v * 100);
 
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => minV + span * t);
 
-  function seriNoktalari(seri: HpTrendSeriNokta[]) {
-    return donemler.map((donem, i) => {
-      const v = seri.find((p) => p.donem === donem)?.v ?? null;
-      return { donem, i, v, x: xAt(i), y: v !== null && Number.isFinite(v) ? yAt(v) : null };
-    });
+  function deger(donem: string, seri: HpTrendSeriNokta[]): number | null {
+    const v = seri.find((p) => p.donem === donem)?.v ?? null;
+    return v !== null && Number.isFinite(v) ? v : null;
   }
 
-  function polylinePts(noktalar: ReturnType<typeof seriNoktalari>) {
-    return noktalar
-      .filter((p) => p.y !== null)
-      .map((p) => `${p.x},${p.y}`)
-      .join(" ");
+  function Sutun({
+    i,
+    v,
+    kind,
+    fill,
+  }: {
+    i: number;
+    v: number;
+    kind: "brut" | "net";
+    fill: string;
+  }) {
+    const cx = groupCenterX(i);
+    const x = kind === "brut" ? cx - pairW / 2 : cx - pairW / 2 + barW + barGap;
+    const yTop = yAt(v);
+    const barH = Math.max(0, yBase - yTop);
+    const labelInside = barH >= 18;
+    const labelY = labelInside ? yTop + barH / 2 + 3 : yTop - 5;
+    const labelCls = labelInside
+      ? "fill-white text-[8px] font-bold tabular-nums"
+      : "fill-slate-800 text-[8px] font-semibold tabular-nums";
+
+    return (
+      <g>
+        <rect x={x} y={yTop} width={barW} height={barH} fill={fill} rx={2.5} opacity={0.92} />
+        <text x={x + barW / 2} y={labelY} textAnchor="middle" className={labelCls}>
+          {fmtHpKisa(v)}
+        </text>
+      </g>
+    );
   }
 
-  const brutPts = seriNoktalari(sirketBrut);
-  const netPts = seriNoktalari(sirketNet);
-  const sektorPts = seriNoktalari(sektorBrut);
+  const sektorNoktalar = donemler
+    .map((donem, i) => {
+      const v = deger(donem, sektorBrut);
+      if (v === null) return null;
+      return { donem, i, x: groupCenterX(i), y: yAt(v), v };
+    })
+    .filter((p): p is NonNullable<typeof p> => p !== null);
+
+  const sektorPolyline = sektorNoktalar.map((p) => `${p.x},${p.y}`).join(" ");
 
   return (
     <div className="w-full">
       <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full" role="img" aria-label="H/P trend grafiği">
         {yTicks.map((tick) => {
-          const y = yAt(tick / 100);
+          const y = yAtPct(tick);
           return (
             <g key={tick}>
               <line x1={pad.l} x2={w - pad.r} y1={y} y2={y} stroke="#e2e8f0" strokeWidth={1} />
@@ -192,96 +227,54 @@ function HpTrendGrafik({
           );
         })}
 
-        {polylinePts(sektorPts) && (
+        {donemler.map((donem, i) => {
+          const bv = deger(donem, sirketBrut);
+          const nv = deger(donem, sirketNet);
+          return (
+            <g key={donem}>
+              {bv !== null && <Sutun i={i} v={bv} kind="brut" fill={COL_BRUT} />}
+              {nv !== null && <Sutun i={i} v={nv} kind="net" fill={COL_NET} />}
+            </g>
+          );
+        })}
+
+        {sektorPolyline && (
           <polyline
             fill="none"
             stroke={COL_SEKTOR}
-            strokeWidth={2}
-            strokeDasharray="6 4"
-            points={polylinePts(sektorPts)}
+            strokeWidth={2.5}
+            strokeDasharray="7 5"
+            points={sektorPolyline}
           />
         )}
-        {polylinePts(brutPts) && (
-          <polyline fill="none" stroke={COL_BRUT} strokeWidth={2.5} points={polylinePts(brutPts)} />
-        )}
-        {polylinePts(netPts) && (
-          <polyline fill="none" stroke={COL_NET} strokeWidth={2.5} points={polylinePts(netPts)} />
-        )}
+        {sektorNoktalar.map((p) => (
+          <circle key={p.donem} cx={p.x} cy={p.y} r={4} fill="#fff" stroke={COL_SEKTOR} strokeWidth={2} />
+        ))}
 
         {donemler.map((donem, i) => (
           <text
-            key={donem}
-            x={xAt(i)}
-            y={h - 8}
+            key={`lbl-${donem}`}
+            x={groupCenterX(i)}
+            y={h - 10}
             textAnchor="middle"
             className="fill-slate-600 text-[10px] font-medium"
           >
             {donem}
           </text>
         ))}
-
-        {brutPts.map((p) => {
-          if (p.y === null || p.v === null) return null;
-          const netY = netPts.find((n) => n.donem === p.donem)?.y;
-          const cokYakin = netY !== null && netY !== undefined && Math.abs(p.y - netY) < 18;
-          const labelY = cokYakin ? p.y - 16 : p.y - 10;
-          return (
-            <g key={`b-${p.donem}`}>
-              <circle cx={p.x} cy={p.y} r={4} fill={COL_BRUT} stroke="#fff" strokeWidth={1.5} />
-              <text
-                x={p.x}
-                y={labelY}
-                textAnchor="middle"
-                className="fill-emerald-900 text-[9px] font-semibold tabular-nums"
-              >
-                {fmtHpKisa(p.v)}
-              </text>
-            </g>
-          );
-        })}
-
-        {netPts.map((p) => {
-          if (p.y === null || p.v === null) return null;
-          const brutY = brutPts.find((b) => b.donem === p.donem)?.y;
-          const cokYakin = brutY !== null && brutY !== undefined && Math.abs(p.y - brutY) < 18;
-          const labelY = cokYakin ? p.y + 20 : p.y + 14;
-          return (
-            <g key={`n-${p.donem}`}>
-              <circle cx={p.x} cy={p.y} r={4} fill={COL_NET} stroke="#fff" strokeWidth={1.5} />
-              <text
-                x={p.x}
-                y={labelY}
-                textAnchor="middle"
-                className="fill-blue-900 text-[9px] font-semibold tabular-nums"
-              >
-                {fmtHpKisa(p.v)}
-              </text>
-            </g>
-          );
-        })}
-
-        {sektorPts.map((p) => {
-          if (p.y === null || p.v === null) return null;
-          return (
-            <circle key={`s-${p.donem}`} cx={p.x} cy={p.y} r={3} fill="#fff" stroke={COL_SEKTOR} strokeWidth={2} />
-          );
-        })}
       </svg>
 
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600">
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-0.5 w-5 rounded bg-emerald-600" aria-hidden />
+          <span className="inline-block h-3 w-3 rounded-sm bg-emerald-600" aria-hidden />
           Şirket · brüt H/P (DERK dahil)
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-0.5 w-5 rounded bg-blue-600" aria-hidden />
+          <span className="inline-block h-3 w-3 rounded-sm bg-blue-600" aria-hidden />
           Şirket · net H/P (DERK dahil)
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span
-            className="inline-block h-0 w-5 border-t-2 border-dashed border-red-600"
-            aria-hidden
-          />
+          <span className="inline-block h-0 w-5 border-t-2 border-dashed border-red-600" aria-hidden />
           Sektör · brüt H/P ({kirisumAd})
         </span>
       </div>
@@ -576,7 +569,7 @@ export default function TsbHasarPrimDashboard() {
             Son {trendDonemler.length} çeyrek — {secilenAd}
           </h3>
           <p className={cn(tsb.caption, "mb-4")}>
-            {kirisum.gorunenAd} kırılımında brüt ve net H/P (DERK dahil). Kesik çizgi: aynı kırılımdaki sektör brüt H/P.
+            {kirisum.gorunenAd} kırılımında şirket brüt/net H/P (DERK dahil) sütunlar; kesik çizgi sektör brüt H/P.
           </p>
           <HpTrendGrafik
             donemler={trendDonemler}

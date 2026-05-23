@@ -31,9 +31,7 @@ export default function SigortaKanalPrimPage() {
       title="Kanal bazlı prim üretimi (Hayat dışı / Hayat–emeklilik)"
       description={
         <>
-          TSB satış kanalı bazında prim verisinden hazırlanmış özet tablo. <strong>Hayat</strong> ve{" "}
-          <strong>hayat dışı</strong> şirketler üstteki görünümde ayrı gruplanmıştır; dönem, ana branş ve kanal ile
-          filtreleyerek tabloyu daraltabilirsiniz.
+          Satış kanalı bazında prim özeti; hayat dışı ve hayat–emeklilik ayrı bloklarda, dönem ve kanal filtreleriyle.
         </>
       }
       sourceNote={<TsbSourceNote />}

@@ -31,11 +31,8 @@ export default function SigortaFinansalKarsilastirmaPage() {
       title="Finansal karşılaştırma"
       description={
         <>
-          Çeyreklik <strong>gelir tablosu</strong> ve <strong>bilanço</strong> özetinden türetilmiş finansal göstergeleri tek
-          ekranda karşılaştırın. Sol tarafta seçtiğiniz şirket, sağ tarafta <strong>sektör toplamı</strong> veya başka bir
-          şirket yer alır; havuz hayat dışı veya hayat/emeklilik olarak filtrelenebilir. TL tutarları ve oranlar (ör. brüt
-          prim, özsermaye oranları, hasar/prim) aynı satırda yan yana gösterilir; önceki yılın aynı çeyreği ile değişim
-          okunabilir.
+          Çeyreklik gelir tablosu ve bilanço KPI&apos;ları; odak şirket ile sektör toplamı veya başka bir şirket yan yana,
+          önceki yılın aynı çeyreğine göre değişimle.
         </>
       }
       sourceNote={<TsbSourceNote />}

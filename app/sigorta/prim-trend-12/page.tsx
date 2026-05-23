@@ -32,11 +32,7 @@ export default function SigortaPrimTrend12Page() {
       title="Son 12 ay prim trendi"
       description={
         <>
-          Belirlediğiniz <strong>bitiş ayına</strong> kadar geriye doğru en fazla <strong>12 ay</strong> için{" "}
-          <strong>sektör toplam prim</strong> (kırmızı) ile seçtiğiniz <strong>şirket primi</strong> (yeşil) gösterilir.
-          Üst grafik <strong>yıl içi kümülatif</strong> prim çizgisidir; alt grafik <strong>aylık üretimi</strong> (ardışık
-          aylar arası fark) logaritmik sütunlarla verir. Hayat dışı / hayat–emeklilik, ana branş veya tarife grubu ve kanal
-          ile daraltabilirsiniz.
+          Bitiş ayına kadar en fazla 12 ay: sektör ve odak şirket prim çizgisi; altta aylık üretim farkı.
         </>
       }
       sourceNote={<TsbSourceNote />}

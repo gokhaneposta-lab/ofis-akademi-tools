@@ -31,10 +31,7 @@ export default function SigortaKanalDagilimPage() {
       title="Sektör kanal dağılımı"
       description={
         <>
-          Seçilen dönem ve ana branş filtresinde <strong>şirketin</strong> kanal kırılımı ile{" "}
-          <strong>sektörün</strong> (aynı filtredeki toplam) kanal kırılımını karşılaştırın. Varsayılan şirket hayat
-          dışında <strong>Bereket Sigorta AŞ</strong>, hayat–emeklilikte veri varsa{" "}
-          <strong>Bereket Emeklilik ve Hayat AŞ</strong> önceliklidir.
+          Odak şirketin kanal payları ile sektör dağılımı aynı dönem ve branş filtresinde yan yana.
         </>
       }
       sourceNote={<TsbSourceNote />}

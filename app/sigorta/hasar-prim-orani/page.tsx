@@ -31,11 +31,8 @@ export default function SigortaHasarPrimOraniPage() {
       title="Hasar / Prim oranı"
       description={
         <>
-          <strong>Hasar/prim (H/P) oranı</strong>, dönem içinde gerçekleşen hasarın kazanılmış prime oranını gösterir; genelde
-          düşük oran daha iyi teknik sonuç anlamına gelir. Havuz (hayat dışı veya hayat/emeklilik), branş veya tarife
-          grubu ile kırılımı daraltın; <strong>odak şirketi</strong> seçerek sektör tablosundaki sıranızı ve trend
-          grafiğindeki konumunuzu görün. Tabloda brüt/net H/P, devam eden riskler karşılığı (DERK) dahil ve hariç olmak
-          üzere dört varyant sunulur; sektör toplamı tüm şirketlerin birleşik hasar ve priminden hesaplanır.
+          Hasar/prim (H/P) oranı: branş veya tarife grubu kırılımında brüt/net, DERK dahil/hariç; odak şirketin sektör
+          sırası ve çeyreklik trendi.
         </>
       }
       sourceNote={<TsbSourceNote />}

@@ -28,15 +28,19 @@ import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelir
 import {
   cn,
   tsb,
+  tsbChart,
   TsbError,
   TsbFilterBar,
   TsbFilterField,
   TsbFilterGrid,
+  TsbInsights,
+  type TsbInsightItem,
   TsbLoading,
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
   tsbFormatPp,
+  tsbHpDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
 
 const POOL_LABELS: Record<SegmentSkorPool, string> = {
@@ -51,14 +55,6 @@ const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFra
 
 function defaultSirketModForPool(pool: SegmentSkorPool): "hayatdisi" | "hayat" {
   return pool === "HD" ? "hayatdisi" : "hayat";
-}
-
-/** H/P artışı kötü (kırmızı), düşüşü iyi (yeşil). */
-function hpDeltaRenk(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "text-slate-400";
-  if (v < 0) return "text-emerald-800 font-semibold bg-emerald-50";
-  if (v > 0) return "text-red-700 font-semibold bg-red-50";
-  return "text-amber-700 font-semibold bg-amber-50";
 }
 
 function fmtHp(v: number | null | undefined): string {
@@ -106,9 +102,9 @@ function OzetKart({
   );
 }
 
-const COL_BRUT = "#059669";
-const COL_NET = "#2563eb";
-const COL_SEKTOR = "#dc2626";
+const COL_BRUT = tsbChart.sirketBrut;
+const COL_NET = tsbChart.sirketNet;
+const COL_SEKTOR = tsbChart.sektor;
 
 function fmtHpKisa(v: number): string {
   return `${pf.format(v * 100)}%`;
@@ -274,7 +270,7 @@ function HpTrendGrafik({
           Şirket · net H/P (DERK dahil)
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-0 w-5 border-t-2 border-dashed border-red-600" aria-hidden />
+          <span className="inline-block h-0 w-5 border-t-2 border-dashed border-slate-500" aria-hidden />
           Sektör · brüt H/P ({kirisumAd})
         </span>
       </div>
@@ -444,11 +440,55 @@ export default function TsbHasarPrimDashboard() {
     return buildHasarPrimSektorTrend(rows, trendDonemler, pool, kirisum.bransAp);
   }, [rows, trendDonemler, pool, kirisum.bransAp]);
 
+  const odakYoy = useMemo(() => {
+    if (!onceYilVarMi || !donemOnceki || !rows || sirketKodu === "" || !secilenSatir) return null;
+    const lookup = buildGelirTidyDonemLookup(rows, donemOnceki);
+    const once = hasarPrimOranlariDetayFromLookup(lookup, sirketKodu, { bransAp: kirisum.bransAp });
+    return hpPpFark(secilenSatir.hp.brutHasarPrimOrani, once.brutHasarPrimOrani);
+  }, [onceYilVarMi, donemOnceki, rows, sirketKodu, secilenSatir, kirisum.bransAp]);
+
+  const hpInsights = useMemo((): readonly TsbInsightItem[] => {
+    const items: TsbInsightItem[] = [];
+    if (!secilenSatir || !kiyasOzet) return items;
+
+    const sirketHp = secilenSatir.hp.brutHasarPrimOrani;
+    const kiyasHp = kiyasOzet.hp.brutHasarPrimOrani;
+    if (sirketHp !== null && kiyasHp !== null && Number.isFinite(sirketHp) && Number.isFinite(kiyasHp)) {
+      const fark = hpPpFark(sirketHp, kiyasHp);
+      if (fark !== null && fark > 0.5) {
+        items.push({
+          text: (
+            <>
+              Brüt H/P ({kirisum.gorunenAd}), {kiyasOzet.baslik.toLowerCase()}ndan{" "}
+              <strong>{tsbFormatPp(fark)}</strong> yüksek — sektör ortalamasının üzerinde teknik maliyet baskısı
+              işareti olabilir.
+            </>
+          ),
+        });
+      }
+    }
+
+    if (odakYoy !== null && odakYoy > 0.5) {
+      items.push({
+        text: (
+          <>
+            Brüt H/P önceki yılın aynı çeyreğine göre <strong>{tsbFormatPp(odakYoy)}</strong> arttı — kötüleşme
+            yönünde.
+          </>
+        ),
+      });
+    }
+
+    return items;
+  }, [secilenSatir, kiyasOzet, kirisum.gorunenAd, odakYoy]);
+
   if (error) return <TsbError message={error} />;
   if (!rows || !donem || sirketKodu === "") return <TsbLoading message="Hasar / prim verisi yükleniyor…" />;
 
   return (
     <div className={tsb.dashboardStack}>
+      <TsbInsights items={hpInsights} />
+
       <TsbFilterBar>
         <TsbFilterGrid>
           <TsbFilterField label="Havuz">
@@ -472,7 +512,7 @@ export default function TsbHasarPrimDashboard() {
           <TsbFilterField label="Kırılım">
             <div className={tsb.btnGroup}>
               <TsbToggleButton pressed={kirisumModu === "bransAp"} onClick={() => setKirisumModu("bransAp")}>
-                Branş (GT)
+                Branş
               </TsbToggleButton>
               <TsbToggleButton pressed={kirisumModu === "tarifeGrubu"} onClick={() => setKirisumModu("tarifeGrubu")}>
                 Tarife grubu
@@ -490,7 +530,7 @@ export default function TsbHasarPrimDashboard() {
               </TsbSelect>
             </TsbFilterField>
           ) : (
-            <TsbFilterField label="Tarife grubu">
+            <TsbFilterField label="Tarife grubu" hint={tarifeNot ?? undefined}>
               <TsbSelect className={tsb.selectWide} value={tarifeSecim} onChange={(e) => setTarifeSecim(e.target.value)}>
                 {tarifeSecenekleri.map((t) => (
                   <option key={t.value} value={t.value}>
@@ -509,36 +549,6 @@ export default function TsbHasarPrimDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
-        </TsbFilterGrid>
-        <p className={tsb.filterHint}>
-          <strong>Branş</strong> veya <strong>tarife grubu</strong> ile kırılımı değiştirin; <strong>odak şirket</strong> tabloda
-          vurgulanır ve trend grafiğinde izlenir. Tabloda brüt/net H/P, DERK dahil ve hariç dört varyant yer alır.
-          {tarifeNot ? <> <span className="text-amber-800">{tarifeNot}</span></> : null}
-        </p>
-      </TsbFilterBar>
-
-      {secilenSatir && kiyasOzet && (
-        <div className="grid gap-3 lg:grid-cols-2">
-          <OzetKart
-            baslik={secilenAd}
-            brutDahil={secilenSatir.hp.brutHasarPrimOrani}
-            netDahil={secilenSatir.hp.netHasarPrimOrani}
-            brutHaric={secilenSatir.hp.brutDerkHaric}
-            netHaric={secilenSatir.hp.netDerkHaric}
-            vurgu
-          />
-          <OzetKart
-            baslik={kiyasOzet.baslik}
-            brutDahil={kiyasOzet.hp.brutHasarPrimOrani}
-            netDahil={kiyasOzet.hp.netHasarPrimOrani}
-            brutHaric={kiyasOzet.hp.brutDerkHaric}
-            netHaric={kiyasOzet.hp.netDerkHaric}
-          />
-        </div>
-      )}
-
-      <TsbFilterBar>
-        <TsbFilterGrid>
           <TsbFilterField label="Sağ blok kıyası">
             <div className={tsb.btnGroup}>
               <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
@@ -562,6 +572,26 @@ export default function TsbHasarPrimDashboard() {
           )}
         </TsbFilterGrid>
       </TsbFilterBar>
+
+      {secilenSatir && kiyasOzet && (
+        <div className="grid gap-3 lg:grid-cols-2">
+          <OzetKart
+            baslik={secilenAd}
+            brutDahil={secilenSatir.hp.brutHasarPrimOrani}
+            netDahil={secilenSatir.hp.netHasarPrimOrani}
+            brutHaric={secilenSatir.hp.brutDerkHaric}
+            netHaric={secilenSatir.hp.netDerkHaric}
+            vurgu
+          />
+          <OzetKart
+            baslik={kiyasOzet.baslik}
+            brutDahil={kiyasOzet.hp.brutHasarPrimOrani}
+            netDahil={kiyasOzet.hp.netHasarPrimOrani}
+            brutHaric={kiyasOzet.hp.brutDerkHaric}
+            netHaric={kiyasOzet.hp.netDerkHaric}
+          />
+        </div>
+      )}
 
       {trend.length >= 2 && (
         <div className={tsb.chartPanel}>
@@ -683,7 +713,7 @@ function TabloSatiri({
       <HpHucre v={satir.hp.brutDerkHaric} />
       <HpHucre v={satir.hp.netDerkHaric} />
       {onceYilVarMi && (
-        <td className={cn(tsb.td, "text-right tabular-nums whitespace-nowrap", hpDeltaRenk(yoy))}>{tsbFormatPp(yoy)}</td>
+        <td className={cn(tsb.td, "text-right tabular-nums whitespace-nowrap", tsbHpDeltaRenk(yoy))}>{tsbFormatPp(yoy)}</td>
       )}
     </tr>
   );

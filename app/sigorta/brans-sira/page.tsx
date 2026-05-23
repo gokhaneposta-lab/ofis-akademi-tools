@@ -31,10 +31,7 @@ export default function SigortaBransSiraPage() {
       title="Branş sıra özeti"
       description={
         <>
-          Hayat dışı ve hayat–emeklilik bloklarında her satır için <strong>prim</strong>, şirket portföyüne göre{" "}
-          <strong>branş ağırlığı</strong> ve sektöre göre <strong>sektör ağırlığı</strong>, ardından seçilen aya göre{" "}
-          <strong>sıra</strong> ve önceki yılın aynı ayına göre <strong>Δ sıra</strong> gösterilir. Üstteki daraltma türü
-          ana branş veya tarife satır listesini değiştirir.
+          Branş/tarife satırında prim, portföy ağırlığı, sektör içi sıra ve önceki yılın aynı ayına göre Δ sıra.
         </>
       }
       sourceNote={<TsbSourceNote />}

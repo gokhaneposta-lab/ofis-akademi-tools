@@ -54,29 +54,29 @@ export default function SigortaTsbHubPage() {
               <h2 id={`tsb-group-${group.id}`} className="text-base font-semibold text-slate-900">
                 {group.title}
               </h2>
-              <p className="mt-1 max-w-2xl text-sm text-slate-600">{group.description}</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <p className="mt-0.5 max-w-2xl text-sm text-slate-600">{group.description}</p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {panels.map((p) => (
                   <Link
                     key={p.href}
                     href={p.href}
-                    className={`group ${tsb.dataPanel} p-4 transition hover:border-emerald-300/80 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]`}
+                    className={`group ${tsb.dataPanel} p-3 transition hover:border-emerald-300/80 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]`}
                   >
-                    <div className="flex items-start gap-3">
-                      <span className="text-xl" aria-hidden>
+                    <div className="flex items-start gap-2.5">
+                      <span className="text-lg" aria-hidden>
                         {p.icon}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <span className="inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+                        <span className="inline-block rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
                           {p.badge}
                         </span>
-                        <h3 className="mt-1.5 text-sm font-semibold text-slate-900 group-hover:text-emerald-800">
+                        <h3 className="mt-1 text-sm font-semibold text-slate-900 group-hover:text-emerald-800">
                           {p.title}
                         </h3>
-                        <p className="mt-1 text-xs text-slate-600">{p.subtitle}</p>
+                        <p className="mt-0.5 text-xs text-slate-600">{p.subtitle}</p>
                       </div>
                     </div>
-                    <p className="mt-3 text-right text-[11px] font-semibold text-emerald-800 group-hover:underline">
+                    <p className="mt-2 text-right text-[11px] font-semibold text-emerald-800 group-hover:underline">
                       Panele git →
                     </p>
                   </Link>

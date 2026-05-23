@@ -8,6 +8,7 @@ import { listSirketleriGelirDonemForPool, oncekiYilDonem } from "@/lib/tsbFinans
 import {
   buildHasarPrimTablosu,
   buildHasarPrimTrend,
+  buildHasarPrimSektorTrend,
   hasarPrimKiyasOzet,
   hpPpFark,
   listHpBransApForPool,
@@ -105,47 +106,186 @@ function OzetKart({
   );
 }
 
-function TrendCizgi({
-  noktalar,
-  alan,
-  renk,
+const COL_BRUT = "#059669";
+const COL_NET = "#2563eb";
+const COL_SEKTOR = "#dc2626";
+
+function fmtHpKisa(v: number): string {
+  return `${pf.format(v * 100)}%`;
+}
+
+type HpTrendSeriNokta = { donem: string; v: number | null };
+
+function HpTrendGrafik({
+  donemler,
+  sirketBrut,
+  sirketNet,
+  sektorBrut,
+  kirisumAd,
 }: {
-  noktalar: { donem: string; v: number | null }[];
-  alan: string;
-  renk: string;
+  donemler: string[];
+  sirketBrut: HpTrendSeriNokta[];
+  sirketNet: HpTrendSeriNokta[];
+  sektorBrut: HpTrendSeriNokta[];
+  kirisumAd: string;
 }) {
-  const gecerli = noktalar.filter((n) => n.v !== null && Number.isFinite(n.v));
-  if (gecerli.length < 2) return null;
-  const w = 640;
-  const h = 160;
-  const pad = { l: 44, r: 12, t: 16, b: 28 };
+  const n = donemler.length;
+  if (n < 2) return null;
+
+  const tumDegerler: number[] = [];
+  for (const seri of [sirketBrut, sirketNet, sektorBrut]) {
+    for (const p of seri) {
+      if (p.v !== null && Number.isFinite(p.v)) tumDegerler.push(p.v * 100);
+    }
+  }
+  if (tumDegerler.length < 2) return null;
+
+  const rawMin = Math.min(...tumDegerler);
+  const rawMax = Math.max(...tumDegerler);
+  const padY = Math.max(4, (rawMax - rawMin) * 0.12 || 4);
+  const minV = rawMin - padY;
+  const maxV = rawMax + padY;
+  const span = maxV - minV || 1;
+
+  const perCol = 96;
+  const w = Math.max(720, n * perCol + 72);
+  const h = 248;
+  const pad = { l: 48, r: 24, t: 40, b: 32 };
   const innerW = w - pad.l - pad.r;
   const innerH = h - pad.t - pad.b;
-  const vals = gecerli.map((n) => n.v!);
-  const minV = Math.min(...vals) * 100;
-  const maxV = Math.max(...vals) * 100;
-  const span = maxV - minV || 1;
-  const pts = gecerli.map((n, i) => {
-    const x = pad.l + (i / (gecerli.length - 1)) * innerW;
-    const y = pad.t + innerH - ((n.v! * 100 - minV) / span) * innerH;
-    return `${x},${y}`;
-  });
+
+  const xAt = (i: number) => pad.l + (n <= 1 ? innerW / 2 : (i / (n - 1)) * innerW);
+  const yAt = (v: number) => pad.t + innerH - ((v * 100 - minV) / span) * innerH;
+
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => minV + span * t);
+
+  function seriNoktalari(seri: HpTrendSeriNokta[]) {
+    return donemler.map((donem, i) => {
+      const v = seri.find((p) => p.donem === donem)?.v ?? null;
+      return { donem, i, v, x: xAt(i), y: v !== null && Number.isFinite(v) ? yAt(v) : null };
+    });
+  }
+
+  function polylinePts(noktalar: ReturnType<typeof seriNoktalari>) {
+    return noktalar
+      .filter((p) => p.y !== null)
+      .map((p) => `${p.x},${p.y}`)
+      .join(" ");
+  }
+
+  const brutPts = seriNoktalari(sirketBrut);
+  const netPts = seriNoktalari(sirketNet);
+  const sektorPts = seriNoktalari(sektorBrut);
+
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full max-w-2xl" aria-label={`${alan} trend`}>
-      <polyline fill="none" stroke={renk} strokeWidth={2} points={pts.join(" ")} />
-      {gecerli.map((n, i) => {
-        const x = pad.l + (i / (gecerli.length - 1)) * innerW;
-        const y = pad.t + innerH - ((n.v! * 100 - minV) / span) * innerH;
-        return (
-          <g key={n.donem}>
-            <circle cx={x} cy={y} r={3} fill={renk} />
-            <text x={x} y={h - 6} textAnchor="middle" className="fill-slate-500 text-[9px]">
-              {n.donem}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
+    <div className="w-full">
+      <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full" role="img" aria-label="H/P trend grafiği">
+        {yTicks.map((tick) => {
+          const y = yAt(tick / 100);
+          return (
+            <g key={tick}>
+              <line x1={pad.l} x2={w - pad.r} y1={y} y2={y} stroke="#e2e8f0" strokeWidth={1} />
+              <text x={pad.l - 6} y={y + 3} textAnchor="end" className="fill-slate-500 text-[9px] tabular-nums">
+                {pf.format(tick)}%
+              </text>
+            </g>
+          );
+        })}
+
+        {polylinePts(sektorPts) && (
+          <polyline
+            fill="none"
+            stroke={COL_SEKTOR}
+            strokeWidth={2}
+            strokeDasharray="6 4"
+            points={polylinePts(sektorPts)}
+          />
+        )}
+        {polylinePts(brutPts) && (
+          <polyline fill="none" stroke={COL_BRUT} strokeWidth={2.5} points={polylinePts(brutPts)} />
+        )}
+        {polylinePts(netPts) && (
+          <polyline fill="none" stroke={COL_NET} strokeWidth={2.5} points={polylinePts(netPts)} />
+        )}
+
+        {donemler.map((donem, i) => (
+          <text
+            key={donem}
+            x={xAt(i)}
+            y={h - 8}
+            textAnchor="middle"
+            className="fill-slate-600 text-[10px] font-medium"
+          >
+            {donem}
+          </text>
+        ))}
+
+        {brutPts.map((p) => {
+          if (p.y === null || p.v === null) return null;
+          const netY = netPts.find((n) => n.donem === p.donem)?.y;
+          const cokYakin = netY !== null && netY !== undefined && Math.abs(p.y - netY) < 18;
+          const labelY = cokYakin ? p.y - 16 : p.y - 10;
+          return (
+            <g key={`b-${p.donem}`}>
+              <circle cx={p.x} cy={p.y} r={4} fill={COL_BRUT} stroke="#fff" strokeWidth={1.5} />
+              <text
+                x={p.x}
+                y={labelY}
+                textAnchor="middle"
+                className="fill-emerald-900 text-[9px] font-semibold tabular-nums"
+              >
+                {fmtHpKisa(p.v)}
+              </text>
+            </g>
+          );
+        })}
+
+        {netPts.map((p) => {
+          if (p.y === null || p.v === null) return null;
+          const brutY = brutPts.find((b) => b.donem === p.donem)?.y;
+          const cokYakin = brutY !== null && brutY !== undefined && Math.abs(p.y - brutY) < 18;
+          const labelY = cokYakin ? p.y + 20 : p.y + 14;
+          return (
+            <g key={`n-${p.donem}`}>
+              <circle cx={p.x} cy={p.y} r={4} fill={COL_NET} stroke="#fff" strokeWidth={1.5} />
+              <text
+                x={p.x}
+                y={labelY}
+                textAnchor="middle"
+                className="fill-blue-900 text-[9px] font-semibold tabular-nums"
+              >
+                {fmtHpKisa(p.v)}
+              </text>
+            </g>
+          );
+        })}
+
+        {sektorPts.map((p) => {
+          if (p.y === null || p.v === null) return null;
+          return (
+            <circle key={`s-${p.donem}`} cx={p.x} cy={p.y} r={3} fill="#fff" stroke={COL_SEKTOR} strokeWidth={2} />
+          );
+        })}
+      </svg>
+
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block h-0.5 w-5 rounded bg-emerald-600" aria-hidden />
+          Şirket · brüt H/P (DERK dahil)
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block h-0.5 w-5 rounded bg-blue-600" aria-hidden />
+          Şirket · net H/P (DERK dahil)
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className="inline-block h-0 w-5 border-t-2 border-dashed border-red-600"
+            aria-hidden
+          />
+          Sektör · brüt H/P ({kirisumAd})
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -306,6 +446,11 @@ export default function TsbHasarPrimDashboard() {
     return buildHasarPrimTrend(rows, trendDonemler, sirketKodu, kirisum.bransAp);
   }, [rows, sirketKodu, trendDonemler, kirisum.bransAp]);
 
+  const sektorTrend = useMemo(() => {
+    if (!rows || trendDonemler.length === 0) return [];
+    return buildHasarPrimSektorTrend(rows, trendDonemler, pool, kirisum.bransAp);
+  }, [rows, trendDonemler, pool, kirisum.bransAp]);
+
   if (error) return <TsbError message={error} />;
   if (!rows || !donem || sirketKodu === "") return <TsbLoading message="Hasar / prim verisi yükleniyor…" />;
 
@@ -373,9 +518,8 @@ export default function TsbHasarPrimDashboard() {
           </TsbFilterField>
         </TsbFilterGrid>
         <p className={tsb.filterHint}>
-          TSB H/P pivotu ile uyumlu: <strong>Genel (hayat dışı)</strong> = Excel GENEL sayfası.{" "}
-          <strong>Tarife grubu</strong> seçimi, prim panellerindeki gibi tarife adını GT branş dilimine eşler (ör. KASKO →
-          KASKO sayfası). Dört oran: brüt/net × DERK dahil/hariç.
+          <strong>Branş</strong> veya <strong>tarife grubu</strong> ile kırılımı değiştirin; <strong>odak şirket</strong> tabloda
+          vurgulanır ve trend grafiğinde izlenir. Tabloda brüt/net H/P, DERK dahil ve hariç dört varyant yer alır.
           {tarifeNot ? <> <span className="text-amber-800">{tarifeNot}</span></> : null}
         </p>
       </TsbFilterBar>
@@ -428,13 +572,18 @@ export default function TsbHasarPrimDashboard() {
 
       {trend.length >= 2 && (
         <div className={tsb.chartPanel}>
-          <h3 className="mb-3 text-sm font-semibold text-slate-900">
-            Son {trend.length} çeyrek — {secilenAd} · brüt H/P (DERK dahil)
+          <h3 className="mb-1 text-sm font-semibold text-slate-900">
+            Son {trendDonemler.length} çeyrek — {secilenAd}
           </h3>
-          <TrendCizgi
-            noktalar={trend.map((t) => ({ donem: t.donem, v: t.brutDerkDahil }))}
-            alan="Brüt H/P"
-            renk="#059669"
+          <p className={cn(tsb.caption, "mb-4")}>
+            {kirisum.gorunenAd} kırılımında brüt ve net H/P (DERK dahil). Kesik çizgi: aynı kırılımdaki sektör brüt H/P.
+          </p>
+          <HpTrendGrafik
+            donemler={trendDonemler}
+            sirketBrut={trend.map((t) => ({ donem: t.donem, v: t.brutDerkDahil }))}
+            sirketNet={trend.map((t) => ({ donem: t.donem, v: t.netDerkDahil }))}
+            sektorBrut={sektorTrend.map((t) => ({ donem: t.donem, v: t.brutDerkDahil }))}
+            kirisumAd={kirisum.gorunenAd}
           />
         </div>
       )}

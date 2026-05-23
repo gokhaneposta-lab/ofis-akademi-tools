@@ -188,6 +188,23 @@ export function buildHasarPrimTrend(
   return out;
 }
 
+/** Sektör toplamı brüt H/P (DERK dahil) — trend grafiği referans çizgisi. */
+export function buildHasarPrimSektorTrend(
+  rows: Iterable<TsbGelirTidyRowLike>,
+  donemler: string[],
+  pool: SegmentSkorPool,
+  bransAp: string,
+): { donem: string; brutDerkDahil: number | null }[] {
+  const out: { donem: string; brutDerkDahil: number | null }[] = [];
+  for (const donem of donemler) {
+    const lookup = buildGelirTidyDonemLookup(rows, donem);
+    const peers = segmentPeerSirketKodlari(rows, donem, pool).filter((k) => lookup.has(k));
+    const hp = hasarPrimOranlariDetaySektorFromLookup(lookup, peers, { bransAp });
+    out.push({ donem, brutDerkDahil: hp.brutHasarPrimOrani });
+  }
+  return out;
+}
+
 /** Son N çeyrek (dönem indeksinden geriye). */
 export function sonNCeyrekDonemler(tumDonemler: string[], sonDonem: string, n: number): string[] {
   const idx = tumDonemler.indexOf(sonDonem);

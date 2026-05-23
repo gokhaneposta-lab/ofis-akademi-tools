@@ -10,13 +10,13 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Hasar / Prim oranı (TSB) — Branş bazlı H/P tablosu",
   description:
-    "TSB gelir tablosu pivotu ile uyumlu hasar/prim oranları: brüt ve net, DERK dahil ve hariç; branş ve çeyrek seçimi; sektör sıralaması.",
+    "Hasar/prim oranı: brüt ve net, DERK dahil ve hariç; branş veya tarife grubu seçimi; sektör sıralaması ve çeyreklik trend.",
   alternates: {
     canonical: canonicalUrl("/sigorta/hasar-prim-orani"),
   },
   openGraph: {
     title: "Hasar / Prim oranı (TSB) | Ofis Akademi",
-    description: "Branş bazlı H/P · DERK dahil/hariç · sektör sıralaması.",
+    description: "Branş bazlı H/P · sektör sıralaması · çeyreklik trend.",
     url: `${BASE}/sigorta/hasar-prim-orani`,
     siteName: "Ofis Akademi",
     locale: "tr_TR",
@@ -31,10 +31,11 @@ export default function SigortaHasarPrimOraniPage() {
       title="Hasar / Prim oranı"
       description={
         <>
-          TSB&apos;nin <strong>Hasar Prim Oranları</strong> pivot raporu ile aynı mantık: satırlarda şirketler; sütunlarda
-          kazanılmış prim ve gerçekleşen hasar ara kalemleri; en sağda <strong>dört H/P oranı</strong> (brüt/net × DERK
-          dahil/hariç). <strong>Genel (hayat dışı)</strong> = Excel GENEL sayfası; branş seçimi tek GT dilimidir. Sektör
-          toplamında pay ve payda ayrı Σ alınır (ortalama değil).
+          <strong>Hasar/prim (H/P) oranı</strong>, dönem içinde gerçekleşen hasarın kazanılmış prime oranını gösterir; genelde
+          düşük oran daha iyi teknik sonuç anlamına gelir. Havuz (hayat dışı veya hayat/emeklilik), branş veya tarife
+          grubu ile kırılımı daraltın; <strong>odak şirketi</strong> seçerek sektör tablosundaki sıranızı ve trend
+          grafiğindeki konumunuzu görün. Tabloda brüt/net H/P, devam eden riskler karşılığı (DERK) dahil ve hariç olmak
+          üzere dört varyant sunulur; sektör toplamı tüm şirketlerin birleşik hasar ve priminden hesaplanır.
         </>
       }
       sourceNote={<TsbSourceNote />}

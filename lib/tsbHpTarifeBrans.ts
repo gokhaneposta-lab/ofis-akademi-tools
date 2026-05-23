@@ -100,10 +100,10 @@ export function listHpTarifeGrubuForPool(
 
 export function hpTarifeNotu(tarifeGrubu: string): string | null {
   if (tarifeGrubu === "DASK" || tarifeGrubu === "YANGIN") {
-    return "YANGIN ve DASK aynı GT diliminde (Yangın ve Doğal Afetler); H/P aynıdır.";
+    return "Yangın ve DASK aynı branş diliminde raporlanır; H/P değerleri aynıdır.";
   }
   if (tarifeGrubu === "FERDİ KAZA" || tarifeGrubu === "DİĞER KAZA") {
-    return "Ferdî/Diğer Kaza tarifeleri GT’de KAZA branş diliminde toplanır.";
+    return "Ferdî ve diğer kaza tarifeleri kaza branş diliminde toplanır.";
   }
   return null;
 }

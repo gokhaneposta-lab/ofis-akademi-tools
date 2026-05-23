@@ -10,7 +10,7 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Finansal karşılaştırma (TSB) — Şirket vs sektör toplamı",
   description:
-    "Çeyrek bazında gelir ve bilanço özet KPI'ları; seçilen şirket ile havuzdaki şirketlerin toplamı (TL) ve oranlarda Σ pay / Σ payda yan yana.",
+    "Çeyreklik gelir tablosu ve bilanço özet KPI'ları; seçilen şirket ile sektör toplamı veya başka bir şirket yan yana.",
   alternates: {
     canonical: canonicalUrl("/sigorta/finansal-karsilastirma"),
   },
@@ -31,13 +31,11 @@ export default function SigortaFinansalKarsilastirmaPage() {
       title="Finansal karşılaştırma"
       description={
         <>
-          Excel&apos;deki <strong>Sektör Karşılaştırma</strong> düzenine benzer tablo: satırlarda KPI&apos;lar; her dönemde yan
-          yana <strong>seçilen şirket</strong> ve <strong>sektör toplamı</strong> (havuzdaki tüm şirketlerin Σ&apos;si — HD veya
-          hayat/emeklilik havuzu). Varsayılan şirket <strong>Bereket Sigorta AŞ</strong> (kod 1025); listeden başka bir şirket
-          veya sektör toplamı ile kıyas yapabilirsiniz. Brüt prim: hayat dışı şirketlerde{" "}
-          <strong>60001</strong> (HAYATDISI); hayat/emeklilik şirketlerinde ek olarak tüm branşlarda{" "}
-          <strong>62001</strong> (hayat üretimi) dahildir. Güncelleme <strong>çeyrek</strong> bazındadır (gelir tablosu ve
-          bilanço özeti).
+          Çeyreklik <strong>gelir tablosu</strong> ve <strong>bilanço</strong> özetinden türetilmiş finansal göstergeleri tek
+          ekranda karşılaştırın. Sol tarafta seçtiğiniz şirket, sağ tarafta <strong>sektör toplamı</strong> veya başka bir
+          şirket yer alır; havuz hayat dışı veya hayat/emeklilik olarak filtrelenebilir. TL tutarları ve oranlar (ör. brüt
+          prim, özsermaye oranları, hasar/prim) aynı satırda yan yana gösterilir; önceki yılın aynı çeyreği ile değişim
+          okunabilir.
         </>
       }
       sourceNote={<TsbSourceNote />}

@@ -151,7 +151,7 @@ export function oncekiYilDonem(donem: string): string | null {
   return `${yil - 1}-${m[2]}`;
 }
 
-function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): FinansalKiyaslamaHamOlcum | null {
+export function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): FinansalKiyaslamaHamOlcum | null {
   if (!lookup.has(sk)) return null;
   const h = hamMetrikFromLookup(lookup, sk);
   const g = (br: string, hk: string) => gelirTidyCell(lookup, sk, GT, br, hk);

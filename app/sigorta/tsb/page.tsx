@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import TsbSektorOzeti from "@/components/tsb/TsbSektorOzeti";
 import TsbVeriDurumuBand from "@/components/tsb/TsbVeriDurumuBand";
 import { TSB_DASHBOARD_GROUPS, TSB_DASHBOARD_PANELS } from "@/lib/tsbDashboardPanels";
+import { loadSektorOzeti } from "@/lib/tsbSektorOzeti";
 import { loadTsbVeriDurumu } from "@/lib/tsbVeriDurumu";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
 import { tsb } from "@/components/tsb/tsbDashboardUi";
@@ -27,6 +29,7 @@ export const metadata: Metadata = {
 
 export default async function SigortaTsbHubPage() {
   const veriDurumu = loadTsbVeriDurumu();
+  const sektorOzeti = loadSektorOzeti();
 
   return (
     <div className={tsb.pageBg}>
@@ -52,6 +55,8 @@ export default async function SigortaTsbHubPage() {
       </header>
 
       <main className={tsb.main}>
+        <TsbSektorOzeti data={sektorOzeti} />
+
         {TSB_DASHBOARD_GROUPS.map((group) => {
           const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === group.id);
           return (

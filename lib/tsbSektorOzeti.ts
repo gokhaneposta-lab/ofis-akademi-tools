@@ -25,6 +25,7 @@ import {
   type SektorOzetiPeerMedians,
 } from "./tsbSektorOzetiEligibility";
 import { loadTsbVeriDurumu } from "./tsbVeriDurumu";
+import { sektorOzetiSatirHref } from "./tsbSektorOzetiLinks";
 import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
 
 const GELIR_DIR = join("public", "data", "tsb", "gelir-tidy");
@@ -41,12 +42,19 @@ export type SektorOzetiSatir = {
   sirketAdi: string;
   degerMetin: string;
   ton: SektorOzetiDegerTon;
+  href: string;
 };
 
 export type SektorOzetiListe = {
   id: string;
   baslik: string;
   satirlar: SektorOzetiSatir[];
+};
+
+type SektorOzetiListeDraft = {
+  id: string;
+  baslik: string;
+  satirlar: Omit<SektorOzetiSatir, "href">[];
 };
 
 export type SektorOzetiSekmeId = "karlilik" | "teknik" | "buyume" | "pazar";
@@ -141,7 +149,7 @@ function toSatirlar(
     fmt: (v: number) => string;
     limit?: number;
   },
-): SektorOzetiSatir[] {
+): Omit<SektorOzetiSatir, "href">[] {
   const sorted = [...items].sort((a, b) => (opts.desc !== false ? b.v - a.v : a.v - b.v));
   const limit = opts.limit ?? 5;
   const tonFn = opts.ton ?? (() => "notr" as const);
@@ -214,7 +222,7 @@ function buildKarlilik(
   lookupBu: ReturnType<typeof buildGelirTidyDonemLookup>,
   lookupOnce: ReturnType<typeof buildGelirTidyDonemLookup> | null,
   medians: SektorOzetiPeerMedians,
-): SektorOzetiListe[] {
+): SektorOzetiListeDraft[] {
   const vokOz: HamSatir[] = [];
   const netKarYoy: HamSatir[] = [];
   const teknikKarYoy: HamSatir[] = [];
@@ -299,7 +307,7 @@ function buildTeknik(
   peers: { kod: number; ad: string }[],
   lookupBu: ReturnType<typeof buildGelirTidyDonemLookup>,
   lookupOnce: ReturnType<typeof buildGelirTidyDonemLookup> | null,
-): SektorOzetiListe[] {
+): SektorOzetiListeDraft[] {
   const brutHp: HamSatir[] = [];
   const netHp: HamSatir[] = [];
   const hpIyilestirme: HamSatir[] = [];
@@ -351,8 +359,8 @@ function buildBuyume(
   lookupBu: ReturnType<typeof buildGelirTidyDonemLookup>,
   lookupOnce: ReturnType<typeof buildGelirTidyDonemLookup> | null,
   medians: SektorOzetiPeerMedians,
-): SektorOzetiListe[] {
-  const empty = (id: string, baslik: string): SektorOzetiListe => ({ id, baslik, satirlar: [] });
+): SektorOzetiListeDraft[] {
+  const empty = (id: string, baslik: string): SektorOzetiListeDraft => ({ id, baslik, satirlar: [] });
 
   if (!lookupOnce) {
     return [
@@ -428,8 +436,8 @@ function buildBuyume(
   ];
 }
 
-function buildPazarPayi(primRows: TsbPrimRow[], primDonem: string, primOnce: string | null): SektorOzetiListe[] {
-  const empty = (id: string, baslik: string): SektorOzetiListe => ({ id, baslik, satirlar: [] });
+function buildPazarPayi(primRows: TsbPrimRow[], primDonem: string, primOnce: string | null): SektorOzetiListeDraft[] {
+  const empty = (id: string, baslik: string): SektorOzetiListeDraft => ({ id, baslik, satirlar: [] });
 
   if (!primOnce) {
     return [
@@ -521,28 +529,40 @@ export function loadSektorOzeti(): SektorOzetiData {
 
   const primRows = readPrimRows();
 
+  const donemCtx = { finDonem: finDonem || "—", primDonem: primDonem || "—" };
+  const sekmeler = [
+    {
+      id: "karlilik" as const,
+      label: "Karlılık",
+      listeler: buildKarlilik(peers, lookupBu, lookupOnce, medians ?? emptyMedians()),
+    },
+    { id: "teknik" as const, label: "Teknik", listeler: buildTeknik(peers, lookupBu, lookupOnce) },
+    {
+      id: "buyume" as const,
+      label: "Büyüme",
+      listeler: buildBuyume(peers, lookupBu, lookupOnce, medians ?? emptyMedians()),
+    },
+    {
+      id: "pazar" as const,
+      label: "Pazar Payı",
+      listeler: buildPazarPayi(primRows, primDonem, primOnce),
+    },
+  ].map((sekme) => ({
+    ...sekme,
+    listeler: sekme.listeler.map((liste) => ({
+      ...liste,
+      satirlar: liste.satirlar.map((satir) => ({
+        ...satir,
+        href: sektorOzetiSatirHref(liste.id, satir.sirketKodu, donemCtx),
+      })),
+    })),
+  })) satisfies SektorOzetiSekme[];
+
   return {
-    finDonem: finDonem || "—",
+    finDonem: donemCtx.finDonem,
     finDonemOnceki: finOnce,
-    primDonem: primDonem || "—",
+    primDonem: donemCtx.primDonem,
     primDonemOnceki: primOnce,
-    sekmeler: [
-      {
-        id: "karlilik",
-        label: "Karlılık",
-        listeler: buildKarlilik(peers, lookupBu, lookupOnce, medians ?? emptyMedians()),
-      },
-      { id: "teknik", label: "Teknik", listeler: buildTeknik(peers, lookupBu, lookupOnce) },
-      {
-        id: "buyume",
-        label: "Büyüme",
-        listeler: buildBuyume(peers, lookupBu, lookupOnce, medians ?? emptyMedians()),
-      },
-      {
-        id: "pazar",
-        label: "Pazar Payı",
-        listeler: buildPazarPayi(primRows, primDonem, primOnce),
-      },
-    ],
+    sekmeler,
   };
 }

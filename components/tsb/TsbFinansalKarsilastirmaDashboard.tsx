@@ -1,9 +1,6 @@
 "use client";
 
 import { Fragment, useEffect, useMemo, useState } from "react";
-import {
-  resolveDefaultSirketKodu,
-} from "@/lib/tsbPrimDashboard";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import {
@@ -19,6 +16,10 @@ import {
   type FinansalKiyaslamaDonemPaketi,
 } from "@/lib/tsbFinansalKarsilastirmaData";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
+import {
+  applyUrlSirketOrDefault,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
 import {
   cn,
   tsb,
@@ -43,10 +44,11 @@ function defaultSirketModForPool(pool: SegmentSkorPool): "hayatdisi" | "hayat" {
 }
 
 export default function TsbFinansalKarsilastirmaDashboard() {
+  const urlPrefs = useTsbDashboardUrlPrefs();
   const [tumDonemler, setTumDonemler] = useState<string[]>([]);
   const [rows, setRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pool, setPool] = useState<SegmentSkorPool>("HD");
+  const [pool, setPool] = useState<SegmentSkorPool>(urlPrefs.pool ?? "HD");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [donem, setDonem] = useState<string>("");
   const [kiyasModu, setKiyasModu] = useState<"sektor" | "sirket">("sektor");
@@ -59,7 +61,11 @@ export default function TsbFinansalKarsilastirmaDashboard() {
         if (cancelled) return;
         setTumDonemler(d);
         if (d.length > 0) {
-          setDonem((prev) => (prev && d.includes(prev) ? prev : d[d.length - 1]));
+          setDonem((prev) => {
+            if (prev && d.includes(prev)) return prev;
+            if (urlPrefs.donem && d.includes(urlPrefs.donem)) return urlPrefs.donem;
+            return d[d.length - 1];
+          });
         }
       })
       .catch((e: unknown) => {
@@ -99,11 +105,14 @@ export default function TsbFinansalKarsilastirmaDashboard() {
 
   useEffect(() => {
     if (sirketListesi.length === 0) return;
-    const halaListede = sirketListesi.some((s) => s.kod === sirketKodu);
-    if (halaListede) return;
-    const kod = resolveDefaultSirketKodu(sirketListesi, defaultSirketModForPool(pool));
-    if (kod !== null) setSirketKodu(kod);
-  }, [sirketListesi, pool, sirketKodu]);
+    applyUrlSirketOrDefault(
+      sirketListesi,
+      urlPrefs.sirket,
+      sirketKodu,
+      setSirketKodu,
+      defaultSirketModForPool(pool),
+    );
+  }, [sirketListesi, pool, sirketKodu, urlPrefs.sirket]);
 
   const onceYilVarMi = !!(donemOnceki && tumDonemler.includes(donemOnceki));
 

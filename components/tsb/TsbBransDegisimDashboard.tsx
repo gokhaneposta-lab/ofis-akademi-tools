@@ -3,6 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import {
+  applyUrlSirketOrDefault,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
+import {
   cn,
   tsb,
   TsbError,
@@ -86,12 +90,13 @@ function SatirHucresi({
 }
 
 export default function TsbBransDegisimDashboard() {
+  const urlPrefs = useTsbDashboardUrlPrefs();
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [donem, setDonem] = useState("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
   const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
-  const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
+  const [segment, setSegment] = useState<TsbSektorSegment>(urlPrefs.segment ?? "hayatdisi");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [kiyasModu, setKiyasModu] = useState<"sektor" | "sirket">("sektor");
   const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
@@ -122,6 +127,13 @@ export default function TsbBransDegisimDashboard() {
   const sonDonem = donemler.length ? donemler[donemler.length - 1] : "";
   const secilenDonem = donem || sonDonem;
 
+  useEffect(() => {
+    if (donemler.length === 0 || donem) return;
+    if (urlPrefs.donem && donemler.includes(urlPrefs.donem)) {
+      setDonem(urlPrefs.donem);
+    }
+  }, [donemler, donem, urlPrefs.donem]);
+
   const daraltma = useMemo(
     () => daraltmaFromUiState(filtreModu, "", "", branchLookup),
     [filtreModu, branchLookup],
@@ -134,11 +146,14 @@ export default function TsbBransDegisimDashboard() {
 
   useEffect(() => {
     if (sirketler.length === 0) return;
-    if (sirketKodu === "" || !sirketler.some((s) => s.kod === sirketKodu)) {
-      const kod = resolveDefaultSirketKodu(sirketler, segment === "hayatdisi" ? "hayatdisi" : "hayat");
-      if (kod !== null) setSirketKodu(kod);
-    }
-  }, [sirketler, sirketKodu, segment]);
+    applyUrlSirketOrDefault(
+      sirketler,
+      urlPrefs.sirket,
+      sirketKodu,
+      setSirketKodu,
+      segment === "hayatdisi" ? "hayatdisi" : "hayat",
+    );
+  }, [sirketler, sirketKodu, urlPrefs.sirket, segment]);
 
   const effectiveSirketKodu = useMemo(() => {
     if (sirketler.length === 0) return null;

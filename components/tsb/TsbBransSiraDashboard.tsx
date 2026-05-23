@@ -3,6 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import {
+  applyUrlSirketOrDefault,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
+import {
   cn,
   tsb,
   TsbError,
@@ -78,6 +82,7 @@ function Satir({
 }
 
 export default function TsbBransSiraDashboard() {
+  const urlPrefs = useTsbDashboardUrlPrefs();
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [donem, setDonem] = useState("");
@@ -111,6 +116,13 @@ export default function TsbBransSiraDashboard() {
   const sonDonem = donemler.length ? donemler[donemler.length - 1] : "";
   const secilenDonem = donem || sonDonem;
 
+  useEffect(() => {
+    if (donemler.length === 0 || donem) return;
+    if (urlPrefs.donem && donemler.includes(urlPrefs.donem)) {
+      setDonem(urlPrefs.donem);
+    }
+  }, [donemler, donem, urlPrefs.donem]);
+
   const daraltma = useMemo(
     () => daraltmaFromUiState(filtreModu, "", "", branchLookup),
     [filtreModu, branchLookup],
@@ -123,11 +135,8 @@ export default function TsbBransSiraDashboard() {
 
   useEffect(() => {
     if (sirketler.length === 0) return;
-    if (sirketKodu === "" || !sirketler.some((s) => s.kod === sirketKodu)) {
-      const kod = resolveDefaultSirketKodu(sirketler, "any");
-      if (kod !== null) setSirketKodu(kod);
-    }
-  }, [sirketler, sirketKodu]);
+    applyUrlSirketOrDefault(sirketler, urlPrefs.sirket, sirketKodu, setSirketKodu, "any");
+  }, [sirketler, sirketKodu, urlPrefs.sirket]);
 
   const effectiveSirketKodu = useMemo(() => {
     if (sirketler.length === 0) return null;

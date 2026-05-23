@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { resolveDefaultSirketKodu } from "@/lib/tsbPrimDashboard";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import { listSirketleriGelirDonemForPool, oncekiYilDonem } from "@/lib/tsbFinansalKarsilastirmaData";
@@ -25,6 +24,10 @@ import {
 import { hasarPrimOranlariDetayFromLookup } from "@/lib/tsbHasarPrimOrani";
 import { buildGelirTidyDonemLookup } from "@/lib/tsbSirketSegmentSkor";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
+import {
+  applyUrlSirketOrDefault,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
 import {
   cn,
   tsb,
@@ -279,10 +282,11 @@ function HpTrendGrafik({
 }
 
 export default function TsbHasarPrimDashboard() {
+  const urlPrefs = useTsbDashboardUrlPrefs();
   const [tumDonemler, setTumDonemler] = useState<string[]>([]);
   const [rows, setRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pool, setPool] = useState<SegmentSkorPool>("HD");
+  const [pool, setPool] = useState<SegmentSkorPool>(urlPrefs.pool ?? "HD");
   const [donem, setDonem] = useState("");
   const [kirisumModu, setKirisumModu] = useState<HpKirisumModu>("bransAp");
   const [bransAp, setBransAp] = useState(HAYATDISI);
@@ -297,7 +301,13 @@ export default function TsbHasarPrimDashboard() {
       .then((d) => {
         if (cancelled) return;
         setTumDonemler(d);
-        if (d.length > 0) setDonem((prev) => (prev && d.includes(prev) ? prev : d[d.length - 1]));
+        if (d.length > 0) {
+          setDonem((prev) => {
+            if (prev && d.includes(prev)) return prev;
+            if (urlPrefs.donem && d.includes(urlPrefs.donem)) return urlPrefs.donem;
+            return d[d.length - 1];
+          });
+        }
       })
       .catch((e: unknown) => {
         if (!cancelled) setError(e instanceof Error ? e.message : "Dönem listesi yüklenemedi");
@@ -386,11 +396,14 @@ export default function TsbHasarPrimDashboard() {
 
   useEffect(() => {
     if (sirketListesi.length === 0) return;
-    const halaListede = sirketListesi.some((s) => s.kod === sirketKodu);
-    if (halaListede) return;
-    const kod = resolveDefaultSirketKodu(sirketListesi, defaultSirketModForPool(pool));
-    if (kod !== null) setSirketKodu(kod);
-  }, [sirketListesi, pool, sirketKodu]);
+    applyUrlSirketOrDefault(
+      sirketListesi,
+      urlPrefs.sirket,
+      sirketKodu,
+      setSirketKodu,
+      defaultSirketModForPool(pool),
+    );
+  }, [sirketListesi, pool, sirketKodu, urlPrefs.sirket]);
 
   const kiyasListe = useMemo(
     () => sirketListesi.filter((s) => s.kod !== sirketKodu),

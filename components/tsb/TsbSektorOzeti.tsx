@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { cn, tsb, tsbDelta, TsbToggleButton } from "@/components/tsb/tsbDashboardUi";
 import { SEKTOR_OZETI_METODOLOJI } from "@/lib/tsbSektorOzetiEligibility";
@@ -35,14 +36,18 @@ function LeaderboardKart({ liste }: { liste: SektorOzetiListe }) {
           {liste.satirlar.map((satir) => {
             const medal = madalya(satir.sira);
             return (
-              <li key={satir.sirketKodu} className={tsb.sektorOzetiSatir}>
-                <span className={tsb.sektorOzetiSira} aria-hidden={!!medal}>
-                  {medal ?? satir.sira}
-                </span>
-                <span className={tsb.sektorOzetiAd} title={satir.sirketAdi}>
-                  {satir.sirketAdi}
-                </span>
-                <span className={cn(tsb.sektorOzetiDeger, degerSinifi(satir.ton))}>{satir.degerMetin}</span>
+              <li key={satir.sirketKodu}>
+                <Link
+                  href={satir.href}
+                  className={tsb.sektorOzetiSatirLink}
+                  title={`${satir.sirketAdi} — detay paneline git`}
+                >
+                  <span className={tsb.sektorOzetiSira} aria-hidden={!!medal}>
+                    {medal ?? satir.sira}
+                  </span>
+                  <span className={tsb.sektorOzetiAd}>{satir.sirketAdi}</span>
+                  <span className={cn(tsb.sektorOzetiDeger, degerSinifi(satir.ton))}>{satir.degerMetin}</span>
+                </Link>
               </li>
             );
           })}
@@ -55,10 +60,14 @@ function LeaderboardKart({ liste }: { liste: SektorOzetiListe }) {
 function MetodolojiInfo() {
   return (
     <details className={tsb.sektorOzetiMetodolojiWrap}>
-      <summary className={tsb.sektorOzetiMetodolojiBtn} aria-label="Liderlik listesi metodolojisi">
-        ℹ
+      <summary className={tsb.sektorOzetiMetodolojiBtn} aria-label="Liderlik listesi metodolojisi — tıklayarak açın">
+        <span className={tsb.sektorOzetiMetodolojiIcon} aria-hidden>
+          ℹ
+        </span>
+        <span>Metodoloji</span>
       </summary>
       <div className={tsb.sektorOzetiMetodolojiPanel}>
+        <p className={tsb.sektorOzetiMetodolojiPanelBaslik}>Liste metodolojisi</p>
         <p className={tsb.sektorOzetiMetodolojiPanelTitle}>{SEKTOR_OZETI_METODOLOJI.kisa}</p>
         <p className={tsb.sektorOzetiMetodolojiPanelDetay}>{SEKTOR_OZETI_METODOLOJI.detay}</p>
       </div>

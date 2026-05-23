@@ -153,7 +153,7 @@ function parseSheet(wb, sheetName, channelField, lookup, merged) {
   }
 }
 
-function main() {
+async function main() {
   const inputArg = process.argv[2];
   const outPath = process.argv[3] ? path.resolve(process.argv[3]) : DEFAULT_OUT;
 
@@ -233,6 +233,12 @@ function main() {
     `[tsb-import-prim] Dönem ${period}: +${newRows.length} satır yazıldı; ` +
       `toplam ${combined.length} satır → ${path.relative(ROOT, outPath)}`,
   );
+
+  const { refreshTsbMeta } = await import("./tsb-refresh-meta.mjs");
+  refreshTsbMeta();
 }
 
-main();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

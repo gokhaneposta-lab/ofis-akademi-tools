@@ -16,6 +16,7 @@
     "tsb:import-bilanco-tidy": "node scripts/tsb-import-bilanco-tidy.mjs",
     "tsb:export-gelir-tidy-xlsx": "node scripts/tsb-export-gelir-tidy-xlsx.mjs",
     "tsb:split-gelir-tidy": "node scripts/tsb-split-gelir-tidy-by-donem.mjs",
+    "tsb:meta": "npx --yes tsx scripts/tsb-write-meta.ts",
     "tsb:segment-xlsx": "npx --yes tsx scripts/tsb-segment-export-xlsx.ts"
   },
   "dependencies": {

@@ -66,6 +66,9 @@ export function splitGelirTidyByDonem(inPath = DEFAULT_IN, outDir = DEFAULT_OUT_
   const indexPath = path.join(outDir, "index.json");
   fs.writeFileSync(indexPath, JSON.stringify(donemler), "utf8");
   console.log(`\nindex.json: ${donemler.length} dönem → ${indexPath}`);
+
+  import("./tsb-refresh-meta.mjs").then(({ refreshTsbMeta }) => refreshTsbMeta());
+
   return { donemler, outDir, totalRows: rows.length };
 }
 

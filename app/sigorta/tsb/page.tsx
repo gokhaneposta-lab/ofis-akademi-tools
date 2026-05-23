@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import TsbVeriDurumuBand from "@/components/tsb/TsbVeriDurumuBand";
 import { TSB_DASHBOARD_GROUPS, TSB_DASHBOARD_PANELS } from "@/lib/tsbDashboardPanels";
+import { loadTsbVeriDurumu } from "@/lib/tsbVeriDurumu";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
 import { tsb } from "@/components/tsb/tsbDashboardUi";
 
@@ -23,7 +25,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SigortaTsbHubPage() {
+export default async function SigortaTsbHubPage() {
+  const veriDurumu = loadTsbVeriDurumu();
+
   return (
     <div className={tsb.pageBg}>
       <header className={tsb.pageHeader}>
@@ -43,6 +47,7 @@ export default function SigortaTsbHubPage() {
             <strong>Finansal karşılaştırma</strong> çeyrek bazında gelir tablosu ve bilanço KPI&apos;larını;{" "}
             <strong>prim panelleri</strong> aylık üretim verisini kullanır.
           </p>
+          <TsbVeriDurumuBand data={veriDurumu} />
         </div>
       </header>
 

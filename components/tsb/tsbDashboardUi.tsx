@@ -63,7 +63,15 @@ export const tsb = {
 
   sektorOzetiWrap: "rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_1px_4px_rgba(15,23,42,0.06)] sm:p-4",
   sektorOzetiBaslikWrap: "mb-3",
+  sektorOzetiBaslikRow: "flex items-start justify-between gap-2",
   sektorOzetiBaslik: "text-base font-semibold text-slate-900",
+  sektorOzetiMetodolojiWrap: "relative shrink-0 [&_summary::-webkit-details-marker]:hidden",
+  sektorOzetiMetodolojiBtn:
+    "flex h-7 w-7 cursor-pointer list-none items-center justify-center rounded-md border border-slate-200/80 bg-slate-50/80 text-xs font-semibold text-slate-500 transition hover:border-slate-300 hover:bg-white hover:text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300",
+  sektorOzetiMetodolojiPanel:
+    "absolute right-0 top-full z-20 mt-1.5 w-[min(18rem,calc(100vw-2rem))] rounded-lg border border-slate-200/90 bg-white p-3 text-xs leading-relaxed text-slate-600 shadow-[0_4px_12px_rgba(15,23,42,0.1)]",
+  sektorOzetiMetodolojiPanelTitle: "font-semibold text-slate-800",
+  sektorOzetiMetodolojiPanelDetay: "mt-1.5 text-[11px] leading-snug text-slate-500",
   sektorOzetiAltBaslik: "mt-0.5 text-sm text-slate-600",
   sektorOzetiDonemNotu: "mt-1 text-[11px] text-slate-500",
   sektorOzetiGrid: "grid gap-2 sm:grid-cols-2 xl:grid-cols-4",

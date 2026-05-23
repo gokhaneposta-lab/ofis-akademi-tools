@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { cn, tsb, tsbDelta, TsbToggleButton } from "@/components/tsb/tsbDashboardUi";
+import { SEKTOR_OZETI_METODOLOJI } from "@/lib/tsbSektorOzetiEligibility";
 import type {
   SektorOzetiData,
   SektorOzetiListe,
@@ -51,6 +52,20 @@ function LeaderboardKart({ liste }: { liste: SektorOzetiListe }) {
   );
 }
 
+function MetodolojiInfo() {
+  return (
+    <details className={tsb.sektorOzetiMetodolojiWrap}>
+      <summary className={tsb.sektorOzetiMetodolojiBtn} aria-label="Liderlik listesi metodolojisi">
+        ℹ
+      </summary>
+      <div className={tsb.sektorOzetiMetodolojiPanel}>
+        <p className={tsb.sektorOzetiMetodolojiPanelTitle}>{SEKTOR_OZETI_METODOLOJI.kisa}</p>
+        <p className={tsb.sektorOzetiMetodolojiPanelDetay}>{SEKTOR_OZETI_METODOLOJI.detay}</p>
+      </div>
+    </details>
+  );
+}
+
 export default function TsbSektorOzeti({ data }: { data: SektorOzetiData }) {
   const [aktif, setAktif] = useState<SektorOzetiSekmeId>("karlilik");
 
@@ -69,9 +84,12 @@ export default function TsbSektorOzeti({ data }: { data: SektorOzetiData }) {
   return (
     <section className={tsb.sektorOzetiWrap} aria-labelledby="tsb-sektor-ozeti-baslik">
       <div className={tsb.sektorOzetiBaslikWrap}>
-        <h2 id="tsb-sektor-ozeti-baslik" className={tsb.sektorOzetiBaslik}>
-          Sektör Özeti
-        </h2>
+        <div className={tsb.sektorOzetiBaslikRow}>
+          <h2 id="tsb-sektor-ozeti-baslik" className={tsb.sektorOzetiBaslik}>
+            Sektör Özeti
+          </h2>
+          <MetodolojiInfo />
+        </div>
         <p className={tsb.sektorOzetiAltBaslik}>
           Seçili son dönem verilerine göre öne çıkan şirketler ve sıralamalar.
         </p>

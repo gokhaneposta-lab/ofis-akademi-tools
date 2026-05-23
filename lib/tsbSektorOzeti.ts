@@ -18,6 +18,12 @@ import {
   type TsbPrimRow,
 } from "./tsbPrimDashboard";
 import { buildGelirTidyDonemLookup, hamMetrikFromLookup } from "./tsbSirketSegmentSkor";
+import {
+  SEKTOR_OZETI_UYGUNLUK_ESIKLERI,
+  sektorOzetiPeerMediansFromValues,
+  sektorOzetiUygunMetrik,
+  type SektorOzetiPeerMedians,
+} from "./tsbSektorOzetiEligibility";
 import { loadTsbVeriDurumu } from "./tsbVeriDurumu";
 import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
 
@@ -60,6 +66,18 @@ export type SektorOzetiData = {
 };
 
 type HamSatir = { kod: number; ad: string; v: number };
+
+function emptyMedians(): SektorOzetiPeerMedians {
+  return {
+    ozsermaye: null,
+    netKar: null,
+    teknikKar: null,
+    brutPrim: null,
+    primTrafikHaric: null,
+    teknikKarsilik: null,
+    yatirimGeliri: null,
+  };
+}
 
 function readGelirDonem(donem: string): TsbGelirTidyRowLike[] {
   const abs = join(process.cwd(), GELIR_DIR, `${donem}.json`);
@@ -148,6 +166,35 @@ function competitionRanks(primByKod: Map<number, number>): Map<number, number> {
   return ranks;
 }
 
+function computePeerMedians(
+  peers: { kod: number; ad: string }[],
+  lookupBu: ReturnType<typeof buildGelirTidyDonemLookup>,
+): SektorOzetiPeerMedians {
+  const buckets = {
+    ozsermaye: [] as number[],
+    netKar: [] as number[],
+    teknikKar: [] as number[],
+    brutPrim: [] as number[],
+    primTrafikHaric: [] as number[],
+    teknikKarsilik: [] as number[],
+    yatirimGeliri: [] as number[],
+  };
+
+  for (const { kod } of peers) {
+    const ham = hamOlcumFromLookup(lookupBu, kod);
+    if (!ham) continue;
+    buckets.ozsermaye.push(ham.ozsermaye);
+    buckets.netKar.push(ham.donemNetKar692);
+    buckets.teknikKar.push(ham.teknikKarZarar);
+    buckets.brutPrim.push(ham.brutPrim);
+    buckets.primTrafikHaric.push(ham.primTrafikHaric);
+    buckets.teknikKarsilik.push(ham.teknikKarsilik3545);
+    buckets.yatirimGeliri.push(ham.yatirimSegment);
+  }
+
+  return sektorOzetiPeerMediansFromValues(buckets);
+}
+
 function hdPrimByCompany(rows: TsbPrimRow[], donem: string): Map<number, { ad: string; prim: number }> {
   const m = new Map<number, { ad: string; prim: number }>();
   for (const r of rows) {
@@ -166,31 +213,62 @@ function buildKarlilik(
   peers: { kod: number; ad: string }[],
   lookupBu: ReturnType<typeof buildGelirTidyDonemLookup>,
   lookupOnce: ReturnType<typeof buildGelirTidyDonemLookup> | null,
+  medians: SektorOzetiPeerMedians,
 ): SektorOzetiListe[] {
   const vokOz: HamSatir[] = [];
   const netKarYoy: HamSatir[] = [];
   const teknikKarYoy: HamSatir[] = [];
   const ozsermayeYoy: HamSatir[] = [];
 
+  const esik = SEKTOR_OZETI_UYGUNLUK_ESIKLERI;
+
   for (const { kod, ad } of peers) {
-    const skor = hamMetrikFromLookup(lookupBu, kod);
-    if (skor.oranVokOzsermaye !== null && Number.isFinite(skor.oranVokOzsermaye)) {
-      vokOz.push({ kod, ad, v: skor.oranVokOzsermaye });
+    const hamBu = hamOlcumFromLookup(lookupBu, kod);
+    if (!hamBu) continue;
+
+    if (
+      sektorOzetiUygunMetrik(hamBu.ozsermaye, medians, esik.vokOz.metrik, esik.vokOz.medyanOrani)
+    ) {
+      const skor = hamMetrikFromLookup(lookupBu, kod);
+      if (skor.oranVokOzsermaye !== null && Number.isFinite(skor.oranVokOzsermaye)) {
+        vokOz.push({ kod, ad, v: skor.oranVokOzsermaye });
+      }
     }
 
     if (!lookupOnce) continue;
-    const hamBu = hamOlcumFromLookup(lookupBu, kod);
     const hamOnce = hamOlcumFromLookup(lookupOnce, kod);
-    if (!hamBu || !hamOnce) continue;
+    if (!hamOnce) continue;
 
-    const nY = yoyYuzde(hamOnce.donemNetKar692, hamBu.donemNetKar692);
-    if (nY !== null) netKarYoy.push({ kod, ad, v: nY });
+    if (
+      sektorOzetiUygunMetrik(hamBu.donemNetKar692, medians, esik.netKarYoy.metrik, esik.netKarYoy.medyanOrani)
+    ) {
+      const nY = yoyYuzde(hamOnce.donemNetKar692, hamBu.donemNetKar692);
+      if (nY !== null) netKarYoy.push({ kod, ad, v: nY });
+    }
 
-    const tY = yoyYuzde(hamOnce.teknikKarZarar, hamBu.teknikKarZarar);
-    if (tY !== null) teknikKarYoy.push({ kod, ad, v: tY });
+    if (
+      sektorOzetiUygunMetrik(
+        hamBu.teknikKarZarar,
+        medians,
+        esik.teknikKarYoy.metrik,
+        esik.teknikKarYoy.medyanOrani,
+      )
+    ) {
+      const tY = yoyYuzde(hamOnce.teknikKarZarar, hamBu.teknikKarZarar);
+      if (tY !== null) teknikKarYoy.push({ kod, ad, v: tY });
+    }
 
-    const oY = yoyYuzde(hamOnce.ozsermaye, hamBu.ozsermaye);
-    if (oY !== null) ozsermayeYoy.push({ kod, ad, v: oY });
+    if (
+      sektorOzetiUygunMetrik(
+        hamBu.ozsermaye,
+        medians,
+        esik.ozsermayeYoy.metrik,
+        esik.ozsermayeYoy.medyanOrani,
+      )
+    ) {
+      const oY = yoyYuzde(hamOnce.ozsermaye, hamBu.ozsermaye);
+      if (oY !== null) ozsermayeYoy.push({ kod, ad, v: oY });
+    }
   }
 
   return [
@@ -272,6 +350,7 @@ function buildBuyume(
   peers: { kod: number; ad: string }[],
   lookupBu: ReturnType<typeof buildGelirTidyDonemLookup>,
   lookupOnce: ReturnType<typeof buildGelirTidyDonemLookup> | null,
+  medians: SektorOzetiPeerMedians,
 ): SektorOzetiListe[] {
   const empty = (id: string, baslik: string): SektorOzetiListe => ({ id, baslik, satirlar: [] });
 
@@ -289,22 +368,55 @@ function buildBuyume(
   const teknikKarsilik: HamSatir[] = [];
   const yatirim: HamSatir[] = [];
 
+  const esik = SEKTOR_OZETI_UYGUNLUK_ESIKLERI;
+
   for (const { kod, ad } of peers) {
     const hamBu = hamOlcumFromLookup(lookupBu, kod);
     const hamOnce = hamOlcumFromLookup(lookupOnce, kod);
     if (!hamBu || !hamOnce) continue;
 
-    const b = yoyYuzde(hamOnce.brutPrim, hamBu.brutPrim);
-    if (b !== null) brutPrim.push({ kod, ad, v: b });
+    if (
+      sektorOzetiUygunMetrik(hamBu.brutPrim, medians, esik.brutPrimYoy.metrik, esik.brutPrimYoy.medyanOrani)
+    ) {
+      const b = yoyYuzde(hamOnce.brutPrim, hamBu.brutPrim);
+      if (b !== null) brutPrim.push({ kod, ad, v: b });
+    }
 
-    const t = yoyYuzde(hamOnce.primTrafikHaric, hamBu.primTrafikHaric);
-    if (t !== null) trafikHaric.push({ kod, ad, v: t });
+    if (
+      sektorOzetiUygunMetrik(
+        hamBu.primTrafikHaric,
+        medians,
+        esik.trafikHaricYoy.metrik,
+        esik.trafikHaricYoy.medyanOrani,
+      )
+    ) {
+      const t = yoyYuzde(hamOnce.primTrafikHaric, hamBu.primTrafikHaric);
+      if (t !== null) trafikHaric.push({ kod, ad, v: t });
+    }
 
-    const tk = yoyYuzde(hamOnce.teknikKarsilik3545, hamBu.teknikKarsilik3545);
-    if (tk !== null) teknikKarsilik.push({ kod, ad, v: tk });
+    if (
+      sektorOzetiUygunMetrik(
+        hamBu.teknikKarsilik3545,
+        medians,
+        esik.teknikKarsilikYoy.metrik,
+        esik.teknikKarsilikYoy.medyanOrani,
+      )
+    ) {
+      const tk = yoyYuzde(hamOnce.teknikKarsilik3545, hamBu.teknikKarsilik3545);
+      if (tk !== null) teknikKarsilik.push({ kod, ad, v: tk });
+    }
 
-    const y = yoyYuzde(hamOnce.yatirimSegment, hamBu.yatirimSegment);
-    if (y !== null) yatirim.push({ kod, ad, v: y });
+    if (
+      sektorOzetiUygunMetrik(
+        hamBu.yatirimSegment,
+        medians,
+        esik.yatirimYoy.metrik,
+        esik.yatirimYoy.medyanOrani,
+      )
+    ) {
+      const y = yoyYuzde(hamOnce.yatirimSegment, hamBu.yatirimSegment);
+      if (y !== null) yatirim.push({ kod, ad, v: y });
+    }
   }
 
   const yoyOpts = { desc: true, fmt: fmtYuzde, ton: tonFromYoy };
@@ -405,6 +517,8 @@ export function loadSektorOzeti(): SektorOzetiData {
   const lookupBu = buildGelirTidyDonemLookup(gelirBu, finDonem);
   const lookupOnce = finOnce && gelirOnce.length > 0 ? buildGelirTidyDonemLookup(gelirOnce, finOnce) : null;
 
+  const medians = finDonem && peers.length > 0 ? computePeerMedians(peers, lookupBu) : null;
+
   const primRows = readPrimRows();
 
   return {
@@ -413,9 +527,17 @@ export function loadSektorOzeti(): SektorOzetiData {
     primDonem: primDonem || "—",
     primDonemOnceki: primOnce,
     sekmeler: [
-      { id: "karlilik", label: "Karlılık", listeler: buildKarlilik(peers, lookupBu, lookupOnce) },
+      {
+        id: "karlilik",
+        label: "Karlılık",
+        listeler: buildKarlilik(peers, lookupBu, lookupOnce, medians ?? emptyMedians()),
+      },
       { id: "teknik", label: "Teknik", listeler: buildTeknik(peers, lookupBu, lookupOnce) },
-      { id: "buyume", label: "Büyüme", listeler: buildBuyume(peers, lookupBu, lookupOnce) },
+      {
+        id: "buyume",
+        label: "Büyüme",
+        listeler: buildBuyume(peers, lookupBu, lookupOnce, medians ?? emptyMedians()),
+      },
       {
         id: "pazar",
         label: "Pazar Payı",

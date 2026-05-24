@@ -79,17 +79,18 @@ export const tsb = {
   sektorOzetiMetodolojiPanelDetay: "mt-1.5 text-[11px] leading-snug text-slate-500",
   sektorOzetiAltBaslik: "mt-0.5 text-sm text-slate-600",
   sektorOzetiDonemNotu: "mt-1 text-[11px] text-slate-500",
-  sektorOzetiGrid: "grid gap-2 sm:grid-cols-2 xl:grid-cols-4",
-  sektorOzetiKart: "rounded-lg border border-slate-200/75 bg-slate-50/40 px-2.5 py-2",
+  sektorOzetiGrid: "grid gap-2 sm:grid-cols-2 xl:grid-cols-4 [&>article]:min-w-0",
+  sektorOzetiKart: "min-w-0 rounded-lg border border-slate-200/75 bg-slate-50/40 px-2.5 py-2",
   sektorOzetiKartBaslik: "mb-2 text-[11px] font-semibold leading-snug text-slate-800",
   sektorOzetiBos: "text-[11px] text-slate-500",
   sektorOzetiListe: "space-y-1",
-  sektorOzetiSatirLink:
-    "group flex items-center gap-2 rounded-md px-1 -mx-1 text-xs transition-colors hover:bg-slate-100/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-slate-400",
-  sektorOzetiSatir: "flex items-center gap-2 text-xs",
+  sektorOzetiSatir:
+    "grid min-w-0 grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-x-1.5 text-xs",
+  sektorOzetiAdLink:
+    "min-w-0 truncate text-slate-800 hover:text-slate-950 hover:underline decoration-slate-300 underline-offset-2",
   sektorOzetiSira: "w-5 shrink-0 text-center text-[11px] font-semibold tabular-nums text-slate-500",
-  sektorOzetiAd: "min-w-0 flex-1 truncate text-slate-800 group-hover:text-slate-950 group-hover:underline decoration-slate-300 underline-offset-2",
-  sektorOzetiDeger: "shrink-0 rounded px-1 py-0.5 text-[11px] font-semibold tabular-nums",
+  sektorOzetiDeger:
+    "shrink-0 justify-self-end whitespace-nowrap rounded px-1 py-0.5 text-[11px] font-semibold tabular-nums",
   filterField: "block min-w-0",
   filterLabel: "mb-0.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-500",
   filterMicroHint: "mt-0.5 text-[10px] leading-snug text-slate-500",

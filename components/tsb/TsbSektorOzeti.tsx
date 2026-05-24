@@ -21,7 +21,7 @@ function madalya(sira: number): string | null {
 function degerSinifi(ton: SektorOzetiSatir["ton"]): string {
   if (ton === "iyi") return tsbDelta.iyi;
   if (ton === "kotu") return tsbDelta.kotu;
-  if (ton === "notr") return tsbDelta.notr;
+  if (ton === "notr") return "text-slate-700";
   return "text-slate-700";
 }
 
@@ -36,18 +36,18 @@ function LeaderboardKart({ liste }: { liste: SektorOzetiListe }) {
           {liste.satirlar.map((satir) => {
             const medal = madalya(satir.sira);
             return (
-              <li key={satir.sirketKodu}>
+              <li key={satir.sirketKodu} className={tsb.sektorOzetiSatir}>
+                <span className={tsb.sektorOzetiSira} aria-hidden={!!medal}>
+                  {medal ?? satir.sira}
+                </span>
                 <Link
                   href={satir.href}
-                  className={tsb.sektorOzetiSatirLink}
+                  className={tsb.sektorOzetiAdLink}
                   title={`${satir.sirketAdi} — detay paneline git`}
                 >
-                  <span className={tsb.sektorOzetiSira} aria-hidden={!!medal}>
-                    {medal ?? satir.sira}
-                  </span>
-                  <span className={tsb.sektorOzetiAd}>{satir.sirketAdi}</span>
-                  <span className={cn(tsb.sektorOzetiDeger, degerSinifi(satir.ton))}>{satir.degerMetin}</span>
+                  {satir.sirketAdi}
                 </Link>
+                <span className={cn(tsb.sektorOzetiDeger, degerSinifi(satir.ton))}>{satir.degerMetin}</span>
               </li>
             );
           })}

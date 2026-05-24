@@ -8,14 +8,22 @@ const BASE = getSiteUrl();
 export const metadata: Metadata = {
   title: "Finans & Sigorta için Excel — Sektörel Metrikler & IFRS 17",
   description:
-    "Sigortacılık ve finans: H/P, kazanılmış prim, KPK, muallak hasar, IFRS 17 (TFRS 17) — CSM, RA, PAA, LIC, LRC, GMM — cari oran, VÖK ve operasyonel KPI'lar. Excel rehberi ve interaktif hesaplayıcılar.",
+    "Sigortacılık ve finans: H/P, kazanılmış prim, KPK, muallak hasar, IFRS 17 (TFRS 17) — CSM, RA, PAA, LIC, LRC, GMM — cari oran, VÖK ve operasyonel KPI'lar. TSB prim ve finansal istatistik dashboard'ları. Excel rehberi ve interaktif hesaplayıcılar.",
+  keywords: [
+    "sigorta KPI",
+    "IFRS 17",
+    "TSB prim",
+    "TSB istatistikleri",
+    "TSB finansal",
+    "Türkiye Sigortalar Birliği",
+  ],
   alternates: {
     canonical: canonicalUrl("/finans-sigorta"),
   },
   openGraph: {
     title: "Finans & Sigorta için Excel & IFRS 17 (TFRS 17) — Ofis Akademi",
     description:
-      "Sigortacılık ve finans metrikleri ile IFRS 17 (CSM, RA, PAA, LIC, LRC, GMM) — Excel rehberi ve interaktif hesaplayıcılar.",
+      "Sigortacılık metrikleri, IFRS 17 (CSM, RA, PAA) ve TSB prim/finansal istatistik dashboard'ları — Excel rehberi ve hesaplayıcılar.",
     url: `${BASE}/finans-sigorta`,
     siteName: "Ofis Akademi",
     locale: "tr_TR",
@@ -107,7 +115,7 @@ export default function FinansSigortaPage() {
                 </span>
                 <div className="min-w-0">
                   <h3 className="text-sm font-bold text-gray-900 transition-colors group-hover:text-sky-800">
-                    Sektör verileri (TSB)
+                    TSB prim ve finansal istatistikleri
                   </h3>
                   <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
                     KANAL · BRANŞ · İLERİDE DAHA FAZLA PANEL

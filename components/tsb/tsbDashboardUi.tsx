@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode, SelectHTMLAttributes } from "react";
+import TsbJsonLd from "@/components/tsb/TsbJsonLd";
 import {
   TSB_DASHBOARD_GROUPS,
   TSB_DASHBOARD_PANELS,
@@ -7,6 +8,7 @@ import {
   type TsbDashboardGroupId,
 } from "@/lib/tsbDashboardPanels";
 import { tsbPanelHelpForHref } from "@/lib/tsbPanelHelpContent";
+import { TSB_SEO, type TsbSeoPageId } from "@/lib/tsbSeo";
 
 /** TSB dashboard — profesyonel finansal analiz platformu görünümü (paylaşılan token'lar). */
 export const tsb = {
@@ -219,6 +221,8 @@ type TsbPageLayoutProps = {
   description: ReactNode;
   sourceNote?: ReactNode;
   currentHref: string;
+  /** Görünmez SEO (metadata ayrı; JSON-LD buradan) */
+  seoPageId: TsbSeoPageId;
   helpItems?: readonly string[];
   children: ReactNode;
 };
@@ -228,13 +232,17 @@ export function TsbPageLayout({
   description,
   sourceNote,
   currentHref,
+  seoPageId,
   helpItems,
   children,
 }: TsbPageLayoutProps) {
   const help = helpItems ?? tsbPanelHelpForHref(currentHref);
+  const seo = TSB_SEO[seoPageId];
 
   return (
-    <div className={tsb.pageBg}>
+    <>
+      <TsbJsonLd page={seo} variant="panel" />
+      <div className={tsb.pageBg}>
       <header className={tsb.pageHeader}>
         <div className={tsb.pageHeaderInner}>
           <Link href="/sigorta/tsb" className={tsb.backLink}>
@@ -257,6 +265,7 @@ export function TsbPageLayout({
         {children}
       </main>
     </div>
+    </>
   );
 }
 

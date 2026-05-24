@@ -1,32 +1,16 @@
 import type { Metadata } from "next";
-import { canonicalUrl, getSiteUrl } from "@/lib/site";
 import TsbHasarPrimDashboard from "@/components/tsb/TsbHasarPrimDashboard";
 import TsbRelatedDashboards from "@/components/tsb/TsbRelatedDashboards";
 import { TsbPageLayout } from "@/components/tsb/tsbDashboardUi";
 import TsbSourceNote from "@/components/tsb/tsbSourceNote";
+import { TSB_SEO, tsbPageMetadata } from "@/lib/tsbSeo";
 
-const BASE = getSiteUrl();
-
-export const metadata: Metadata = {
-  title: "Hasar / Prim oranı (TSB) — Branş bazlı H/P tablosu",
-  description:
-    "Hasar/prim oranı: brüt ve net, DERK dahil ve hariç; branş veya tarife grubu seçimi; sektör sıralaması ve çeyreklik trend.",
-  alternates: {
-    canonical: canonicalUrl("/sigorta/hasar-prim-orani"),
-  },
-  openGraph: {
-    title: "Hasar / Prim oranı (TSB) | Ofis Akademi",
-    description: "Branş bazlı H/P · sektör sıralaması · çeyreklik trend.",
-    url: `${BASE}/sigorta/hasar-prim-orani`,
-    siteName: "Ofis Akademi",
-    locale: "tr_TR",
-    type: "website",
-  },
-};
+export const metadata: Metadata = tsbPageMetadata(TSB_SEO.hasarPrimOrani);
 
 export default function SigortaHasarPrimOraniPage() {
   return (
     <TsbPageLayout
+      seoPageId="hasarPrimOrani"
       currentHref="/sigorta/hasar-prim-orani"
       title="Hasar / Prim oranı"
       description={

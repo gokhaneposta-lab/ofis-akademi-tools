@@ -1,7 +1,8 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "sonPrimDonem": "2026-04",
   "sonFinansalDonem": "2026-1",
   "sirketSayisiHd": 47,
+  "sirketSayisiHayatEmeklilik": 19,
   "guncellemeIso": "2026-05-19T19:28:41.011Z"
 }

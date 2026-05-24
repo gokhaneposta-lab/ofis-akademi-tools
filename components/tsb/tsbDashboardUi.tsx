@@ -58,7 +58,9 @@ export const tsb = {
   veriDurumuItem:
     "rounded-lg border border-slate-200/75 bg-slate-50/50 px-2.5 py-2 shadow-[0_1px_2px_rgba(15,23,42,0.03)]",
   veriDurumuLabel: "text-[10px] font-semibold uppercase tracking-wider text-slate-500",
-  veriDurumuValue: "mt-0.5 text-sm font-semibold tabular-nums tracking-tight text-slate-900",
+  veriDurumuValue:
+    "mt-0.5 text-base font-bold tabular-nums tracking-tight text-emerald-700 sm:text-[1.05rem]",
+  veriDurumuValueMuted: "font-semibold text-slate-400",
   veriDurumuHint: "mt-0.5 text-[10px] leading-snug text-slate-500",
 
   sektorOzetiWrap: "rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_1px_4px_rgba(15,23,42,0.06)] sm:p-4",

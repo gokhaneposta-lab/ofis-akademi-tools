@@ -9,13 +9,21 @@ export type TsbVeriDurumu = {
   sonFinansalDonem: string;
   /** Hayat dışı (HD) havuzundaki şirket sayısı — finansal son çeyrek peer kümesi */
   sirketSayisiHd: number;
+  /** Hayat–emeklilik havuzundaki şirket sayısı — finansal son çeyrek peer kümesi */
+  sirketSayisiHayatEmeklilik: number;
   /** ISO 8601 — veri dosyalarının en son değişim zamanı */
   guncellemeIso: string;
 };
 
 export type TsbVeriDurumuMeta = TsbVeriDurumu & {
   /** meta.json sürümü — import script uyumu */
-  schemaVersion: 1;
+  schemaVersion: 2;
+};
+
+/** Diskten okunan meta — v1 geriye dönük uyum */
+type TsbVeriDurumuMetaFile = TsbVeriDurumu & {
+  schemaVersion: 1 | 2;
+  sirketSayisiHayatEmeklilik?: number;
 };
 
 const META_REL = join("public", "data", "tsb", "meta.json");
@@ -60,11 +68,22 @@ function isHdGelirRow(r: TsbGelirTidyRowLike): boolean {
   return !p3 && t === "HD";
 }
 
-function hdSirketSayisiFromGelir(rows: TsbGelirTidyRowLike[], donem: string): number {
+function isHayatEmeklilikGelirRow(r: TsbGelirTidyRowLike): boolean {
+  if (!Number.isFinite(r.sirketKodu) || isTsbToplamSirketKodu(r.sirketKodu)) return false;
+  if (sirketKoduHayatEmeklilikPrefix(r.sirketKodu)) return true;
+  const t = String(r.sirketTipi ?? "").trim().toUpperCase();
+  return t === "H" || t === "E";
+}
+
+function sirketSayisiFromGelir(
+  rows: TsbGelirTidyRowLike[],
+  donem: string,
+  match: (r: TsbGelirTidyRowLike) => boolean,
+): number {
   const set = new Set<number>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
-    if (!isHdGelirRow(r)) continue;
+    if (!match(r)) continue;
     set.add(r.sirketKodu);
   }
   return set.size;
@@ -104,23 +123,30 @@ export function computeTsbVeriDurumu(): TsbVeriDurumu {
   const sonFinansalDonem = latestDonemFromList(gelirIndex);
 
   let sirketSayisiHd = 0;
+  let sirketSayisiHayatEmeklilik = 0;
   if (sonFinansalDonem) {
     const quarterRows =
       readJsonFile<TsbGelirTidyRowLike[]>(join(GELIR_DIR_REL, `${sonFinansalDonem}.json`)) ?? [];
-    sirketSayisiHd = hdSirketSayisiFromGelir(quarterRows, sonFinansalDonem);
+    sirketSayisiHd = sirketSayisiFromGelir(quarterRows, sonFinansalDonem, isHdGelirRow);
+    sirketSayisiHayatEmeklilik = sirketSayisiFromGelir(
+      quarterRows,
+      sonFinansalDonem,
+      isHayatEmeklilikGelirRow,
+    );
   }
 
   return {
     sonPrimDonem: sonPrimDonem || "—",
     sonFinansalDonem: sonFinansalDonem || "—",
     sirketSayisiHd,
+    sirketSayisiHayatEmeklilik,
     guncellemeIso: dataFilesMtimeIso(),
   };
 }
 
 export function writeTsbVeriDurumuMeta(): TsbVeriDurumuMeta {
   const computed = computeTsbVeriDurumu();
-  const meta: TsbVeriDurumuMeta = { schemaVersion: 1, ...computed };
+  const meta: TsbVeriDurumuMeta = { schemaVersion: 2, ...computed };
   const abs = join(tsbDataRoot(), META_REL);
   mkdirSync(join(tsbDataRoot(), "public", "data", "tsb"), { recursive: true });
   writeFileSync(abs, `${JSON.stringify(meta, null, 2)}\n`, "utf8");
@@ -129,18 +155,23 @@ export function writeTsbVeriDurumuMeta(): TsbVeriDurumuMeta {
 
 /** Hub bandı — önce meta.json, yoksa veya eksikse hesapla. */
 export function loadTsbVeriDurumu(): TsbVeriDurumu {
-  const meta = readJsonFile<TsbVeriDurumuMeta>(META_REL);
+  const meta = readJsonFile<TsbVeriDurumuMetaFile>(META_REL);
   if (
     meta &&
-    meta.schemaVersion === 1 &&
+    (meta.schemaVersion === 1 || meta.schemaVersion === 2) &&
     meta.sonPrimDonem &&
     meta.sonFinansalDonem &&
     meta.guncellemeIso
   ) {
+    const computed = computeTsbVeriDurumu();
     return {
       sonPrimDonem: meta.sonPrimDonem,
       sonFinansalDonem: meta.sonFinansalDonem,
       sirketSayisiHd: meta.sirketSayisiHd,
+      sirketSayisiHayatEmeklilik:
+        meta.schemaVersion === 2 && Number.isFinite(meta.sirketSayisiHayatEmeklilik)
+          ? meta.sirketSayisiHayatEmeklilik
+          : computed.sirketSayisiHayatEmeklilik,
       guncellemeIso: meta.guncellemeIso,
     };
   }

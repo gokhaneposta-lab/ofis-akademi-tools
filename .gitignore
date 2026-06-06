@@ -45,3 +45,6 @@ next-env.d.ts
 
 # TSB birleşik gelir-tidy (171MB+); site `public/data/tsb/gelir-tidy/*.json` kullanır
 /public/data/tsb/gelir-tidy.json
+
+# Bütçe / projeksiyon — şirket içi veri (GT·BL, hedefler)
+/data/butce/private/

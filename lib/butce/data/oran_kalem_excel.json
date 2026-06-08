@@ -1,0 +1,871 @@
+{
+  "kaynak": "Bütçe GT Çalışma_v8.xlsx",
+  "oran_birlestirme_sayisi": 26,
+  "kalemler": [
+    {
+      "kalem_kodu": "F245",
+      "oran_hucre": "F245",
+      "oran_satir": 245,
+      "ad": "HP ORANI ( BRÜT )",
+      "pay": [
+        "61001",
+        "61101"
+      ],
+      "baz": [
+        "60001",
+        "60101",
+        "60201"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.6
+        ],
+        [
+          2,
+          0.4
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F245"
+    },
+    {
+      "kalem_kodu": "0251",
+      "oran_hucre": "F275",
+      "oran_satir": 275,
+      "ad": "Ö.KOMİSYON ORANI ( CARİ )",
+      "pay": [
+        "61401199"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 180,
+        "tahmin_kod": null,
+        "tahmin_hucre": "F180",
+        "formul": "=F12*F275"
+      },
+      "gt_hucre": "F275"
+    },
+    {
+      "kalem_kodu": "0112",
+      "oran_hucre": "F295",
+      "oran_satir": 295,
+      "ad": "DEVREDİLEN PRİM ORANI (SGK HARİÇ)",
+      "pay": [
+        "60002",
+        "60003"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 19,
+        "tahmin_kod": "0112",
+        "tahmin_hucre": "F19",
+        "formul": "=F11*F295"
+      },
+      "gt_hucre": "F295"
+    },
+    {
+      "kalem_kodu": "016",
+      "oran_hucre": "F315",
+      "oran_satir": 315,
+      "ad": "Rücu Sovtaj gelirleri oranı",
+      "pay": [],
+      "baz": [
+        "61001",
+        "611011"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 86,
+        "tahmin_kod": "016",
+        "tahmin_hucre": "F86",
+        "formul": "=(F96+F116)*F315"
+      },
+      "gt_hucre": "F315"
+    },
+    {
+      "kalem_kodu": "0211",
+      "oran_hucre": "F320",
+      "oran_satir": 320,
+      "ad": "Brüt Ödenen Hasar Payı",
+      "pay": [
+        "61001"
+      ],
+      "baz": [
+        "60001",
+        "60101",
+        "60201"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.8
+        ],
+        [
+          2,
+          0.005
+        ],
+        [
+          3,
+          0.15
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 96,
+        "tahmin_kod": "0211",
+        "tahmin_hucre": "F96",
+        "formul": "=(F11+F22+F32)*F320"
+      },
+      "gt_hucre": "F320"
+    },
+    {
+      "kalem_kodu": "F325",
+      "oran_hucre": "F325",
+      "oran_satir": 325,
+      "ad": "Muallak Hasar Payı",
+      "pay": [
+        "61101"
+      ],
+      "baz": [
+        "60001",
+        "60101",
+        "60201"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F325"
+    },
+    {
+      "kalem_kodu": "F348",
+      "oran_hucre": "F348",
+      "oran_satir": 348,
+      "ad": "Dengeleme Karşılığı Payı",
+      "pay": [
+        "61301101"
+      ],
+      "baz": [],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F348"
+    },
+    {
+      "kalem_kodu": "F353",
+      "oran_hucre": "F353",
+      "oran_satir": 353,
+      "ad": "Üretim Komisyon Gideri",
+      "pay": [],
+      "baz": [
+        "614011"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F353"
+    },
+    {
+      "kalem_kodu": "F358",
+      "oran_hucre": "F358",
+      "oran_satir": 358,
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "pay": [],
+      "baz": [
+        "614011"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F358"
+    },
+    {
+      "kalem_kodu": "F363",
+      "oran_hucre": "F363",
+      "oran_satir": 363,
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "pay": [
+        "61401199"
+      ],
+      "baz": [
+        "614011"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F363"
+    },
+    {
+      "kalem_kodu": "F368",
+      "oran_hucre": "F368",
+      "oran_satir": 368,
+      "ad": "FAALİYET  GİDERLERİ Branş Payları",
+      "pay": [
+        "61402"
+      ],
+      "baz": [
+        "61402"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F368"
+    },
+    {
+      "kalem_kodu": "F373",
+      "oran_hucre": "F373",
+      "oran_satir": 373,
+      "ad": "Alınan Komisyon Geliri",
+      "pay": [
+        "61407101"
+      ],
+      "baz": [
+        "614071"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F373"
+    },
+    {
+      "kalem_kodu": "F378",
+      "oran_hucre": "F378",
+      "oran_satir": 378,
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "pay": [],
+      "baz": [
+        "614071"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F378"
+    },
+    {
+      "kalem_kodu": "0258",
+      "oran_hucre": "F383",
+      "oran_satir": 383,
+      "ad": "DİĞER FAALİYET GİDERLERİ (TKK Teşvik, Ön Eks. Acer Yaz.)",
+      "pay": [
+        "61408"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 200,
+        "tahmin_kod": "0258",
+        "tahmin_hucre": "F200",
+        "formul": "=F11*F383"
+      },
+      "gt_hucre": "F383"
+    },
+    {
+      "kalem_kodu": "0259",
+      "oran_hucre": "F388",
+      "oran_satir": 388,
+      "ad": "DİĞER FAALİYET GİDERLERİ  2 (ASİSTANS)",
+      "pay": [
+        "61409"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 201,
+        "tahmin_kod": "0259",
+        "tahmin_hucre": "F201",
+        "formul": "=F11*F388"
+      },
+      "gt_hucre": "F388"
+    },
+    {
+      "kalem_kodu": "F393",
+      "oran_hucre": "F393",
+      "oran_satir": 393,
+      "ad": "Aktüeryal Matematik Karşılık",
+      "pay": [
+        "61409"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F393"
+    },
+    {
+      "kalem_kodu": "F398",
+      "oran_hucre": "F398",
+      "oran_satir": 398,
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "pay": [
+        "60301"
+      ],
+      "baz": [
+        "60301"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F398"
+    },
+    {
+      "kalem_kodu": "0251199",
+      "oran_hucre": "F431",
+      "oran_satir": 431,
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "pay": [],
+      "baz": [],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 188,
+        "tahmin_kod": "0251199",
+        "tahmin_hucre": "F188",
+        "formul": "=F15*F431"
+      },
+      "gt_hucre": "F431"
+    },
+    {
+      "kalem_kodu": "F436",
+      "oran_hucre": "F436",
+      "oran_satir": 436,
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "pay": [
+        "61002"
+      ],
+      "baz": [
+        "61001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.95
+        ],
+        [
+          2,
+          0.05
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F436"
+    },
+    {
+      "kalem_kodu": "F441",
+      "oran_hucre": "F441",
+      "oran_satir": 441,
+      "ad": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)",
+      "pay": [],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F441"
+    },
+    {
+      "kalem_kodu": "022220101",
+      "oran_hucre": "F446",
+      "oran_satir": 446,
+      "ad": "Brüt Muallak Hasarlar Karşılığında Değişim (Devreden Kısım Düşülmüş)",
+      "pay": [
+        "61101"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 149,
+        "tahmin_kod": "022220101",
+        "tahmin_hucre": "F149",
+        "formul": "=F128*F446"
+      },
+      "gt_hucre": "F446"
+    },
+    {
+      "kalem_kodu": "02211",
+      "oran_hucre": "F451",
+      "oran_satir": 451,
+      "ad": "Muallak Hasarlar Karşılığı (+/-)",
+      "pay": [
+        "611011"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 116,
+        "tahmin_kod": "02211",
+        "tahmin_hucre": "F116",
+        "formul": "=F11*F451"
+      },
+      "gt_hucre": "F451"
+    },
+    {
+      "kalem_kodu": "02212",
+      "oran_hucre": "F456",
+      "oran_satir": 456,
+      "ad": "Devreden Muallak Hasarlar Karşılığı (+/-)",
+      "pay": [
+        "611012"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 126,
+        "tahmin_kod": "02212",
+        "tahmin_hucre": "F126",
+        "formul": "=F11*F456"
+      },
+      "gt_hucre": "F456"
+    },
+    {
+      "kalem_kodu": "F461",
+      "oran_hucre": "F461",
+      "oran_satir": 461,
+      "ad": "Brüt Muallak Has. Kar. Değişim Reasürör Payı (Dev. Kısım Düşülmüş) ",
+      "pay": [
+        "61102"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F461"
+    },
+    {
+      "kalem_kodu": "02221",
+      "oran_hucre": "F466",
+      "oran_satir": 466,
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "pay": [
+        "611021"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 137,
+        "tahmin_kod": "02221",
+        "tahmin_hucre": "F137",
+        "formul": "=F11*F466"
+      },
+      "gt_hucre": "F466"
+    },
+    {
+      "kalem_kodu": "02222",
+      "oran_hucre": "F471",
+      "oran_satir": 471,
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "pay": [
+        "611022"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": {
+        "tahmin_satir": 147,
+        "tahmin_kod": "02222",
+        "tahmin_hucre": "F147",
+        "formul": "=F11*F471"
+      },
+      "gt_hucre": "F471"
+    }
+  ]
+}

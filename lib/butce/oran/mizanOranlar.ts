@@ -1,0 +1,210 @@
+import { HAZINE_BRANS_KODLARI, HAZINE_BRANS_SIRASI } from "../config/brans";
+import {
+  ORAN_KALEM_ALT_GRUP,
+  ORAN_REFERANS_SECENEKLERI,
+  ORAN_REFERANS_VARSAYILAN,
+} from "../config/constants";
+import { normalizeBransKodu } from "../textUtils";
+import type { BransOranAyar, BransOranSatir, MizanRow, OranAyarStore } from "../types";
+import type { BilesenSpec } from "./oranKalemLoader";
+import { ORAN_BAZLI_KALEMLER, ORAN_KALEM_MIZAN } from "./oranKalemLoader";
+import { exportNormSpec, hesaplaEtkinOran } from "./oranMotoru";
+
+const MIN_BAZ_TUTAR = 1;
+
+export class MizanOranServisi {
+  readonly butceYili: number;
+  readonly yillar: number[];
+  private readonly mizan: MizanRow[];
+
+  constructor(mizan: MizanRow[], butceYili = 2027) {
+    this.butceYili = butceYili;
+    this.mizan = mizan.filter((r) => r.bransKodu !== "TOPLAM");
+    this.yillar = [...new Set(this.mizan.map((r) => r.yil))]
+      .filter((y) => y < butceYili)
+      .sort((a, b) => a - b);
+  }
+
+  private hesapTutar(
+    yil: number,
+    brans: string,
+    hesaplar: string[],
+    opts: { prefix?: boolean; tumSirket?: boolean } = {},
+  ): number {
+    const { prefix = false, tumSirket = false } = opts;
+    const br = normalizeBransKodu(brans);
+    const rows = this.mizan.filter((r) => {
+      if (r.yil !== yil) return false;
+      if (!tumSirket && r.bransKodu !== br) return false;
+      return true;
+    });
+    if (rows.length === 0) return 0;
+
+    let toplam = 0;
+    for (const hesap of hesaplar) {
+      for (const r of rows) {
+        const h = String(r.hesap);
+        if (prefix ? h.startsWith(hesap) : h === hesap) toplam += r.tutar;
+      }
+    }
+    return toplam;
+  }
+
+  private bilesenYilOrani(brans: string, yil: number, bilesen: BilesenSpec): number | null {
+    const prefix = bilesen.hesap_eslesme === "prefix";
+    const tumSirketBaz = bilesen.baz_toplam_sirket ?? false;
+    const pay = this.hesapTutar(yil, brans, bilesen.pay, { prefix });
+    const baz = this.hesapTutar(yil, brans, bilesen.baz, { prefix, tumSirket: tumSirketBaz });
+    if (Math.abs(baz) < MIN_BAZ_TUTAR) return null;
+    return pay / baz;
+  }
+
+  private etkinOranHesapla(kalemKodu: string, brans: string) {
+    return hesaplaEtkinOran(
+      kalemKodu,
+      brans,
+      (b, y, bil) => this.bilesenYilOrani(b, y, bil),
+      this.yillar,
+    );
+  }
+
+  bransOrani(kalemKodu: string, brans: string, referans: string): number {
+    if (!(kalemKodu in ORAN_KALEM_MIZAN)) {
+      return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+    }
+    if (referans === "manuel") {
+      return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+    }
+    if (referans === ORAN_REFERANS_VARSAYILAN || referans === "excel_gt") {
+      return this.etkinOranHesapla(kalemKodu, brans).etkinOran;
+    }
+    if (referans === "son_yil") {
+      if (this.yillar.length === 0) return 0;
+      const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+      const o = this.bilesenYilOrani(brans, this.yillar[this.yillar.length - 1], b0);
+      return o ?? 0;
+    }
+    if (/^\d+$/.test(referans)) {
+      const y = parseInt(referans, 10);
+      if (this.yillar.includes(y)) {
+        const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+        const o = this.bilesenYilOrani(brans, y, b0);
+        return o ?? 0;
+      }
+      return 0;
+    }
+    if (referans === "son_3_yil_ort") {
+      const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+      const oranlar: number[] = [];
+      for (const y of this.yillar.slice(-3)) {
+        const o = this.bilesenYilOrani(brans, y, b0);
+        if (o != null) oranlar.push(o);
+      }
+      if (oranlar.length) return oranlar.reduce((a, b) => a + b, 0) / oranlar.length;
+    }
+    return 0;
+  }
+
+  yilEtiketleri(): [string, string][] {
+    const opts: [string, string][] = [...ORAN_REFERANS_SECENEKLERI];
+    for (const y of [...this.yillar].reverse()) opts.push([String(y), String(y)]);
+    return opts;
+  }
+
+  tumBranslarTablosu(
+    kalemKodu: string,
+    bransAyar: Record<string, BransOranAyar> = {},
+    opts: { mizanHesapla?: boolean } = {},
+  ): BransOranSatir[] {
+    const { mizanHesapla = true } = opts;
+
+    if (!mizanHesapla && Object.keys(bransAyar).length > 0) {
+      return this.tabloFromBransAyar(kalemKodu, bransAyar);
+    }
+
+    return HAZINE_BRANS_SIRASI.map((kod) => {
+      const info = HAZINE_BRANS_KODLARI[kod] ?? ["", kod, ""];
+      const ayar = bransAyar[kod] ?? {};
+      const referans = ayar.referans ?? ORAN_REFERANS_VARSAYILAN;
+      const manuel = ayar.manuel ?? false;
+      const oran = manuel && ayar.oran != null
+        ? ayar.oran
+        : this.bransOrani(kalemKodu, kod, referans);
+
+      return {
+        bransKodu: kod,
+        bransAdi: info[1],
+        anaBrans: info[2],
+        referans,
+        oran: Math.round(oran * 1e6) / 1e6,
+        manuel,
+      };
+    });
+  }
+
+  tabloFromBransAyar(kalemKodu: string, bransAyar: Record<string, BransOranAyar>): BransOranSatir[] {
+    const varsayilan = ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+    return HAZINE_BRANS_SIRASI.map((kod) => {
+      const info = HAZINE_BRANS_KODLARI[kod] ?? ["", kod, ""];
+      const ayar = bransAyar[kod] ?? {};
+      return {
+        bransKodu: kod,
+        bransAdi: info[1],
+        anaBrans: info[2],
+        referans: ayar.referans ?? ORAN_REFERANS_VARSAYILAN,
+        oran: Math.round((ayar.oran ?? varsayilan) * 1e6) / 1e6,
+        manuel: ayar.manuel ?? false,
+      };
+    });
+  }
+
+  bransAyarMizanHesapla(
+    kalemKodu: string,
+    mevcutAyar: Record<string, BransOranAyar> = {},
+  ): Record<string, BransOranAyar> {
+    const tablo = this.tumBranslarTablosu(kalemKodu, mevcutAyar);
+    const out: Record<string, BransOranAyar> = {};
+    for (const row of tablo) {
+      out[row.bransKodu] = {
+        referans: row.referans,
+        oran: row.oran,
+        manuel: row.manuel,
+      };
+    }
+    return out;
+  }
+
+  migrateLegacyBransAyarlar(bransAyarlar: OranAyarStore): OranAyarStore {
+    const out: OranAyarStore = { ...bransAyarlar };
+    for (const [parent, altlar] of Object.entries(ORAN_KALEM_ALT_GRUP)) {
+      if (!(parent in out) || altlar.some((a) => a in out)) continue;
+      const parentAyar = out[parent];
+      delete out[parent];
+      for (const alt of altlar) {
+        const altAyar: Record<string, BransOranAyar> = {};
+        for (const [kod, ayar] of Object.entries(parentAyar)) {
+          const ref = ayar.referans ?? ORAN_REFERANS_VARSAYILAN;
+          if (ayar.manuel && ayar.oran != null) {
+            altAyar[kod] = { referans: "manuel", oran: ayar.oran, manuel: true };
+          } else {
+            altAyar[kod] = {
+              referans: ref,
+              oran: this.bransOrani(alt, kod, ref),
+              manuel: false,
+            };
+          }
+        }
+        out[alt] = altAyar;
+      }
+    }
+    return out;
+  }
+
+  kalemDetay(kalemKodu: string, brans: string) {
+    return this.etkinOranHesapla(kalemKodu, brans);
+  }
+}
+
+export function oranKalemListesi(): { kod: string; ad: string }[] {
+  return Object.entries(ORAN_BAZLI_KALEMLER).map(([kod, v]) => ({ kod, ad: v.ad }));
+}

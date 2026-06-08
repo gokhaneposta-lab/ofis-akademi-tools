@@ -1,0 +1,6091 @@
+{
+  "meta": {
+    "kaynak": "Bütçe GT Çalışma_v8.xlsx",
+    "sayfa": "GT",
+    "tahmin_aralik": "9-219",
+    "oran_aralik": "241+"
+  },
+  "tahmin_alani": [
+    {
+      "satir": 9,
+      "hucre": "F9",
+      "kod": "01",
+      "ad": "HAYAT DIŞI TEKNİK GELİR ",
+      "formul": "=F10+F21+F31+F38+F83+F86",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        10,
+        21,
+        31,
+        38,
+        83,
+        86
+      ]
+    },
+    {
+      "satir": 10,
+      "hucre": "F10",
+      "kod": "011",
+      "ad": "YAZILAN PRİMLER (REASÜRANS PAYI DÜŞÜLMÜŞ OLARAK)",
+      "formul": "=F11+F19+F20",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        11,
+        19,
+        20
+      ]
+    },
+    {
+      "satir": 11,
+      "hucre": "F11",
+      "kod": "0111",
+      "ad": "YAZILAN PRİMLER (BRÜT)",
+      "formul": "=SUMIFS('3-Prim Ay Dağılımı'!$U:$U,'3-Prim Ay Dağılımı'!$G:$G,GT!F$5,'3-Prim Ay Dağılımı'!$B:$B,GT!$C$1)",
+      "tip": "prim_dagilim",
+      "dis_sayfalar": [
+        "3-Prim Ay Dağılımı"
+      ]
+    },
+    {
+      "satir": 12,
+      "hucre": "F12",
+      "kod": "01111",
+      "ad": "DİREK",
+      "formul": "=F11-F15",
+      "tip": "fark",
+      "dis_sayfalar": [],
+      "carpim": {
+        "tip": "fark",
+        "baz_hucre": "F11",
+        "cikar_hucre": "F15"
+      }
+    },
+    {
+      "satir": 13,
+      "hucre": "F13",
+      "kod": "0111101",
+      "ad": "YURTİÇİ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 14,
+      "hucre": "F14",
+      "kod": "0111102",
+      "ad": "YURTDIŞI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 15,
+      "hucre": "F15",
+      "kod": "1112",
+      "ad": "ENDİREK",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 16,
+      "hucre": "F16",
+      "kod": "0111201",
+      "ad": "YURTİÇİ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 17,
+      "hucre": "F17",
+      "kod": "0111202",
+      "ad": "YURTDIŞI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 18,
+      "hucre": "F18",
+      "kod": "01113",
+      "ad": "SGK'YA AKTARILMAK ÜZERE YAZILAN PRİMLER",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 19,
+      "hucre": "F19",
+      "kod": "0112",
+      "ad": "REASÜRANSA DEVREDİLEN PRİMLER ( - )",
+      "formul": "=F11*F295",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 11,
+        "baz_hucre": "F11",
+        "oran_satir": 295,
+        "oran_hucre": "F295"
+      }
+    },
+    {
+      "satir": 20,
+      "hucre": "F20",
+      "kod": "0113",
+      "ad": "SGK'YA AKTARILAN PRİMLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 21,
+      "hucre": "F21",
+      "kod": "012",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F22+F25+F28",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        22,
+        25,
+        28
+      ]
+    },
+    {
+      "satir": 22,
+      "hucre": "F22",
+      "kod": "0121",
+      "ad": "BRÜT KAZANILMAMIŞ PRİM KARŞILIĞI (DEVREDEN DÜŞÜLMÜŞ)",
+      "formul": "=SUM(F23:F24)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        23,
+        24
+      ]
+    },
+    {
+      "satir": 23,
+      "hucre": "F23",
+      "kod": "01211",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞI",
+      "formul": "=SUMIFS('YK KPK'!$V:$V,'YK KPK'!$D:$D,GT!F$5,'YK KPK'!$B:$B,GT!$C$1)",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "YK KPK"
+      ]
+    },
+    {
+      "satir": 24,
+      "hucre": "F24",
+      "kod": "01212",
+      "ad": "DEVREDEN KAZANILMAMIŞ PRİM KARŞILIĞI",
+      "formul": "=SUMIFS('MEVCUT YIL DEVREDEN KPK'!$V:$V,'MEVCUT YIL DEVREDEN KPK'!$D:$D,GT!F$5,'MEVCUT YIL DEVREDEN KPK'!$B:$B,GT!$C$1)*-1",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "MEVCUT YIL DEVREDEN KPK"
+      ]
+    },
+    {
+      "satir": 25,
+      "hucre": "F25",
+      "kod": "0122",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRÖR PAYI",
+      "formul": "=SUM(F26:F27)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        26,
+        27
+      ]
+    },
+    {
+      "satir": 26,
+      "hucre": "F26",
+      "kod": "01221",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRANSPAYI",
+      "formul": "=SUMIFS('YK KPK'!$AL:$AL,'YK KPK'!$D:$D,GT!F$5,'YK KPK'!$B:$B,GT!$C$1)",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "YK KPK"
+      ]
+    },
+    {
+      "satir": 27,
+      "hucre": "F27",
+      "kod": "01222",
+      "ad": "DEVREDEN KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRANSPAYI",
+      "formul": "=SUMIFS('MEVCUT YIL DEVREDEN KPK'!$AL:$AL,'MEVCUT YIL DEVREDEN KPK'!$D:$D,GT!F$5,'MEVCUT YIL DEVREDEN KPK'!$B:$B,GT!$C$1)*-1",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "MEVCUT YIL DEVREDEN KPK"
+      ]
+    },
+    {
+      "satir": 28,
+      "hucre": "F28",
+      "kod": "0123",
+      "ad": "BRÜT KPK SGK PAYI",
+      "formul": "=SUM(F29:F30)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        29,
+        30
+      ]
+    },
+    {
+      "satir": 29,
+      "hucre": "F29",
+      "kod": "01231",
+      "ad": "KPK SGK PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 30,
+      "hucre": "F30",
+      "kod": "01232",
+      "ad": "DEVREDEN KPK SGK PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 31,
+      "hucre": "F31",
+      "kod": "013",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": "=F32+F35",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        32,
+        35
+      ]
+    },
+    {
+      "satir": 32,
+      "hucre": "F32",
+      "kod": "0131",
+      "ad": "BRÜT DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": "=SUM(F33:F34)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        33,
+        34
+      ]
+    },
+    {
+      "satir": 33,
+      "hucre": "F33",
+      "kod": "01311",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 34,
+      "hucre": "F34",
+      "kod": "01312",
+      "ad": "DEVREDEN DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 35,
+      "hucre": "F35",
+      "kod": "0132",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI",
+      "formul": "=SUM(F36:F37)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        36,
+        37
+      ]
+    },
+    {
+      "satir": 36,
+      "hucre": "F36",
+      "kod": "01321",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 37,
+      "hucre": "F37",
+      "kod": "01322",
+      "ad": "DEVREDEN DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 38,
+      "hucre": "F38",
+      "kod": "014",
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "formul": "=SUMIFS('Nakit Akış Özet'!$AC:$AC,'Nakit Akış Özet'!$C:$C,GT!$C$1,'Nakit Akış Özet'!$B:$B,\"bs\")*GT!F397",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "Nakit Akış Özet"
+      ]
+    },
+    {
+      "satir": 39,
+      "hucre": "F39",
+      "kod": "0141",
+      "ad": "FİNANSAL YATIRIM GELİRLERİ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 40,
+      "hucre": "F40",
+      "kod": "01411",
+      "ad": "HİSSE SENETLERİ VE DİĞER",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 41,
+      "hucre": "F41",
+      "kod": "01412",
+      "ad": "HAZİNE BONOSU",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 42,
+      "hucre": "F42",
+      "kod": "01413",
+      "ad": "DEVLET TAHVİLİ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 43,
+      "hucre": "F43",
+      "kod": "01414",
+      "ad": "ÖZEL SEKTÖR BONO",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 44,
+      "hucre": "F44",
+      "kod": "01415",
+      "ad": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 45,
+      "hucre": "F45",
+      "kod": "01416",
+      "ad": "YATIRIM FONU",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 46,
+      "hucre": "F46",
+      "kod": "01417",
+      "ad": "REPO",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 47,
+      "hucre": "F47",
+      "kod": "01418",
+      "ad": "VADELİ MEVDUAT",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 48,
+      "hucre": "F48",
+      "kod": "01419",
+      "ad": "DİĞER FİNANSAL",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 49,
+      "hucre": "F49",
+      "kod": "0142",
+      "ad": "FİNANSAL YAT.NAKTE ÇEV.KAY.KARLAR",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 50,
+      "hucre": "F50",
+      "kod": "01421",
+      "ad": "HİSSE SENETLERİ VE DİĞER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 51,
+      "hucre": "F51",
+      "kod": "01422",
+      "ad": "HAZİNE BONOSU",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 52,
+      "hucre": "F52",
+      "kod": "01423",
+      "ad": "DEVLET TAHVİLİ",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 53,
+      "hucre": "F53",
+      "kod": "01424",
+      "ad": "ÖZEL SEKTÖR BONO",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 54,
+      "hucre": "F54",
+      "kod": "01425",
+      "ad": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 55,
+      "hucre": "F55",
+      "kod": "01426",
+      "ad": "YATIRIM FONU",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 56,
+      "hucre": "F56",
+      "kod": "01427",
+      "ad": "REPO",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 57,
+      "hucre": "F57",
+      "kod": "01429",
+      "ad": "DİĞER FİNANSAL",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 58,
+      "hucre": "F58",
+      "kod": "0143",
+      "ad": "FİNANSAL YATIRIMLARIN DEĞERLEMESİ",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 59,
+      "hucre": "F59",
+      "kod": "01431",
+      "ad": "HİSSE SENETLERİ VE DİĞER",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 60,
+      "hucre": "F60",
+      "kod": "01432",
+      "ad": "HAZİNE BONOSU",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 61,
+      "hucre": "F61",
+      "kod": "01433",
+      "ad": "DEVLET TAHVİLİ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 62,
+      "hucre": "F62",
+      "kod": "01434",
+      "ad": "ÖZEL SEKTÖR BONO",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 63,
+      "hucre": "F63",
+      "kod": "01435",
+      "ad": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 64,
+      "hucre": "F64",
+      "kod": "01436",
+      "ad": "YATIRIM FONU",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 65,
+      "hucre": "F65",
+      "kod": "01437",
+      "ad": "REPO",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 66,
+      "hucre": "F66",
+      "kod": "01439",
+      "ad": "DİĞER FİNANSAL",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 67,
+      "hucre": "F67",
+      "kod": "0144",
+      "ad": "KAMBİYO KARLARI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 68,
+      "hucre": "F68",
+      "kod": "0145",
+      "ad": "İŞTİRAKLERDEN GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 69,
+      "hucre": "F69",
+      "kod": "01451",
+      "ad": "TEMETTÜ",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 70,
+      "hucre": "F70",
+      "kod": "01452",
+      "ad": "DİĞER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 71,
+      "hucre": "F71",
+      "kod": "0146",
+      "ad": "BAĞLI ORT.VE MÜŞT.YÖN.TEŞ.GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 72,
+      "hucre": "F72",
+      "kod": "01461",
+      "ad": "TEMETTÜ",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 73,
+      "hucre": "F73",
+      "kod": "01462",
+      "ad": "DİĞER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 74,
+      "hucre": "F74",
+      "kod": "0147",
+      "ad": "ARAZİ, ARSA BİNALARDAN ELDE EDİLEN GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 75,
+      "hucre": "F75",
+      "kod": "01471",
+      "ad": "KİRA",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 76,
+      "hucre": "F76",
+      "kod": "01472",
+      "ad": "SATIŞ KARI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 77,
+      "hucre": "F77",
+      "kod": "01473",
+      "ad": "DEĞERLEME ARTIŞLARI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 78,
+      "hucre": "F78",
+      "kod": "0148",
+      "ad": "TÜREV ÜRÜNLERİNDEN ELDE EDİLEN GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 79,
+      "hucre": "F79",
+      "kod": "0149",
+      "ad": "DİĞER YATIRIMLARDAN ELDE EDİLEN GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 80,
+      "hucre": "F80",
+      "kod": "01491",
+      "ad": "DÜZENLİ GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 81,
+      "hucre": "F81",
+      "kod": "01492",
+      "ad": "NAKDE ÇEVRİMDEN ELDE EDİLEN GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 82,
+      "hucre": "F82",
+      "kod": "01493",
+      "ad": "DEĞERLEME ARTIŞLARI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 83,
+      "hucre": "F83",
+      "kod": "015",
+      "ad": "DİĞER TEKNİK GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 84,
+      "hucre": "F84",
+      "kod": "0151",
+      "ad": "BRÜT DİĞER TEKNİK GELİRLER",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 85,
+      "hucre": "F85",
+      "kod": "0152",
+      "ad": "BRÜT DİĞER TEKNİK GELİRLERDE REASÜRÖR PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 86,
+      "hucre": "F86",
+      "kod": "016",
+      "ad": "TAHAKKUK EDEN RÜCU VE SOVTAJ GELİRLERİ (  + )",
+      "formul": "=(F96+F116)*F315",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz": "F96+F116",
+        "oran_satir": 315,
+        "oran_hucre": "F315"
+      }
+    },
+    {
+      "satir": 87,
+      "hucre": "F87",
+      "kod": "0161",
+      "ad": "TAHAKKUK EDEN RÜCU GELİRİ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 88,
+      "hucre": "F88",
+      "kod": "0162",
+      "ad": "TAHAKKUK EDEN RÜCU GELİRİ REAS PAYI",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 89,
+      "hucre": "F89",
+      "kod": "0163",
+      "ad": "TAHAKKUK EDEN SOVTAJ GELİRİ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 90,
+      "hucre": "F90",
+      "kod": "0164",
+      "ad": "TAHAKKUK ENE SOVTAJ GELİRİ RE PAYI",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 91,
+      "hucre": "F91",
+      "kod": "0165",
+      "ad": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 92,
+      "hucre": "F92",
+      "kod": "01651",
+      "ad": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI BRÜT",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 93,
+      "hucre": "F93",
+      "kod": "01652",
+      "ad": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI RE PAYI",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 94,
+      "hucre": "F94",
+      "kod": "02",
+      "ad": "HAYAT DIŞI TEKNİK GİDER",
+      "formul": "=F95+F114+F157+F164+F176+F217+F202",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        95,
+        114,
+        157,
+        164,
+        176,
+        202,
+        217
+      ]
+    },
+    {
+      "satir": 95,
+      "hucre": "F95",
+      "kod": "021",
+      "ad": "ÖDENEN HASARLAR",
+      "formul": "=F96+F105",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        96,
+        105
+      ]
+    },
+    {
+      "satir": 96,
+      "hucre": "F96",
+      "kod": "0211",
+      "ad": "BRÜT ÖDENEN HASARLAR",
+      "formul": "=(F11+F22+F32)*F320",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz": "F11+F22+F32",
+        "oran_satir": 320,
+        "oran_hucre": "F320"
+      }
+    },
+    {
+      "satir": 97,
+      "hucre": "F97",
+      "kod": "02111",
+      "ad": "Fiili Tazminat Ödemeleri (-)",
+      "formul": "=SUM(F98:F100)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        98,
+        100
+      ]
+    },
+    {
+      "satir": 98,
+      "hucre": "F98",
+      "kod": "0211101",
+      "ad": "Sigortalılara Ödemeler (Sigortalılara / 3. Şahıslara Tazminat Ödemeleri) ",
+      "formul": "=F$96*F399",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 99,
+      "hucre": "F99",
+      "kod": "0211102",
+      "ad": "Eksper Ödemeleri",
+      "formul": "=F$96*F400",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 100,
+      "hucre": "F100",
+      "kod": "0211199",
+      "ad": "Diğer Ödemeler (Masraf Ödemeleri)",
+      "formul": "=F$96*F401",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 101,
+      "hucre": "F101",
+      "kod": "02112",
+      "ad": "Tahsil Edilen Rücu Gelirleri (+)",
+      "formul": "=F$96*F402",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 102,
+      "hucre": "F102",
+      "kod": "02113",
+      "ad": "Tahsil Edilen Sovtaj Gelirleri (+)",
+      "formul": "=F$96*F403",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 103,
+      "hucre": "F103",
+      "kod": "02114",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumlu Farkları (+)",
+      "formul": "=F$96*F404",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 104,
+      "hucre": "F104",
+      "kod": "02115",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumsuz Farkları (-)",
+      "formul": "=F$96*F405",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 105,
+      "hucre": "F105",
+      "kod": "0212",
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "formul": "=F106+F110+F111+F112+F113",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        106,
+        110,
+        111,
+        112,
+        113
+      ]
+    },
+    {
+      "satir": 106,
+      "hucre": "F106",
+      "kod": "02121",
+      "ad": "Fiilen Ödenen Tazminatlarda Reasürör Payı (+)",
+      "formul": "=SUM(F107:F109)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        107,
+        109
+      ]
+    },
+    {
+      "satir": 107,
+      "hucre": "F107",
+      "kod": "0212101",
+      "ad": "Sigortalılara Ödemeler (Sigortalılara / 3. Şahıslara Tazminat Ödemeleri) ",
+      "formul": "=F98*F$436",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 108,
+      "hucre": "F108",
+      "kod": "0212102",
+      "ad": "Eksper Ödemeleri",
+      "formul": "=F99*F$436",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 109,
+      "hucre": "F109",
+      "kod": "0212199",
+      "ad": "Diğer Ödemeler (Masraf Ödemeleri)",
+      "formul": "=F100*F$436",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 110,
+      "hucre": "F110",
+      "kod": "02122",
+      "ad": "Tahsil Edilen Rücu Gelirleri Reasürör Payı(-)",
+      "formul": "=F101*F$436",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 111,
+      "hucre": "F111",
+      "kod": "02123",
+      "ad": "Tahsil Edilen Sovtaj Gelirleri Reasürör Payı(-)",
+      "formul": "=F102*F$436",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 112,
+      "hucre": "F112",
+      "kod": "02124",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumlu Farkları Reasürör Payı (-)",
+      "formul": "=F103*F$436",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 113,
+      "hucre": "F113",
+      "kod": "02125",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumsuz Farkları Reasürör Payı (+)",
+      "formul": "=F104*F$436",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 114,
+      "hucre": "F114",
+      "kod": "022",
+      "ad": "MUALLAK HASARLAR KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F115+F136",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        115,
+        136
+      ]
+    },
+    {
+      "satir": 115,
+      "hucre": "F115",
+      "kod": "0221",
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F116+F126",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        116,
+        126
+      ]
+    },
+    {
+      "satir": 116,
+      "hucre": "F116",
+      "kod": "02211",
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞI",
+      "formul": "=F11*F451",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 11,
+        "baz_hucre": "F11",
+        "oran_satir": 451,
+        "oran_hucre": "F451"
+      }
+    },
+    {
+      "satir": 117,
+      "hucre": "F117",
+      "kod": "0221101",
+      "ad": "Tahakkuk Eden",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 118,
+      "hucre": "F118",
+      "kod": "022110101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 119,
+      "hucre": "F119",
+      "kod": "022110102",
+      "ad": "Eksper  ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 120,
+      "hucre": "F120",
+      "kod": "022110103",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 121,
+      "hucre": "F121",
+      "kod": "022111040",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 122,
+      "hucre": "F122",
+      "kod": "022110199",
+      "ad": "Diğer (Masraf Muallakları)",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 123,
+      "hucre": "F123",
+      "kod": "0221102",
+      "ad": "Raporlanmayan",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 124,
+      "hucre": "F124",
+      "kod": "0221104",
+      "ad": "Muallak Tazminat Karşılığı Yeterlilik Farkı",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 125,
+      "hucre": "F125",
+      "kod": "0221108",
+      "ad": "Nakit Akışlarından Kaynaklanan İskonto ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 126,
+      "hucre": "F126",
+      "kod": "02212",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI",
+      "formul": "=F11*F456",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 11,
+        "baz_hucre": "F11",
+        "oran_satir": 456,
+        "oran_hucre": "F456"
+      }
+    },
+    {
+      "satir": 127,
+      "hucre": "F127",
+      "kod": "0221201",
+      "ad": "DEVREDEN MHK TAHAKKUK",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 128,
+      "hucre": "F128",
+      "kod": "022120101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 129,
+      "hucre": "F129",
+      "kod": "022120102",
+      "ad": "Eksper  ",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 130,
+      "hucre": "F130",
+      "kod": "022120103",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 131,
+      "hucre": "F131",
+      "kod": "022121040",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 132,
+      "hucre": "F132",
+      "kod": "022120199",
+      "ad": "Diğer (Masraf Muallakları)",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 133,
+      "hucre": "F133",
+      "kod": "0221202",
+      "ad": "DEVREDEN MHK IBNR",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 134,
+      "hucre": "F134",
+      "kod": "0221204",
+      "ad": "MUALLAK TAZMİNAT KARŞILIĞI YETERLİLİK FARKI",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 135,
+      "hucre": "F135",
+      "kod": "0221208",
+      "ad": "NAKİT AKIŞLARINDAN KAYNAKLANAN İSKONTO",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 136,
+      "hucre": "F136",
+      "kod": "0222",
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYINDA DEĞİŞİM",
+      "formul": "=F137+F147",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        137,
+        147
+      ]
+    },
+    {
+      "satir": 137,
+      "hucre": "F137",
+      "kod": "02221",
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=F11*F466",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 11,
+        "baz_hucre": "F11",
+        "oran_satir": 466,
+        "oran_hucre": "F466"
+      }
+    },
+    {
+      "satir": 138,
+      "hucre": "F138",
+      "kod": "0222101",
+      "ad": "Tahakkuk Eden",
+      "formul": "=SUM(F139:F143)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        139,
+        143
+      ]
+    },
+    {
+      "satir": 139,
+      "hucre": "F139",
+      "kod": "022210101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": "=F118*F$441",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 140,
+      "hucre": "F140",
+      "kod": "022210102",
+      "ad": "Eksper  ",
+      "formul": "=F119*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 141,
+      "hucre": "F141",
+      "kod": "022210103",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (-)",
+      "formul": "=F120*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 142,
+      "hucre": "F142",
+      "kod": "022211040",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "formul": "=F121*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 143,
+      "hucre": "F143",
+      "kod": "022210199",
+      "ad": "Diğer (Masraf Muallakları)",
+      "formul": "=F122*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 144,
+      "hucre": "F144",
+      "kod": "0222102",
+      "ad": "Raporlanmayan",
+      "formul": "=F123*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 145,
+      "hucre": "F145",
+      "kod": "0222104",
+      "ad": "Muallak Tazminat Karşılığı Yeterlilik Farkı",
+      "formul": "=F124*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 146,
+      "hucre": "F146",
+      "kod": "0222108",
+      "ad": "Nakit Akışlarından Kaynaklanan İskontoda Reasürör Payı",
+      "formul": "=F125*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 147,
+      "hucre": "F147",
+      "kod": "02222",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=F11*F471",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 11,
+        "baz_hucre": "F11",
+        "oran_satir": 471,
+        "oran_hucre": "F471"
+      }
+    },
+    {
+      "satir": 148,
+      "hucre": "F148",
+      "kod": "0222201",
+      "ad": "DEVREDEN MHK RE PAYI TAHAKKUK",
+      "formul": "=SUM(F149:F153)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        149,
+        153
+      ]
+    },
+    {
+      "satir": 149,
+      "hucre": "F149",
+      "kod": "022220101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": "=F128*F446",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 128,
+        "baz_hucre": "F128",
+        "oran_satir": 446,
+        "oran_hucre": "F446"
+      }
+    },
+    {
+      "satir": 150,
+      "hucre": "F150",
+      "kod": "022220102",
+      "ad": "Eksper  ",
+      "formul": "=F129*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 151,
+      "hucre": "F151",
+      "kod": "022220103",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (-)",
+      "formul": "=F130*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 152,
+      "hucre": "F152",
+      "kod": "022221040",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "formul": "=F131*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 153,
+      "hucre": "F153",
+      "kod": "022220199",
+      "ad": "Diğer (Masraf Muallakları)",
+      "formul": "=F132*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 154,
+      "hucre": "F154",
+      "kod": "0222202",
+      "ad": "DEVREDEN MHK RE PAYI IBNR",
+      "formul": "=F133*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 155,
+      "hucre": "F155",
+      "kod": "0222204",
+      "ad": "MUALLAK TAZMİNAT KARŞILIĞI YETERLİLİK FARKI RE PAYI",
+      "formul": "=F134*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 156,
+      "hucre": "F156",
+      "kod": "0222208",
+      "ad": "NAKİT AKIŞLARINDAN KAYNAKLANAN İSKONTODA REASÜRÖR PAYI",
+      "formul": "=F135*F$325",
+      "tip": "carpim",
+      "dis_sayfalar": []
+    },
+    {
+      "satir": 157,
+      "hucre": "F157",
+      "kod": "023",
+      "ad": "İKRAMİYE VE İND.KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F158+F161",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        158,
+        161
+      ]
+    },
+    {
+      "satir": 158,
+      "hucre": "F158",
+      "kod": "0231",
+      "ad": "BRÜT İKRAMİYE VE İND.KARŞILIĞI",
+      "formul": "=SUM(F159:F160)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        159,
+        160
+      ]
+    },
+    {
+      "satir": 159,
+      "hucre": "F159",
+      "kod": "02311",
+      "ad": "İKRAMİYE VE İNDİRİMLER KARŞILIĞI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 160,
+      "hucre": "F160",
+      "kod": "02312",
+      "ad": "DEVREDEN İKRAMİYE VE İNDİRİMLER KARŞILIĞI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 161,
+      "hucre": "F161",
+      "kod": "0232",
+      "ad": "BRÜT İKRAMİYE VE İND.KARŞILIĞI REAS PAYI",
+      "formul": "=SUM(F162:F163)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        162,
+        163
+      ]
+    },
+    {
+      "satir": 162,
+      "hucre": "F162",
+      "kod": "02321",
+      "ad": "İKRAMİYE VE İNDİRİMLER KARŞILIĞI REAS PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 163,
+      "hucre": "F163",
+      "kod": "02322",
+      "ad": "DEVREDEN İKRAMİYE VE İNDİRİMLER KARŞILIĞI REAS PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 164,
+      "hucre": "F164",
+      "kod": "024",
+      "ad": "DİĞER TEKNİK KARŞILIĞI",
+      "formul": "=F165+F170+F173",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        165,
+        170,
+        173
+      ]
+    },
+    {
+      "satir": 165,
+      "hucre": "F165",
+      "kod": "0241",
+      "ad": "DENGELEME KARŞILIĞI",
+      "formul": "=F166+F169",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        166,
+        169
+      ]
+    },
+    {
+      "satir": 166,
+      "hucre": "F166",
+      "kod": "02411",
+      "ad": "DENGELEME KARŞILIĞI",
+      "formul": "=F167+F168",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        167,
+        168
+      ]
+    },
+    {
+      "satir": 167,
+      "hucre": "F167",
+      "kod": "0241101",
+      "ad": "Dengeleme Karşılığı (-)",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 168,
+      "hucre": "F168",
+      "kod": "0241102",
+      "ad": "Devreden Dengeleme Karşılığı (+)",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 169,
+      "hucre": "F169",
+      "kod": "02412",
+      "ad": "DENGELEME KARŞILIĞI RE PAYI",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 170,
+      "hucre": "F170",
+      "kod": "0242",
+      "ad": "MALİ RİSKLER KARŞILIĞI",
+      "formul": "=SUM(F171:F172)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        171,
+        172
+      ]
+    },
+    {
+      "satir": 171,
+      "hucre": "F171",
+      "kod": "02421",
+      "ad": "MALİ RİSKLER KARŞILIĞI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 172,
+      "hucre": "F172",
+      "kod": "02422",
+      "ad": "MALİ RİSKLER KARŞILIĞI RE PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 173,
+      "hucre": "F173",
+      "kod": "0249",
+      "ad": "DİĞER KARŞILIĞI",
+      "formul": "=SUM(F174:F175)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        174,
+        175
+      ]
+    },
+    {
+      "satir": 174,
+      "hucre": "F174",
+      "kod": "02491",
+      "ad": "DİĞER TEKNİK KARŞILIKLAR",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 175,
+      "hucre": "F175",
+      "kod": "02492",
+      "ad": "DİĞER TEKNİK KARŞILIKLAR RE PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 176,
+      "hucre": "F176",
+      "kod": "025",
+      "ad": "FAALİYET GİDERLERİ",
+      "formul": "=SUM(F177,F190:F195,F200,F201)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        177,
+        190,
+        195,
+        200,
+        201
+      ]
+    },
+    {
+      "satir": 177,
+      "hucre": "F177",
+      "kod": "0251",
+      "ad": "ÜRETİM KOMİSYON GİD.(-)",
+      "formul": "=F178+F189",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        178,
+        189
+      ]
+    },
+    {
+      "satir": 178,
+      "hucre": "F178",
+      "kod": "02511",
+      "ad": "Üretim Komisyonu Giderleri (-)",
+      "formul": "=F179+F182+F185+F188",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        179,
+        182,
+        185,
+        188
+      ]
+    },
+    {
+      "satir": 179,
+      "hucre": "F179",
+      "kod": "0251101",
+      "ad": "Bankalar Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F180:F181)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        180,
+        181
+      ]
+    },
+    {
+      "satir": 180,
+      "hucre": "F180",
+      "kod": null,
+      "ad": "Üretim Komisyon Gideri",
+      "formul": "=F12*F275",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 12,
+        "baz_hucre": "F12",
+        "oran_satir": 275,
+        "oran_hucre": "F275"
+      }
+    },
+    {
+      "satir": 181,
+      "hucre": "F181",
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "formul": "=SUMIFS('YK KPK'!$BD:$BD,'YK KPK'!$D:$D,GT!F$5,'YK KPK'!$B:$B,GT!$C$1)-SUMIFS('MEVCUT YIL DEVREDEN KPK'!$BD:$BD,'MEVCUT YIL DEVREDEN KPK'!$D:$D,GT!F$5,'MEVCUT YIL DEVREDEN KPK'!$B:$B,GT!$C$1)",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "YK KPK",
+        "MEVCUT YIL DEVREDEN KPK"
+      ]
+    },
+    {
+      "satir": 182,
+      "hucre": "F182",
+      "kod": "0251102",
+      "ad": "Acenteler Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F183:F184)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        183,
+        184
+      ]
+    },
+    {
+      "satir": 183,
+      "hucre": "F183",
+      "kod": null,
+      "ad": "Üretim Komisyon Gideri",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 184,
+      "hucre": "F184",
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 185,
+      "hucre": "F185",
+      "kod": "0251103",
+      "ad": "Doğrudan Satış Personeli Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F186:F187)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        186,
+        187
+      ]
+    },
+    {
+      "satir": 186,
+      "hucre": "F186",
+      "kod": null,
+      "ad": "Üretim Komisyon Gideri",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 187,
+      "hucre": "F187",
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 188,
+      "hucre": "F188",
+      "kod": "0251199",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "formul": "=F15*F431",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 15,
+        "baz_hucre": "F15",
+        "oran_satir": 431,
+        "oran_hucre": "F431"
+      }
+    },
+    {
+      "satir": 189,
+      "hucre": "F189",
+      "kod": "02512",
+      "ad": "Diğer Üretim Giderleri (-)",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 190,
+      "hucre": "F190",
+      "kod": "0252",
+      "ad": "PERSONEL GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C190,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "Genel Gider"
+      ]
+    },
+    {
+      "satir": 191,
+      "hucre": "F191",
+      "kod": "0253",
+      "ad": "YÖNETİM GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C191,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "Genel Gider"
+      ]
+    },
+    {
+      "satir": 192,
+      "hucre": "F192",
+      "kod": "0254",
+      "ad": "AR-GE GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C192,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "Genel Gider"
+      ]
+    },
+    {
+      "satir": 193,
+      "hucre": "F193",
+      "kod": "0255",
+      "ad": "PAZARLAMA SATIŞ DAĞITIM GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C193,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "Genel Gider"
+      ]
+    },
+    {
+      "satir": 194,
+      "hucre": "F194",
+      "kod": "0256",
+      "ad": "DIŞARDAN SAĞLANAN FAYDA VE HİZMET GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C194,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "Genel Gider"
+      ]
+    },
+    {
+      "satir": 195,
+      "hucre": "F195",
+      "kod": "0257",
+      "ad": "REASÜRANS KOMİSYONLARI GELİRLERİ",
+      "formul": "=F196+F199",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        196,
+        199
+      ]
+    },
+    {
+      "satir": 196,
+      "hucre": "F196",
+      "kod": "02571",
+      "ad": "Alınan Reasürans Komisyonları (+)",
+      "formul": "=SUM(F197:F198)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        197,
+        198
+      ]
+    },
+    {
+      "satir": 197,
+      "hucre": "F197",
+      "kod": null,
+      "ad": "Alınan Komisyon Geliri",
+      "formul": "=F19*F300",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 19,
+        "baz_hucre": "F19",
+        "oran_satir": 300,
+        "oran_hucre": "F300"
+      }
+    },
+    {
+      "satir": 198,
+      "hucre": "F198",
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "formul": "=(SUMIFS('MEVCUT YIL DEVREDEN KPK'!$BA:$BA,'MEVCUT YIL DEVREDEN KPK'!$D:$D,GT!F5)*-1)+SUMIFS('YK KPK'!$BA:$BA,'YK KPK'!$D:$D,GT!F5)",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "MEVCUT YIL DEVREDEN KPK",
+        "YK KPK"
+      ]
+    },
+    {
+      "satir": 199,
+      "hucre": "F199",
+      "kod": "02572",
+      "ad": "Verilen Reasürans Komisyonları (-)",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 200,
+      "hucre": "F200",
+      "kod": "0258",
+      "ad": "DİĞER FAALİYET GİDERLERİ",
+      "formul": "=F11*F383",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 11,
+        "baz_hucre": "F11",
+        "oran_satir": 383,
+        "oran_hucre": "F383"
+      }
+    },
+    {
+      "satir": 201,
+      "hucre": "F201",
+      "kod": "0259",
+      "ad": "DİĞER FAALİYET GİDERLERİ 2",
+      "formul": "=F11*F388",
+      "tip": "carpim",
+      "dis_sayfalar": [],
+      "carpim": {
+        "baz_satir": 11,
+        "baz_hucre": "F11",
+        "oran_satir": 388,
+        "oran_hucre": "F388"
+      }
+    },
+    {
+      "satir": 202,
+      "hucre": "F202",
+      "kod": "026",
+      "ad": "Matematik Karş.Değ. (Reas. Payı ve Devr. Kısım Düşülmüş Olarak) (+/-)",
+      "formul": "=F203+F210",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        203,
+        210
+      ]
+    },
+    {
+      "satir": 203,
+      "hucre": "F203",
+      "kod": "0261",
+      "ad": "Brüt Matematik Karşılıklarda Değişim (Devreden Kısım Düşülmüş)",
+      "formul": "=F204+F207",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        204,
+        207
+      ]
+    },
+    {
+      "satir": 204,
+      "hucre": "F204",
+      "kod": "02611",
+      "ad": "Matematik Karşılıklar (-)",
+      "formul": "=F205+F206",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        205,
+        206
+      ]
+    },
+    {
+      "satir": 205,
+      "hucre": "F205",
+      "kod": "0261101",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 206,
+      "hucre": "F206",
+      "kod": "0261130",
+      "ad": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 207,
+      "hucre": "F207",
+      "kod": "02612",
+      "ad": "Devreden Matematik Karşılık (+)",
+      "formul": "=F208+F209",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        208,
+        209
+      ]
+    },
+    {
+      "satir": 208,
+      "hucre": "F208",
+      "kod": "0261201",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 209,
+      "hucre": "F209",
+      "kod": "0261230",
+      "ad": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 210,
+      "hucre": "F210",
+      "kod": "0262",
+      "ad": "Brüt Matematik Karşılıklarda Değişim Reasürör Payı (Devreden Kısım Düşülmüş)",
+      "formul": "=F211+F214",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        211,
+        214
+      ]
+    },
+    {
+      "satir": 211,
+      "hucre": "F211",
+      "kod": "02621",
+      "ad": "Matematik Karşılıklarda Reasürör Payı (+)",
+      "formul": "=F212+F213",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        212,
+        213
+      ]
+    },
+    {
+      "satir": 212,
+      "hucre": "F212",
+      "kod": "0262101",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 213,
+      "hucre": "F213",
+      "kod": "0262130",
+      "ad": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 214,
+      "hucre": "F214",
+      "kod": "02622",
+      "ad": "Devreden Matematik Karşılıklarda Reasürör Payı (-)",
+      "formul": "=F215+F216",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        215,
+        216
+      ]
+    },
+    {
+      "satir": 215,
+      "hucre": "F215",
+      "kod": "0262201",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 216,
+      "hucre": "F216",
+      "kod": "0262230",
+      "ad": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim",
+      "formul": 0,
+      "tip": "sabit"
+    },
+    {
+      "satir": 217,
+      "hucre": "F217",
+      "kod": "029",
+      "ad": "DİĞER TEKNİK GİDERLER",
+      "formul": "=SUM(F218:F219)",
+      "tip": "alt_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        218,
+        219
+      ]
+    },
+    {
+      "satir": 218,
+      "hucre": "F218",
+      "kod": "0291",
+      "ad": "BRÜT DİĞER TEKNİK GİDERLER",
+      "formul": null,
+      "tip": "bos"
+    },
+    {
+      "satir": 219,
+      "hucre": "F219",
+      "kod": "0292",
+      "ad": "DİĞER TEKNİK GİDERLER REASÜRANS PAYI",
+      "formul": 0,
+      "tip": "sabit"
+    }
+  ],
+  "oran_alani": [
+    {
+      "satir": 241,
+      "hucre": "F241",
+      "yil": "2022",
+      "ad": "HP ORANI ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -2.3902542265085014
+    },
+    {
+      "satir": 242,
+      "hucre": "F242",
+      "yil": "2023",
+      "ad": "HP ORANI ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.7722503347581576
+    },
+    {
+      "satir": 243,
+      "hucre": "F243",
+      "yil": "2024",
+      "ad": "HP ORANI ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.7950835768305825
+    },
+    {
+      "satir": 244,
+      "hucre": "F244",
+      "kod": null,
+      "ad": "HP ORANI ( BRÜT )",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61001\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61101\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60101\") +\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60201\")\n),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61001",
+          "61101"
+        ],
+        "baz_hesap": [
+          "60001",
+          "60101",
+          "60201"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 245,
+      "hucre": "F245",
+      "kod": null,
+      "ad": "HP ORANI ( BRÜT )",
+      "formul": "=(F244*0.6)+(F243*0.4)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 244,
+            "hucre": "F244",
+            "agirlik": 0.6
+          },
+          {
+            "satir": 243,
+            "hucre": "F243",
+            "agirlik": 0.4
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 246,
+      "hucre": "F246",
+      "yil": "2022",
+      "ad": "HP ORANI ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -1.5033716385795468
+    },
+    {
+      "satir": 247,
+      "hucre": "F247",
+      "yil": "2023",
+      "ad": "HP ORANI ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.19054644653317548
+    },
+    {
+      "satir": 248,
+      "hucre": "F248",
+      "yil": "2024",
+      "ad": "HP ORANI ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.2951169236241043
+    },
+    {
+      "satir": 249,
+      "hucre": "F249",
+      "kod": null,
+      "ad": "HP ORANI ( NET )",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"610\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"600\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"601\") +\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"602\")\n),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": []
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 250,
+      "hucre": "F250",
+      "kod": null,
+      "ad": "HP ORANI ( NET )",
+      "formul": "=AVERAGE(F248:F249)",
+      "tip": "diger",
+      "dis_sayfalar": [],
+      "yil": "2026"
+    },
+    {
+      "satir": 251,
+      "hucre": "F251",
+      "yil": "2022",
+      "ad": "MASRAF ORANI ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.21390868512897968
+    },
+    {
+      "satir": 252,
+      "hucre": "F252",
+      "yil": "2023",
+      "ad": "MASRAF ORANI ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.301094842594499
+    },
+    {
+      "satir": 253,
+      "hucre": "F253",
+      "yil": "2024",
+      "ad": "MASRAF ORANI ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.22309362796038712
+    },
+    {
+      "satir": 254,
+      "hucre": "F254",
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT )",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60101\") +\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60201\")\n),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61408"
+        ],
+        "baz_hesap": [
+          "60001",
+          "60101",
+          "60201"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 255,
+      "hucre": "F255",
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT )",
+      "formul": "=AVERAGE(F253:F254)",
+      "tip": "diger",
+      "dis_sayfalar": [],
+      "yil": "2026"
+    },
+    {
+      "satir": 256,
+      "hucre": "F256",
+      "yil": "2022",
+      "ad": "MASRAF ORANI ( BRÜT ) (KOMİSYONSUZ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.11082733679801615
+    },
+    {
+      "satir": 257,
+      "hucre": "F257",
+      "yil": "2023",
+      "ad": "MASRAF ORANI ( BRÜT ) (KOMİSYONSUZ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.05089005328427402
+    },
+    {
+      "satir": 258,
+      "hucre": "F258",
+      "yil": "2024",
+      "ad": "MASRAF ORANI ( BRÜT ) (KOMİSYONSUZ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.0608870973799688
+    },
+    {
+      "satir": 259,
+      "hucre": "F259",
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT ) (KOMİSYONSUZ)",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")-\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61401\")-\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61407\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60101\") ),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61408",
+          "61401",
+          "61407"
+        ],
+        "baz_hesap": [
+          "60001",
+          "60101"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 260,
+      "hucre": "F260",
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT ) (KOMİSYONSUZ)",
+      "formul": "=AVERAGE(F258:F259)",
+      "tip": "diger",
+      "dis_sayfalar": [],
+      "yil": "2026"
+    },
+    {
+      "satir": 261,
+      "hucre": "F261",
+      "yil": "2022",
+      "ad": "MASRAF ORANI ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.8022135246721989
+    },
+    {
+      "satir": 262,
+      "hucre": "F262",
+      "yil": "2023",
+      "ad": "MASRAF ORANI ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.5001450768456317
+    },
+    {
+      "satir": 263,
+      "hucre": "F263",
+      "yil": "2024",
+      "ad": "MASRAF ORANI ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.6252030822832594
+    },
+    {
+      "satir": 264,
+      "hucre": "F264",
+      "kod": null,
+      "ad": "MASRAF ORANI ( NET )",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"600\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"601\") +\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"602\")\n),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61408"
+        ],
+        "baz_hesap": []
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 265,
+      "hucre": "F265",
+      "kod": null,
+      "ad": "MASRAF ORANI ( NET )",
+      "formul": "=AVERAGE(F263:F264)",
+      "tip": "diger",
+      "dis_sayfalar": [],
+      "yil": "2026"
+    },
+    {
+      "satir": 266,
+      "hucre": "F266",
+      "yil": "2022",
+      "ad": "MASRAF ORANI ( NET ) (KOMİSYONSUZ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.41563150383146624
+    },
+    {
+      "satir": 267,
+      "hucre": "F267",
+      "yil": "2023",
+      "ad": "MASRAF ORANI ( NET ) (KOMİSYONSUZ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.08453286476520516
+    },
+    {
+      "satir": 268,
+      "hucre": "F268",
+      "yil": "2024",
+      "ad": "MASRAF ORANI ( NET ) (KOMİSYONSUZ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.1706315025725283
+    },
+    {
+      "satir": 269,
+      "hucre": "F269",
+      "kod": null,
+      "ad": "MASRAF ORANI ( NET ) (KOMİSYONSUZ)",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")-\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61401\")-\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61407\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"600\")+\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"601\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61408",
+          "61401",
+          "61407"
+        ],
+        "baz_hesap": []
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 270,
+      "hucre": "F270",
+      "kod": null,
+      "ad": "MASRAF ORANI ( NET ) (KOMİSYONSUZ)",
+      "formul": "=AVERAGE(F268:F269)",
+      "tip": "diger",
+      "dis_sayfalar": [],
+      "yil": "2026"
+    },
+    {
+      "satir": 271,
+      "hucre": "F271",
+      "yil": "2022",
+      "ad": "Ö.KOMİSYON ORANI ( CARİ )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.264576799341256
+    },
+    {
+      "satir": 272,
+      "hucre": "F272",
+      "yil": "2023",
+      "ad": "Ö.KOMİSYON ORANI ( CARİ )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.31959395243532096
+    },
+    {
+      "satir": 273,
+      "hucre": "F273",
+      "yil": "2024",
+      "ad": "Ö.KOMİSYON ORANI ( CARİ )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.23404336755080193
+    },
+    {
+      "satir": 274,
+      "hucre": "F274",
+      "kod": null,
+      "ad": "Ö.KOMİSYON ORANI ( CARİ )",
+      "formul": "=IFERROR( (SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"6140110101\")+\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61401199\"))/\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\")),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61401199"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 275,
+      "hucre": "F275",
+      "kod": null,
+      "ad": "Ö.KOMİSYON ORANI ( CARİ )",
+      "formul": "=(F274*0.5)+(F273*0.25)+(F272*0.15)+(F271*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 274,
+            "hucre": "F274",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 273,
+            "hucre": "F273",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 272,
+            "hucre": "F272",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 271,
+            "hucre": "F271",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 276,
+      "hucre": "F276",
+      "yil": "2022",
+      "ad": "Ö.KOMİSYON ORANI ( ERTELENMİŞ DAHİL)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.12176538247820386
+    },
+    {
+      "satir": 277,
+      "hucre": "F277",
+      "yil": "2023",
+      "ad": "Ö.KOMİSYON ORANI ( ERTELENMİŞ DAHİL)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.23693828979878892
+    },
+    {
+      "satir": 278,
+      "hucre": "F278",
+      "yil": "2024",
+      "ad": "Ö.KOMİSYON ORANI ( ERTELENMİŞ DAHİL)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.263582741338608
+    },
+    {
+      "satir": 279,
+      "hucre": "F279",
+      "kod": null,
+      "ad": "Ö.KOMİSYON ORANI ( ERTELENMİŞ DAHİL)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61401\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61401"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 280,
+      "hucre": "F280",
+      "kod": null,
+      "ad": "Ö.KOMİSYON ORANI ( ERTELENMİŞ DAHİL)",
+      "formul": "=AVERAGE(F278:F279)",
+      "tip": "diger",
+      "dis_sayfalar": [],
+      "yil": "2026"
+    },
+    {
+      "satir": 281,
+      "hucre": "F281",
+      "yil": "2022",
+      "ad": "BİRLEŞİK RASYO ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -2.604162911637481
+    },
+    {
+      "satir": 282,
+      "hucre": "F282",
+      "yil": "2023",
+      "ad": "BİRLEŞİK RASYO ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -1.0733451773526566
+    },
+    {
+      "satir": 283,
+      "hucre": "F283",
+      "yil": "2024",
+      "ad": "BİRLEŞİK RASYO ( BRÜT )",
+      "tip": "etiket_veya_deger",
+      "formul": -1.0181772047909696
+    },
+    {
+      "satir": 284,
+      "hucre": "F284",
+      "kod": null,
+      "ad": "BİRLEŞİK RASYO ( BRÜT )",
+      "formul": "=F244+F254",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        244,
+        254
+      ],
+      "yil": "2025"
+    },
+    {
+      "satir": 285,
+      "hucre": "F285",
+      "kod": null,
+      "ad": "BİRLEŞİK RASYO ( BRÜT )",
+      "formul": "=F245+F255",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        245,
+        255
+      ],
+      "yil": "2026"
+    },
+    {
+      "satir": 286,
+      "hucre": "F286",
+      "yil": "2022",
+      "ad": "BİRLEŞİK RASYO ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -2.3055851632517457
+    },
+    {
+      "satir": 287,
+      "hucre": "F287",
+      "yil": "2023",
+      "ad": "BİRLEŞİK RASYO ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.6906915233788071
+    },
+    {
+      "satir": 288,
+      "hucre": "F288",
+      "yil": "2024",
+      "ad": "BİRLEŞİK RASYO ( NET )",
+      "tip": "etiket_veya_deger",
+      "formul": -0.9203200059073637
+    },
+    {
+      "satir": 289,
+      "hucre": "F289",
+      "kod": null,
+      "ad": "BİRLEŞİK RASYO ( NET )",
+      "formul": "=F249+F264",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        249,
+        264
+      ],
+      "yil": "2025"
+    },
+    {
+      "satir": 290,
+      "hucre": "F290",
+      "kod": null,
+      "ad": "BİRLEŞİK RASYO ( NET )",
+      "formul": "=F250+F265",
+      "tip": "satir_toplam",
+      "dis_sayfalar": [],
+      "alt_satirlar": [
+        250,
+        265
+      ],
+      "yil": "2026"
+    },
+    {
+      "satir": 291,
+      "hucre": "F291",
+      "yil": "2022",
+      "ad": "DEVREDİLEN PRİM ORANI (SGK HARİÇ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.5239692535081214
+    },
+    {
+      "satir": 292,
+      "hucre": "F292",
+      "yil": "2023",
+      "ad": "DEVREDİLEN PRİM ORANI (SGK HARİÇ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.422127360633049
+    },
+    {
+      "satir": 293,
+      "hucre": "F293",
+      "yil": "2024",
+      "ad": "DEVREDİLEN PRİM ORANI (SGK HARİÇ)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.713836597518594
+    },
+    {
+      "satir": 294,
+      "hucre": "F294",
+      "kod": null,
+      "ad": "DEVREDİLEN PRİM ORANI (SGK HARİÇ)",
+      "formul": "=IFERROR(( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60002\")+\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60003\"))/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "60002",
+          "60003"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 295,
+      "hucre": "F295",
+      "kod": null,
+      "ad": "DEVREDİLEN PRİM ORANI (SGK HARİÇ)",
+      "formul": "=(F294*0.5)+(F293*0.25)+(F292*0.15)+(F291*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 294,
+            "hucre": "F294",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 293,
+            "hucre": "F293",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 292,
+            "hucre": "F292",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 291,
+            "hucre": "F291",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 296,
+      "hucre": "F296",
+      "yil": "2022",
+      "ad": "A.KOMİSYON ORANI",
+      "tip": "etiket_veya_deger",
+      "formul": -0.17408927541855665
+    },
+    {
+      "satir": 297,
+      "hucre": "F297",
+      "yil": "2023",
+      "ad": "A.KOMİSYON ORANI",
+      "tip": "etiket_veya_deger",
+      "formul": -0.22452067995623967
+    },
+    {
+      "satir": 298,
+      "hucre": "F298",
+      "yil": "2024",
+      "ad": "A.KOMİSYON ORANI",
+      "tip": "etiket_veya_deger",
+      "formul": -0.1553146757197879
+    },
+    {
+      "satir": 299,
+      "hucre": "F299",
+      "kod": null,
+      "ad": "A.KOMİSYON ORANI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61407101\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60002\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61407101"
+        ],
+        "baz_hesap": [
+          "60002"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 300,
+      "hucre": "F300",
+      "kod": null,
+      "ad": "A.KOMİSYON ORANI",
+      "formul": "=AVERAGE(F298:F299)",
+      "tip": "diger",
+      "dis_sayfalar": [],
+      "yil": "2026"
+    },
+    {
+      "satir": 301,
+      "hucre": "F301",
+      "yil": "2022",
+      "ad": "A.KOMİSYON ORANI (ERTELENMİŞ DAHİL)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.12246165786988285
+    },
+    {
+      "satir": 302,
+      "hucre": "F302",
+      "yil": "2023",
+      "ad": "A.KOMİSYON ORANI (ERTELENMİŞ DAHİL)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.14371146827174203
+    },
+    {
+      "satir": 303,
+      "hucre": "F303",
+      "yil": "2024",
+      "ad": "A.KOMİSYON ORANI (ERTELENMİŞ DAHİL)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.14622926226899938
+    },
+    {
+      "satir": 304,
+      "hucre": "F304",
+      "kod": null,
+      "ad": "A.KOMİSYON ORANI (ERTELENMİŞ DAHİL)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614071\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60002\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "614071"
+        ],
+        "baz_hesap": [
+          "60002"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 305,
+      "hucre": "F305",
+      "kod": null,
+      "ad": "A.KOMİSYON ORANI (ERTELENMİŞ DAHİL)",
+      "formul": "=AVERAGE(F303:F304)",
+      "tip": "diger",
+      "dis_sayfalar": [],
+      "yil": "2026"
+    },
+    {
+      "satir": 306,
+      "hucre": "F306",
+      "yil": "2022",
+      "ad": "DEVREDİLEN PRİM ORANI (SGK )",
+      "tip": "etiket_veya_deger",
+      "formul": null
+    },
+    {
+      "satir": 307,
+      "hucre": "F307",
+      "yil": "2023",
+      "ad": "DEVREDİLEN PRİM ORANI (SGK )",
+      "tip": "etiket_veya_deger",
+      "formul": null
+    },
+    {
+      "satir": 308,
+      "hucre": "F308",
+      "yil": "2024",
+      "ad": "DEVREDİLEN PRİM ORANI (SGK )",
+      "tip": "etiket_veya_deger",
+      "formul": null
+    },
+    {
+      "satir": 309,
+      "hucre": "F309",
+      "yil": "2025",
+      "ad": "DEVREDİLEN PRİM ORANI (SGK )",
+      "tip": "etiket_veya_deger",
+      "formul": null
+    },
+    {
+      "satir": 310,
+      "hucre": "F310",
+      "yil": "2026",
+      "ad": "DEVREDİLEN PRİM ORANI (SGK )",
+      "tip": "etiket_veya_deger",
+      "formul": null
+    },
+    {
+      "satir": 311,
+      "hucre": "F311",
+      "yil": "2022",
+      "ad": "Rücu Sovtaj gelirleri oranı",
+      "tip": "etiket_veya_deger",
+      "formul": -0.0002076408058195969
+    },
+    {
+      "satir": 312,
+      "hucre": "F312",
+      "yil": "2023",
+      "ad": "Rücu Sovtaj gelirleri oranı",
+      "tip": "etiket_veya_deger",
+      "formul": -0.0015085156005908045
+    },
+    {
+      "satir": 313,
+      "hucre": "F313",
+      "yil": "2024",
+      "ad": "Rücu Sovtaj gelirleri oranı",
+      "tip": "etiket_veya_deger",
+      "formul": -2.261524133099393e-05
+    },
+    {
+      "satir": 314,
+      "hucre": "F314",
+      "kod": "50",
+      "ad": "Rücu Sovtaj gelirleri oranı",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C314,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"605\")/\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C314,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61001\")+\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C314,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611011\")),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": [
+          "61001",
+          "611011"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 315,
+      "hucre": "F315",
+      "kod": null,
+      "ad": "Rücu Sovtaj gelirleri oranı",
+      "formul": "=(F314*0.5)+(F313*0.25)+(F312*0.15)+(F311*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 314,
+            "hucre": "F314",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 313,
+            "hucre": "F313",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 312,
+            "hucre": "F312",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 311,
+            "hucre": "F311",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 316,
+      "hucre": "F316",
+      "yil": "2022",
+      "ad": "Brüt Ödenen Hasar Payı",
+      "tip": "etiket_veya_deger",
+      "formul": -0.9456354247302181
+    },
+    {
+      "satir": 317,
+      "hucre": "F317",
+      "yil": "2023",
+      "ad": "Brüt Ödenen Hasar Payı",
+      "tip": "etiket_veya_deger",
+      "formul": -0.6590055618388019
+    },
+    {
+      "satir": 318,
+      "hucre": "F318",
+      "yil": "2024",
+      "ad": "Brüt Ödenen Hasar Payı",
+      "tip": "etiket_veya_deger",
+      "formul": -1.132214539059652
+    },
+    {
+      "satir": 319,
+      "hucre": "F319",
+      "kod": "50",
+      "ad": "Brüt Ödenen Hasar Payı",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C319,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61001\")/\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C319,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\")+\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C319,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60101\")+\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C319,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60201\")\n),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61001"
+        ],
+        "baz_hesap": [
+          "60001",
+          "60101",
+          "60201"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 320,
+      "hucre": "F320",
+      "kod": null,
+      "ad": "Brüt Ödenen Hasar Payı",
+      "formul": "=(F319*0.8)+(F318*0.005)+(F317*0.15)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 319,
+            "hucre": "F319",
+            "agirlik": 0.8
+          },
+          {
+            "satir": 318,
+            "hucre": "F318",
+            "agirlik": 0.005
+          },
+          {
+            "satir": 317,
+            "hucre": "F317",
+            "agirlik": 0.15
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 321,
+      "hucre": "F321",
+      "yil": "2022",
+      "ad": "Muallak Hasar Payı",
+      "tip": "etiket_veya_deger",
+      "formul": -1.444618801778283
+    },
+    {
+      "satir": 322,
+      "hucre": "F322",
+      "yil": "2023",
+      "ad": "Muallak Hasar Payı",
+      "tip": "etiket_veya_deger",
+      "formul": -0.11324477291935581
+    },
+    {
+      "satir": 323,
+      "hucre": "F323",
+      "yil": "2024",
+      "ad": "Muallak Hasar Payı",
+      "tip": "etiket_veya_deger",
+      "formul": 0.3371309622290696
+    },
+    {
+      "satir": 324,
+      "hucre": "F324",
+      "kod": "50",
+      "ad": "Muallak Hasar Payı",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C324,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61101\")/\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C324,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\")+\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C324,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60101\")+\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C324,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60201\")\n),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61101"
+        ],
+        "baz_hesap": [
+          "60001",
+          "60101",
+          "60201"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 325,
+      "hucre": "F325",
+      "kod": null,
+      "ad": "Muallak Hasar Payı",
+      "formul": "=(F324*0.5)+(F323*0.25)+(F322*0.15)+(F321*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 324,
+            "hucre": "F324",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 323,
+            "hucre": "F323",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 322,
+            "hucre": "F322",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 321,
+            "hucre": "F321",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 326,
+      "hucre": "F326",
+      "yil": null,
+      "ad": "BRÜT ÖDENEN HASARLAR Payları▼",
+      "tip": "etiket_veya_deger",
+      "formul": null
+    },
+    {
+      "satir": 327,
+      "hucre": "F327",
+      "yil": "61001101",
+      "ad": "Sigortalılara Ödemeler (Sigortalılara / 3. Şahıslara Tazminat Ödemeleri) ",
+      "tip": "etiket_veya_deger",
+      "formul": 0.9314083188417668
+    },
+    {
+      "satir": 328,
+      "hucre": "F328",
+      "yil": "61001102",
+      "ad": "Eksper Ödemeleri",
+      "tip": "etiket_veya_deger",
+      "formul": 0.04845358684928063
+    },
+    {
+      "satir": 329,
+      "hucre": "F329",
+      "yil": "61001199",
+      "ad": "Diğer Ödemeler (Masraf Ödemeleri)",
+      "tip": "etiket_veya_deger",
+      "formul": 0.020138093796821417
+    },
+    {
+      "satir": 330,
+      "hucre": "F330",
+      "yil": "610012",
+      "ad": "Tahsil Edilen Rücu Gelirleri (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.01982348372372429
+    },
+    {
+      "satir": 331,
+      "hucre": "F331",
+      "yil": "610013",
+      "ad": "Tahsil Edilen Sovtaj Gelirleri (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.00017747730917542985
+    },
+    {
+      "satir": 332,
+      "hucre": "F332",
+      "yil": "610014",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumlu Farkları (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.0032348883293590713
+    },
+    {
+      "satir": 333,
+      "hucre": "F333",
+      "yil": "610015",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumsuz Farkları (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 334,
+      "hucre": "F334",
+      "yil": null,
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞI Payları▼",
+      "tip": "etiket_veya_deger",
+      "formul": null
+    },
+    {
+      "satir": 335,
+      "hucre": "F335",
+      "yil": "61101101",
+      "ad": "Tahakkuk Eden",
+      "tip": "etiket_veya_deger",
+      "formul": 1
+    },
+    {
+      "satir": 336,
+      "hucre": "F336",
+      "yil": "611011011",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "tip": "etiket_veya_deger",
+      "formul": 0.994474560659462
+    },
+    {
+      "satir": 337,
+      "hucre": "F337",
+      "yil": "611011012",
+      "ad": "Eksper  ",
+      "tip": "etiket_veya_deger",
+      "formul": 0.016276719151646902
+    },
+    {
+      "satir": 338,
+      "hucre": "F338",
+      "yil": "611011013",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.03589127760609054
+    },
+    {
+      "satir": 339,
+      "hucre": "F339",
+      "yil": "6110110140",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 340,
+      "hucre": "F340",
+      "yil": "611011019",
+      "ad": "Diğer (Masraf Muallakları)",
+      "tip": "etiket_veya_deger",
+      "formul": 0.02513999836310779
+    },
+    {
+      "satir": 341,
+      "hucre": "F341",
+      "yil": "61101102",
+      "ad": "Raporlanmayan",
+      "tip": "etiket_veya_deger",
+      "formul": 0.2995825916764259
+    },
+    {
+      "satir": 342,
+      "hucre": "F342",
+      "yil": "61101104",
+      "ad": "Muallak Tazminat Karşılığı Yeterlilik Farkı",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 343,
+      "hucre": "F343",
+      "yil": "61101108",
+      "ad": "Nakit Akışlarından Kaynaklanan İskonto ",
+      "tip": "etiket_veya_deger",
+      "formul": -0.4992706101034982
+    },
+    {
+      "satir": 344,
+      "hucre": "F344",
+      "yil": "2022",
+      "ad": "Dengeleme Karşılığı Payı",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 345,
+      "hucre": "F345",
+      "yil": "2023",
+      "ad": "Dengeleme Karşılığı Payı",
+      "tip": "etiket_veya_deger",
+      "formul": 0.00010858019375894883
+    },
+    {
+      "satir": 346,
+      "hucre": "F346",
+      "yil": "2024",
+      "ad": "Dengeleme Karşılığı Payı",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 347,
+      "hucre": "F347",
+      "kod": null,
+      "ad": "Dengeleme Karşılığı Payı",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C347,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61301101\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C347,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"600\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61301101"
+        ],
+        "baz_hesap": []
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 348,
+      "hucre": "F348",
+      "kod": null,
+      "ad": "Dengeleme Karşılığı Payı",
+      "formul": "=(F347*0.5)+(F346*0.25)+(F345*0.15)+(F344*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 347,
+            "hucre": "F347",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 346,
+            "hucre": "F346",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 345,
+            "hucre": "F345",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 344,
+            "hucre": "F344",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 349,
+      "hucre": "F349",
+      "yil": "2022",
+      "ad": "Üretim Komisyon Gideri",
+      "tip": "etiket_veya_deger",
+      "formul": 2.1728408678765128
+    },
+    {
+      "satir": 350,
+      "hucre": "F350",
+      "yil": "2023",
+      "ad": "Üretim Komisyon Gideri",
+      "tip": "etiket_veya_deger",
+      "formul": 1.3488489036817322
+    },
+    {
+      "satir": 351,
+      "hucre": "F351",
+      "yil": "2024",
+      "ad": "Üretim Komisyon Gideri",
+      "tip": "etiket_veya_deger",
+      "formul": 0.887931305222072
+    },
+    {
+      "satir": 352,
+      "hucre": "F352",
+      "kod": null,
+      "ad": "Üretim Komisyon Gideri",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C352,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"6140110101\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C352,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614011\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": [
+          "614011"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 353,
+      "hucre": "F353",
+      "kod": null,
+      "ad": "Üretim Komisyon Gideri",
+      "formul": "=(F352*0.5)+(F351*0.25)+(F350*0.15)+(F349*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 352,
+            "hucre": "F352",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 351,
+            "hucre": "F351",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 350,
+            "hucre": "F350",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 349,
+            "hucre": "F349",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 354,
+      "hucre": "F354",
+      "yil": "2022",
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.950681797073088
+    },
+    {
+      "satir": 355,
+      "hucre": "F355",
+      "yil": "2023",
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.20487985894783747
+    },
+    {
+      "satir": 356,
+      "hucre": "F356",
+      "yil": "2024",
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "tip": "etiket_veya_deger",
+      "formul": 0.13667387413005047
+    },
+    {
+      "satir": 357,
+      "hucre": "F357",
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C357,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"6140110102\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C357,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614011\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": [
+          "614011"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 358,
+      "hucre": "F358",
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "formul": "=(F357*0.5)+(F356*0.25)+(F355*0.15)+(F354*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 357,
+            "hucre": "F357",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 356,
+            "hucre": "F356",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 355,
+            "hucre": "F355",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 354,
+            "hucre": "F354",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 359,
+      "hucre": "F359",
+      "yil": "2022",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 360,
+      "hucre": "F360",
+      "yil": "2023",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 361,
+      "hucre": "F361",
+      "yil": "2024",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 362,
+      "hucre": "F362",
+      "kod": null,
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C362,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61401199\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C362,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614011\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61401199"
+        ],
+        "baz_hesap": [
+          "614011"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 363,
+      "hucre": "F363",
+      "kod": null,
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "formul": "=(F362*0.5)+(F361*0.25)+(F360*0.15)+(F359*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 362,
+            "hucre": "F362",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 361,
+            "hucre": "F361",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 360,
+            "hucre": "F360",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 359,
+            "hucre": "F359",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 364,
+      "hucre": "F364",
+      "yil": "2022",
+      "ad": "FAALİYET  GİDERLERİ Branş Payları",
+      "tip": "etiket_veya_deger",
+      "formul": 0.06214244420648039
+    },
+    {
+      "satir": 365,
+      "hucre": "F365",
+      "yil": "2023",
+      "ad": "FAALİYET  GİDERLERİ Branş Payları",
+      "tip": "etiket_veya_deger",
+      "formul": 0.06268689429719619
+    },
+    {
+      "satir": 366,
+      "hucre": "F366",
+      "yil": "2024",
+      "ad": "FAALİYET  GİDERLERİ Branş Payları",
+      "tip": "etiket_veya_deger",
+      "formul": 0.052021834936487724
+    },
+    {
+      "satir": 367,
+      "hucre": "F367",
+      "kod": null,
+      "ad": "FAALİYET  GİDERLERİ Branş Payları",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C367,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61402\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C367,'UNPİVOT MİZAN'!$E:$E,\"<>TOPLAM\",'UNPİVOT MİZAN'!$C:$C,\"61402\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61402"
+        ],
+        "baz_hesap": [
+          "61402"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 368,
+      "hucre": "F368",
+      "kod": null,
+      "ad": "FAALİYET  GİDERLERİ Branş Payları",
+      "formul": "=(F367*0.5)+(F366*0.25)+(F365*0.15)+(F364*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 367,
+            "hucre": "F367",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 366,
+            "hucre": "F366",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 365,
+            "hucre": "F365",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 364,
+            "hucre": "F364",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 369,
+      "hucre": "F369",
+      "yil": "2022",
+      "ad": "Alınan Komisyon Geliri",
+      "tip": "etiket_veya_deger",
+      "formul": 1.4215818930324202
+    },
+    {
+      "satir": 370,
+      "hucre": "F370",
+      "yil": "2023",
+      "ad": "Alınan Komisyon Geliri",
+      "tip": "etiket_veya_deger",
+      "formul": 1.5623017609958354
+    },
+    {
+      "satir": 371,
+      "hucre": "F371",
+      "yil": "2024",
+      "ad": "Alınan Komisyon Geliri",
+      "tip": "etiket_veya_deger",
+      "formul": 1.06213129513076
+    },
+    {
+      "satir": 372,
+      "hucre": "F372",
+      "kod": null,
+      "ad": "Alınan Komisyon Geliri",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C372,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61407101\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C372,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614071\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61407101"
+        ],
+        "baz_hesap": [
+          "614071"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 373,
+      "hucre": "F373",
+      "kod": null,
+      "ad": "Alınan Komisyon Geliri",
+      "formul": "=(F372*0.5)+(F371*0.25)+(F370*0.15)+(F369*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 372,
+            "hucre": "F372",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 371,
+            "hucre": "F371",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 370,
+            "hucre": "F370",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 369,
+            "hucre": "F369",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 374,
+      "hucre": "F374",
+      "yil": "2022",
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 1.8040687253151624
+    },
+    {
+      "satir": 375,
+      "hucre": "F375",
+      "yil": "2023",
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0.800201916265301
+    },
+    {
+      "satir": 376,
+      "hucre": "F376",
+      "yil": "2024",
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.34511940306202354
+    },
+    {
+      "satir": 377,
+      "hucre": "F377",
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C377,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"6140110102\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C377,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614071\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": [
+          "614071"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 378,
+      "hucre": "F378",
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "formul": "=(F377*0.5)+(F376*0.25)+(F375*0.15)+(F374*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 377,
+            "hucre": "F377",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 376,
+            "hucre": "F376",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 375,
+            "hucre": "F375",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 374,
+            "hucre": "F374",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 379,
+      "hucre": "F379",
+      "kod": "61408",
+      "ad": "DİĞER FAALİYET GİDERLERİ (TKK Teşvik, Ön Eks. Acer Yaz.)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C379,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C379,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61408"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 380,
+      "hucre": "F380",
+      "kod": "60001",
+      "ad": "DİĞER FAALİYET GİDERLERİ (TKK Teşvik, Ön Eks. Acer Yaz.)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C380,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C380,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61408"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 381,
+      "hucre": "F381",
+      "kod": null,
+      "ad": "DİĞER FAALİYET GİDERLERİ (TKK Teşvik, Ön Eks. Acer Yaz.)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C381,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C381,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61408"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 382,
+      "hucre": "F382",
+      "kod": null,
+      "ad": "DİĞER FAALİYET GİDERLERİ (TKK Teşvik, Ön Eks. Acer Yaz.)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C382,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C382,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61408"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 383,
+      "hucre": "F383",
+      "kod": null,
+      "ad": "DİĞER FAALİYET GİDERLERİ (TKK Teşvik, Ön Eks. Acer Yaz.)",
+      "formul": "=(F382*0.5)+(F381*0.25)+(F380*0.15)+(F379*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 382,
+            "hucre": "F382",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 381,
+            "hucre": "F381",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 380,
+            "hucre": "F380",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 379,
+            "hucre": "F379",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 384,
+      "hucre": "F384",
+      "yil": "2022",
+      "ad": "DİĞER FAALİYET GİDERLERİ  2 (ASİSTANS)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.027483675228008164
+    },
+    {
+      "satir": 385,
+      "hucre": "F385",
+      "yil": "2023",
+      "ad": "DİĞER FAALİYET GİDERLERİ  2 (ASİSTANS)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.013683207312978719
+    },
+    {
+      "satir": 386,
+      "hucre": "F386",
+      "yil": "2024",
+      "ad": "DİĞER FAALİYET GİDERLERİ  2 (ASİSTANS)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.014692230707809678
+    },
+    {
+      "satir": 387,
+      "hucre": "F387",
+      "kod": null,
+      "ad": "DİĞER FAALİYET GİDERLERİ  2 (ASİSTANS)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C387,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61409\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C387,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61409"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 388,
+      "hucre": "F388",
+      "kod": null,
+      "ad": "DİĞER FAALİYET GİDERLERİ  2 (ASİSTANS)",
+      "formul": "=(F387*0.5)+(F386*0.25)+(F385*0.15)+(F384*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 387,
+            "hucre": "F387",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 386,
+            "hucre": "F386",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 385,
+            "hucre": "F385",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 384,
+            "hucre": "F384",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 389,
+      "hucre": "F389",
+      "kod": "615",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C389,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"615\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C389,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": []
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 390,
+      "hucre": "F390",
+      "kod": "611",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C390,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"615\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C390,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": []
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 391,
+      "hucre": "F391",
+      "kod": null,
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C391,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"615\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C391,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": []
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 392,
+      "hucre": "F392",
+      "kod": null,
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C392,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"615\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C392,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": []
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 393,
+      "hucre": "F393",
+      "kod": null,
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": "=(F392*0.5)+(F391*0.25)+(F390*0.15)+(F389*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 392,
+            "hucre": "F392",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 391,
+            "hucre": "F391",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 390,
+            "hucre": "F390",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 389,
+            "hucre": "F389",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 394,
+      "hucre": "F394",
+      "yil": "2022",
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "tip": "etiket_veya_deger",
+      "formul": 0.11078273594758671
+    },
+    {
+      "satir": 395,
+      "hucre": "F395",
+      "yil": "2023",
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "tip": "etiket_veya_deger",
+      "formul": 0.17616211503411228
+    },
+    {
+      "satir": 396,
+      "hucre": "F396",
+      "yil": "2024",
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "tip": "etiket_veya_deger",
+      "formul": 0.027342624512159904
+    },
+    {
+      "satir": 397,
+      "hucre": "F397",
+      "kod": null,
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C397,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60301\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C397,'UNPİVOT MİZAN'!$E:$E,\"<>TOPLAM\",'UNPİVOT MİZAN'!$C:$C,\"60301\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "60301"
+        ],
+        "baz_hesap": [
+          "60301"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 398,
+      "hucre": "F398",
+      "kod": null,
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "formul": "=(F397*0.5)+(F396*0.25)+(F395*0.15)+(F394*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 397,
+            "hucre": "F397",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 396,
+            "hucre": "F396",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 395,
+            "hucre": "F395",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 394,
+            "hucre": "F394",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 399,
+      "hucre": "F399",
+      "yil": "61001101",
+      "ad": "Sigortalılara Ödemeler (Sigortalılara / 3. Şahıslara Tazminat Ödemeleri) ",
+      "tip": "etiket_veya_deger",
+      "formul": 0.9532463480664156
+    },
+    {
+      "satir": 400,
+      "hucre": "F400",
+      "yil": "61001102",
+      "ad": "Eksper Ödemeleri",
+      "tip": "etiket_veya_deger",
+      "formul": 0.04993612942929808
+    },
+    {
+      "satir": 401,
+      "hucre": "F401",
+      "yil": "61001199",
+      "ad": "Diğer Ödemeler (Masraf Ödemeleri)",
+      "tip": "etiket_veya_deger",
+      "formul": 0.020866885042085382
+    },
+    {
+      "satir": 402,
+      "hucre": "F402",
+      "yil": "610012",
+      "ad": "Tahsil Edilen Rücu Gelirleri (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.02050175784928917
+    },
+    {
+      "satir": 403,
+      "hucre": "F403",
+      "yil": "610013",
+      "ad": "Tahsil Edilen Sovtaj Gelirleri (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.00018460199968430192
+    },
+    {
+      "satir": 404,
+      "hucre": "F404",
+      "yil": "610014",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumlu Farkları (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.0033630032059376435
+    },
+    {
+      "satir": 405,
+      "hucre": "F405",
+      "kod": null,
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumsuz Farkları (-)",
+      "formul": "=SUMIFS(Sayfa1!$T:$T,Sayfa1!$C:$C,GT!$C405,Sayfa1!$A:$A,GT!F$5)",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [],
+      "yil": "610015"
+    },
+    {
+      "satir": 406,
+      "hucre": "F406",
+      "yil": "61101",
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞINDA DEĞİŞİM",
+      "tip": "etiket_veya_deger",
+      "formul": 1
+    },
+    {
+      "satir": 407,
+      "hucre": "F407",
+      "yil": "611011",
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞI",
+      "tip": "etiket_veya_deger",
+      "formul": 1.516013400876289
+    },
+    {
+      "satir": 408,
+      "hucre": "F408",
+      "yil": "61101101",
+      "ad": "Tahakkuk Eden",
+      "tip": "etiket_veya_deger",
+      "formul": 1.5971907743673748
+    },
+    {
+      "satir": 409,
+      "hucre": "F409",
+      "yil": "611011011",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "tip": "etiket_veya_deger",
+      "formul": 1.5727927741028849
+    },
+    {
+      "satir": 410,
+      "hucre": "F410",
+      "yil": "611011012",
+      "ad": "Eksper  ",
+      "tip": "etiket_veya_deger",
+      "formul": 0.017000509674204668
+    },
+    {
+      "satir": 411,
+      "hucre": "F411",
+      "yil": "611011013",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.01959155716018638
+    },
+    {
+      "satir": 412,
+      "hucre": "F412",
+      "yil": "6110110140",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 413,
+      "hucre": "F413",
+      "yil": "611011019",
+      "ad": "Diğer (Masraf Muallakları)",
+      "tip": "etiket_veya_deger",
+      "formul": 0.026989050759702902
+    },
+    {
+      "satir": 414,
+      "hucre": "F414",
+      "yil": "61101102",
+      "ad": "Raporlanmayan",
+      "tip": "etiket_veya_deger",
+      "formul": 0.33500169162307236
+    },
+    {
+      "satir": 415,
+      "hucre": "F415",
+      "yil": "61101104",
+      "ad": "Muallak Tazminat Karşılığı Yeterlilik Farkı",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 416,
+      "hucre": "F416",
+      "yil": "61101108",
+      "ad": "Nakit Akışlarından Kaynaklanan İskonto ",
+      "tip": "etiket_veya_deger",
+      "formul": -0.41617906511415836
+    },
+    {
+      "satir": 417,
+      "hucre": "F417",
+      "yil": "611012",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI",
+      "tip": "etiket_veya_deger",
+      "formul": -0.5160134008762888
+    },
+    {
+      "satir": 418,
+      "hucre": "F418",
+      "yil": "61101201",
+      "ad": "DEVREDEN MHK TAHAKKUK",
+      "tip": "etiket_veya_deger",
+      "formul": -0.6667547015998329
+    },
+    {
+      "satir": 419,
+      "hucre": "F419",
+      "yil": "611012011",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.6713487347277013
+    },
+    {
+      "satir": 420,
+      "hucre": "F420",
+      "yil": "611012012",
+      "ad": "Eksper  ",
+      "tip": "etiket_veya_deger",
+      "formul": -0.009571649359379389
+    },
+    {
+      "satir": 421,
+      "hucre": "F421",
+      "yil": "611012013",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)",
+      "tip": "etiket_veya_deger",
+      "formul": 0.030117545945082633
+    },
+    {
+      "satir": 422,
+      "hucre": "F422",
+      "yil": "6110120140",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 423,
+      "hucre": "F423",
+      "yil": "611012019",
+      "ad": "Diğer (Masraf Muallakları)",
+      "tip": "etiket_veya_deger",
+      "formul": -0.015951862355906416
+    },
+    {
+      "satir": 424,
+      "hucre": "F424",
+      "yil": "61101202",
+      "ad": "DEVREDEN MHK IBNR",
+      "tip": "etiket_veya_deger",
+      "formul": -0.12352860796279388
+    },
+    {
+      "satir": 425,
+      "hucre": "F425",
+      "yil": "61101204",
+      "ad": "MUALLAK TAZMİNAT KARŞILIĞI YETERLİLİK FARKI",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 426,
+      "hucre": "F426",
+      "kod": null,
+      "ad": "NAKİT AKIŞLARINDAN KAYNAKLANAN İSKONTO",
+      "formul": "=SUMIFS('Sayfa1 (2)'!$T:$T,'Sayfa1 (2)'!$C:$C,GT!$C426,'Sayfa1 (2)'!$A:$A,GT!F$5)",
+      "tip": "dis_sayfa",
+      "dis_sayfalar": [
+        "Sayfa1 (2)"
+      ],
+      "yil": "61101208"
+    },
+    {
+      "satir": 427,
+      "hucre": "F427",
+      "yil": "2022",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 428,
+      "hucre": "F428",
+      "yil": "2023",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 429,
+      "hucre": "F429",
+      "yil": "2024",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 430,
+      "hucre": "F430",
+      "yil": "2025",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tip": "etiket_veya_deger",
+      "formul": 0
+    },
+    {
+      "satir": 431,
+      "hucre": "F431",
+      "kod": null,
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "formul": "=(F430*0.5)+(F429*0.25)+(F428*0.15)+(F427*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 430,
+            "hucre": "F430",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 429,
+            "hucre": "F429",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 428,
+            "hucre": "F428",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 427,
+            "hucre": "F427",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 432,
+      "hucre": "F432",
+      "yil": "2022",
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "tip": "etiket_veya_deger",
+      "formul": -0.7092351997866378
+    },
+    {
+      "satir": 433,
+      "hucre": "F433",
+      "yil": "2023",
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "tip": "etiket_veya_deger",
+      "formul": -0.8317408688771556
+    },
+    {
+      "satir": 434,
+      "hucre": "F434",
+      "yil": "2024",
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "tip": "etiket_veya_deger",
+      "formul": -0.8883631415960763
+    },
+    {
+      "satir": 435,
+      "hucre": "F435",
+      "kod": null,
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C435,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61002\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C435,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61002"
+        ],
+        "baz_hesap": [
+          "61001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 436,
+      "hucre": "F436",
+      "kod": null,
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "formul": "=(F435*0.95)+(F434*0.05)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 435,
+            "hucre": "F435",
+            "agirlik": 0.95
+          },
+          {
+            "satir": 434,
+            "hucre": "F434",
+            "agirlik": 0.05
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 437,
+      "hucre": "F437",
+      "kod": "611",
+      "ad": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C437,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C437,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 438,
+      "hucre": "F438",
+      "kod": "60001",
+      "ad": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C438,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C438,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 439,
+      "hucre": "F439",
+      "kod": null,
+      "ad": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C439,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C439,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 440,
+      "hucre": "F440",
+      "kod": null,
+      "ad": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C440,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C440,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 441,
+      "hucre": "F441",
+      "kod": null,
+      "ad": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)",
+      "formul": "=(F440*0.5)+(F439*0.25)+(F438*0.15)+(F437*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 440,
+            "hucre": "F440",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 439,
+            "hucre": "F439",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 438,
+            "hucre": "F438",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 437,
+            "hucre": "F437",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 442,
+      "hucre": "F442",
+      "kod": "61101",
+      "ad": "Brüt Muallak Hasarlar Karşılığında Değişim (Devreden Kısım Düşülmüş)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C442,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61101\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C442,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61101"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 443,
+      "hucre": "F443",
+      "kod": "60001",
+      "ad": "Brüt Muallak Hasarlar Karşılığında Değişim (Devreden Kısım Düşülmüş)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C443,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61101\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C443,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61101"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 444,
+      "hucre": "F444",
+      "kod": null,
+      "ad": "Brüt Muallak Hasarlar Karşılığında Değişim (Devreden Kısım Düşülmüş)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C444,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61101\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C444,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61101"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 445,
+      "hucre": "F445",
+      "kod": null,
+      "ad": "Brüt Muallak Hasarlar Karşılığında Değişim (Devreden Kısım Düşülmüş)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C445,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61101\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C445,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61101"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 446,
+      "hucre": "F446",
+      "kod": null,
+      "ad": "Brüt Muallak Hasarlar Karşılığında Değişim (Devreden Kısım Düşülmüş)",
+      "formul": "=(F445*0.5)+(F444*0.25)+(F443*0.15)+(F442*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 445,
+            "hucre": "F445",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 444,
+            "hucre": "F444",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 443,
+            "hucre": "F443",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 442,
+            "hucre": "F442",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 447,
+      "hucre": "F447",
+      "kod": "611011",
+      "ad": "Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C447,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611011\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C447,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611011"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 448,
+      "hucre": "F448",
+      "kod": "60001",
+      "ad": "Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C448,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611011\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C448,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611011"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 449,
+      "hucre": "F449",
+      "kod": null,
+      "ad": "Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C449,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611011\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C449,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611011"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 450,
+      "hucre": "F450",
+      "kod": null,
+      "ad": "Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C450,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611011\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C450,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611011"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 451,
+      "hucre": "F451",
+      "kod": null,
+      "ad": "Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=(F450*0.5)+(F449*0.25)+(F448*0.15)+(F447*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 450,
+            "hucre": "F450",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 449,
+            "hucre": "F449",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 448,
+            "hucre": "F448",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 447,
+            "hucre": "F447",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 452,
+      "hucre": "F452",
+      "kod": "611012",
+      "ad": "Devreden Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C452,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611012\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C452,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611012"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 453,
+      "hucre": "F453",
+      "kod": "60001",
+      "ad": "Devreden Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C453,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611012\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C453,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611012"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 454,
+      "hucre": "F454",
+      "kod": null,
+      "ad": "Devreden Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C454,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611012\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C454,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611012"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 455,
+      "hucre": "F455",
+      "kod": null,
+      "ad": "Devreden Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C455,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611012\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C455,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611012"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 456,
+      "hucre": "F456",
+      "kod": null,
+      "ad": "Devreden Muallak Hasarlar Karşılığı (+/-)",
+      "formul": "=(F455*0.5)+(F454*0.25)+(F453*0.15)+(F452*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 455,
+            "hucre": "F455",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 454,
+            "hucre": "F454",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 453,
+            "hucre": "F453",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 452,
+            "hucre": "F452",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 457,
+      "hucre": "F457",
+      "kod": "61102",
+      "ad": "Brüt Muallak Has. Kar. Değişim Reasürör Payı (Dev. Kısım Düşülmüş) ",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C457,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61102\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C457,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61102"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 458,
+      "hucre": "F458",
+      "kod": "60001",
+      "ad": "Brüt Muallak Has. Kar. Değişim Reasürör Payı (Dev. Kısım Düşülmüş) ",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C458,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61102\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C458,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61102"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 459,
+      "hucre": "F459",
+      "kod": null,
+      "ad": "Brüt Muallak Has. Kar. Değişim Reasürör Payı (Dev. Kısım Düşülmüş) ",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C459,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61102\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C459,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61102"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 460,
+      "hucre": "F460",
+      "kod": null,
+      "ad": "Brüt Muallak Has. Kar. Değişim Reasürör Payı (Dev. Kısım Düşülmüş) ",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C460,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61102\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C460,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "61102"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 461,
+      "hucre": "F461",
+      "kod": null,
+      "ad": "Brüt Muallak Has. Kar. Değişim Reasürör Payı (Dev. Kısım Düşülmüş) ",
+      "formul": "=(F460*0.5)+(F459*0.25)+(F458*0.15)+(F457*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 460,
+            "hucre": "F460",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 459,
+            "hucre": "F459",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 458,
+            "hucre": "F458",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 457,
+            "hucre": "F457",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 462,
+      "hucre": "F462",
+      "kod": "611021",
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C462,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611021\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C462,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611021"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 463,
+      "hucre": "F463",
+      "kod": "60001",
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C463,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611021\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C463,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611021"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 464,
+      "hucre": "F464",
+      "kod": null,
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C464,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611021\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C464,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611021"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 465,
+      "hucre": "F465",
+      "kod": null,
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C465,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611021\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C465,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611021"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 466,
+      "hucre": "F466",
+      "kod": null,
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=(F465*0.5)+(F464*0.25)+(F463*0.15)+(F462*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 465,
+            "hucre": "F465",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 464,
+            "hucre": "F464",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 463,
+            "hucre": "F463",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 462,
+            "hucre": "F462",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    },
+    {
+      "satir": 467,
+      "hucre": "F467",
+      "kod": "611022",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C467,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611022\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C467,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611022"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2022"
+    },
+    {
+      "satir": 468,
+      "hucre": "F468",
+      "kod": "60001",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C468,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611022\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C468,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611022"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2023"
+    },
+    {
+      "satir": 469,
+      "hucre": "F469",
+      "kod": null,
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C469,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611022\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C469,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611022"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2024"
+    },
+    {
+      "satir": 470,
+      "hucre": "F470",
+      "kod": null,
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=IFERROR( SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C470,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611022\")/\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,$C470,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\"),0)",
+      "tip": "mizan_oran_yil",
+      "dis_sayfalar": [
+        "UNPİVOT MİZAN"
+      ],
+      "mizan": {
+        "pay_hesap": [
+          "611022"
+        ],
+        "baz_hesap": [
+          "60001"
+        ]
+      },
+      "yil": "2025"
+    },
+    {
+      "satir": 471,
+      "hucre": "F471",
+      "kod": null,
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=(F470*0.5)+(F469*0.25)+(F468*0.15)+(F467*0.1)",
+      "tip": "oran_birlestirme",
+      "dis_sayfalar": [],
+      "birlestirme": {
+        "bilesenler": [
+          {
+            "satir": 470,
+            "hucre": "F470",
+            "agirlik": 0.5
+          },
+          {
+            "satir": 469,
+            "hucre": "F469",
+            "agirlik": 0.25
+          },
+          {
+            "satir": 468,
+            "hucre": "F468",
+            "agirlik": 0.15
+          },
+          {
+            "satir": 467,
+            "hucre": "F467",
+            "agirlik": 0.1
+          }
+        ]
+      },
+      "yil": "2026"
+    }
+  ],
+  "oran_birlestirme_to_tahmin": {
+    "F245": {
+      "bilesenler": [
+        {
+          "satir": 244,
+          "hucre": "F244",
+          "agirlik": 0.6
+        },
+        {
+          "satir": 243,
+          "hucre": "F243",
+          "agirlik": 0.4
+        }
+      ],
+      "oran_satir": 245,
+      "ad": "HP ORANI ( BRÜT )",
+      "tahmin": null
+    },
+    "F275": {
+      "bilesenler": [
+        {
+          "satir": 274,
+          "hucre": "F274",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 273,
+          "hucre": "F273",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 272,
+          "hucre": "F272",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 271,
+          "hucre": "F271",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 275,
+      "ad": "Ö.KOMİSYON ORANI ( CARİ )",
+      "tahmin": {
+        "tahmin_satir": 180,
+        "tahmin_kod": null,
+        "tahmin_hucre": "F180"
+      }
+    },
+    "F295": {
+      "bilesenler": [
+        {
+          "satir": 294,
+          "hucre": "F294",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 293,
+          "hucre": "F293",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 292,
+          "hucre": "F292",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 291,
+          "hucre": "F291",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 295,
+      "ad": "DEVREDİLEN PRİM ORANI (SGK HARİÇ)",
+      "tahmin": {
+        "tahmin_satir": 19,
+        "tahmin_kod": "0112",
+        "tahmin_hucre": "F19"
+      }
+    },
+    "F315": {
+      "bilesenler": [
+        {
+          "satir": 314,
+          "hucre": "F314",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 313,
+          "hucre": "F313",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 312,
+          "hucre": "F312",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 311,
+          "hucre": "F311",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 315,
+      "ad": "Rücu Sovtaj gelirleri oranı",
+      "tahmin": {
+        "tahmin_satir": 86,
+        "tahmin_kod": "016",
+        "tahmin_hucre": "F86"
+      }
+    },
+    "F320": {
+      "bilesenler": [
+        {
+          "satir": 319,
+          "hucre": "F319",
+          "agirlik": 0.8
+        },
+        {
+          "satir": 318,
+          "hucre": "F318",
+          "agirlik": 0.005
+        },
+        {
+          "satir": 317,
+          "hucre": "F317",
+          "agirlik": 0.15
+        }
+      ],
+      "oran_satir": 320,
+      "ad": "Brüt Ödenen Hasar Payı",
+      "tahmin": {
+        "tahmin_satir": 96,
+        "tahmin_kod": "0211",
+        "tahmin_hucre": "F96"
+      }
+    },
+    "F325": {
+      "bilesenler": [
+        {
+          "satir": 324,
+          "hucre": "F324",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 323,
+          "hucre": "F323",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 322,
+          "hucre": "F322",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 321,
+          "hucre": "F321",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 325,
+      "ad": "Muallak Hasar Payı",
+      "tahmin": null
+    },
+    "F348": {
+      "bilesenler": [
+        {
+          "satir": 347,
+          "hucre": "F347",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 346,
+          "hucre": "F346",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 345,
+          "hucre": "F345",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 344,
+          "hucre": "F344",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 348,
+      "ad": "Dengeleme Karşılığı Payı",
+      "tahmin": null
+    },
+    "F353": {
+      "bilesenler": [
+        {
+          "satir": 352,
+          "hucre": "F352",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 351,
+          "hucre": "F351",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 350,
+          "hucre": "F350",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 349,
+          "hucre": "F349",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 353,
+      "ad": "Üretim Komisyon Gideri",
+      "tahmin": null
+    },
+    "F358": {
+      "bilesenler": [
+        {
+          "satir": 357,
+          "hucre": "F357",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 356,
+          "hucre": "F356",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 355,
+          "hucre": "F355",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 354,
+          "hucre": "F354",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 358,
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "tahmin": null
+    },
+    "F363": {
+      "bilesenler": [
+        {
+          "satir": 362,
+          "hucre": "F362",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 361,
+          "hucre": "F361",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 360,
+          "hucre": "F360",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 359,
+          "hucre": "F359",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 363,
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tahmin": null
+    },
+    "F368": {
+      "bilesenler": [
+        {
+          "satir": 367,
+          "hucre": "F367",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 366,
+          "hucre": "F366",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 365,
+          "hucre": "F365",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 364,
+          "hucre": "F364",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 368,
+      "ad": "FAALİYET  GİDERLERİ Branş Payları",
+      "tahmin": null
+    },
+    "F373": {
+      "bilesenler": [
+        {
+          "satir": 372,
+          "hucre": "F372",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 371,
+          "hucre": "F371",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 370,
+          "hucre": "F370",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 369,
+          "hucre": "F369",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 373,
+      "ad": "Alınan Komisyon Geliri",
+      "tahmin": null
+    },
+    "F378": {
+      "bilesenler": [
+        {
+          "satir": 377,
+          "hucre": "F377",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 376,
+          "hucre": "F376",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 375,
+          "hucre": "F375",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 374,
+          "hucre": "F374",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 378,
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "tahmin": null
+    },
+    "F383": {
+      "bilesenler": [
+        {
+          "satir": 382,
+          "hucre": "F382",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 381,
+          "hucre": "F381",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 380,
+          "hucre": "F380",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 379,
+          "hucre": "F379",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 383,
+      "ad": "DİĞER FAALİYET GİDERLERİ (TKK Teşvik, Ön Eks. Acer Yaz.)",
+      "tahmin": {
+        "tahmin_satir": 200,
+        "tahmin_kod": "0258",
+        "tahmin_hucre": "F200"
+      }
+    },
+    "F388": {
+      "bilesenler": [
+        {
+          "satir": 387,
+          "hucre": "F387",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 386,
+          "hucre": "F386",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 385,
+          "hucre": "F385",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 384,
+          "hucre": "F384",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 388,
+      "ad": "DİĞER FAALİYET GİDERLERİ  2 (ASİSTANS)",
+      "tahmin": {
+        "tahmin_satir": 201,
+        "tahmin_kod": "0259",
+        "tahmin_hucre": "F201"
+      }
+    },
+    "F393": {
+      "bilesenler": [
+        {
+          "satir": 392,
+          "hucre": "F392",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 391,
+          "hucre": "F391",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 390,
+          "hucre": "F390",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 389,
+          "hucre": "F389",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 393,
+      "ad": "Aktüeryal Matematik Karşılık",
+      "tahmin": null
+    },
+    "F398": {
+      "bilesenler": [
+        {
+          "satir": 397,
+          "hucre": "F397",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 396,
+          "hucre": "F396",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 395,
+          "hucre": "F395",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 394,
+          "hucre": "F394",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 398,
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "tahmin": null
+    },
+    "F431": {
+      "bilesenler": [
+        {
+          "satir": 430,
+          "hucre": "F430",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 429,
+          "hucre": "F429",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 428,
+          "hucre": "F428",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 427,
+          "hucre": "F427",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 431,
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "tahmin": {
+        "tahmin_satir": 188,
+        "tahmin_kod": "0251199",
+        "tahmin_hucre": "F188"
+      }
+    },
+    "F436": {
+      "bilesenler": [
+        {
+          "satir": 435,
+          "hucre": "F435",
+          "agirlik": 0.95
+        },
+        {
+          "satir": 434,
+          "hucre": "F434",
+          "agirlik": 0.05
+        }
+      ],
+      "oran_satir": 436,
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "tahmin": null
+    },
+    "F441": {
+      "bilesenler": [
+        {
+          "satir": 440,
+          "hucre": "F440",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 439,
+          "hucre": "F439",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 438,
+          "hucre": "F438",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 437,
+          "hucre": "F437",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 441,
+      "ad": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)",
+      "tahmin": null
+    },
+    "F446": {
+      "bilesenler": [
+        {
+          "satir": 445,
+          "hucre": "F445",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 444,
+          "hucre": "F444",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 443,
+          "hucre": "F443",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 442,
+          "hucre": "F442",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 446,
+      "ad": "Brüt Muallak Hasarlar Karşılığında Değişim (Devreden Kısım Düşülmüş)",
+      "tahmin": {
+        "tahmin_satir": 149,
+        "tahmin_kod": "022220101",
+        "tahmin_hucre": "F149"
+      }
+    },
+    "F451": {
+      "bilesenler": [
+        {
+          "satir": 450,
+          "hucre": "F450",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 449,
+          "hucre": "F449",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 448,
+          "hucre": "F448",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 447,
+          "hucre": "F447",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 451,
+      "ad": "Muallak Hasarlar Karşılığı (+/-)",
+      "tahmin": {
+        "tahmin_satir": 116,
+        "tahmin_kod": "02211",
+        "tahmin_hucre": "F116"
+      }
+    },
+    "F456": {
+      "bilesenler": [
+        {
+          "satir": 455,
+          "hucre": "F455",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 454,
+          "hucre": "F454",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 453,
+          "hucre": "F453",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 452,
+          "hucre": "F452",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 456,
+      "ad": "Devreden Muallak Hasarlar Karşılığı (+/-)",
+      "tahmin": {
+        "tahmin_satir": 126,
+        "tahmin_kod": "02212",
+        "tahmin_hucre": "F126"
+      }
+    },
+    "F461": {
+      "bilesenler": [
+        {
+          "satir": 460,
+          "hucre": "F460",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 459,
+          "hucre": "F459",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 458,
+          "hucre": "F458",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 457,
+          "hucre": "F457",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 461,
+      "ad": "Brüt Muallak Has. Kar. Değişim Reasürör Payı (Dev. Kısım Düşülmüş) ",
+      "tahmin": null
+    },
+    "F466": {
+      "bilesenler": [
+        {
+          "satir": 465,
+          "hucre": "F465",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 464,
+          "hucre": "F464",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 463,
+          "hucre": "F463",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 462,
+          "hucre": "F462",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 466,
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "tahmin": {
+        "tahmin_satir": 137,
+        "tahmin_kod": "02221",
+        "tahmin_hucre": "F137"
+      }
+    },
+    "F471": {
+      "bilesenler": [
+        {
+          "satir": 470,
+          "hucre": "F470",
+          "agirlik": 0.5
+        },
+        {
+          "satir": 469,
+          "hucre": "F469",
+          "agirlik": 0.25
+        },
+        {
+          "satir": 468,
+          "hucre": "F468",
+          "agirlik": 0.15
+        },
+        {
+          "satir": 467,
+          "hucre": "F467",
+          "agirlik": 0.1
+        }
+      ],
+      "oran_satir": 471,
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "tahmin": {
+        "tahmin_satir": 147,
+        "tahmin_kod": "02222",
+        "tahmin_hucre": "F147"
+      }
+    }
+  },
+  "ozet": {
+    "tahmin_satir_sayisi": 211,
+    "oran_satir_sayisi": 231,
+    "tahmin_tipleri": {
+      "satir_toplam": 24,
+      "prim_dagilim": 1,
+      "fark": 1,
+      "bos": 53,
+      "sabit": 59,
+      "carpim": 42,
+      "alt_toplam": 19,
+      "dis_sayfa": 12
+    },
+    "oran_tipleri": {
+      "etiket_veya_deger": 131,
+      "mizan_oran_yil": 60,
+      "oran_birlestirme": 26,
+      "diger": 8,
+      "satir_toplam": 4,
+      "dis_sayfa": 2
+    },
+    "carpim_sayisi": 42,
+    "mizan_yil_sayisi": 60,
+    "birlestirme_sayisi": 26
+  }
+}

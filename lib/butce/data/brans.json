@@ -1,0 +1,529 @@
+{
+  "brans": {
+    "701": [
+      "YANGIN VE DOĞAL AFETLER",
+      "YANGIN",
+      "YANGIN"
+    ],
+    "702": [
+      "FİNANSAL KAYIPLAR",
+      "KAR KAYBI",
+      "YANGIN"
+    ],
+    "703": [
+      "YANGIN VE DOĞAL AFETLER",
+      "ZORUNLU DEPREM (DASK)",
+      "DASK"
+    ],
+    "704": [
+      "KAZA",
+      "MADEN ÇALIŞANLARI ZORUNLU FERDİ KAZA",
+      "FERDİ KAZA"
+    ],
+    "705": [
+      "KEFALET",
+      "DOĞRUDAN KEFALET",
+      "DİĞER KAZA"
+    ],
+    "706": [
+      "KEFALET",
+      "DOLAYLI KEFALET",
+      "DİĞER KAZA"
+    ],
+    "707": [
+      "KREDİ",
+      "DEVLET DESTEKLİ TİCARİ ALACAK SİGORTASI",
+      "KREDİ"
+    ],
+    "708": [
+      "KEFALET",
+      "BİNA TAMAMLAMA",
+      "DİĞER KAZA"
+    ],
+    "710": [
+      "NAKLİYAT",
+      "EMTEA",
+      "NAKLİYAT"
+    ],
+    "711": [
+      "NAKLİYAT",
+      "KIYMET",
+      "NAKLİYAT"
+    ],
+    "712": [
+      "SU ARAÇLARI",
+      "TEKNE",
+      "NAKLİYAT"
+    ],
+    "713": [
+      "RAYLI ARAÇLAR",
+      "RAYLI ARAÇLAR GENEL",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "714": [
+      "KARA ARAÇLARI SORUMLULUK",
+      "ZORUNLU KARAYOLU TAŞIMACILIK MALİ SORUMLULUK",
+      "TRAFİK"
+    ],
+    "715": [
+      "KARA ARAÇLARI SORUMLULUK",
+      "ZORUNLU TRAFİK",
+      "TRAFİK"
+    ],
+    "716": [
+      "KARA ARAÇLARI SORUMLULUK",
+      "MOTORLU KARA TAŞIT ARAÇLARI İHTİYARİ MALİ SORUMLULUK",
+      "TRAFİK"
+    ],
+    "717": [
+      "KARA ARAÇLARI",
+      "MOTORLU KARA TAŞIT ARAÇLARI KASKO",
+      "KASKO"
+    ],
+    "718": [
+      "KAZA",
+      "OTOBÜS ZORUNLU KOLTUK FERDİ KAZA",
+      "FERDİ KAZA"
+    ],
+    "719": [
+      "GENEL SORUMLULUK",
+      "İŞVEREN MALİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "720": [
+      "GENEL SORUMLULUK",
+      "ÜÇÜNCÜ ŞAHISLARA KARŞI MALİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "721": [
+      "GENEL SORUMLULUK",
+      "ASANSÖR KAZA ÜÇÜNCÜ ŞAHISLARA KARŞI MALİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "722": [
+      "GENEL SORUMLULUK",
+      "ÇEVRE KİRLİLİĞİ MALİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "723": [
+      "GENEL ZARARLAR",
+      "CAM KIRILMASI",
+      "DİĞER KAZA"
+    ],
+    "724": [
+      "GENEL ZARARLAR",
+      "HIRSIZLIK",
+      "DİĞER KAZA"
+    ],
+    "725": [
+      "GENEL SORUMLULUK",
+      "TÜPGAZ ZORUNLU SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "726": [
+      "GENEL SORUMLULUK",
+      "TEHLİKELİ MADDELER ZORUNLU SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "727": [
+      "HAVA ARAÇLARI",
+      "UÇAK TEKNE",
+      "DİĞER KAZA"
+    ],
+    "728": [
+      "HAVA ARAÇLARI SORUMLULUK",
+      "UÇAK MALİ MESULİYET",
+      "DİĞER KAZA"
+    ],
+    "729": [
+      "KAZA",
+      "UÇAK YOLCU KAZA",
+      "DİĞER KAZA"
+    ],
+    "730": [
+      "GENEL SORUMLULUK",
+      "TIBBİ KÖTÜ UYGULAMA",
+      "DİĞER KAZA"
+    ],
+    "731": [
+      "GENEL SORUMLULUK",
+      "ÖZEL GÜVENLİK MALİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "732": [
+      "GENEL SORUMLULUK",
+      "ZORUNLU SERTİFİKA MALİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "733": [
+      "GENEL SORUMLULUK",
+      "MESLEKİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "734": [
+      "GENEL SORUMLULUK",
+      "KIYI TESİSLERİ DENİZ KİRLİLİĞİ ZORUNLU MALİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "735": [
+      "SU ARAÇLARI SORUMLULUK",
+      "TEKNE SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "736": [
+      "KEFALET",
+      "EMNİYETİ SUİSTİMAL",
+      "DİĞER KAZA"
+    ],
+    "737": [
+      "KARA ARAÇLARI",
+      "MOTORLU KARA TAŞITLARI DIŞINDAKİ KARA TAŞITLARI",
+      "DİĞER KAZA"
+    ],
+    "738": [
+      "SU ARAÇLARI",
+      "NEHİR ARAÇLARI",
+      "DİĞER KAZA"
+    ],
+    "739": [
+      "SU ARAÇLARI",
+      "GÖL ARAÇLARI",
+      "DİĞER KAZA"
+    ],
+    "740": [
+      "YANGIN VE DOĞAL AFETLER",
+      "İHTİYARİ DEPREM",
+      "YANGIN"
+    ],
+    "741": [
+      "YANGIN VE DOĞAL AFETLER",
+      "SEL",
+      "YANGIN"
+    ],
+    "742": [
+      "YANGIN VE DOĞAL AFETLER",
+      "DEPREM VE SEL DIŞINDAKİ DOĞAL AFETLER",
+      "YANGIN"
+    ],
+    "743": [
+      "YANGIN VE DOĞAL AFETLER",
+      "NÜKLEER ENERJİ",
+      "YANGIN"
+    ],
+    "744": [
+      "YANGIN VE DOĞAL AFETLER",
+      "TOPRAK KAYMASI",
+      "YANGIN"
+    ],
+    "745": [
+      "KREDİ",
+      "TAKSİTLİ KREDİ",
+      "KREDİ"
+    ],
+    "746": [
+      "KREDİ",
+      "UZUN VADELİ KONUT KREDİSİ",
+      "KREDİ"
+    ],
+    "747": [
+      "KREDİ",
+      "TARIM KREDİSİ",
+      "KREDİ"
+    ],
+    "748": [
+      "FİNANSAL KAYIPLAR",
+      "İSTİHDAM",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "749": [
+      "FİNANSAL KAYIPLAR",
+      "GELİR YETERSİZLİĞİ",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "750": [
+      "KAZA",
+      "FERDİ KAZA",
+      "FERDİ KAZA"
+    ],
+    "751": [
+      "KAZA",
+      "UZUN SÜRELİ FERDİ KAZA",
+      "FERDİ KAZA"
+    ],
+    "752": [
+      "FİNANSAL KAYIPLAR",
+      "HAVA ŞARTLARI",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "753": [
+      "FİNANSAL KAYIPLAR",
+      "GENEL GİDERLER",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "754": [
+      "FİNANSAL KAYIPLAR",
+      "BEKLENMEYEN TİCARİ GİDERLER",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "755": [
+      "KREDİ",
+      "KREDİ",
+      "KREDİ"
+    ],
+    "756": [
+      "KREDİ",
+      "İHRACAT KREDİ",
+      "KREDİ"
+    ],
+    "757": [
+      "FİNANSAL KAYIPLAR",
+      "PİYASA DEĞERİNDEKİ KAYIP",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "758": [
+      "FİNANSAL KAYIPLAR",
+      "KİRA VE GELİR KAYBI",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "759": [
+      "FİNANSAL KAYIPLAR",
+      "DİĞER FİNANSAL KAYIPLAR",
+      "FİNANSAL KAYIPLAR"
+    ],
+    "760": [
+      "HUKUKSAL KORUMA",
+      "HUKUKSAL KORUMA",
+      "DİĞER KAZA"
+    ],
+    "761": [
+      "YANGIN VE DOĞAL AFETLER",
+      "PATLAMA",
+      "YANGIN"
+    ],
+    "765": [
+      "GENEL ZARARLAR",
+      "MAKİNE KIRILMASI",
+      "MÜHENDİSLİK"
+    ],
+    "766": [
+      "GENEL ZARARLAR",
+      "MONTAJ",
+      "MÜHENDİSLİK"
+    ],
+    "767": [
+      "GENEL ZARARLAR",
+      "İNŞAAT",
+      "MÜHENDİSLİK"
+    ],
+    "768": [
+      "GENEL ZARARLAR",
+      "ELEKTRONİK CİHAZ",
+      "MÜHENDİSLİK"
+    ],
+    "769": [
+      "GENEL SORUMLULUK",
+      "YAPI DENETİMİ ZORUNLU MALİ SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "770": [
+      "GENEL SORUMLULUK",
+      "DENİZ YOLU TAŞIMACILIĞI ZMM",
+      "DİĞER KAZA"
+    ],
+    "771": [
+      "GENEL SORUMLULUK",
+      "ÜRÜN SORUMLULUK",
+      "DİĞER KAZA"
+    ],
+    "773": [
+      "GENEL ZARARLAR",
+      "DEVLET DESTEKLİ ARICILIK",
+      "TARSİM"
+    ],
+    "774": [
+      "GENEL ZARARLAR",
+      "SU ÜRÜNLERİ",
+      "TARSİM"
+    ],
+    "775": [
+      "GENEL ZARARLAR",
+      "DOLU SERA",
+      "TARSİM"
+    ],
+    "776": [
+      "GENEL ZARARLAR",
+      "DEVLET DESTEKLİ SERA",
+      "TARSİM"
+    ],
+    "777": [
+      "GENEL ZARARLAR",
+      "DEVLET DESTEKLİ BİTKİSEL ÜRÜN",
+      "TARSİM"
+    ],
+    "778": [
+      "GENEL ZARARLAR",
+      "DEVLET DESTEKLİ SU ÜRÜNLERİ",
+      "TARSİM"
+    ],
+    "779": [
+      "GENEL ZARARLAR",
+      "DEVLET DESTEKLİ HAYVAN HAYAT",
+      "TARSİM"
+    ],
+    "780": [
+      "GENEL ZARARLAR",
+      "HAYVAN HAYAT",
+      "TARSİM"
+    ],
+    "781": [
+      "GENEL ZARARLAR",
+      "KÜMES HAYVAN HAYAT",
+      "TARSİM"
+    ],
+    "782": [
+      "GENEL ZARARLAR",
+      "DEVLET DESTEKLİ KÜMES HAYVAN HAYAT",
+      "TARSİM"
+    ],
+    "783": [
+      "GENEL ZARARLAR",
+      "DEVLET DESTEKLİ KÜÇÜKBAŞ HAYVAN HAYAT",
+      "TARSİM"
+    ],
+    "784": [
+      "HASTALIK / SAĞLIK",
+      "HASTALIK",
+      "SAĞLIK"
+    ],
+    "785": [
+      "HASTALIK / SAĞLIK",
+      "SAĞLIK",
+      "SAĞLIK"
+    ],
+    "786": [
+      "HASTALIK / SAĞLIK",
+      "SEYAHAT SAĞLIK",
+      "SAĞLIK"
+    ],
+    "789": [
+      "DESTEK",
+      "SEYAHAT ARAÇ DESTEK",
+      "DİĞER KAZA"
+    ],
+    "798": [
+      "DESTEK",
+      "DESTEK",
+      "DİĞER KAZA"
+    ]
+  },
+  "sira": [],
+  "ana": {
+    "YANGIN": [
+      "701",
+      "702",
+      "740",
+      "741",
+      "742",
+      "743",
+      "744",
+      "761"
+    ],
+    "DASK": [
+      "703"
+    ],
+    "TRAFİK": [
+      "714",
+      "715",
+      "716"
+    ],
+    "KASKO": [
+      "717"
+    ],
+    "NAKLİYAT": [
+      "710",
+      "711",
+      "712"
+    ],
+    "MÜHENDİSLİK": [
+      "765",
+      "766",
+      "767",
+      "768"
+    ],
+    "FERDİ KAZA": [
+      "704",
+      "718",
+      "750",
+      "751"
+    ],
+    "SAĞLIK": [
+      "784",
+      "785",
+      "786"
+    ],
+    "TARSİM": [
+      "773",
+      "774",
+      "775",
+      "776",
+      "777",
+      "778",
+      "779",
+      "780",
+      "781",
+      "782",
+      "783"
+    ],
+    "KREDİ": [
+      "707",
+      "745",
+      "746",
+      "747",
+      "755",
+      "756"
+    ],
+    "FİNANSAL KAYIPLAR": [
+      "713",
+      "748",
+      "749",
+      "752",
+      "753",
+      "754",
+      "757",
+      "758",
+      "759"
+    ],
+    "DİĞER KAZA": [
+      "705",
+      "706",
+      "708",
+      "719",
+      "720",
+      "721",
+      "722",
+      "723",
+      "724",
+      "725",
+      "726",
+      "727",
+      "728",
+      "729",
+      "730",
+      "731",
+      "732",
+      "733",
+      "734",
+      "735",
+      "736",
+      "737",
+      "738",
+      "739",
+      "760",
+      "769",
+      "770",
+      "771",
+      "789",
+      "798"
+    ]
+  }
+}

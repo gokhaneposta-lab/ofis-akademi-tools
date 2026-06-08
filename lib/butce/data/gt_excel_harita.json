@@ -1,0 +1,2166 @@
+{
+  "kaynak": "Bütçe GT Çalışma_v8.xlsx",
+  "sayfa": "GT",
+  "tahmin_carpim_satirlari": [
+    {
+      "satir": 19,
+      "kod": "0112",
+      "ad": "REASÜRANSA DEVREDİLEN PRİMLER ( - )",
+      "formul": "=F11*F295",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F295",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 86,
+      "kod": "016",
+      "ad": "TAHAKKUK EDEN RÜCU VE SOVTAJ GELİRLERİ (  + )",
+      "formul": "=(F96+F116)*F315",
+      "tip": "carpim_toplam",
+      "carpim": {
+        "baz_ifade": "F96+F116",
+        "oran_hucre": "F315",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 96,
+      "kod": "0211",
+      "ad": "BRÜT ÖDENEN HASARLAR",
+      "formul": "=(F11+F22+F32)*F320",
+      "tip": "carpim_toplam",
+      "carpim": {
+        "baz_ifade": "F11+F22+F32",
+        "oran_hucre": "F320",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 116,
+      "kod": "02211",
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞI",
+      "formul": "=F11*F451",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F451",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 126,
+      "kod": "02212",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI",
+      "formul": "=F11*F456",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F456",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 137,
+      "kod": "02221",
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=F11*F466",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F466",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 147,
+      "kod": "02222",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=F11*F471",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F471",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 149,
+      "kod": "022220101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": "=F128*F446",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F128",
+        "oran_hucre": "F446",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 188,
+      "kod": "0251199",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "formul": "=F15*F431",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F15",
+        "oran_hucre": "F431",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 200,
+      "kod": "0258",
+      "ad": "DİĞER FAALİYET GİDERLERİ",
+      "formul": "=F11*F383",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F383",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 201,
+      "kod": "0259",
+      "ad": "DİĞER FAALİYET GİDERLERİ 2",
+      "formul": "=F11*F388",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F388",
+        "tip": "carpim"
+      }
+    }
+  ],
+  "toplam_satirlari": [
+    {
+      "satir": 9,
+      "kod": "01",
+      "ad": "HAYAT DIŞI TEKNİK GELİR ",
+      "formul": "=F10+F21+F31+F38+F83+F86",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 10,
+      "kod": "011",
+      "ad": "YAZILAN PRİMLER (REASÜRANS PAYI DÜŞÜLMÜŞ OLARAK)",
+      "formul": "=F11+F19+F20",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 21,
+      "kod": "012",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F22+F25+F28",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 22,
+      "kod": "0121",
+      "ad": "BRÜT KAZANILMAMIŞ PRİM KARŞILIĞI (DEVREDEN DÜŞÜLMÜŞ)",
+      "formul": "=SUM(F23:F24)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 25,
+      "kod": "0122",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRÖR PAYI",
+      "formul": "=SUM(F26:F27)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 28,
+      "kod": "0123",
+      "ad": "BRÜT KPK SGK PAYI",
+      "formul": "=SUM(F29:F30)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 31,
+      "kod": "013",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": "=F32+F35",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 32,
+      "kod": "0131",
+      "ad": "BRÜT DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": "=SUM(F33:F34)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 35,
+      "kod": "0132",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI",
+      "formul": "=SUM(F36:F37)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 94,
+      "kod": "02",
+      "ad": "HAYAT DIŞI TEKNİK GİDER",
+      "formul": "=F95+F114+F157+F164+F176+F217+F202",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 95,
+      "kod": "021",
+      "ad": "ÖDENEN HASARLAR",
+      "formul": "=F96+F105",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 97,
+      "kod": "02111",
+      "ad": "Fiili Tazminat Ödemeleri (-)",
+      "formul": "=SUM(F98:F100)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 105,
+      "kod": "0212",
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "formul": "=F106+F110+F111+F112+F113",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 106,
+      "kod": "02121",
+      "ad": "Fiilen Ödenen Tazminatlarda Reasürör Payı (+)",
+      "formul": "=SUM(F107:F109)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 114,
+      "kod": "022",
+      "ad": "MUALLAK HASARLAR KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F115+F136",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 115,
+      "kod": "0221",
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F116+F126",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 136,
+      "kod": "0222",
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYINDA DEĞİŞİM",
+      "formul": "=F137+F147",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 138,
+      "kod": "0222101",
+      "ad": "Tahakkuk Eden",
+      "formul": "=SUM(F139:F143)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 148,
+      "kod": "0222201",
+      "ad": "DEVREDEN MHK RE PAYI TAHAKKUK",
+      "formul": "=SUM(F149:F153)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 157,
+      "kod": "023",
+      "ad": "İKRAMİYE VE İND.KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F158+F161",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 158,
+      "kod": "0231",
+      "ad": "BRÜT İKRAMİYE VE İND.KARŞILIĞI",
+      "formul": "=SUM(F159:F160)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 161,
+      "kod": "0232",
+      "ad": "BRÜT İKRAMİYE VE İND.KARŞILIĞI REAS PAYI",
+      "formul": "=SUM(F162:F163)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 164,
+      "kod": "024",
+      "ad": "DİĞER TEKNİK KARŞILIĞI",
+      "formul": "=F165+F170+F173",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 165,
+      "kod": "0241",
+      "ad": "DENGELEME KARŞILIĞI",
+      "formul": "=F166+F169",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 166,
+      "kod": "02411",
+      "ad": "DENGELEME KARŞILIĞI",
+      "formul": "=F167+F168",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 170,
+      "kod": "0242",
+      "ad": "MALİ RİSKLER KARŞILIĞI",
+      "formul": "=SUM(F171:F172)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 173,
+      "kod": "0249",
+      "ad": "DİĞER KARŞILIĞI",
+      "formul": "=SUM(F174:F175)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 176,
+      "kod": "025",
+      "ad": "FAALİYET GİDERLERİ",
+      "formul": "=SUM(F177,F190:F195,F200,F201)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 177,
+      "kod": "0251",
+      "ad": "ÜRETİM KOMİSYON GİD.(-)",
+      "formul": "=F178+F189",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 178,
+      "kod": "02511",
+      "ad": "Üretim Komisyonu Giderleri (-)",
+      "formul": "=F179+F182+F185+F188",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 179,
+      "kod": "0251101",
+      "ad": "Bankalar Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F180:F181)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 182,
+      "kod": "0251102",
+      "ad": "Acenteler Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F183:F184)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 185,
+      "kod": "0251103",
+      "ad": "Doğrudan Satış Personeli Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F186:F187)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 195,
+      "kod": "0257",
+      "ad": "REASÜRANS KOMİSYONLARI GELİRLERİ",
+      "formul": "=F196+F199",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 196,
+      "kod": "02571",
+      "ad": "Alınan Reasürans Komisyonları (+)",
+      "formul": "=SUM(F197:F198)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 202,
+      "kod": "026",
+      "ad": "Matematik Karş.Değ. (Reas. Payı ve Devr. Kısım Düşülmüş Olarak) (+/-)",
+      "formul": "=F203+F210",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 203,
+      "kod": "0261",
+      "ad": "Brüt Matematik Karşılıklarda Değişim (Devreden Kısım Düşülmüş)",
+      "formul": "=F204+F207",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 204,
+      "kod": "02611",
+      "ad": "Matematik Karşılıklar (-)",
+      "formul": "=F205+F206",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 207,
+      "kod": "02612",
+      "ad": "Devreden Matematik Karşılık (+)",
+      "formul": "=F208+F209",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 210,
+      "kod": "0262",
+      "ad": "Brüt Matematik Karşılıklarda Değişim Reasürör Payı (Devreden Kısım Düşülmüş)",
+      "formul": "=F211+F214",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 211,
+      "kod": "02621",
+      "ad": "Matematik Karşılıklarda Reasürör Payı (+)",
+      "formul": "=F212+F213",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 214,
+      "kod": "02622",
+      "ad": "Devreden Matematik Karşılıklarda Reasürör Payı (-)",
+      "formul": "=F215+F216",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 217,
+      "kod": "029",
+      "ad": "DİĞER TEKNİK GİDERLER",
+      "formul": "=SUM(F218:F219)",
+      "tip": "alt_toplam"
+    }
+  ],
+  "oran_birlestirme": [
+    {
+      "hucre": "F245",
+      "satir": 245,
+      "aciklama": "HP ORANI ( BRÜT )",
+      "kaynak_hucreler": [
+        "F244",
+        "F243"
+      ]
+    }
+  ],
+  "tum_satirlar": [
+    {
+      "satir": 7,
+      "kod": null,
+      "ad": "SAFİ TEKNİK KAR ZARAR",
+      "formul": "=(F9-F38)+(F94-F190-F191-F192-F193-F194)",
+      "tip": "diger"
+    },
+    {
+      "satir": 8,
+      "kod": null,
+      "ad": "TEKNİK KAR ZARAR",
+      "formul": "=F9+F94",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 9,
+      "kod": "01",
+      "ad": "HAYAT DIŞI TEKNİK GELİR ",
+      "formul": "=F10+F21+F31+F38+F83+F86",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 10,
+      "kod": "011",
+      "ad": "YAZILAN PRİMLER (REASÜRANS PAYI DÜŞÜLMÜŞ OLARAK)",
+      "formul": "=F11+F19+F20",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 11,
+      "kod": "0111",
+      "ad": "YAZILAN PRİMLER (BRÜT)",
+      "formul": "=SUMIFS('3-Prim Ay Dağılımı'!$U:$U,'3-Prim Ay Dağılımı'!$G:$G,GT!F$5,'3-Prim Ay Dağılımı'!$B:$B,GT!$C$1)",
+      "tip": "prim_dagilim"
+    },
+    {
+      "satir": 12,
+      "kod": "01111",
+      "ad": "DİREK",
+      "formul": "=F11-F15",
+      "tip": "diger"
+    },
+    {
+      "satir": 13,
+      "kod": "0111101",
+      "ad": "YURTİÇİ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 14,
+      "kod": "0111102",
+      "ad": "YURTDIŞI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 15,
+      "kod": "1112",
+      "ad": "ENDİREK",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 16,
+      "kod": "0111201",
+      "ad": "YURTİÇİ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 17,
+      "kod": "0111202",
+      "ad": "YURTDIŞI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 18,
+      "kod": "01113",
+      "ad": "SGK'YA AKTARILMAK ÜZERE YAZILAN PRİMLER",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 19,
+      "kod": "0112",
+      "ad": "REASÜRANSA DEVREDİLEN PRİMLER ( - )",
+      "formul": "=F11*F295",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F295",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 20,
+      "kod": "0113",
+      "ad": "SGK'YA AKTARILAN PRİMLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 21,
+      "kod": "012",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F22+F25+F28",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 22,
+      "kod": "0121",
+      "ad": "BRÜT KAZANILMAMIŞ PRİM KARŞILIĞI (DEVREDEN DÜŞÜLMÜŞ)",
+      "formul": "=SUM(F23:F24)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 23,
+      "kod": "01211",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞI",
+      "formul": "=SUMIFS('YK KPK'!$V:$V,'YK KPK'!$D:$D,GT!F$5,'YK KPK'!$B:$B,GT!$C$1)",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 24,
+      "kod": "01212",
+      "ad": "DEVREDEN KAZANILMAMIŞ PRİM KARŞILIĞI",
+      "formul": "=SUMIFS('MEVCUT YIL DEVREDEN KPK'!$V:$V,'MEVCUT YIL DEVREDEN KPK'!$D:$D,GT!F$5,'MEVCUT YIL DEVREDEN KPK'!$B:$B,GT!$C$1)*-1",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 25,
+      "kod": "0122",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRÖR PAYI",
+      "formul": "=SUM(F26:F27)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 26,
+      "kod": "01221",
+      "ad": "KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRANSPAYI",
+      "formul": "=SUMIFS('YK KPK'!$AL:$AL,'YK KPK'!$D:$D,GT!F$5,'YK KPK'!$B:$B,GT!$C$1)",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 27,
+      "kod": "01222",
+      "ad": "DEVREDEN KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRANSPAYI",
+      "formul": "=SUMIFS('MEVCUT YIL DEVREDEN KPK'!$AL:$AL,'MEVCUT YIL DEVREDEN KPK'!$D:$D,GT!F$5,'MEVCUT YIL DEVREDEN KPK'!$B:$B,GT!$C$1)*-1",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 28,
+      "kod": "0123",
+      "ad": "BRÜT KPK SGK PAYI",
+      "formul": "=SUM(F29:F30)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 29,
+      "kod": "01231",
+      "ad": "KPK SGK PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 30,
+      "kod": "01232",
+      "ad": "DEVREDEN KPK SGK PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 31,
+      "kod": "013",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": "=F32+F35",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 32,
+      "kod": "0131",
+      "ad": "BRÜT DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": "=SUM(F33:F34)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 33,
+      "kod": "01311",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 34,
+      "kod": "01312",
+      "ad": "DEVREDEN DEVAM EDEN RİSKLER KARŞILIĞI",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 35,
+      "kod": "0132",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI",
+      "formul": "=SUM(F36:F37)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 36,
+      "kod": "01321",
+      "ad": "DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 37,
+      "kod": "01322",
+      "ad": "DEVREDEN DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 38,
+      "kod": "014",
+      "ad": "TEKNİK OLMAYAN YATIRIM GELİRLERİ",
+      "formul": "=SUMIFS('Nakit Akış Özet'!$AC:$AC,'Nakit Akış Özet'!$C:$C,GT!$C$1,'Nakit Akış Özet'!$B:$B,\"bs\")*GT!F397",
+      "tip": "carpim"
+    },
+    {
+      "satir": 39,
+      "kod": "0141",
+      "ad": "FİNANSAL YATIRIM GELİRLERİ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 40,
+      "kod": "01411",
+      "ad": "HİSSE SENETLERİ VE DİĞER",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 41,
+      "kod": "01412",
+      "ad": "HAZİNE BONOSU",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 42,
+      "kod": "01413",
+      "ad": "DEVLET TAHVİLİ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 43,
+      "kod": "01414",
+      "ad": "ÖZEL SEKTÖR BONO",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 44,
+      "kod": "01415",
+      "ad": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 45,
+      "kod": "01416",
+      "ad": "YATIRIM FONU",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 46,
+      "kod": "01417",
+      "ad": "REPO",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 47,
+      "kod": "01418",
+      "ad": "VADELİ MEVDUAT",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 48,
+      "kod": "01419",
+      "ad": "DİĞER FİNANSAL",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 49,
+      "kod": "0142",
+      "ad": "FİNANSAL YAT.NAKTE ÇEV.KAY.KARLAR",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 50,
+      "kod": "01421",
+      "ad": "HİSSE SENETLERİ VE DİĞER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 51,
+      "kod": "01422",
+      "ad": "HAZİNE BONOSU",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 52,
+      "kod": "01423",
+      "ad": "DEVLET TAHVİLİ",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 53,
+      "kod": "01424",
+      "ad": "ÖZEL SEKTÖR BONO",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 54,
+      "kod": "01425",
+      "ad": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 55,
+      "kod": "01426",
+      "ad": "YATIRIM FONU",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 56,
+      "kod": "01427",
+      "ad": "REPO",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 57,
+      "kod": "01429",
+      "ad": "DİĞER FİNANSAL",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 58,
+      "kod": "0143",
+      "ad": "FİNANSAL YATIRIMLARIN DEĞERLEMESİ",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 59,
+      "kod": "01431",
+      "ad": "HİSSE SENETLERİ VE DİĞER",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 60,
+      "kod": "01432",
+      "ad": "HAZİNE BONOSU",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 61,
+      "kod": "01433",
+      "ad": "DEVLET TAHVİLİ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 62,
+      "kod": "01434",
+      "ad": "ÖZEL SEKTÖR BONO",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 63,
+      "kod": "01435",
+      "ad": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 64,
+      "kod": "01436",
+      "ad": "YATIRIM FONU",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 65,
+      "kod": "01437",
+      "ad": "REPO",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 66,
+      "kod": "01439",
+      "ad": "DİĞER FİNANSAL",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 67,
+      "kod": "0144",
+      "ad": "KAMBİYO KARLARI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 68,
+      "kod": "0145",
+      "ad": "İŞTİRAKLERDEN GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 69,
+      "kod": "01451",
+      "ad": "TEMETTÜ",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 70,
+      "kod": "01452",
+      "ad": "DİĞER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 71,
+      "kod": "0146",
+      "ad": "BAĞLI ORT.VE MÜŞT.YÖN.TEŞ.GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 72,
+      "kod": "01461",
+      "ad": "TEMETTÜ",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 73,
+      "kod": "01462",
+      "ad": "DİĞER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 74,
+      "kod": "0147",
+      "ad": "ARAZİ, ARSA BİNALARDAN ELDE EDİLEN GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 75,
+      "kod": "01471",
+      "ad": "KİRA",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 76,
+      "kod": "01472",
+      "ad": "SATIŞ KARI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 77,
+      "kod": "01473",
+      "ad": "DEĞERLEME ARTIŞLARI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 78,
+      "kod": "0148",
+      "ad": "TÜREV ÜRÜNLERİNDEN ELDE EDİLEN GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 79,
+      "kod": "0149",
+      "ad": "DİĞER YATIRIMLARDAN ELDE EDİLEN GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 80,
+      "kod": "01491",
+      "ad": "DÜZENLİ GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 81,
+      "kod": "01492",
+      "ad": "NAKDE ÇEVRİMDEN ELDE EDİLEN GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 82,
+      "kod": "01493",
+      "ad": "DEĞERLEME ARTIŞLARI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 83,
+      "kod": "015",
+      "ad": "DİĞER TEKNİK GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 84,
+      "kod": "0151",
+      "ad": "BRÜT DİĞER TEKNİK GELİRLER",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 85,
+      "kod": "0152",
+      "ad": "BRÜT DİĞER TEKNİK GELİRLERDE REASÜRÖR PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 86,
+      "kod": "016",
+      "ad": "TAHAKKUK EDEN RÜCU VE SOVTAJ GELİRLERİ (  + )",
+      "formul": "=(F96+F116)*F315",
+      "tip": "carpim_toplam",
+      "carpim": {
+        "baz_ifade": "F96+F116",
+        "oran_hucre": "F315",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 87,
+      "kod": "0161",
+      "ad": "TAHAKKUK EDEN RÜCU GELİRİ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 88,
+      "kod": "0162",
+      "ad": "TAHAKKUK EDEN RÜCU GELİRİ REAS PAYI",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 89,
+      "kod": "0163",
+      "ad": "TAHAKKUK EDEN SOVTAJ GELİRİ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 90,
+      "kod": "0164",
+      "ad": "TAHAKKUK ENE SOVTAJ GELİRİ RE PAYI",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 91,
+      "kod": "0165",
+      "ad": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 92,
+      "kod": "01651",
+      "ad": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI BRÜT",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 93,
+      "kod": "01652",
+      "ad": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI RE PAYI",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 94,
+      "kod": "02",
+      "ad": "HAYAT DIŞI TEKNİK GİDER",
+      "formul": "=F95+F114+F157+F164+F176+F217+F202",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 95,
+      "kod": "021",
+      "ad": "ÖDENEN HASARLAR",
+      "formul": "=F96+F105",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 96,
+      "kod": "0211",
+      "ad": "BRÜT ÖDENEN HASARLAR",
+      "formul": "=(F11+F22+F32)*F320",
+      "tip": "carpim_toplam",
+      "carpim": {
+        "baz_ifade": "F11+F22+F32",
+        "oran_hucre": "F320",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 97,
+      "kod": "02111",
+      "ad": "Fiili Tazminat Ödemeleri (-)",
+      "formul": "=SUM(F98:F100)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 98,
+      "kod": "0211101",
+      "ad": "Sigortalılara Ödemeler (Sigortalılara / 3. Şahıslara Tazminat Ödemeleri) ",
+      "formul": "=F$96*F399",
+      "tip": "carpim"
+    },
+    {
+      "satir": 99,
+      "kod": "0211102",
+      "ad": "Eksper Ödemeleri",
+      "formul": "=F$96*F400",
+      "tip": "carpim"
+    },
+    {
+      "satir": 100,
+      "kod": "0211199",
+      "ad": "Diğer Ödemeler (Masraf Ödemeleri)",
+      "formul": "=F$96*F401",
+      "tip": "carpim"
+    },
+    {
+      "satir": 101,
+      "kod": "02112",
+      "ad": "Tahsil Edilen Rücu Gelirleri (+)",
+      "formul": "=F$96*F402",
+      "tip": "carpim"
+    },
+    {
+      "satir": 102,
+      "kod": "02113",
+      "ad": "Tahsil Edilen Sovtaj Gelirleri (+)",
+      "formul": "=F$96*F403",
+      "tip": "carpim"
+    },
+    {
+      "satir": 103,
+      "kod": "02114",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumlu Farkları (+)",
+      "formul": "=F$96*F404",
+      "tip": "carpim"
+    },
+    {
+      "satir": 104,
+      "kod": "02115",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumsuz Farkları (-)",
+      "formul": "=F$96*F405",
+      "tip": "carpim"
+    },
+    {
+      "satir": 105,
+      "kod": "0212",
+      "ad": "ÖDENEN HASARLARDA REASÜRANSPAYI",
+      "formul": "=F106+F110+F111+F112+F113",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 106,
+      "kod": "02121",
+      "ad": "Fiilen Ödenen Tazminatlarda Reasürör Payı (+)",
+      "formul": "=SUM(F107:F109)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 107,
+      "kod": "0212101",
+      "ad": "Sigortalılara Ödemeler (Sigortalılara / 3. Şahıslara Tazminat Ödemeleri) ",
+      "formul": "=F98*F$436",
+      "tip": "carpim"
+    },
+    {
+      "satir": 108,
+      "kod": "0212102",
+      "ad": "Eksper Ödemeleri",
+      "formul": "=F99*F$436",
+      "tip": "carpim"
+    },
+    {
+      "satir": 109,
+      "kod": "0212199",
+      "ad": "Diğer Ödemeler (Masraf Ödemeleri)",
+      "formul": "=F100*F$436",
+      "tip": "carpim"
+    },
+    {
+      "satir": 110,
+      "kod": "02122",
+      "ad": "Tahsil Edilen Rücu Gelirleri Reasürör Payı(-)",
+      "formul": "=F101*F$436",
+      "tip": "carpim"
+    },
+    {
+      "satir": 111,
+      "kod": "02123",
+      "ad": "Tahsil Edilen Sovtaj Gelirleri Reasürör Payı(-)",
+      "formul": "=F102*F$436",
+      "tip": "carpim"
+    },
+    {
+      "satir": 112,
+      "kod": "02124",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumlu Farkları Reasürör Payı (-)",
+      "formul": "=F103*F$436",
+      "tip": "carpim"
+    },
+    {
+      "satir": 113,
+      "kod": "02125",
+      "ad": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumsuz Farkları Reasürör Payı (+)",
+      "formul": "=F104*F$436",
+      "tip": "carpim"
+    },
+    {
+      "satir": 114,
+      "kod": "022",
+      "ad": "MUALLAK HASARLAR KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F115+F136",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 115,
+      "kod": "0221",
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F116+F126",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 116,
+      "kod": "02211",
+      "ad": "BRÜT MUALLAK HASAR KARŞILIĞI",
+      "formul": "=F11*F451",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F451",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 117,
+      "kod": "0221101",
+      "ad": "Tahakkuk Eden",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 118,
+      "kod": "022110101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 119,
+      "kod": "022110102",
+      "ad": "Eksper  ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 120,
+      "kod": "022110103",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 121,
+      "kod": "022111040",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 122,
+      "kod": "022110199",
+      "ad": "Diğer (Masraf Muallakları)",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 123,
+      "kod": "0221102",
+      "ad": "Raporlanmayan",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 124,
+      "kod": "0221104",
+      "ad": "Muallak Tazminat Karşılığı Yeterlilik Farkı",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 125,
+      "kod": "0221108",
+      "ad": "Nakit Akışlarından Kaynaklanan İskonto ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 126,
+      "kod": "02212",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI",
+      "formul": "=F11*F456",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F456",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 127,
+      "kod": "0221201",
+      "ad": "DEVREDEN MHK TAHAKKUK",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 128,
+      "kod": "022120101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 129,
+      "kod": "022120102",
+      "ad": "Eksper  ",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 130,
+      "kod": "022120103",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 131,
+      "kod": "022121040",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 132,
+      "kod": "022120199",
+      "ad": "Diğer (Masraf Muallakları)",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 133,
+      "kod": "0221202",
+      "ad": "DEVREDEN MHK IBNR",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 134,
+      "kod": "0221204",
+      "ad": "MUALLAK TAZMİNAT KARŞILIĞI YETERLİLİK FARKI",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 135,
+      "kod": "0221208",
+      "ad": "NAKİT AKIŞLARINDAN KAYNAKLANAN İSKONTO",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 136,
+      "kod": "0222",
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYINDA DEĞİŞİM",
+      "formul": "=F137+F147",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 137,
+      "kod": "02221",
+      "ad": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=F11*F466",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F466",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 138,
+      "kod": "0222101",
+      "ad": "Tahakkuk Eden",
+      "formul": "=SUM(F139:F143)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 139,
+      "kod": "022210101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": "=F118*F$441",
+      "tip": "carpim"
+    },
+    {
+      "satir": 140,
+      "kod": "022210102",
+      "ad": "Eksper  ",
+      "formul": "=F119*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 141,
+      "kod": "022210103",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (-)",
+      "formul": "=F120*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 142,
+      "kod": "022211040",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "formul": "=F121*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 143,
+      "kod": "022210199",
+      "ad": "Diğer (Masraf Muallakları)",
+      "formul": "=F122*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 144,
+      "kod": "0222102",
+      "ad": "Raporlanmayan",
+      "formul": "=F123*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 145,
+      "kod": "0222104",
+      "ad": "Muallak Tazminat Karşılığı Yeterlilik Farkı",
+      "formul": "=F124*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 146,
+      "kod": "0222108",
+      "ad": "Nakit Akışlarından Kaynaklanan İskontoda Reasürör Payı",
+      "formul": "=F125*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 147,
+      "kod": "02222",
+      "ad": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI",
+      "formul": "=F11*F471",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F471",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 148,
+      "kod": "0222201",
+      "ad": "DEVREDEN MHK RE PAYI TAHAKKUK",
+      "formul": "=SUM(F149:F153)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 149,
+      "kod": "022220101",
+      "ad": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)",
+      "formul": "=F128*F446",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F128",
+        "oran_hucre": "F446",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 150,
+      "kod": "022220102",
+      "ad": "Eksper  ",
+      "formul": "=F129*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 151,
+      "kod": "022220103",
+      "ad": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (-)",
+      "formul": "=F130*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 152,
+      "kod": "022221040",
+      "ad": "İstatistiki Hesaplamalara Göre Yapılan İndirimler",
+      "formul": "=F131*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 153,
+      "kod": "022220199",
+      "ad": "Diğer (Masraf Muallakları)",
+      "formul": "=F132*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 154,
+      "kod": "0222202",
+      "ad": "DEVREDEN MHK RE PAYI IBNR",
+      "formul": "=F133*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 155,
+      "kod": "0222204",
+      "ad": "MUALLAK TAZMİNAT KARŞILIĞI YETERLİLİK FARKI RE PAYI",
+      "formul": "=F134*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 156,
+      "kod": "0222208",
+      "ad": "NAKİT AKIŞLARINDAN KAYNAKLANAN İSKONTODA REASÜRÖR PAYI",
+      "formul": "=F135*F$325",
+      "tip": "carpim"
+    },
+    {
+      "satir": 157,
+      "kod": "023",
+      "ad": "İKRAMİYE VE İND.KARŞILIĞINDA DEĞİŞİM",
+      "formul": "=F158+F161",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 158,
+      "kod": "0231",
+      "ad": "BRÜT İKRAMİYE VE İND.KARŞILIĞI",
+      "formul": "=SUM(F159:F160)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 159,
+      "kod": "02311",
+      "ad": "İKRAMİYE VE İNDİRİMLER KARŞILIĞI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 160,
+      "kod": "02312",
+      "ad": "DEVREDEN İKRAMİYE VE İNDİRİMLER KARŞILIĞI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 161,
+      "kod": "0232",
+      "ad": "BRÜT İKRAMİYE VE İND.KARŞILIĞI REAS PAYI",
+      "formul": "=SUM(F162:F163)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 162,
+      "kod": "02321",
+      "ad": "İKRAMİYE VE İNDİRİMLER KARŞILIĞI REAS PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 163,
+      "kod": "02322",
+      "ad": "DEVREDEN İKRAMİYE VE İNDİRİMLER KARŞILIĞI REAS PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 164,
+      "kod": "024",
+      "ad": "DİĞER TEKNİK KARŞILIĞI",
+      "formul": "=F165+F170+F173",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 165,
+      "kod": "0241",
+      "ad": "DENGELEME KARŞILIĞI",
+      "formul": "=F166+F169",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 166,
+      "kod": "02411",
+      "ad": "DENGELEME KARŞILIĞI",
+      "formul": "=F167+F168",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 167,
+      "kod": "0241101",
+      "ad": "Dengeleme Karşılığı (-)",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 168,
+      "kod": "0241102",
+      "ad": "Devreden Dengeleme Karşılığı (+)",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 169,
+      "kod": "02412",
+      "ad": "DENGELEME KARŞILIĞI RE PAYI",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 170,
+      "kod": "0242",
+      "ad": "MALİ RİSKLER KARŞILIĞI",
+      "formul": "=SUM(F171:F172)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 171,
+      "kod": "02421",
+      "ad": "MALİ RİSKLER KARŞILIĞI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 172,
+      "kod": "02422",
+      "ad": "MALİ RİSKLER KARŞILIĞI RE PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 173,
+      "kod": "0249",
+      "ad": "DİĞER KARŞILIĞI",
+      "formul": "=SUM(F174:F175)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 174,
+      "kod": "02491",
+      "ad": "DİĞER TEKNİK KARŞILIKLAR",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 175,
+      "kod": "02492",
+      "ad": "DİĞER TEKNİK KARŞILIKLAR RE PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 176,
+      "kod": "025",
+      "ad": "FAALİYET GİDERLERİ",
+      "formul": "=SUM(F177,F190:F195,F200,F201)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 177,
+      "kod": "0251",
+      "ad": "ÜRETİM KOMİSYON GİD.(-)",
+      "formul": "=F178+F189",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 178,
+      "kod": "02511",
+      "ad": "Üretim Komisyonu Giderleri (-)",
+      "formul": "=F179+F182+F185+F188",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 179,
+      "kod": "0251101",
+      "ad": "Bankalar Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F180:F181)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 180,
+      "kod": null,
+      "ad": "Üretim Komisyon Gideri",
+      "formul": "=F12*F275",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F12",
+        "oran_hucre": "F275",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 181,
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Giderleri (+)",
+      "formul": "=SUMIFS('YK KPK'!$BD:$BD,'YK KPK'!$D:$D,GT!F$5,'YK KPK'!$B:$B,GT!$C$1)-SUMIFS('MEVCUT YIL DEVREDEN KPK'!$BD:$BD,'MEVCUT YIL DEVREDEN KPK'!$D:$D,GT!F$5,'MEVCUT YIL DEVREDEN KPK'!$B:$B,GT!$C$1)",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 182,
+      "kod": "0251102",
+      "ad": "Acenteler Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F183:F184)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 185,
+      "kod": "0251103",
+      "ad": "Doğrudan Satış Personeli Üretim Komisyonu Giderleri (-)",
+      "formul": "=SUM(F186:F187)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 188,
+      "kod": "0251199",
+      "ad": "Diğer Üretim Komisyonu Giderleri (-)",
+      "formul": "=F15*F431",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F15",
+        "oran_hucre": "F431",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 189,
+      "kod": "02512",
+      "ad": "Diğer Üretim Giderleri (-)",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 190,
+      "kod": "0252",
+      "ad": "PERSONEL GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C190,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 191,
+      "kod": "0253",
+      "ad": "YÖNETİM GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C191,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 192,
+      "kod": "0254",
+      "ad": "AR-GE GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C192,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 193,
+      "kod": "0255",
+      "ad": "PAZARLAMA SATIŞ DAĞITIM GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C193,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 194,
+      "kod": "0256",
+      "ad": "DIŞARDAN SAĞLANAN FAYDA VE HİZMET GİDERLERİ",
+      "formul": "=SUMIFS('Genel Gider'!$H:$H,'Genel Gider'!$A:$A,GT!$C194,'Genel Gider'!$C:$C,GT!$C$1)*-F$368",
+      "tip": "dis_sayfa"
+    },
+    {
+      "satir": 195,
+      "kod": "0257",
+      "ad": "REASÜRANS KOMİSYONLARI GELİRLERİ",
+      "formul": "=F196+F199",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 196,
+      "kod": "02571",
+      "ad": "Alınan Reasürans Komisyonları (+)",
+      "formul": "=SUM(F197:F198)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 197,
+      "kod": null,
+      "ad": "Alınan Komisyon Geliri",
+      "formul": "=F19*F300",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F19",
+        "oran_hucre": "F300",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 198,
+      "kod": null,
+      "ad": "Ertelenmiş Komisyon Geliri (-)",
+      "formul": "=(SUMIFS('MEVCUT YIL DEVREDEN KPK'!$BA:$BA,'MEVCUT YIL DEVREDEN KPK'!$D:$D,GT!F5)*-1)+SUMIFS('YK KPK'!$BA:$BA,'YK KPK'!$D:$D,GT!F5)",
+      "tip": "carpim"
+    },
+    {
+      "satir": 199,
+      "kod": "02572",
+      "ad": "Verilen Reasürans Komisyonları (-)",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 200,
+      "kod": "0258",
+      "ad": "DİĞER FAALİYET GİDERLERİ",
+      "formul": "=F11*F383",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F383",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 201,
+      "kod": "0259",
+      "ad": "DİĞER FAALİYET GİDERLERİ 2",
+      "formul": "=F11*F388",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F388",
+        "tip": "carpim"
+      }
+    },
+    {
+      "satir": 202,
+      "kod": "026",
+      "ad": "Matematik Karş.Değ. (Reas. Payı ve Devr. Kısım Düşülmüş Olarak) (+/-)",
+      "formul": "=F203+F210",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 203,
+      "kod": "0261",
+      "ad": "Brüt Matematik Karşılıklarda Değişim (Devreden Kısım Düşülmüş)",
+      "formul": "=F204+F207",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 204,
+      "kod": "02611",
+      "ad": "Matematik Karşılıklar (-)",
+      "formul": "=F205+F206",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 205,
+      "kod": "0261101",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 206,
+      "kod": "0261130",
+      "ad": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 207,
+      "kod": "02612",
+      "ad": "Devreden Matematik Karşılık (+)",
+      "formul": "=F208+F209",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 208,
+      "kod": "0261201",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 209,
+      "kod": "0261230",
+      "ad": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 210,
+      "kod": "0262",
+      "ad": "Brüt Matematik Karşılıklarda Değişim Reasürör Payı (Devreden Kısım Düşülmüş)",
+      "formul": "=F211+F214",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 211,
+      "kod": "02621",
+      "ad": "Matematik Karşılıklarda Reasürör Payı (+)",
+      "formul": "=F212+F213",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 212,
+      "kod": "0262101",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 213,
+      "kod": "0262130",
+      "ad": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 214,
+      "kod": "02622",
+      "ad": "Devreden Matematik Karşılıklarda Reasürör Payı (-)",
+      "formul": "=F215+F216",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 215,
+      "kod": "0262201",
+      "ad": "Aktüeryal Matematik Karşılık",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 216,
+      "kod": "0262230",
+      "ad": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 217,
+      "kod": "029",
+      "ad": "DİĞER TEKNİK GİDERLER",
+      "formul": "=SUM(F218:F219)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 218,
+      "kod": "0291",
+      "ad": "BRÜT DİĞER TEKNİK GİDERLER",
+      "formul": null,
+      "tip": "deger"
+    },
+    {
+      "satir": 219,
+      "kod": "0292",
+      "ad": "DİĞER TEKNİK GİDERLER REASÜRANS PAYI",
+      "formul": 0,
+      "tip": "deger"
+    },
+    {
+      "satir": 220,
+      "kod": null,
+      "ad": "TEKNİK KAR ZARAR",
+      "formul": "=F94+F9",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 223,
+      "kod": null,
+      "ad": "HP ORANI ( BRÜT )",
+      "formul": "=IFERROR(ROUND(-(F96+F115)/(F11+F22+F32),4),0)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 224,
+      "kod": null,
+      "ad": "HP ORANI ( NET )",
+      "formul": "=IFERROR(ROUND(-(F95+F114)/(F10+F21+F31),4),0)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 225,
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT )",
+      "formul": "=IFERROR(ROUND(-(F176+F200)/(F11+F22+F32),4),0)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 226,
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT ) (KOMİSYONSUZ)",
+      "formul": "=IFERROR(ROUND(-(F176+F200-F177-F195)/(F11+F22),4),0)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 227,
+      "kod": null,
+      "ad": "MASRAF ORANI ( NET )",
+      "formul": "=IFERROR(ROUND(-(F176+F200)/(F10+F21+F31),4),0)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 228,
+      "kod": null,
+      "ad": "MASRAF ORANI ( NET ) (KOMİSYONSUZ)",
+      "formul": "=IFERROR(ROUND(-(F176+F200-F177-F195)/(F10+F21+F31),4),0)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 229,
+      "kod": null,
+      "ad": "Ö.KOMİSYON ORANI ( CARİ )",
+      "formul": "=IFERROR(ROUND(-(F180+F183+F186+F188)/(F11),4),0)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 230,
+      "kod": null,
+      "ad": "Ö.KOMİSYON ORANI ( ERTELENMİŞ DAHİL)",
+      "formul": "=IFERROR(ROUND(-(F177)/(F11),4),0)",
+      "tip": "diger"
+    },
+    {
+      "satir": 231,
+      "kod": null,
+      "ad": "BİRLEŞİK RASYO ( BRÜT )",
+      "formul": "=F223+F225",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 232,
+      "kod": null,
+      "ad": "BİRLEŞİK RASYO ( NET )",
+      "formul": "=F224+F227",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 233,
+      "kod": null,
+      "ad": "DEVREDİLEN PRİM ORANI",
+      "formul": "=IFERROR(ROUND(-(F19+F20)/(F11),4),0)",
+      "tip": "alt_toplam"
+    },
+    {
+      "satir": 234,
+      "kod": null,
+      "ad": "A.KOMİSYON ORANI",
+      "formul": "=IFERROR(ROUND(-(F197)/(F19),4),0)",
+      "tip": "diger"
+    },
+    {
+      "satir": 235,
+      "kod": null,
+      "ad": "A.KOMİSYON ORANI (ERTELENMİŞ DAHİL)",
+      "formul": "=IFERROR(ROUND(-(F196)/(F19),4),0)",
+      "tip": "diger"
+    },
+    {
+      "satir": 244,
+      "kod": null,
+      "ad": "HP ORANI ( BRÜT )",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61001\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61101\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"",
+      "tip": "mizan_oran",
+      "mizan_oran": {
+        "pay": [
+          "61001",
+          "61101"
+        ],
+        "baz": [
+          "60001",
+          "60101",
+          "60201"
+        ]
+      }
+    },
+    {
+      "satir": 245,
+      "kod": null,
+      "ad": "HP ORANI ( BRÜT )",
+      "formul": "=(F244*0.6)+(F243*0.4)",
+      "tip": "oran_birlestirme"
+    },
+    {
+      "satir": 249,
+      "kod": null,
+      "ad": "HP ORANI ( NET )",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"610\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"611\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"600\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"601\") ",
+      "tip": "mizan_oran",
+      "mizan_oran": {
+        "pay": [],
+        "baz": []
+      }
+    },
+    {
+      "satir": 250,
+      "kod": null,
+      "ad": "HP ORANI ( NET )",
+      "formul": "=AVERAGE(F248:F249)",
+      "tip": "oran_birlestirme"
+    },
+    {
+      "satir": 254,
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT )",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")) /\n(SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60001\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"60",
+      "tip": "mizan_oran",
+      "mizan_oran": {
+        "pay": [
+          "61408"
+        ],
+        "baz": [
+          "60001",
+          "60101",
+          "60201"
+        ]
+      }
+    },
+    {
+      "satir": 255,
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT )",
+      "formul": "=AVERAGE(F253:F254)",
+      "tip": "oran_birlestirme"
+    },
+    {
+      "satir": 259,
+      "kod": null,
+      "ad": "MASRAF ORANI ( BRÜT ) (KOMİSYONSUZ)",
+      "formul": "=IFERROR((SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"614\")+\n  SUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61408\")-\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61401\")-\nSUMIFS('UNPİVOT MİZAN'!$F:$F,'UNPİVOT MİZAN'!$B:$B,GT!$C244,'UNPİVOT MİZAN'!$E:$E,GT!F$240,'UNPİVOT MİZAN'!$C:$C,\"61407\")",
+      "tip": "mizan_oran",
+      "mizan_oran": {
+        "pay": [
+          "61408",
+          "61401",
+          "61407"
+        ],
+        "baz": [
+          "60001",
+          "60101"
+        ]
+      }
+    }
+  ],
+  "oran_hucre_sayisi": 4
+}

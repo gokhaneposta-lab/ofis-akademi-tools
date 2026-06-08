@@ -18,8 +18,8 @@
     "tsb:split-gelir-tidy": "node scripts/tsb-split-gelir-tidy-by-donem.mjs",
     "tsb:meta": "npx --yes tsx scripts/tsb-write-meta.ts",
     "tsb:segment-xlsx": "npx --yes tsx scripts/tsb-segment-export-xlsx.ts",
-    "butce:import-gt-bl": "node scripts/butce-import-gt-bl.mjs",
-    "butce:import-hedef": "node scripts/butce-import-hedef.mjs"
+    "butce:import-mizan": "node scripts/butce-import-mizan.mjs",
+    "butce:gen-brans": "node scripts/gen-brans-json.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

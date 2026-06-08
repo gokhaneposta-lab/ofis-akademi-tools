@@ -8,21 +8,26 @@ const py = fs.readFileSync(
   "utf8",
 );
 
-const block = (name) => {
+const blockDict = (name) => {
   const m = py.match(new RegExp(`${name} = \\{([\\s\\S]*?)\\n\\}`));
   return m ? m[1] : "";
 };
 
+const blockList = (name) => {
+  const m = py.match(new RegExp(`${name} = \\[([\\s\\S]*?)\\]`));
+  return m ? m[1] : "";
+};
+
 const brans = {};
-const bransBlock = block("HAZINE_BRANS_KODLARI");
+const bransBlock = blockDict("HAZINE_BRANS_KODLARI");
 for (const m of bransBlock.matchAll(/"(\d+)":\s*\("([^"]*)",\s*"([^"]*)",\s*"([^"]*)"\)/g)) {
   brans[m[1]] = [m[2], m[3], m[4]];
 }
 
-const sira = [...block("HAZINE_BRANS_SIRASI").matchAll(/"(\d+)"/g)].map((m) => m[1]);
+const sira = [...blockList("HAZINE_BRANS_SIRASI").matchAll(/"(\d+)"/g)].map((m) => m[1]);
 
 const ana = {};
-for (const m of block("ANA_BRANS_GRUPLARI").matchAll(/"([^"]+)":\s*\[([\s\S]*?)\]/g)) {
+for (const m of blockDict("ANA_BRANS_GRUPLARI").matchAll(/"([^"]+)":\s*\[([\s\S]*?)\]/g)) {
   ana[m[1]] = [...m[2].matchAll(/"(\d+)"/g)].map((x) => x[1]);
 }
 

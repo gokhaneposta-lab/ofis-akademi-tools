@@ -4,23 +4,24 @@ import {
   ORAN_REFERANS_SECENEKLERI,
   ORAN_REFERANS_VARSAYILAN,
 } from "../config/constants";
-import { normalizeBransKodu } from "../textUtils";
 import type { BransOranAyar, BransOranSatir, MizanRow, OranAyarStore } from "../types";
 import type { BilesenSpec } from "./oranKalemLoader";
 import { ORAN_BAZLI_KALEMLER, ORAN_KALEM_MIZAN } from "./oranKalemLoader";
 import { exportNormSpec, hesaplaEtkinOran } from "./oranMotoru";
+import { MizanIndex } from "./mizanIndex";
 
 const MIN_BAZ_TUTAR = 1;
 
 export class MizanOranServisi {
   readonly butceYili: number;
   readonly yillar: number[];
-  private readonly mizan: MizanRow[];
+  private readonly index: MizanIndex;
 
   constructor(mizan: MizanRow[], butceYili = 2027) {
     this.butceYili = butceYili;
-    this.mizan = mizan.filter((r) => r.bransKodu !== "TOPLAM");
-    this.yillar = [...new Set(this.mizan.map((r) => r.yil))]
+    const filtered = mizan.filter((r) => r.bransKodu !== "TOPLAM");
+    this.index = new MizanIndex(filtered);
+    this.yillar = [...new Set(filtered.map((r) => r.yil))]
       .filter((y) => y < butceYili)
       .sort((a, b) => a - b);
   }
@@ -31,23 +32,7 @@ export class MizanOranServisi {
     hesaplar: string[],
     opts: { prefix?: boolean; tumSirket?: boolean } = {},
   ): number {
-    const { prefix = false, tumSirket = false } = opts;
-    const br = normalizeBransKodu(brans);
-    const rows = this.mizan.filter((r) => {
-      if (r.yil !== yil) return false;
-      if (!tumSirket && r.bransKodu !== br) return false;
-      return true;
-    });
-    if (rows.length === 0) return 0;
-
-    let toplam = 0;
-    for (const hesap of hesaplar) {
-      for (const r of rows) {
-        const h = String(r.hesap);
-        if (prefix ? h.startsWith(hesap) : h === hesap) toplam += r.tutar;
-      }
-    }
-    return toplam;
+    return this.index.hesapTutar(yil, brans, hesaplar, opts);
   }
 
   private bilesenYilOrani(brans: string, yil: number, bilesen: BilesenSpec): number | null {

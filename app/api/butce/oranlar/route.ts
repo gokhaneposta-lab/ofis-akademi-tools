@@ -3,6 +3,7 @@ import { loadMizanRows, loadOranAyarlar, butceDataDurumu } from "@/lib/butce/loa
 import { MizanOranServisi, oranKalemListesi } from "@/lib/butce/oran/mizanOranlar";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
@@ -28,14 +29,19 @@ export async function GET(request: Request) {
     });
   }
 
-  const kalemAyar = ayarlar[kalem] ?? {};
-  const tablo = yeniden
-    ? servis.tumBranslarTablosu(kalem, servis.bransAyarMizanHesapla(kalem, kalemAyar))
-    : servis.tumBranslarTablosu(kalem, kalemAyar);
+  try {
+    const kalemAyar = ayarlar[kalem] ?? {};
+    const tablo = yeniden
+      ? servis.tumBranslarTablosu(kalem, servis.bransAyarMizanHesapla(kalem, kalemAyar))
+      : servis.tumBranslarTablosu(kalem, kalemAyar);
 
-  return NextResponse.json({
-    kalem,
-    tablo,
-    referansSecenekleri: servis.yilEtiketleri(),
-  });
+    return NextResponse.json({
+      kalem,
+      tablo,
+      referansSecenekleri: servis.yilEtiketleri(),
+    });
+  } catch (e) {
+    const detail = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ error: "Oran hesabı başarısız", detail }, { status: 500 });
+  }
 }

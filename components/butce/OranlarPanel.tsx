@@ -15,6 +15,7 @@ export default function OranlarPanel() {
   const [yillar, setYillar] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   const loadKalemler = useCallback(async () => {
     const res = await fetch("/api/butce/oranlar");
@@ -31,17 +32,35 @@ export default function OranlarPanel() {
     if (!k) return;
     setBusy(true);
     setMsg(null);
+    setErr(null);
     const q = new URLSearchParams({ kalem: k });
     if (yeniden) q.set("yeniden", "1");
-    const res = await fetch(`/api/butce/oranlar?${q}`);
-    setBusy(false);
-    if (!res.ok) {
-      setMsg("Tablo yüklenemedi");
-      return;
+    try {
+      const res = await fetch(`/api/butce/oranlar?${q}`);
+      const text = await res.text();
+      let data: { tablo?: BransOranSatir[]; error?: string } = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        setErr(`Sunucu yanıtı okunamadı (HTTP ${res.status})`);
+        return;
+      }
+      if (!res.ok) {
+        setErr(data.error ?? `Tablo yüklenemedi (HTTP ${res.status})`);
+        return;
+      }
+      const rows = data.tablo ?? [];
+      setTablo(rows);
+      if (rows.length === 0) {
+        setErr("Branş tablosu boş döndü — sayfayı yenileyip tekrar deneyin.");
+      } else if (yeniden) {
+        setMsg(`MIZAN'dan yeniden hesaplandı (${rows.length} branş)`);
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Bağlantı hatası");
+    } finally {
+      setBusy(false);
     }
-    const data = await res.json();
-    setTablo(data.tablo ?? []);
-    if (yeniden) setMsg("MIZAN'dan yeniden hesaplandı");
   }, []);
 
   useEffect(() => {
@@ -117,6 +136,9 @@ export default function OranlarPanel() {
         </p>
       )}
       {msg && <p className="text-sm text-emerald-700">{msg}</p>}
+      {err && <p className="text-sm text-red-700">{err}</p>}
+
+      {busy && <p className="text-sm text-slate-500">Hesaplanıyor… (83 branş)</p>}
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
         <table className="min-w-full text-left text-sm">

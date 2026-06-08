@@ -61,9 +61,9 @@ export function storageDurumu(): { mode: "blob" | "local" | "vercel-tmp"; yazila
 export function vercelBlobGerekliMesaji(): string | null {
   if (process.env.VERCEL === "1" && !useBlobStorage()) {
     return (
-      "Vercel ortamında kalıcı depolama için BLOB_READ_WRITE_TOKEN gerekli. " +
-      "Vercel Dashboard → Storage → Blob Store oluşturun, projeye bağlayın ve " +
-      "BLOB_READ_WRITE_TOKEN ortam değişkenini ekleyin (Production + Preview)."
+      "Vercel Blob bağlı değil veya ortam değişkenleri deploy'a yansımamış. " +
+      "Storage → Blob Store oluşturup projeye bağlayın; ardından Deployments → " +
+      "son dağıtım → Redeploy (Yeniden dağıt) yapın."
     );
   }
   return null;

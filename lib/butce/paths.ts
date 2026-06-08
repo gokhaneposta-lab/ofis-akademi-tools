@@ -10,7 +10,10 @@ export const BUTCE_ORAN_AYAR_JSON = "oran-ayarlar.json";
 export const BUTCE_PRIVATE_DIR = join(process.cwd(), "data", "butce", "private");
 
 export function useBlobStorage(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim());
+  if (process.env.BLOB_READ_WRITE_TOKEN?.trim()) return true;
+  // Vercel Blob store projeye bağlandığında STORE_ID de gelir; SDK platform kimliği kullanır
+  if (process.env.VERCEL === "1" && process.env.BLOB_STORE_ID?.trim()) return true;
+  return false;
 }
 
 export function localPrivateDir(): string {

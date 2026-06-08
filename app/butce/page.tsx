@@ -20,8 +20,8 @@ const STEPS = [
   { href: "/butce/export", title: "7. Excel export", desc: "Rapor indir", needs: "Tamamlanmış adımlar" },
 ];
 
-export default function ButceHomePage() {
-  const durum = butceDataDurumu();
+export default async function ButceHomePage() {
+  const durum = await butceDataDurumu();
   const kalemSayisi = oranKalemListesi().length;
 
   const mizanOzet = durum.hasMizan

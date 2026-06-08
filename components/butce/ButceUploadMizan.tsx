@@ -29,15 +29,22 @@ export default function ButceUploadMizan({ hasMizan, butceYili, mizanOzet }: Pro
 
     try {
       const res = await fetch("/api/butce/upload", { method: "POST", body: fd });
-      const data = await res.json();
+      const text = await res.text();
+      let data: { error?: string; detail?: string; log?: string } = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        setErr(`Sunucu yanıtı okunamadı (HTTP ${res.status}). ${text.slice(0, 300)}`);
+        return;
+      }
       if (!res.ok) {
-        setErr(data.detail ?? data.error ?? "Yükleme başarısız");
+        setErr(data.detail ?? data.error ?? `Yükleme başarısız (HTTP ${res.status})`);
         return;
       }
       setMsg(data.log ?? "MIZAN yüklendi");
       router.refresh();
-    } catch {
-      setErr("Ağ hatası — bağlantıyı kontrol edin");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Bağlantı hatası — sayfayı yenileyip tekrar deneyin");
     } finally {
       setBusy(false);
     }

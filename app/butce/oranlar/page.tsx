@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function OranlarPage() {
-  const durum = butceDataDurumu();
+export default async function OranlarPage() {
+  const durum = await butceDataDurumu();
 
   return (
     <div className="space-y-4">

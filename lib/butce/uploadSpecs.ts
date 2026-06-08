@@ -39,6 +39,7 @@ export const BUTCE_MAP_MIZAN_SPEC: UploadSpec = {
     "En az bir geçmiş yıl (ör. 2022–2025) ve 7xx branş kodları var mı?",
     "TOPLAM satırları otomatik atlanır — sorun değil.",
     "Import sonrası ~50.000+ satır normaldir (branş × hesap × yıl).",
+    "Canlı sitede (Vercel): BLOB_READ_WRITE_TOKEN tanımlı olmalı — aksi halde yükleme reddedilir.",
   ],
   errors: [
     "«MIZAN sayfası bulunamadı» → Dosyada sayfa adını MIZAN yapın.",

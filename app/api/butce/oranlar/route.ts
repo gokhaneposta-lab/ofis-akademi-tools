@@ -3,20 +3,21 @@ import { loadMizanRows, loadOranAyarlar, butceDataDurumu } from "@/lib/butce/loa
 import { MizanOranServisi, oranKalemListesi } from "@/lib/butce/oran/mizanOranlar";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const kalem = searchParams.get("kalem");
   const yeniden = searchParams.get("yeniden") === "1";
 
-  const mizan = loadMizanRows();
+  const mizan = await loadMizanRows();
   if (mizan.length === 0) {
     return NextResponse.json({ error: "MIZAN verisi yok" }, { status: 400 });
   }
 
-  const { butceYili } = butceDataDurumu();
+  const { butceYili } = await butceDataDurumu();
   const servis = new MizanOranServisi(mizan, butceYili);
-  let ayarlar = loadOranAyarlar();
+  let ayarlar = await loadOranAyarlar();
   ayarlar = servis.migrateLegacyBransAyarlar(ayarlar);
 
   if (!kalem) {

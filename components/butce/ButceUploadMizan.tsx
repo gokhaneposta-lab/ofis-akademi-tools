@@ -16,6 +16,7 @@ export default function ButceUploadMizan({ hasMizan, butceYili, mizanOzet }: Pro
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [uploaded, setUploaded] = useState(hasMizan);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,6 +43,7 @@ export default function ButceUploadMizan({ hasMizan, butceYili, mizanOzet }: Pro
         return;
       }
       setMsg(data.log ?? "MIZAN yüklendi");
+      setUploaded(true);
       router.refresh();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Bağlantı hatası — sayfayı yenileyip tekrar deneyin");
@@ -63,12 +65,12 @@ export default function ButceUploadMizan({ hasMizan, butceYili, mizanOzet }: Pro
         </div>
         <span
           className={`rounded-full px-3 py-1 text-xs font-medium ${
-            hasMizan
+            hasMizan || uploaded
               ? "bg-emerald-100 text-emerald-800"
               : "bg-amber-100 text-amber-900"
           }`}
         >
-          {hasMizan ? "Yüklü" : "Bekliyor"}
+          {hasMizan || uploaded ? "Yüklü" : "Bekliyor"}
         </span>
       </div>
 

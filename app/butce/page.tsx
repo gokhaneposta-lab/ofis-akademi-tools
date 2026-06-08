@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export const dynamic = "force-dynamic";
+
 const STEPS = [
   { href: "/butce/prim-hedefi", title: "2. Prim hedefi", desc: "SATIS_BUTCE → 7xx dağıtım", needs: "SATIS_BUTCE_ + TARIFE_MAP" },
   { href: "/butce/aylik-dagilim", title: "3. Aylık dağılım", desc: "Yıllık hedef → 12 ay", needs: "Prim hedefi" },

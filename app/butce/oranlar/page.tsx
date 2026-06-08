@@ -21,12 +21,16 @@ export default function OranlarPage() {
       </div>
 
       {!durum.hasMizan ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          MIZAN verisi yok.{" "}
-          <Link href="/butce" className="font-medium underline">
-            Ana sayfadan BUTCE_MAP.xlsx yükleyin
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+          <p className="font-medium">MIZAN verisi yok</p>
+          <p className="mt-1">
+            <strong>BUTCE_MAP.xlsx</strong> dosyasındaki <code className="rounded bg-amber-100 px-1">MIZAN</code>{" "}
+            sayfasını ana sayfadan yükleyin. Kolon düzeni (A=yıl, B=hesap, D=branş, E=tutar) rehberde
+            açıklanmıştır.
+          </p>
+          <Link href="/butce" className="mt-2 inline-block font-medium underline">
+            Ana sayfaya git → veri yükle
           </Link>
-          .
         </div>
       ) : (
         <OranlarPanel />

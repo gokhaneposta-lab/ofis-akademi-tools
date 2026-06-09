@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadMizanRows, loadOranAyarlar, butceDataDurumu } from "@/lib/butce/loadData";
 import { MizanOranServisi, oranKalemListesi } from "@/lib/butce/oran/mizanOranlar";
+import { oranKalemAciklama } from "@/lib/butce/oran/oranKalemAciklama";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -39,6 +40,7 @@ export async function GET(request: Request) {
       kalem,
       tablo,
       referansSecenekleri: servis.yilEtiketleri(),
+      aciklama: oranKalemAciklama(kalem),
     });
   } catch (e) {
     const detail = e instanceof Error ? e.message : String(e);

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { BransOranSatir } from "@/lib/butce/types";
+import type { OranKalemAciklama } from "@/lib/butce/oran/oranKalemAciklama";
 
 type Kalem = { kod: string; ad: string };
 
@@ -12,6 +13,7 @@ export default function OranlarPanel() {
   const [kalemler, setKalemler] = useState<Kalem[]>([]);
   const [kalem, setKalem] = useState("");
   const [tablo, setTablo] = useState<BransOranSatir[]>([]);
+  const [aciklama, setAciklama] = useState<OranKalemAciklama | null>(null);
   const [yillar, setYillar] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -38,7 +40,7 @@ export default function OranlarPanel() {
     try {
       const res = await fetch(`/api/butce/oranlar?${q}`);
       const text = await res.text();
-      let data: { tablo?: BransOranSatir[]; error?: string } = {};
+      let data: { tablo?: BransOranSatir[]; aciklama?: OranKalemAciklama | null; error?: string } = {};
       try {
         data = text ? JSON.parse(text) : {};
       } catch {
@@ -51,6 +53,7 @@ export default function OranlarPanel() {
       }
       const rows = data.tablo ?? [];
       setTablo(rows);
+      setAciklama(data.aciklama ?? null);
       if (rows.length === 0) {
         setErr("Branş tablosu boş döndü — sayfayı yenileyip tekrar deneyin.");
       } else if (yeniden) {
@@ -129,6 +132,53 @@ export default function OranlarPanel() {
           Kaydet
         </button>
       </div>
+
+      {aciklama && (
+        <section className="rounded-xl border border-slate-200 bg-slate-50/90 px-4 py-3 text-sm text-slate-800">
+          <h3 className="font-semibold text-slate-900">{aciklama.ad}</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            GT kodu: {aciklama.kalemKodu}
+            {aciklama.gtHucre ? ` · Excel oran hücresi: ${aciklama.gtHucre}` : ""}
+            {aciklama.excelHucre && aciklama.excelHucre !== aciklama.kalemKodu
+              ? ` · Excel kalem: ${aciklama.excelHucre}`
+              : ""}
+          </p>
+
+          <div className="mt-3 space-y-2">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">MIZAN oranı (pay ÷ baz)</p>
+              {aciklama.mizanSatirlar.length <= 1 ? (
+                <p className="mt-1 font-mono text-base text-slate-900">{aciklama.mizanOranFormul}</p>
+              ) : (
+                <ul className="mt-1 space-y-1">
+                  {aciklama.mizanSatirlar.map((s) => (
+                    <li key={s.etiket}>
+                      <span className="text-slate-600">{s.etiket}: </span>
+                      <span className="font-mono text-slate-900">{s.formul}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Yıl birleştirme</p>
+                <p className="mt-0.5 text-slate-700">{aciklama.yilBirlestirme}</p>
+              </div>
+              {aciklama.tahminAciklama && (
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">GT tahmin</p>
+                  <p className="mt-0.5 text-slate-700">{aciklama.tahminAciklama}</p>
+                  {aciklama.excelCarpim && (
+                    <p className="mt-0.5 font-mono text-xs text-slate-500">Excel: {aciklama.excelCarpim}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {yillar.length > 0 && (
         <p className="text-xs text-slate-500">

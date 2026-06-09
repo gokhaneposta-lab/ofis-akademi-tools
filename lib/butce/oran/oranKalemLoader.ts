@@ -48,9 +48,11 @@ export type OranBazliKalem = {
   ust_kod?: string;
 };
 
+/** Teknik oranlar listesinde hesaplanmayan kalemler (Excel gt_hucre / kalem_kodu). */
+const DISLANAN_ORAN_KALEM = new Set(["F373", "F378", "F393"]);
+
 const KOD_GT: Record<string, string> = {
   F436: "0212",
-  F393: "026",
   F398: "014",
 };
 
@@ -81,14 +83,6 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
     baz: ["61402"],
     baz_toplam_sirket: true,
   },
-  F378: { pay: ["61407102"], baz: ["614071"] },
-  "026": {
-    pay: ["615"],
-    baz: ["611"],
-    hesap_eslesme: "prefix",
-    gt_hucre: "F393",
-    carpim: CARPIM_BRUT_PRIM,
-  },
   "014": {
     pay: ["60301"],
     baz: ["60301"],
@@ -102,7 +96,6 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
     carpim: CARPIM_DIREKT_PRIM,
     excel_carpim: "F12*F275",
   },
-  F393: { pay: ["615"], baz: ["611"], hesap_eslesme: "prefix" },
 };
 
 const CARPIM_MAP: Record<string, string> = {
@@ -130,7 +123,6 @@ const VARSAYILAN_ORAN: Record<string, number> = {
   "0251": -0.12,
   "0258": -0.005,
   "0259": -0.012,
-  "026": -0.001,
   "014": 0.08,
 };
 
@@ -153,6 +145,10 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
 
   for (const k of kalemlerRaw()) {
     const raw = k.kalem_kodu;
+    const gtHucre = k.oran_hucre ?? (k as { gt_hucre?: string }).gt_hucre;
+    if (DISLANAN_ORAN_KALEM.has(raw) || (gtHucre && DISLANAN_ORAN_KALEM.has(gtHucre))) {
+      continue;
+    }
     const kod = KOD_GT[raw] ?? raw;
     const man = MANUEL[kod] ?? MANUEL[raw] ?? {};
     const pay = man.pay ?? k.pay ?? [];

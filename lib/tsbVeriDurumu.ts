@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSync } from "fs";
+import { existsSync, readFileSync, statSync, writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
 import { isTsbToplamSirketKodu, sirketKoduHayatEmeklilikPrefix } from "@/lib/tsbPrimDashboard";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
@@ -89,7 +89,8 @@ function sirketSayisiFromGelir(
   return set.size;
 }
 
-function dataFilesMtimeIso(): string {
+/** Yalnızca bilinen dosyalar — readdir yok (Vercel bundle 250 MB sınırı). */
+function dataFilesMtimeIso(sonFinansalDonem?: string): string {
   const root = tsbDataRoot();
   let maxMs = 0;
 
@@ -98,11 +99,13 @@ function dataFilesMtimeIso(): string {
     maxMs = Math.max(maxMs, statSync(primPath).mtimeMs);
   }
 
-  const gelirDir = join(root, GELIR_DIR_REL);
-  if (existsSync(gelirDir)) {
-    for (const name of readdirSync(gelirDir)) {
-      if (!name.endsWith(".json") || name === "index.json") continue;
-      maxMs = Math.max(maxMs, statSync(join(gelirDir, name)).mtimeMs);
+  const donem =
+    sonFinansalDonem ||
+    latestDonemFromList(readJsonFile<string[]>(GELIR_INDEX_REL) ?? []);
+  if (donem) {
+    const gelirPath = join(root, GELIR_DIR_REL, `${donem}.json`);
+    if (existsSync(gelirPath)) {
+      maxMs = Math.max(maxMs, statSync(gelirPath).mtimeMs);
     }
   }
 
@@ -140,7 +143,7 @@ export function computeTsbVeriDurumu(): TsbVeriDurumu {
     sonFinansalDonem: sonFinansalDonem || "—",
     sirketSayisiHd,
     sirketSayisiHayatEmeklilik,
-    guncellemeIso: dataFilesMtimeIso(),
+    guncellemeIso: dataFilesMtimeIso(sonFinansalDonem || undefined),
   };
 }
 
@@ -158,7 +161,24 @@ export function loadTsbVeriDurumu(): TsbVeriDurumu {
   const meta = readJsonFile<TsbVeriDurumuMetaFile>(META_REL);
   if (
     meta &&
-    (meta.schemaVersion === 1 || meta.schemaVersion === 2) &&
+    meta.schemaVersion === 2 &&
+    meta.sonPrimDonem &&
+    meta.sonFinansalDonem &&
+    meta.guncellemeIso &&
+    Number.isFinite(meta.sirketSayisiHd) &&
+    Number.isFinite(meta.sirketSayisiHayatEmeklilik)
+  ) {
+    return {
+      sonPrimDonem: meta.sonPrimDonem,
+      sonFinansalDonem: meta.sonFinansalDonem,
+      sirketSayisiHd: meta.sirketSayisiHd,
+      sirketSayisiHayatEmeklilik: meta.sirketSayisiHayatEmeklilik,
+      guncellemeIso: meta.guncellemeIso,
+    };
+  }
+  if (
+    meta &&
+    meta.schemaVersion === 1 &&
     meta.sonPrimDonem &&
     meta.sonFinansalDonem &&
     meta.guncellemeIso
@@ -168,10 +188,7 @@ export function loadTsbVeriDurumu(): TsbVeriDurumu {
       sonPrimDonem: meta.sonPrimDonem,
       sonFinansalDonem: meta.sonFinansalDonem,
       sirketSayisiHd: meta.sirketSayisiHd,
-      sirketSayisiHayatEmeklilik:
-        meta.schemaVersion === 2 && Number.isFinite(meta.sirketSayisiHayatEmeklilik)
-          ? meta.sirketSayisiHayatEmeklilik
-          : computed.sirketSayisiHayatEmeklilik,
+      sirketSayisiHayatEmeklilik: computed.sirketSayisiHayatEmeklilik,
       guncellemeIso: meta.guncellemeIso,
     };
   }

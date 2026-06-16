@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /** TSB hub önbellek kullanır; büyük tidy dosyaları lambda bundle'a girmesin. */
+  outputFileTracingExcludes: {
+    "*": ["./public/data/tsb/gelir-tidy/**", "./public/data/tsb/prim-tidy.json"],
+  },
   async redirects() {
     return [
       {

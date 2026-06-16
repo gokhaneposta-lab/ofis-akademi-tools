@@ -3,7 +3,7 @@
  * Kaynak: gelir-tidy çeyrekleri + prim-tidy aylık; HD havuzu.
  */
 
-import { existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 import {
   hamOlcumFromLookup,
@@ -30,6 +30,7 @@ import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
 
 const GELIR_DIR = join("public", "data", "tsb", "gelir-tidy");
 const PRIM_REL = join("public", "data", "tsb", "prim-tidy.json");
+const SEKTOR_OZETI_REL = join("public", "data", "tsb", "sektor-ozeti.json");
 const HAYATDISI = "HAYATDISI";
 
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -509,7 +510,27 @@ function buildPazarPayi(primRows: TsbPrimRow[], primDonem: string, primOnce: str
 }
 
 /** Hub Sektör Özeti — build/SSR; veri meta.json dönemlerinden türetilir. */
+function readSektorOzetiCache(): SektorOzetiData | null {
+  const abs = join(process.cwd(), SEKTOR_OZETI_REL);
+  if (!existsSync(abs)) return null;
+  try {
+    const data = JSON.parse(readFileSync(abs, "utf8")) as unknown;
+    if (!data || typeof data !== "object") return null;
+    const d = data as SektorOzetiData;
+    if (!Array.isArray(d.sekmeler) || d.sekmeler.length === 0) return null;
+    return d;
+  } catch {
+    return null;
+  }
+}
+
+/** Hub build — önbellek JSON (import/meta script üretir); yoksa hesapla. */
 export function loadSektorOzeti(): SektorOzetiData {
+  return readSektorOzetiCache() ?? computeSektorOzeti();
+}
+
+/** Prim + gelir-tidy dosyalarından hub leaderboard hesaplar. */
+export function computeSektorOzeti(): SektorOzetiData {
   const meta = loadTsbVeriDurumu();
   const finDonem = meta.sonFinansalDonem !== "—" ? meta.sonFinansalDonem : "";
   const primDonem = meta.sonPrimDonem !== "—" ? meta.sonPrimDonem : "";
@@ -565,4 +586,13 @@ export function loadSektorOzeti(): SektorOzetiData {
     primDonemOnceki: primOnce,
     sekmeler,
   };
+}
+
+/** `npm run tsb:meta` — hub build bundle'ına büyük tidy dosyalarını dahil etmemek için. */
+export function writeSektorOzetiCache(): SektorOzetiData {
+  const data = computeSektorOzeti();
+  const abs = join(process.cwd(), SEKTOR_OZETI_REL);
+  mkdirSync(join(process.cwd(), "public", "data", "tsb"), { recursive: true });
+  writeFileSync(abs, `${JSON.stringify(data)}\n`, "utf8");
+  return data;
 }

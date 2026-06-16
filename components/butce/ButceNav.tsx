@@ -14,7 +14,7 @@ const LINKS = [
   { href: "/butce/export", label: "Excel export" },
 ];
 
-export default function ButceNav() {
+export default function ButceNav({ username }: { username?: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
@@ -56,14 +56,21 @@ export default function ButceNav() {
             );
           })}
         </div>
-        <button
-          type="button"
-          onClick={logout}
-          disabled={loggingOut}
-          className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:opacity-60"
-        >
-          {loggingOut ? "Çıkış…" : "Çıkış"}
-        </button>
+        <div className="flex flex-col items-end">
+          <button
+            type="button"
+            onClick={logout}
+            disabled={loggingOut}
+            className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:opacity-60"
+          >
+            {loggingOut ? "Çıkış…" : "Çıkış"}
+          </button>
+          {username ? (
+            <span className="px-3 text-xs text-slate-500" title="Giriş yapan kullanıcı">
+              {username}
+            </span>
+          ) : null}
+        </div>
       </div>
     </nav>
   );

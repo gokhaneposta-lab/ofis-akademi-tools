@@ -55,3 +55,15 @@ export function verifyButceSession(cookieValue: string | undefined): boolean {
   if (!token || !cookieValue) return false;
   return cookieValue === token;
 }
+
+type CookieReader = {
+  get: (name: string) => { value: string } | undefined;
+};
+
+/** Geçerli oturumda giriş yapan kullanıcı adını döndürür. */
+export function getButceLoggedInUser(cookieStore: CookieReader): string | undefined {
+  const session = cookieStore.get(BUTCE_SESSION_COOKIE)?.value;
+  if (!verifyButceSession(session)) return undefined;
+  const user = cookieStore.get(BUTCE_USER_COOKIE)?.value?.trim();
+  return user || undefined;
+}

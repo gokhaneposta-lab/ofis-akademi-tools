@@ -217,7 +217,9 @@
       "pay": [
         "61301101"
       ],
-      "baz": [],
+      "baz": [
+        "600"
+      ],
       "yil_birlestirme": [
         [
           1,
@@ -625,7 +627,9 @@
       "oran_hucre": "F441",
       "oran_satir": 441,
       "ad": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)",
-      "pay": [],
+      "pay": [
+        "611"
+      ],
       "baz": [
         "60001"
       ],

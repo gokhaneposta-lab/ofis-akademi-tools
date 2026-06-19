@@ -76,8 +76,8 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
   },
   F353: { pay: ["6140110101"], baz: ["614011"], carpim: CARPIM_DIREKT_PRIM },
   F358: { pay: ["6140110102"], baz: ["614011"], carpim: CARPIM_DIREKT_PRIM },
-  F348: { pay: ["61301101"], baz: ["60001"] },
-  F441: { pay: ["61102"], baz: ["60001"] },
+  F348: { pay: ["61301101"], baz: ["600"] },
+  F441: { pay: ["611"], baz: ["60001"] },
   F368: {
     pay: ["61402"],
     baz: ["61402"],

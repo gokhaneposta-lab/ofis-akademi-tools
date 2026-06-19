@@ -5,6 +5,9 @@ import { tmpdir } from "os";
 export const BUTCE_MIZAN_JSON = "mizan-tidy.json";
 export const BUTCE_META_JSON = "meta.json";
 export const BUTCE_ORAN_AYAR_JSON = "oran-ayarlar.json";
+export const BUTCE_TARIFE_MAP_JSON = "tarife-map.json";
+export const BUTCE_SATIS_BUTCE_JSON = "satis-butce.json";
+export const BUTCE_URETIM_JSON = "uretim.json";
 
 /** @deprecated use localPrivateDir() */
 export const BUTCE_PRIVATE_DIR = join(process.cwd(), "data", "butce", "private");

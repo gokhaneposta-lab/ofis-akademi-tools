@@ -1,25 +1,35 @@
 import type { Metadata } from "next";
+import PrimHedefiClient from "@/components/butce/PrimHedefiClient";
+import { butceDataDurumu, loadSatisButceRows } from "@/lib/butce/loadData";
+import { tarifeOzetFromSatis } from "@/lib/butce/prim/dagitimMotoru";
 
 export const metadata: Metadata = {
   title: "Prim hedefi",
   robots: { index: false, follow: false },
 };
 
-export default function PrimHedefiPage() {
-  return (
-    <Placeholder
-      title="Prim hedefi"
-      desc="SATIS_BUTCE Excel → 7xx branş dağıtımı. Sonraki adımda dagitim_motoru port edilecek."
-    />
-  );
-}
+export const dynamic = "force-dynamic";
 
-function Placeholder({ title, desc }: { title: string; desc: string }) {
+export default async function PrimHedefiPage() {
+  const durum = await butceDataDurumu();
+  const satisRows = await loadSatisButceRows();
+  const initialTarifeOzet = satisRows.length > 0 ? tarifeOzetFromSatis(satisRows) : [];
+
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
-      <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-      <p className="mt-2 text-sm text-slate-600">{desc}</p>
-      <p className="mt-4 text-xs text-slate-400">Yakında — butce-modulu port devam ediyor</p>
-    </div>
+    <PrimHedefiClient
+      key={`${durum.satisButceSatir}-${durum.mizanSatir}`}
+      durum={{
+        hasMizan: durum.hasMizan,
+        hasTarifeMap: durum.hasTarifeMap,
+        hasSatisButce: durum.hasSatisButce,
+        hasUretim: durum.hasUretim,
+        mizanSatir: durum.mizanSatir,
+        tarifeMapSatir: durum.tarifeMapSatir,
+        satisButceSatir: durum.satisButceSatir,
+        uretimSatir: durum.uretimSatir,
+        butceYili: durum.butceYili,
+      }}
+      initialTarifeOzet={initialTarifeOzet}
+    />
   );
 }

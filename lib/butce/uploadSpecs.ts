@@ -54,7 +54,10 @@ export const BUTCE_MAP_TARIFE_SPEC: UploadSpec = {
   summary: "Tarife grubu ↔ 7xx hazine branş eşlemesi. Prim hedefi dağıtımında kullanılacak.",
   fileHint: "Aynı BUTCE_MAP.xlsx dosyası",
   sheetName: "TARIFE_MAP",
-  steps: ["Prim hedefi adımı aktif olunca yüklenecek."],
+  steps: [
+    "Aynı BUTCE_MAP.xlsx dosyasını yükleyin (MIZAN ile birlikte import edilir).",
+    "Prim hedefi sayfasında «BUTCE_MAP — MIZAN + TARIFE_MAP» ile yükleyin.",
+  ],
   columns: [
     { col: "A", field: "Branş kodu", example: "701" },
     { col: "B", field: "Hazine branş adı", example: "YANGIN VE DOĞAL AFETLER" },
@@ -62,8 +65,11 @@ export const BUTCE_MAP_TARIFE_SPEC: UploadSpec = {
     { col: "D", field: "Şirket branş adı", example: "YANGIN" },
     { col: "E", field: "Tarife grubu", example: "YANGIN" },
   ],
-  checks: [],
-  comingSoon: true,
+  checks: [
+    "TARIFE_MAP sayfası var mı?",
+    "Her 7xx branş için tarife grubu (E kolonu) dolu mu?",
+  ],
+  comingSoon: false,
 };
 
 export const BUTCE_PRIM_SPEC: UploadSpec = {
@@ -72,12 +78,19 @@ export const BUTCE_PRIM_SPEC: UploadSpec = {
   summary: "GM prim hedefi (kanal × tarife × şirket). 7xx branş dağıtımının girdisi.",
   fileHint: "Bütçe GT Çalışma_v8.xlsx (veya eşdeğeri)",
   sheetName: "SATIS_BUTCE_",
-  steps: ["Prim hedefi sayfası aktif olunca yüklenecek."],
+  steps: [
+    "Bütçe GT Çalışma_v8.xlsx dosyasını alın.",
+    "Prim hedefi sayfasında «SATIS_BUTCE_» olarak yükleyin.",
+    "Tarife hedeflerini düzenleyip A motoru ile dağıtın.",
+  ],
   columns: [
     { col: "A–C", field: "Şirket, kanal1, kanal2", example: "BS, ACENTE, …" },
     { col: "D", field: "Tarife grubu", example: "KASKO, TRAFİK, …" },
     { col: "…", field: "Geçmiş yıl / hedef kolonları", example: "2027 HEDEF PRİM" },
   ],
-  checks: [],
-  comingSoon: true,
+  checks: [
+    "SATIS_BUTCE_ sayfası var mı?",
+    "D kolonu tarife grubu dolu mu?",
+  ],
+  comingSoon: false,
 };

@@ -43,3 +43,17 @@ export const KANAL_1 = [
 ] as const;
 
 export const SIRKET_TIPLERI = ["BS", "BE", "HAVUZ"] as const;
+
+/** A dağıtım motoru — üretim payları için referans yıl seçenekleri */
+export const REFERANS_YIL_SECENEKLERI: Readonly<Record<string, readonly number[]>> = {
+  "2024": [2024],
+  "2023": [2023],
+  "2025": [2025],
+  "2022": [2022],
+  "Son 2 Yıl Ortalaması (2023-2024)": [2023, 2024],
+  "Son 2 Yıl Ortalaması (2024-2025)": [2024, 2025],
+  "Son 3 Yıl Ortalaması (2023-2025)": [2023, 2024, 2025],
+};
+
+export const MIZAN_HESAP_DIREKT = "60001";
+export const MIZAN_HESAP_ENDIREKT = "600012";

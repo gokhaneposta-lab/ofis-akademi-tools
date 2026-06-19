@@ -47,10 +47,14 @@ export default async function ButceHomePage() {
       />
 
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <h2 className="text-sm font-semibold text-slate-900">Diğer veri dosyaları (yakında)</h2>
+        <h2 className="text-sm font-semibold text-slate-900">Diğer veri dosyaları</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Aynı <strong>BUTCE_MAP.xlsx</strong> içindeki TARIFE_MAP ve ayrı bütçe Excel&apos;indeki
-          SATIS_BUTCE_ sayfaları prim dağıtımı için kullanılacak — import henüz bu sürümde yok.
+          Aynı <strong>BUTCE_MAP.xlsx</strong> içindeki TARIFE_MAP ve Bütçe GT Excel&apos;indeki
+          SATIS_BUTCE_ sayfaları prim dağıtımı için kullanılır —{" "}
+          <Link href="/butce/prim-hedefi" className="font-medium underline">
+            Prim hedefi
+          </Link>{" "}
+          sayfasından yükleyin.
         </p>
         <div className="mt-3 space-y-2">
           <ButceUploadGuide spec={BUTCE_MAP_TARIFE_SPEC} />

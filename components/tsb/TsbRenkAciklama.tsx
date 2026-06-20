@@ -41,7 +41,7 @@ export function TsbRenkAciklama({
   );
 }
 
-/** Kanal grafiği: sol koyu = şirket, sağ soluk = sektör. */
+/** Kanal grafiği: sol dolu = şirket, sağ çizgili = sektör. */
 export function TsbSirketSektorGrafikLegend({ sirketAdi }: { sirketAdi?: string }) {
   return (
     <div className={tsb.grafikLegendWrap} aria-label="Grafik açıklaması">
@@ -49,12 +49,15 @@ export function TsbSirketSektorGrafikLegend({ sirketAdi }: { sirketAdi?: string 
         <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500" aria-hidden />
         <strong>Şirket</strong>
         {sirketAdi ? ` · ${sirketAdi}` : ""}
-        <span className="text-slate-500"> — koyu çubuk, sol</span>
+        <span className="text-slate-500"> — dolu çubuk, sol (Ş)</span>
       </span>
       <span className={tsb.grafikLegendItem}>
-        <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500/45" aria-hidden />
+        <span
+          className="inline-block h-3 w-3 rounded-sm border-2 border-slate-500 bg-slate-100 bg-[repeating-linear-gradient(-45deg,#cbd5e1_0_2px,transparent_2px_4px)]"
+          aria-hidden
+        />
         <strong>Sektör</strong>
-        <span className="text-slate-500"> — soluk çubuk, sağ</span>
+        <span className="text-slate-500"> — çizgili çubuk, sağ (S)</span>
       </span>
     </div>
   );

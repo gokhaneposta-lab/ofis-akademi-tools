@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import TsbJsonLd from "@/components/tsb/TsbJsonLd";
-import TsbKirilimReferans from "@/components/tsb/TsbKirilimReferans";
 import TsbSektorOzeti from "@/components/tsb/TsbSektorOzeti";
 import TsbVeriDurumuBand from "@/components/tsb/TsbVeriDurumuBand";
 import { tsb } from "@/components/tsb/tsbDashboardUi";
@@ -56,7 +55,6 @@ export default async function SigortaTsbHubPage() {
 
         <main className={tsb.main}>
           <TsbSektorOzeti data={sektorOzeti} />
-          <TsbKirilimReferans />
 
           {TSB_DASHBOARD_GROUPS.map((group) => {
             const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === group.id);

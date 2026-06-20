@@ -7,7 +7,6 @@ import {
   tsbDashboardPanelByHref,
   type TsbDashboardGroupId,
 } from "@/lib/tsbDashboardPanels";
-import TsbKirilimReferans from "@/components/tsb/TsbKirilimReferans";
 import { tsbPanelHelpForHref } from "@/lib/tsbPanelHelpContent";
 import { TSB_SEO, type TsbSeoPageId } from "@/lib/tsbSeo";
 
@@ -268,7 +267,6 @@ export function TsbPageLayout({
 }: TsbPageLayoutProps) {
   const help = helpItems ?? tsbPanelHelpForHref(currentHref);
   const seo = TSB_SEO[seoPageId];
-  const showKirilimReferans = PRIM_PANEL_HREFS.has(currentHref);
 
   return (
     <>
@@ -293,7 +291,6 @@ export function TsbPageLayout({
       <main className={tsb.main}>
         <TsbDashboardStickyNav currentHref={currentHref} />
         {help.length > 0 ? <TsbPanelHelp items={help} /> : null}
-        {showKirilimReferans ? <TsbKirilimReferans /> : null}
         {children}
       </main>
     </div>
@@ -301,14 +298,35 @@ export function TsbPageLayout({
   );
 }
 
-const PRIM_PANEL_HREFS = new Set([
-  "/sigorta/kanal-prim",
-  "/sigorta/kanal-dagilim",
-  "/sigorta/brans-degisim",
-  "/sigorta/brans-sira",
-  "/sigorta/prim-trend-12",
-  "/sigorta/hasar-prim-orani",
-]);
+/** Yardım metninde yeşil / kırmızı / sarı kelimelerini renklendirir. */
+export function tsbPanelHelpRenderText(text: string): ReactNode {
+  const parts = text.split(/(yeşil|kırmızı|sarı)/gi);
+  return parts.map((part, i) => {
+    const lower = part.toLowerCase();
+    if (lower === "yeşil") {
+      return (
+        <span key={i} className="font-semibold text-emerald-700">
+          {part}
+        </span>
+      );
+    }
+    if (lower === "kırmızı") {
+      return (
+        <span key={i} className="font-semibold text-rose-700">
+          {part}
+        </span>
+      );
+    }
+    if (lower === "sarı") {
+      return (
+        <span key={i} className="font-semibold text-amber-700">
+          {part}
+        </span>
+      );
+    }
+    return part;
+  });
+}
 
 export function TsbPanelHelp({ items }: { items: readonly string[] }) {
   if (items.length === 0) return null;
@@ -327,7 +345,7 @@ export function TsbPanelHelp({ items }: { items: readonly string[] }) {
         <ul className={tsb.panelHelpList}>
           {items.map((item) => (
             <li key={item} className={tsb.panelHelpListItem}>
-              {item}
+              {tsbPanelHelpRenderText(item)}
             </li>
           ))}
         </ul>

@@ -53,7 +53,15 @@ const KANAL_RENK: Record<KanalDagilimSatirKey, string> = {
   diger: "bg-rose-500",
 };
 
-/** Kanal başına yan yana iki sütun: sol şirket, sağ sektör; aynı kanal rengi (sektör daha soluk). */
+const KANAL_RING: Record<KanalDagilimSatirKey, string> = {
+  merkez: "ring-emerald-600",
+  acente: "ring-sky-600",
+  banka: "ring-violet-600",
+  broker: "ring-amber-600",
+  diger: "ring-rose-600",
+};
+
+/** Sol: dolu renk (şirket). Sağ: çizgili gri kutu (sektör) — aynı rengin soluk hali yerine. */
 function KanalYuzdeGroupedBars({
   ys,
   yk,
@@ -66,15 +74,25 @@ function KanalYuzdeGroupedBars({
   const H = 168;
   return (
     <div className="mt-3">
-      <div className="mb-2 flex justify-center gap-6 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-        <span className="text-slate-800">← Şirket</span>
-        <span>Sektör →</span>
+      <div className="mb-2 flex flex-wrap justify-center gap-4 text-[10px] font-semibold text-slate-600">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500" aria-hidden />
+          Şirket · dolu çubuk
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className="inline-block h-3 w-3 rounded-sm border-2 border-slate-500 bg-[repeating-linear-gradient(-45deg,#cbd5e1_0_2px,transparent_2px_4px)]"
+            aria-hidden
+          />
+          Sektör · çizgili çubuk
+        </span>
       </div>
       <div className="flex flex-wrap justify-between gap-4 sm:flex-nowrap sm:gap-2">
       {KANAL_DAGILIM_SATIRLARI.map(({ key, label }) => (
         <div key={key} className="flex min-w-[4.75rem] flex-1 flex-col items-center">
-          <div className="flex h-[188px] w-full items-end justify-center gap-1.5 border-b border-gray-200 px-0.5 pb-0.5">
-            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
+          <div className="flex h-[188px] w-full items-end justify-center gap-2 border-b border-gray-200 px-0.5 pb-0.5">
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-0.5">
+              <span className="text-[9px] font-bold uppercase tracking-wide text-slate-700">Ş</span>
               <span className="text-[10px] font-semibold tabular-nums text-gray-900">{pf.format(ys[key])}%</span>
               <div
                 className={`w-full max-w-[2rem] rounded-t ${KANAL_RENK[key]}`}
@@ -83,10 +101,11 @@ function KanalYuzdeGroupedBars({
                 }}
               />
             </div>
-            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
-              <span className="text-[10px] tabular-nums text-gray-500">{pf.format(yk[key])}%</span>
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-0.5">
+              <span className="text-[9px] font-bold uppercase tracking-wide text-slate-500">S</span>
+              <span className="text-[10px] tabular-nums text-gray-600">{pf.format(yk[key])}%</span>
               <div
-                className={`w-full max-w-[2rem] rounded-t ${KANAL_RENK[key]} opacity-[0.52]`}
+                className={`w-full max-w-[2rem] rounded-t border-2 border-slate-500 bg-slate-100 bg-[repeating-linear-gradient(-45deg,#cbd5e1_0_3px,transparent_3px_6px)] ring-2 ring-inset ${KANAL_RING[key]}`}
                 style={{
                   height: `${yk[key] <= 0 ? 0 : Math.max(4, (yk[key] / 100) * H)}px`,
                 }}

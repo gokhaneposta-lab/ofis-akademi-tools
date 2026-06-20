@@ -19,7 +19,7 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     href: "/sigorta/hasar-prim-orani",
     items: [
       "Hasar/prim (H/P): gerçekleşen hasarın kazanılmış prime oranı. Düşük oran genelde daha iyi teknik sonuç demektir.",
-      "Bu paneldeki «Branş» gelir tablosu dilimidir (GT). Prim panellerindeki «Ana branş (TSB)» ile karıştırmayın — alttaki referans tablosuna bakın.",
+      "Bu paneldeki «Branş» gelir tablosu dilimidir (GT — bransAp). Prim panellerindeki «Ana branş (TSB)» farklı bir sınıflandırmadır.",
       "Grafikte yeşil/mavi sütunlar şirketin brüt/net H/P değeri; gri kesik çizgi sektör brüt H/P referansıdır.",
       "Tabloda DERK dahil/hariç dört varyant vardır. Sıra tablosunda YoY artış kırmızı, düşüş yeşil gösterilir.",
     ],
@@ -37,7 +37,7 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     href: "/sigorta/kanal-dagilim",
     items: [
       "Odak şirketin kanal paylarını (merkez, acente, banka…) sektör dağılımı ile yan yana görürsünüz.",
-      "Grafikte sol koyu çubuk = şirket, sağ soluk çubuk = sektör. Her ikisi de kendi toplam primine göre %100 dağılım gösterir.",
+      "Grafikte sol dolu çubuk (Ş) = şirket, sağ çizgili çubuk (S) = sektör. Her ikisi de kendi toplam primine göre %100 dağılım gösterir.",
       "«Kanalda %» = o kanalda şirket priminin sektör primine oranı (pazar payı gibi düşünün).",
     ],
   },

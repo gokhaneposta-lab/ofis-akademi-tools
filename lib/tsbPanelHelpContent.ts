@@ -37,7 +37,7 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     href: "/sigorta/kanal-dagilim",
     items: [
       "Odak şirketin kanal paylarını (merkez, acente, banka…) sektör dağılımı ile yan yana görürsünüz.",
-      "Grafikte sol dolu çubuk (Ş) = şirket, sağ çizgili çubuk (S) = sektör. Her ikisi de kendi toplam primine göre %100 dağılım gösterir.",
+      "Grafikte sol koyu çubuk = şirket, sağ açık çubuk = sektör; her kanal kendi renk zemininde. Her ikisi de kendi toplam primine göre %100 dağılım gösterir.",
       "«Kanalda %» = o kanalda şirket priminin sektör primine oranı (pazar payı gibi düşünün).",
     ],
   },

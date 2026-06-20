@@ -45,23 +45,31 @@ import {
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
-const KANAL_RENK: Record<KanalDagilimSatirKey, string> = {
-  merkez: "bg-emerald-500",
-  acente: "bg-sky-500",
-  banka: "bg-violet-500",
-  broker: "bg-amber-500",
-  diger: "bg-rose-500",
+const KANAL_RENK_SIRKET: Record<KanalDagilimSatirKey, string> = {
+  merkez: "bg-emerald-600",
+  acente: "bg-sky-600",
+  banka: "bg-violet-600",
+  broker: "bg-amber-600",
+  diger: "bg-rose-600",
 };
 
-const KANAL_RING: Record<KanalDagilimSatirKey, string> = {
-  merkez: "ring-emerald-600",
-  acente: "ring-sky-600",
-  banka: "ring-violet-600",
-  broker: "ring-amber-600",
-  diger: "ring-rose-600",
+const KANAL_RENK_SEKTOR: Record<KanalDagilimSatirKey, string> = {
+  merkez: "bg-emerald-300",
+  acente: "bg-sky-300",
+  banka: "bg-violet-300",
+  broker: "bg-amber-300",
+  diger: "bg-rose-300",
 };
 
-/** Sol: dolu renk (şirket). Sağ: çizgili gri kutu (sektör) — aynı rengin soluk hali yerine. */
+const KANAL_GRADIENT: Record<KanalDagilimSatirKey, string> = {
+  merkez: "from-emerald-50/90 via-emerald-50/40 to-white",
+  acente: "from-sky-50/90 via-sky-50/40 to-white",
+  banka: "from-violet-50/90 via-violet-50/40 to-white",
+  broker: "from-amber-50/90 via-amber-50/40 to-white",
+  diger: "from-rose-50/90 via-rose-50/40 to-white",
+};
+
+/** Kanal başına gradyan zemin; sol koyu = şirket, sağ açık = sektör (aynı renk ailesi). */
 function KanalYuzdeGroupedBars({
   ys,
   yk,
@@ -74,38 +82,48 @@ function KanalYuzdeGroupedBars({
   const H = 168;
   return (
     <div className="mt-3">
-      <div className="mb-2 flex flex-wrap justify-center gap-4 text-[10px] font-semibold text-slate-600">
+      <div className="mb-2 flex justify-center gap-8 text-[10px] font-medium text-slate-600">
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500" aria-hidden />
-          Şirket · dolu çubuk
+          <span className="inline-block h-0 w-0 border-y-[5px] border-r-[6px] border-y-transparent border-r-slate-700" aria-hidden />
+          Sol · şirket (koyu)
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span
-            className="inline-block h-3 w-3 rounded-sm border-2 border-slate-500 bg-[repeating-linear-gradient(-45deg,#cbd5e1_0_2px,transparent_2px_4px)]"
-            aria-hidden
-          />
-          Sektör · çizgili çubuk
+          Sağ · sektör (açık)
+          <span className="inline-block h-0 w-0 border-y-[5px] border-l-[6px] border-y-transparent border-l-slate-400" aria-hidden />
         </span>
       </div>
-      <div className="flex flex-wrap justify-between gap-4 sm:flex-nowrap sm:gap-2">
-      {KANAL_DAGILIM_SATIRLARI.map(({ key, label }) => (
-        <div key={key} className="flex min-w-[4.75rem] flex-1 flex-col items-center">
-          <div className="flex h-[188px] w-full items-end justify-center gap-2 border-b border-gray-200 px-0.5 pb-0.5">
-            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-0.5">
-              <span className="text-[9px] font-bold uppercase tracking-wide text-slate-700">Ş</span>
-              <span className="text-[10px] font-semibold tabular-nums text-gray-900">{pf.format(ys[key])}%</span>
+      <div className="flex flex-wrap justify-between gap-0 sm:flex-nowrap">
+      {KANAL_DAGILIM_SATIRLARI.map(({ key, label }, index) => (
+        <div
+          key={key}
+          className={cn(
+            "flex min-w-[4.75rem] flex-1 flex-col items-center bg-gradient-to-b px-2 py-2.5 sm:px-2.5",
+            KANAL_GRADIENT[key],
+            index > 0 && "border-l border-slate-200/90",
+            index === 0 && "rounded-l-lg",
+            index === KANAL_DAGILIM_SATIRLARI.length - 1 && "rounded-r-lg",
+          )}
+        >
+          <div className="flex h-[188px] w-full items-end justify-center gap-2.5 border-b border-slate-200/70 px-0.5 pb-0.5">
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold tabular-nums text-gray-900">
+                <span className={`inline-block h-2 w-2 shrink-0 rounded-sm ${KANAL_RENK_SIRKET[key]}`} aria-hidden />
+                {pf.format(ys[key])}%
+              </span>
               <div
-                className={`w-full max-w-[2rem] rounded-t ${KANAL_RENK[key]}`}
+                className={`w-full max-w-[2.25rem] rounded-t ${KANAL_RENK_SIRKET[key]}`}
                 style={{
                   height: `${ys[key] <= 0 ? 0 : Math.max(4, (ys[key] / 100) * H)}px`,
                 }}
               />
             </div>
-            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-0.5">
-              <span className="text-[9px] font-bold uppercase tracking-wide text-slate-500">S</span>
-              <span className="text-[10px] tabular-nums text-gray-600">{pf.format(yk[key])}%</span>
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
+              <span className="inline-flex items-center gap-1 text-[10px] tabular-nums text-gray-700">
+                <span className={`inline-block h-2 w-2 shrink-0 rounded-sm ${KANAL_RENK_SEKTOR[key]}`} aria-hidden />
+                {pf.format(yk[key])}%
+              </span>
               <div
-                className={`w-full max-w-[2rem] rounded-t border-2 border-slate-500 bg-slate-100 bg-[repeating-linear-gradient(-45deg,#cbd5e1_0_3px,transparent_3px_6px)] ring-2 ring-inset ${KANAL_RING[key]}`}
+                className={`w-full max-w-[2.25rem] rounded-t ${KANAL_RENK_SEKTOR[key]}`}
                 style={{
                   height: `${yk[key] <= 0 ? 0 : Math.max(4, (yk[key] / 100) * H)}px`,
                 }}

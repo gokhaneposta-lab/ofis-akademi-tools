@@ -525,7 +525,7 @@ export default function TsbHasarPrimDashboard() {
           <TsbFilterField label="Kırılım">
             <div className={tsb.btnGroup}>
               <TsbToggleButton pressed={kirisumModu === "bransAp"} onClick={() => setKirisumModu("bransAp")}>
-                Branş
+                Branş (GT)
               </TsbToggleButton>
               <TsbToggleButton pressed={kirisumModu === "tarifeGrubu"} onClick={() => setKirisumModu("tarifeGrubu")}>
                 Tarife grubu
@@ -533,7 +533,7 @@ export default function TsbHasarPrimDashboard() {
             </div>
           </TsbFilterField>
           {kirisumModu === "bransAp" ? (
-            <TsbFilterField label="Branş">
+            <TsbFilterField label="Branş (gelir tablosu)">
               <TsbSelect className={tsb.selectWide} value={bransAp} onChange={(e) => setBransAp(e.target.value)}>
                 {bransSecenekleri.map((b) => (
                   <option key={b.value} value={b.value}>

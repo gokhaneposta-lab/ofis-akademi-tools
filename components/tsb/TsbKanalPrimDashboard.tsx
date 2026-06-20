@@ -15,7 +15,9 @@ import {
   uniqueSortedPeriods,
   uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
+import { TsbRenkAciklama } from "@/components/tsb/TsbRenkAciklama";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
+import { TSB_TUM_BRANS_LABEL } from "@/lib/tsbKirilimSozluk";
 import {
   cn,
   tsb,
@@ -124,10 +126,7 @@ export default function TsbKanalPrimDashboard() {
     return <p className={tsb.alertWarn}>Gösterilecek prim verisi bulunamadı.</p>;
   }
 
-  const tumAnaBransLabel =
-    segment === "hayatdisi"
-      ? "Tümü (hayat dışı · HD, kod 3… hariç)"
-      : "Tümü (hayat-emeklilik · kod 3… veya tip H / E)";
+  const tumAnaBransLabel = TSB_TUM_BRANS_LABEL[segment];
 
   const toplamDegisim =
     tablo !== null
@@ -239,12 +238,28 @@ export default function TsbKanalPrimDashboard() {
 
       {tablo && (
         <>
-          <p className={tsb.caption}>
-            Önceki yıl: <strong>{tablo.donemOnceki ?? "—"}</strong>. Alt satırda seçili filtrelere göre toplam prim;
-            pay sütunları en fazla %100.{" "}
-            <strong className="text-emerald-800">Bu yıl sıra:</strong> iyileşme yeşil, aynı sırada sarı, düşüş kırmızı.{" "}
-            <strong>Değişim %:</strong> artış yeşil, düşüş kırmızı.
-          </p>
+          <div className="space-y-2">
+            <p className={tsb.caption}>
+              Karşılaştırma dönemi: <strong>{secilenDonem}</strong>
+              {tablo.donemOnceki ? (
+                <>
+                  {" "}
+                  · geçen yılın aynı ayı: <strong>{tablo.donemOnceki}</strong>
+                </>
+              ) : null}
+              . Alt satır seçili filtrelere göre toplam prim; pay sütunları en fazla %100.
+            </p>
+            <TsbRenkAciklama
+              baslik="Renk kodları"
+              items={[
+                { label: "Bu yıl sıra — yeşil: sıra iyileşti (daha küçük numara)", ton: "iyi" },
+                { label: "Bu yıl sıra — sarı: sıra değişmedi", ton: "notr" },
+                { label: "Bu yıl sıra — kırmızı: sıra kötüleşti", ton: "kotu" },
+                { label: "Değişim % — yeşil: prim artışı", ton: "iyi" },
+                { label: "Değişim % — kırmızı: prim düşüşü", ton: "kotu" },
+              ]}
+            />
+          </div>
           <TsbTableShell>
             <table className={tsb.tableDense}>
               <colgroup>

@@ -22,7 +22,11 @@ import {
   uniqueSortedPeriods,
   uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
+import { TsbSirketSektorGrafikLegend } from "@/components/tsb/TsbRenkAciklama";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
+import {
+  TSB_TUM_BRANS_LABEL,
+} from "@/lib/tsbKirilimSozluk";
 import {
   cn,
   tsb,
@@ -61,7 +65,12 @@ function KanalYuzdeGroupedBars({
 }) {
   const H = 168;
   return (
-    <div className="mt-4 flex flex-wrap justify-between gap-4 sm:flex-nowrap sm:gap-2">
+    <div className="mt-3">
+      <div className="mb-2 flex justify-center gap-6 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+        <span className="text-slate-800">← Şirket</span>
+        <span>Sektör →</span>
+      </div>
+      <div className="flex flex-wrap justify-between gap-4 sm:flex-nowrap sm:gap-2">
       {KANAL_DAGILIM_SATIRLARI.map(({ key, label }) => (
         <div key={key} className="flex min-w-[4.75rem] flex-1 flex-col items-center">
           <div className="flex h-[188px] w-full items-end justify-center gap-1.5 border-b border-gray-200 px-0.5 pb-0.5">
@@ -95,6 +104,7 @@ function KanalYuzdeGroupedBars({
           </p>
         </div>
       ))}
+      </div>
     </div>
   );
 }
@@ -207,10 +217,7 @@ export default function TsbKanalDagilimDashboard() {
     kiyas.sektor.genelToplam > 0 ? (kiyas.sirket.genelToplam / kiyas.sektor.genelToplam) * 100 : null;
   const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
 
-  const tumBransLabel =
-    segment === "hayatdisi"
-      ? "Tüm ana branşlar (hayat dışı)"
-      : "Tüm ana branşlar (hayat–emeklilik)";
+  const tumBransLabel = TSB_TUM_BRANS_LABEL[segment];
 
   return (
     <div className={tsb.dashboardStack}>
@@ -301,11 +308,10 @@ export default function TsbKanalDagilimDashboard() {
 
       <div className={tsb.chartPanel}>
         <p className="text-xs font-semibold text-slate-800">Kanal payları — yüzde (yan yana)</p>
-        <p className={cn(tsb.caption, "mt-1")}>
-          Her kanal için <strong>sol sütun</strong> seçilen şirket (<span className="text-slate-800">{secilenAd}</span>),
-          <strong className="ml-1">sağ sütun</strong> aynı filtredeki sektör toplamıdır (ikisi de kendi genel
-          toplamlarına göre yüzde). Çubukların altındaki <strong>Kanalda %</strong>, o kanaldaki şirket priminin
-          sektörün aynı kanaldaki primine oranıdır (şirket ₺ ÷ sektör ₺).
+        <TsbSirketSektorGrafikLegend sirketAdi={secilenAd} />
+        <p className={cn(tsb.caption, "mt-2")}>
+          Her kanalda iki çubuk: kendi toplam primine göre kanal payı (%). Alttaki{" "}
+          <strong>Kanalda %</strong> = o kanaldaki şirket primi ÷ sektör primi (pazar payı).
         </p>
         <KanalYuzdeGroupedBars ys={ys} yk={yk} kanalSektorPayi={kanalSektorPayi} />
         <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-t border-slate-100 pt-3 text-[11px] text-slate-600">

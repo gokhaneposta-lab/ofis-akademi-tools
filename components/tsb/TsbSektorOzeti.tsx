@@ -80,14 +80,21 @@ export default function TsbSektorOzeti({ data }: { data: SektorOzetiData }) {
 
   const sekme = useMemo(() => data.sekmeler.find((s) => s.id === aktif) ?? data.sekmeler[0], [data, aktif]);
 
-  const donemNotu = useMemo(() => {
-    const fin = data.finDonemOnceki
-      ? `Finansal/teknik: ${data.finDonem} · önceki yıl ${data.finDonemOnceki}`
-      : `Finansal/teknik: ${data.finDonem}`;
-    const prim = data.primDonemOnceki
-      ? `Prim/pay: ${data.primDonem} · önceki yıl ${data.primDonemOnceki}`
-      : `Prim/pay: ${data.primDonem}`;
-    return `${fin} · ${prim} · Hayat dışı (HD)`;
+  const donemChips = useMemo(() => {
+    const chips: { label: string; value: string; sub?: string }[] = [
+      {
+        label: "Finansal KPI",
+        value: data.finDonem || "—",
+        sub: data.finDonemOnceki ? `geçen yıl: ${data.finDonemOnceki}` : undefined,
+      },
+      {
+        label: "Prim sıralama",
+        value: data.primDonem || "—",
+        sub: data.primDonemOnceki ? `geçen yıl: ${data.primDonemOnceki}` : undefined,
+      },
+      { label: "Havuz", value: "Hayat dışı (HD)" },
+    ];
+    return chips;
   }, [data]);
 
   return (
@@ -100,9 +107,18 @@ export default function TsbSektorOzeti({ data }: { data: SektorOzetiData }) {
           <MetodolojiInfo />
         </div>
         <p className={tsb.sektorOzetiAltBaslik}>
-          Seçili son dönem verilerine göre öne çıkan şirketler ve sıralamalar.
+          Son dönemde sektörde öne çıkan şirketler — karlılık, teknik sonuç, büyüme ve pazar payına göre
+          sıralanmış kısa listeler.
         </p>
-        <p className={tsb.sektorOzetiDonemNotu}>{donemNotu}</p>
+        <div className={tsb.sektorOzetiDonemGrid} aria-label="Kullanılan dönemler">
+          {donemChips.map((c) => (
+            <div key={c.label} className={tsb.sektorOzetiDonemChip}>
+              <span className={tsb.sektorOzetiDonemChipLabel}>{c.label}: </span>
+              {c.value}
+              {c.sub ? <span className="text-slate-500"> · {c.sub}</span> : null}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className={cn(tsb.btnGroup, "mb-3")} role="tablist" aria-label="Sektör özeti kategorileri">

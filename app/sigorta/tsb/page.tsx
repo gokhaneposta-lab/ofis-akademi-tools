@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import TsbJsonLd from "@/components/tsb/TsbJsonLd";
+import TsbKirilimReferans from "@/components/tsb/TsbKirilimReferans";
 import TsbSektorOzeti from "@/components/tsb/TsbSektorOzeti";
 import TsbVeriDurumuBand from "@/components/tsb/TsbVeriDurumuBand";
 import { tsb } from "@/components/tsb/tsbDashboardUi";
@@ -32,17 +33,30 @@ export default async function SigortaTsbHubPage() {
               <span className={tsb.pageBadge}>Dashboard</span>
             </div>
             <p className={tsb.pageLead}>
-              Türkiye Sigortalar Birliği (TSB) kaynaklı <strong>prim istatistikleri</strong> ve{" "}
-              <strong>finansal veriler</strong> — site içinde yeniden işlenmiş gösterge panelleri.{" "}
-              <strong>Finansal karşılaştırma</strong> çeyrek bazında gelir tablosu ve bilanço KPI&apos;larını;{" "}
-              <strong>prim panelleri</strong> aylık üretim verisini kullanır.
+              Türkiye Sigortalar Birliği (TSB) kaynaklı veriler — site içinde yeniden düzenlenmiş gösterge
+              panelleri.
             </p>
+            <ul className={tsb.hubLeadList} aria-label="Veri türleri">
+              <li className={tsb.hubLeadItem}>
+                <span className={tsb.hubLeadBullet} aria-hidden />
+                <span>
+                  <strong>Finansal karşılaştırma</strong> — çeyreklik gelir tablosu ve bilanço KPI&apos;ları
+                </span>
+              </li>
+              <li className={tsb.hubLeadItem}>
+                <span className={tsb.hubLeadBullet} aria-hidden />
+                <span>
+                  <strong>Prim panelleri</strong> — aylık prim üretimi, kanal ve branş kırılımları
+                </span>
+              </li>
+            </ul>
             <TsbVeriDurumuBand data={veriDurumu} />
           </div>
         </header>
 
         <main className={tsb.main}>
           <TsbSektorOzeti data={sektorOzeti} />
+          <TsbKirilimReferans />
 
           {TSB_DASHBOARD_GROUPS.map((group) => {
             const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === group.id);

@@ -7,6 +7,7 @@ import {
   tsbDashboardPanelByHref,
   type TsbDashboardGroupId,
 } from "@/lib/tsbDashboardPanels";
+import TsbKirilimReferans from "@/components/tsb/TsbKirilimReferans";
 import { tsbPanelHelpForHref } from "@/lib/tsbPanelHelpContent";
 import { TSB_SEO, type TsbSeoPageId } from "@/lib/tsbSeo";
 
@@ -46,11 +47,40 @@ export const tsb = {
   filterGrid: "grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
 
   panelHelp:
-    "rounded-lg border border-slate-200/80 bg-white text-sm shadow-[0_1px_2px_rgba(15,23,42,0.04)] [&_summary::-webkit-details-marker]:hidden",
+    "group rounded-lg border border-slate-200/90 bg-white text-sm shadow-[0_1px_2px_rgba(15,23,42,0.04)] open:border-emerald-200/80 open:shadow-[0_2px_8px_rgba(15,23,42,0.06)] [&_summary::-webkit-details-marker]:hidden",
   panelHelpSummary:
-    "cursor-pointer list-none px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50/80",
-  panelHelpBody: "border-t border-slate-100 px-3 py-2 text-xs leading-relaxed text-slate-600",
-  panelHelpList: "list-disc space-y-1 pl-4",
+    "flex cursor-pointer list-none items-center gap-2 px-3 py-2.5 transition hover:bg-slate-50/90 group-open:bg-emerald-50/40",
+  panelHelpChevron:
+    "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-[10px] font-bold text-emerald-800 transition group-open:rotate-90 group-open:border-emerald-200 group-open:bg-emerald-50",
+  panelHelpBody: "border-t border-slate-100 px-3 py-3 text-xs leading-relaxed text-slate-600",
+  panelHelpList: "list-none space-y-2 pl-0",
+  panelHelpListItem: "flex gap-2 before:mt-1.5 before:h-1.5 before:w-1.5 before:shrink-0 before:rounded-full before:bg-emerald-500 before:content-['']",
+
+  renkAciklamaWrap: "rounded-lg border border-slate-200/80 bg-slate-50/70 px-3 py-2.5",
+  renkAciklamaBaslik: "mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500",
+  renkAciklamaList: "flex flex-wrap gap-x-4 gap-y-1.5",
+  renkAciklamaItem: "inline-flex items-center gap-1.5 text-[11px] text-slate-700",
+  renkAciklamaNokta: "inline-block h-2 w-2 shrink-0 rounded-full",
+
+  grafikLegendWrap: "flex flex-wrap gap-x-4 gap-y-1 rounded-md border border-slate-200/80 bg-white px-2.5 py-2 text-[11px] text-slate-700",
+  grafikLegendItem: "inline-flex flex-wrap items-center gap-1",
+
+  kirilimReferansWrap:
+    "rounded-lg border border-slate-200/80 bg-slate-50/50 text-sm [&_summary::-webkit-details-marker]:hidden",
+  kirilimReferansSummary:
+    "group flex cursor-pointer list-none items-start gap-2 px-3 py-2.5 transition hover:bg-white/80",
+  kirilimReferansBody: "border-t border-slate-200/80 bg-white px-3 py-3",
+  kirilimTable:
+    "w-full min-w-[640px] text-left text-[11px] [&_th]:border-b [&_th]:border-slate-200 [&_th]:px-2 [&_th]:py-1.5 [&_th]:font-semibold [&_th]:text-slate-600 [&_td]:border-b [&_td]:border-slate-100 [&_td]:px-2 [&_td]:py-2 [&_td]:align-top [&_td]:text-slate-600",
+
+  hubLeadList: "mt-2 max-w-3xl space-y-1.5 text-sm leading-relaxed text-slate-600",
+  hubLeadItem: "flex gap-2 pl-0.5",
+  hubLeadBullet: "mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600",
+
+  sektorOzetiDonemGrid: "mt-2 flex flex-wrap gap-2",
+  sektorOzetiDonemChip:
+    "rounded-md border border-slate-200/90 bg-white px-2 py-1 text-[11px] leading-snug text-slate-600 shadow-sm",
+  sektorOzetiDonemChipLabel: "font-semibold text-slate-800",
 
   insightsWrap: "rounded-lg border border-amber-200/90 bg-amber-50/70 px-3 py-2.5 shadow-sm",
   insightsTitle: "text-[10px] font-semibold uppercase tracking-wider text-amber-900/80",
@@ -238,6 +268,7 @@ export function TsbPageLayout({
 }: TsbPageLayoutProps) {
   const help = helpItems ?? tsbPanelHelpForHref(currentHref);
   const seo = TSB_SEO[seoPageId];
+  const showKirilimReferans = PRIM_PANEL_HREFS.has(currentHref);
 
   return (
     <>
@@ -262,6 +293,7 @@ export function TsbPageLayout({
       <main className={tsb.main}>
         <TsbDashboardStickyNav currentHref={currentHref} />
         {help.length > 0 ? <TsbPanelHelp items={help} /> : null}
+        {showKirilimReferans ? <TsbKirilimReferans /> : null}
         {children}
       </main>
     </div>
@@ -269,15 +301,34 @@ export function TsbPageLayout({
   );
 }
 
+const PRIM_PANEL_HREFS = new Set([
+  "/sigorta/kanal-prim",
+  "/sigorta/kanal-dagilim",
+  "/sigorta/brans-degisim",
+  "/sigorta/brans-sira",
+  "/sigorta/prim-trend-12",
+  "/sigorta/hasar-prim-orani",
+]);
+
 export function TsbPanelHelp({ items }: { items: readonly string[] }) {
   if (items.length === 0) return null;
   return (
     <details className={tsb.panelHelp}>
-      <summary className={tsb.panelHelpSummary}>Bu panel nasıl okunur?</summary>
+      <summary className={tsb.panelHelpSummary}>
+        <span className={tsb.panelHelpChevron} aria-hidden>
+          ›
+        </span>
+        <span>
+          <span className="block text-xs font-semibold text-slate-800">Bu panel nasıl okunur?</span>
+          <span className="block text-[11px] font-normal text-slate-500">Tıklayın — kısa kullanım rehberi</span>
+        </span>
+      </summary>
       <div className={tsb.panelHelpBody}>
         <ul className={tsb.panelHelpList}>
           {items.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={item} className={tsb.panelHelpListItem}>
+              {item}
+            </li>
           ))}
         </ul>
       </div>

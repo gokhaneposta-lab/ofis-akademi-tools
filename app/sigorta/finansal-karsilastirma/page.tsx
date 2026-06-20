@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import TsbFinansalKarsilastirmaDashboard from "@/components/tsb/TsbFinansalKarsilastirmaDashboard";
 import TsbRelatedDashboards from "@/components/tsb/TsbRelatedDashboards";
-import { TsbPageLayout } from "@/components/tsb/tsbDashboardUi";
+import { TsbPageLayout } from "@/components/tsb/TsbPageLayout";
 import TsbSourceNote from "@/components/tsb/tsbSourceNote";
 import { TSB_SEO, tsbPageMetadata } from "@/lib/tsbSeo";
 

@@ -28,6 +28,13 @@ export const metadata: Metadata = {
     siteName: "Ofis Akademi",
     locale: "tr_TR",
     type: "website",
+    images: [{ url: `${BASE}/og/tsb-sektor`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Finans & Sigorta — TSB dashboard & IFRS 17",
+    description: "Sigortacılık KPI hesaplayıcıları ve TSB canlı sektör panelleri.",
+    images: [`${BASE}/og/tsb-sektor`],
   },
 };
 
@@ -94,20 +101,27 @@ export default function FinansSigortaPage() {
             className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gray-900"
           >
             <span className="h-1 w-5 rounded-full bg-sky-500" />
-            TSB · Sektör verileri
+            TSB · Canlı sektör dashboard&apos;ları
           </h2>
           <p className="mb-4 max-w-2xl text-[13px] text-gray-600 sm:text-sm">
-            Türkiye Sigortalar Birliği (TSB) yayınlarından derlenen veriler ayrı bir{" "}
-            <strong>dashboard grubunda</strong> toplanır: kanal bazlı prim, branş değişim tablosu ve ileride eklenecek
-            paneller için tek giriş noktası.
+            TSB aylık prim ve çeyreklik finansal verilerini Excel indirmeden takip edin: kanal, branş, H/P ve finansal
+            KPI panelleri — şirket vs sektör karşılaştırmalı.
           </p>
+          <div className="mb-4 flex flex-wrap gap-2">
+            <Link
+              href="/blog/tsb-prim-istatistikleri-nasil-takip-edilir"
+              className="inline-flex items-center rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-900 transition hover:bg-sky-100"
+            >
+              TSB takip rehberi (blog) →
+            </Link>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link
               href="/sigorta/tsb"
               className="group relative overflow-hidden rounded-2xl border-2 border-sky-200 bg-gradient-to-br from-sky-50 to-white p-5 shadow-sm transition hover:border-sky-400 hover:shadow-md sm:col-span-2 lg:col-span-3"
             >
               <span className="absolute right-4 top-4 rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                Dashboard
+                Hub
               </span>
               <div className="flex items-start gap-3 pr-20">
                 <span className="text-2xl" aria-hidden>
@@ -118,28 +132,43 @@ export default function FinansSigortaPage() {
                     TSB prim ve finansal istatistikleri
                   </h3>
                   <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
-                    KANAL · BRANŞ · İLERİDE DAHA FAZLA PANEL
+                    7 panel · hayat dışı / hayat–emeklilik
                   </span>
                 </div>
               </div>
               <p className="mt-3 text-xs text-gray-600">
-                Merkez, acente, banka, broker ve diğer kanallarda <strong>prim</strong>; branş bazında şirket–sektör
-                karşılaştırması ve pazar payı. Veriler siteye özel işlenmiş TSB tabanlı gösterge panelleridir.
+                Merkez, acente, banka, broker kanallarında prim; branş pazar payı; çeyreklik GT/BL KPI; hasar/prim oranı.
               </p>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap gap-1.5">
                   <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800">
-                    Hub sayfası
+                    Ücretsiz
                   </span>
                   <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-                    Çoklu panel
+                    Güncel TSB verisi
                   </span>
                 </div>
                 <span className="text-[11px] font-semibold text-sky-700 group-hover:underline">
-                  Dashboard grubuna git →
+                  Dashboard hub →
                 </span>
               </div>
             </Link>
+            {[
+              { href: "/sigorta/kanal-prim", label: "Kanal prim", icon: "🏪" },
+              { href: "/sigorta/hasar-prim-orani", label: "Hasar / prim", icon: "📉" },
+              { href: "/sigorta/finansal-karsilastirma", label: "Finansal KPI", icon: "📋" },
+            ].map((p) => (
+              <Link
+                key={p.href}
+                href={p.href}
+                className="rounded-xl border border-gray-200 bg-white p-4 text-sm font-semibold text-gray-800 shadow-sm transition hover:border-sky-300 hover:text-sky-800"
+              >
+                <span className="mr-2" aria-hidden>
+                  {p.icon}
+                </span>
+                {p.label}
+              </Link>
+            ))}
           </div>
         </section>
 

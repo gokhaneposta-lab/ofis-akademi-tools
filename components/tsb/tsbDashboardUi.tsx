@@ -1,14 +1,11 @@
 import Link from "next/link";
 import type { ReactNode, SelectHTMLAttributes } from "react";
-import TsbJsonLd from "@/components/tsb/TsbJsonLd";
 import {
   TSB_DASHBOARD_GROUPS,
   TSB_DASHBOARD_PANELS,
   tsbDashboardPanelByHref,
   type TsbDashboardGroupId,
 } from "@/lib/tsbDashboardPanels";
-import { tsbPanelHelpForHref } from "@/lib/tsbPanelHelpContent";
-import { TSB_SEO, type TsbSeoPageId } from "@/lib/tsbSeo";
 
 /** TSB dashboard — profesyonel finansal analiz platformu görünümü (paylaşılan token'lar). */
 export const tsb = {
@@ -243,59 +240,6 @@ export function tsbFormatPp(v: number | null | undefined): string {
   if (v === null || v === undefined || !Number.isFinite(v)) return "—";
   const sign = v > 0 ? "+" : "";
   return `${sign}${degisimPf.format(v)} pp`;
-}
-
-type TsbPageLayoutProps = {
-  title: string;
-  description: ReactNode;
-  sourceNote?: ReactNode;
-  currentHref: string;
-  /** Görünmez SEO (metadata ayrı; JSON-LD buradan) */
-  seoPageId: TsbSeoPageId;
-  helpItems?: readonly string[];
-  children: ReactNode;
-};
-
-export function TsbPageLayout({
-  title,
-  description,
-  sourceNote,
-  currentHref,
-  seoPageId,
-  helpItems,
-  children,
-}: TsbPageLayoutProps) {
-  const help = helpItems ?? tsbPanelHelpForHref(currentHref);
-  const seo = TSB_SEO[seoPageId];
-
-  return (
-    <>
-      <TsbJsonLd page={seo} variant="panel" />
-      <div className={tsb.pageBg}>
-      <header className={tsb.pageHeader}>
-        <div className={tsb.pageHeaderInner}>
-          <Link href="/sigorta/tsb" className={tsb.backLink}>
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            Sektör verileri (TSB)
-          </Link>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className={tsb.pageTitle}>{title}</h1>
-            <span className={tsb.pageBadge}>TSB</span>
-          </div>
-          <p className={tsb.pageLead}>{description}</p>
-          {sourceNote ? <aside className={tsb.sourceNote}>{sourceNote}</aside> : null}
-        </div>
-      </header>
-      <main className={tsb.main}>
-        <TsbDashboardStickyNav currentHref={currentHref} />
-        {help.length > 0 ? <TsbPanelHelp items={help} /> : null}
-        {children}
-      </main>
-    </div>
-    </>
-  );
 }
 
 /** Yardım metninde yeşil / kırmızı / sarı kelimelerini renklendirir. */

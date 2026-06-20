@@ -8,6 +8,11 @@ export const TSB_SEO_KEYWORDS_CORE = [
   "Türkiye Sigortalar Birliği",
   "sigorta sektör verileri",
   "TSB sigorta verileri",
+  "TSB dashboard",
+  "sigorta dashboard",
+  "sigorta sektör karşılaştırma",
+  "TSB online",
+  "TSB veri takip",
 ] as const;
 
 export const TSB_SEO_KEYWORDS_PRIM = [
@@ -16,6 +21,11 @@ export const TSB_SEO_KEYWORDS_PRIM = [
   "TSB prim verileri",
   "sigorta prim üretimi",
   "sigorta prim istatistikleri",
+  "TSB aylık prim",
+  "sigorta pazar payı",
+  "TSB kanal prim",
+  "TSB branş prim",
+  "sigorta acente prim",
 ] as const;
 
 export const TSB_SEO_KEYWORDS_FINANSAL = [
@@ -25,7 +35,12 @@ export const TSB_SEO_KEYWORDS_FINANSAL = [
   "sigorta finansal karşılaştırma",
   "TSB gelir tablosu",
   "TSB bilanço",
+  "TSB hasar prim oranı",
+  "sigorta H/P oranı",
+  "TSB çeyreklik veri",
 ] as const;
+
+export const TSB_OG_IMAGE_PATH = "/og/tsb-sektor";
 
 export type TsbSeoPage = {
   path: string;
@@ -120,6 +135,7 @@ export type TsbSeoPageId = keyof typeof TSB_SEO;
 
 export function tsbPageMetadata(page: TsbSeoPage): Metadata {
   const base = getSiteUrl();
+  const ogImage = `${base}${TSB_OG_IMAGE_PATH}`;
   return {
     title: page.title,
     description: page.description,
@@ -134,6 +150,13 @@ export function tsbPageMetadata(page: TsbSeoPage): Metadata {
       siteName: "Ofis Akademi",
       locale: "tr_TR",
       type: "website",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: page.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: page.title,
+      description: page.description,
+      images: [ogImage],
     },
   };
 }

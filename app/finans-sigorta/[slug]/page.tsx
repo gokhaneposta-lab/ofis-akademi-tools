@@ -33,6 +33,8 @@ import {
 } from "@/components/calculators/FinansSigortaCalculators";
 import { canonicalUrl } from "@/lib/site";
 import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
+import TsbLiveDataCta from "@/components/tsb/TsbLiveDataCta";
+import { getTsbDashboardLinkForMetric } from "@/lib/tsbMetricDashboardLinks";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -144,6 +146,7 @@ export default async function MetricDetailPage({ params }: Props) {
   if (!m) notFound();
 
   const related = getRelatedMetrics(slug);
+  const tsbLink = getTsbDashboardLinkForMetric(slug);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100/80">
@@ -185,6 +188,8 @@ export default async function MetricDetailPage({ params }: Props) {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
+        {tsbLink ? <TsbLiveDataCta link={tsbLink} /> : null}
+
         {/* Hesaplayıcı — en üstte */}
         <Section title="Hemen Hesapla">
           <CalculatorSection type={m.calculatorType} />

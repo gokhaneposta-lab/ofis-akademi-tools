@@ -57,6 +57,7 @@ export type BlogPost = {
 import { BLOG_POSTS_EXTRA } from "./blog-posts-extra";
 import { BLOG_POSTS_TFRS17 } from "./blog-posts-tfrs17";
 import { BLOG_POSTS_EXCEL_HUB } from "./blog-posts-excel-hub";
+import { BLOG_POSTS_TSB } from "./blog-posts-tsb";
 
 export type BlogCategorySlug =
   | "formuller"
@@ -93,7 +94,8 @@ export function categorizePost(post: Pick<BlogPost, "slug" | "toolHref" | "toolN
     s.includes("csm") ||
     s.includes("sigorta muhasebe") ||
     s.includes("sigortacılık mali") ||
-    (s.includes("sigorta") && (s.includes("bilanço") || s.includes("gelir tablosu") || s.includes("teknik")))
+    s.includes("tsb") ||
+    (s.includes("sigorta") && (s.includes("bilanço") || s.includes("gelir tablosu") || s.includes("teknik") || s.includes("prim")))
   )
     return "finans";
   if (s.includes("kredi") || s.includes("faiz") || s.includes("yuzde") || s.includes("yüzde")) return "finans";
@@ -240,6 +242,7 @@ export const BLOG_POSTS: BlogPost[] = [
   ...BLOG_POSTS_EXTRA,
   ...BLOG_POSTS_TFRS17,
   ...BLOG_POSTS_EXCEL_HUB,
+  ...BLOG_POSTS_TSB,
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
@@ -355,6 +358,7 @@ const POPULAR_BLOG_SLUGS: string[] = [
   "excel-yinelenenleri-kaldirma",
   "excel-listeleri-birlestirme",
   "tfrs-17-yeni-sigorta-mali-tablosu-rehberi",
+  "tsb-prim-istatistikleri-nasil-takip-edilir",
 ];
 
 export function getPopularPosts(limit = 6): BlogPost[] {

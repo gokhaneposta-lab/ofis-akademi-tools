@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import TsbJsonLd from "@/components/tsb/TsbJsonLd";
+import TsbSeoSection from "@/components/tsb/TsbSeoSection";
 import TsbSektorOzeti from "@/components/tsb/TsbSektorOzeti";
 import TsbVeriDurumuBand from "@/components/tsb/TsbVeriDurumuBand";
 import { tsb } from "@/components/tsb/tsbDashboardUi";
@@ -17,7 +18,12 @@ export default async function SigortaTsbHubPage() {
 
   return (
     <>
-      <TsbJsonLd page={TSB_SEO.hub} variant="hub" dateModified={veriDurumu.guncellemeIso} />
+      <TsbJsonLd
+        page={TSB_SEO.hub}
+        variant="hub"
+        dateModified={veriDurumu.guncellemeIso}
+        seoPageId="hub"
+      />
       <div className={tsb.pageBg}>
         <header className={tsb.pageHeader}>
           <div className={tsb.pageHeaderInner}>
@@ -94,6 +100,8 @@ export default async function SigortaTsbHubPage() {
               </section>
             );
           })}
+
+          <TsbSeoSection pageId="hub" />
 
           <p className="text-center text-[11px] text-slate-500">
             <Link href="/finans-sigorta" className="font-medium text-emerald-800 hover:underline">

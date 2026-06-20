@@ -4,11 +4,13 @@
  */
 
 import { getSiteUrl } from "@/lib/site";
+import { tsbSeoFaqsFor } from "@/lib/tsbSeoContent";
 import {
   tsbHubBreadcrumbItems,
   tsbPanelBreadcrumbItems,
   TSB_SEO,
   type TsbSeoPage,
+  type TsbSeoPageId,
 } from "@/lib/tsbSeo";
 
 type Props = {
@@ -17,12 +19,15 @@ type Props = {
   variant?: "hub" | "panel";
   /** Veri dosyası güncelleme tarihi (ISO) — hub için önerilir */
   dateModified?: string;
+  /** FAQ kaynağı — panel/hub seoPageId */
+  seoPageId?: TsbSeoPageId | "hub";
 };
 
-export default function TsbJsonLd({ page, variant = "panel", dateModified }: Props) {
+export default function TsbJsonLd({ page, variant = "panel", dateModified, seoPageId }: Props) {
   const baseUrl = getSiteUrl();
   const url = `${baseUrl}${page.path}`;
   const isHub = variant === "hub";
+  const faqs = seoPageId ? tsbSeoFaqsFor(seoPageId) : [];
 
   const breadcrumbItems = isHub
     ? tsbHubBreadcrumbItems(baseUrl, page)
@@ -88,7 +93,22 @@ export default function TsbJsonLd({ page, variant = "panel", dateModified }: Pro
       : {}),
   };
 
-  const payload = [breadcrumbListSchema, webPageSchema, datasetSchema];
+  const payload: Record<string, unknown>[] = [breadcrumbListSchema, webPageSchema, datasetSchema];
+
+  if (faqs.length > 0) {
+    payload.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    });
+  }
 
   return (
     <script

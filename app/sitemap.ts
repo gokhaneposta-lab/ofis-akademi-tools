@@ -4,6 +4,7 @@ import { BLOG_CATEGORIES, getAllSlugs, getPostBySlug } from "@/lib/blog-posts";
 import { formulas } from "@/lib/formulData";
 import { metrics } from "@/lib/sektorMetrikData";
 import { getSiteUrl } from "@/lib/site";
+import { loadTsbVeriDurumu } from "@/lib/tsbVeriDurumu";
 
 const BASE_URL = getSiteUrl();
 
@@ -30,6 +31,17 @@ const HUB_ROUTES = [
   "/kaynaklar",
   "/gizlilik",
 ] as const;
+
+const TSB_ROUTES = new Set<string>([
+  "/sigorta/tsb",
+  "/sigorta/finansal-karsilastirma",
+  "/sigorta/hasar-prim-orani",
+  "/sigorta/kanal-prim",
+  "/sigorta/brans-degisim",
+  "/sigorta/brans-sira",
+  "/sigorta/kanal-dagilim",
+  "/sigorta/prim-trend-12",
+]);
 
 function priorityFor(route: string): number {
   if (route === "/") return 1.0;
@@ -66,12 +78,15 @@ function priorityFor(route: string): number {
 
 function changeFreqFor(route: string): MetadataRoute.Sitemap[0]["changeFrequency"] {
   if (route === "/") return "weekly";
+  if (TSB_ROUTES.has(route)) return "weekly";
   if (route.startsWith("/blog/")) return "monthly";
   return "monthly";
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
+  const tsbUpdated = new Date(loadTsbVeriDurumu().guncellemeIso);
+  const tsbLastMod = Number.isNaN(tsbUpdated.getTime()) ? now : tsbUpdated;
 
   const toolRoutes = EXCEL_TOOLS.map((t) => t.href);
   const blogCategoryRoutes = BLOG_CATEGORIES.map((c) => `/blog/kategori/${c.slug}`);
@@ -90,7 +105,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return allRoutes.map((route) => {
     let lastModified = now;
-    if (route.startsWith("/blog/") && !route.startsWith("/blog/kategori/")) {
+    if (TSB_ROUTES.has(route)) {
+      lastModified = tsbLastMod;
+    } else if (route.startsWith("/blog/") && !route.startsWith("/blog/kategori/")) {
       const slug = route.slice("/blog/".length);
       const post = getPostBySlug(slug);
       if (post?.date) {

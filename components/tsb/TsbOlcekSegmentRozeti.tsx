@@ -37,13 +37,20 @@ export default function TsbOlcekSegmentRozeti({ sirketAdi, kayit, yukleniyor, cl
             <span className="text-xs font-medium text-slate-800">{kayit.olcekSegmentAdi}</span>
           </div>
           <p className="mt-1 text-xs text-slate-600">
-            Sıra:{" "}
+            Sektör Sırası:{" "}
             <strong className="tabular-nums text-slate-800">
               {kayit.olcekSirasi} / {kayit.peerSayisi}
             </strong>
-            <span className="ml-2 text-slate-500">
-              · Skor: {kayit.olcekSkoru.toFixed(1)}
-            </span>
+            <span className="mx-2 text-slate-300">·</span>
+            Segment Sırası:{" "}
+            {kayit.segmentSirasi > 0 && kayit.segmentPeerSayisi > 0 ? (
+              <strong className="tabular-nums text-slate-800">
+                {kayit.segmentSirasi} / {kayit.segmentPeerSayisi}
+              </strong>
+            ) : (
+              <span className="text-slate-500">—</span>
+            )}
+            <span className="ml-2 text-slate-500">· Skor: {kayit.olcekSkoru.toFixed(1)}</span>
           </p>
         </div>
       </div>
@@ -59,6 +66,15 @@ export default function TsbOlcekSegmentRozeti({ sirketAdi, kayit, yukleniyor, cl
           </ul>
           <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
             kullanılarak hesaplanır. Segment performans değil, şirketin sektördeki göreli büyüklüğünü ifade eder.
+          </p>
+          <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+            Segment ortalamaları aynı ölçek grubunda yer alan şirketlerin ortalama değerlerinden oluşur. Segment
+            skoru ve sıralamalar yalnızca aynı havuz (Hayat Dışı veya Hayat/Emeklilik) içindeki şirketlerle
+            karşılaştırılır.
+          </p>
+          <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+            Finansal karşılaştırmada segment ortalaması: TL satırlarında aritmetik ortalama; oran satırlarında
+            Σ pay ÷ Σ payda (havuzlanmış oran).
           </p>
         </div>
       </details>

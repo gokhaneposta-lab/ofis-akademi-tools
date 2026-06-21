@@ -6,6 +6,7 @@ import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import {
   FINANSAL_KIYASLAMA_SATIRLARI,
   finansalKiyaslamaDegisim,
+  finansalKiyaslamaBenchmarkFark,
   finansalKiyaslamaDonemPaketi,
   finansalKiyaslamaSatirSayisal,
   formatFinansalDegisim,
@@ -181,6 +182,9 @@ export default function TsbFinansalKarsilastirmaDashboard() {
     return <TsbLoading message={donem ? `${donem} verisi yükleniyor…` : "Gelir verisi yükleniyor…"} />;
   }
 
+  const segmentBenchmark = kiyasModu === "olcek";
+  const tabloColSpan = segmentBenchmark ? 8 : 7;
+
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
@@ -278,6 +282,11 @@ export default function TsbFinansalKarsilastirmaDashboard() {
 
         <p className={tsb.filterHint}>
           {POOL_LABELS[pool]} havuzu · Δ: TL satırlarında yüzde değişim; oran satırlarında puan farkı (pp).{" "}
+          {segmentBenchmark ? (
+            <>
+              Benzer ölçek: TL ortalaması, oranlarda havuzlanmış oran ·{" "}
+            </>
+          ) : null}
           <span className="text-emerald-800">Artış yeşil</span>, <span className="text-red-700">düşüş kırmızı</span>.
         </p>
       </TsbFilterBar>
@@ -309,6 +318,18 @@ export default function TsbFinansalKarsilastirmaDashboard() {
               >
                 {kiyasBaslik}
               </th>
+              {segmentBenchmark ? (
+                <th
+                  scope="col"
+                  rowSpan={2}
+                  className="border-l border-gray-200 bg-sky-50/80 px-2 py-2 text-center text-[10px] font-bold uppercase tracking-wide text-sky-900"
+                >
+                  Fark
+                  <span className="mt-0.5 block text-[9px] font-normal normal-case text-sky-800/80">
+                    vs segment ({donem})
+                  </span>
+                </th>
+              ) : null}
             </tr>
             <tr>
               {(["sirket", "kiyas"] as const).map((blok) => (
@@ -346,7 +367,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
               if (satir.kind === "spacer") {
                 return (
                   <tr key={satir.id} aria-hidden className="border-b border-slate-100 bg-slate-100/50">
-                    <td colSpan={7} className="h-2 p-0" />
+                    <td colSpan={tabloColSpan} className="h-2 p-0" />
                   </tr>
                 );
               }
@@ -377,6 +398,9 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                 : { sirket: null, kiyas: null };
               const sirketDelta = finansalKiyaslamaDegisim(buDeg.sirket, oncDeg.sirket, satir.format);
               const kiyasDelta = finansalKiyaslamaDegisim(buDeg.kiyas, oncDeg.kiyas, satir.format);
+              const benchmarkFark = segmentBenchmark
+                ? finansalKiyaslamaBenchmarkFark(buDeg.sirket, buDeg.kiyas, satir.format)
+                : null;
 
               return (
                 <tr key={satir.id} className={tsb.tbodyRow}>
@@ -402,6 +426,18 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                   <td className={cn(tsb.td, "text-right font-semibold", tsbDeltaRenk(kiyasDelta.deger))}>
                     {formatFinansalDegisim(kiyasDelta.deger, kiyasDelta.format)}
                   </td>
+
+                  {segmentBenchmark ? (
+                    <td
+                      className={cn(
+                        tsb.td,
+                        "border-l border-sky-100 bg-sky-50/30 text-right text-xs font-semibold",
+                        tsbDeltaRenk(benchmarkFark?.deger ?? null),
+                      )}
+                    >
+                      {benchmarkFark ? formatFinansalDegisim(benchmarkFark.deger, benchmarkFark.format) : "—"}
+                    </td>
+                  ) : null}
                 </tr>
               );
             })}

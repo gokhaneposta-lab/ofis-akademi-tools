@@ -64,9 +64,14 @@ export type SirketOlcekSegmentSonuc = {
   sirketKodu: number;
   pool: SegmentSkorPool;
   olcekSkoru: number;
+  /** Havuz genelinde ölçek skoru sırası (1 = en büyük) */
   olcekSirasi: number;
   olcekSegmenti: OlcekSegmentHarfi;
   olcekSegmentAdiTr: string;
+  /** Aynı segment harfi (A+, A, …) içinde ölçek skoru sırası */
+  segmentSirasi: number;
+  /** Aynı segment harfindeki şirket sayısı */
+  segmentPeerSayisi: number;
   bilesenler: OlcekSegmentBilesen[];
   ham: OlcekSegmentHam;
   peerSayisi: number;
@@ -128,9 +133,13 @@ export type OlcekSegmentSirketKayit = {
   sirketKodu: number;
   sirketAdi: string;
   olcekSkoru: number;
+  /** Sektör havuzunda ölçek skoru sırası */
   olcekSirasi: number;
   olcekSegment: OlcekSegmentHarfi;
   olcekSegmentAdi: string;
+  /** Aynı ölçek segmenti içinde sıra */
+  segmentSirasi: number;
+  segmentPeerSayisi: number;
   peerSayisi: number;
 };
 
@@ -145,6 +154,8 @@ export function olcekSegmentSirketKayit(
     olcekSirasi: sonuc.olcekSirasi,
     olcekSegment: sonuc.olcekSegmenti,
     olcekSegmentAdi: olcekSegmentKisaAdi(sonuc.olcekSegmenti),
+    segmentSirasi: sonuc.segmentSirasi,
+    segmentPeerSayisi: sonuc.segmentPeerSayisi,
     peerSayisi: sonuc.peerSayisi,
   };
 }
@@ -242,17 +253,38 @@ export function olcekSegmentHavuzuFromRows(
   ara.sort((a, b) => b.olcekSkoru - a.olcekSkoru || a.sirketKodu - b.sirketKodu);
 
   const peerSayisi = ara.length;
-  return ara.map((row, idx) => {
+  const withSegment = ara.map((row, idx) => {
     const olcekSirasi = idx + 1;
     const olcekSegmenti = olcekSegmentHarfiFromSira(olcekSirasi, peerSayisi);
+    return { ...row, olcekSirasi, olcekSegmenti };
+  });
+
+  const segmentRank = new Map<number, { segmentSirasi: number; segmentPeerSayisi: number }>();
+  const bySegment = new Map<OlcekSegmentHarfi, typeof withSegment>();
+  for (const row of withSegment) {
+    const list = bySegment.get(row.olcekSegmenti) ?? [];
+    list.push(row);
+    bySegment.set(row.olcekSegmenti, list);
+  }
+  for (const list of bySegment.values()) {
+    list.sort((a, b) => b.olcekSkoru - a.olcekSkoru || a.sirketKodu - b.sirketKodu);
+    list.forEach((row, i) => {
+      segmentRank.set(row.sirketKodu, { segmentSirasi: i + 1, segmentPeerSayisi: list.length });
+    });
+  }
+
+  return withSegment.map((row) => {
+    const sr = segmentRank.get(row.sirketKodu)!;
     return {
       donem,
       sirketKodu: row.sirketKodu,
       pool,
       olcekSkoru: row.olcekSkoru,
-      olcekSirasi,
-      olcekSegmenti,
-      olcekSegmentAdiTr: olcekSegmentAdiTr(olcekSegmenti),
+      olcekSirasi: row.olcekSirasi,
+      olcekSegmenti: row.olcekSegmenti,
+      olcekSegmentAdiTr: olcekSegmentAdiTr(row.olcekSegmenti),
+      segmentSirasi: sr.segmentSirasi,
+      segmentPeerSayisi: sr.segmentPeerSayisi,
       bilesenler: row.bilesenler,
       ham: row.ham,
       peerSayisi,

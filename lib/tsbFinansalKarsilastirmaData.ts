@@ -227,6 +227,35 @@ function aggregateSektorHamOlcumleri(list: FinansalKiyaslamaHamOlcum[]): Finansa
   };
 }
 
+/** Ölçek segmenti peer benchmark — TL satırları için aritmetik ortalama. */
+function aggregateOlcekHamOrtalamasi(list: FinansalKiyaslamaHamOlcum[]): FinansalKiyaslamaHamOlcum | null {
+  if (list.length === 0) return null;
+  const n = list.length;
+  const avg = (fn: (x: FinansalKiyaslamaHamOlcum) => number) => sumFinite(list.map(fn)) / n;
+  return {
+    donemKar690: avg((x) => x.donemKar690),
+    donemNetKar692: avg((x) => x.donemNetKar692),
+    ozsermaye: avg((x) => x.ozsermaye),
+    brutPrim: avg((x) => x.brutPrim),
+    primTrafikHaric: avg((x) => x.primTrafikHaric),
+    faaliyet614: avg((x) => x.faaliyet614),
+    personelGider: avg((x) => x.personelGider),
+    genelGider: avg((x) => x.genelGider),
+    yatirimSegment: avg((x) => x.yatirimSegment),
+    teknikKarZarar: avg((x) => x.teknikKarZarar),
+    safiTeknikKz: avg((x) => x.safiTeknikKz),
+    teknikKarsilik3545: avg((x) => x.teknikKarsilik3545),
+    maliKarSentetik: avg((x) => x.maliKarSentetik),
+    vok: avg((x) => x.vok),
+    toplamAktif: avg((x) => x.toplamAktif),
+    yuk34: avg((x) => x.yuk34),
+    aktif1: avg((x) => x.aktif1),
+    pasif3: avg((x) => x.pasif3),
+    nakit10: avg((x) => x.nakit10),
+    finansal11: avg((x) => x.finansal11),
+  };
+}
+
 function sektorOranlarFromPeerHams(list: FinansalKiyaslamaHamOlcum[]): FinansalKiyaslamaSektorOranlar {
   const sum = (fn: (x: FinansalKiyaslamaHamOlcum) => number) => list.reduce((a, x) => a + fn(x), 0);
   const sumPrim = sum((x) => x.brutPrim);
@@ -330,7 +359,7 @@ export function finansalKiyaslamaDonemPaketi(
     const olcekPeerHams = olcekPeers
       .map((pk) => hamOlcumFromLookup(lookup, pk))
       .filter((x): x is FinansalKiyaslamaHamOlcum => x !== null);
-    kiyasHam = aggregateSektorHamOlcumleri(olcekPeerHams);
+    kiyasHam = aggregateOlcekHamOrtalamasi(olcekPeerHams);
     kiyasSkorHam = null;
     kiyasOran = olcekPeerHams.length > 0 ? sektorOranlarFromPeerHams(olcekPeerHams) : null;
     kiyasHp = hasarPrimOranlariSektorFromLookup(lookup, olcekPeers);
@@ -380,6 +409,24 @@ export function finansalKiyaslamaDegisim(
     return { deger: null, format: "yuzdeDegisim" };
   }
   return { deger: (bu - onceki) / Math.abs(onceki), format: "yuzdeDegisim" };
+}
+
+/** Şirket vs segment/sektör benchmark farkı (güncel dönem). */
+export function finansalKiyaslamaBenchmarkFark(
+  sirket: number | null,
+  kiyas: number | null,
+  format: FinansalKiyaslamaSatirFormat,
+): { deger: number | null; format: "yuzdeDegisim" | "puanFark" | "oranFark" } {
+  if (sirket === null || kiyas === null || !Number.isFinite(sirket) || !Number.isFinite(kiyas)) {
+    return { deger: null, format: format === "yuzde" ? "puanFark" : format === "oran" ? "oranFark" : "yuzdeDegisim" };
+  }
+  if (format === "yuzde" || format === "oran") {
+    return { deger: sirket - kiyas, format: format === "yuzde" ? "puanFark" : "oranFark" };
+  }
+  if (kiyas === 0) {
+    return { deger: null, format: "yuzdeDegisim" };
+  }
+  return { deger: (sirket - kiyas) / Math.abs(kiyas), format: "yuzdeDegisim" };
 }
 
 export function finansalKiyaslamaSatirSayisal(

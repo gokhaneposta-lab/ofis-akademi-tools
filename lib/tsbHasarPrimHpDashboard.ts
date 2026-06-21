@@ -14,6 +14,8 @@ import {
   type SegmentSkorPool,
 } from "./tsbSirketSegmentSkor";
 import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
+import type { TsbKiyasHedef } from "./tsbKiyasHedef";
+import { olcekSegmentEsleri, type OlcekSegmentHarfi } from "./tsbOlcekSegment";
 import type { HpKirisumModu } from "./tsbHpTarifeBrans";
 
 const GT = "GT";
@@ -49,7 +51,14 @@ const BRANS_SIRASI_HD = [
 
 const BRANS_SIRASI_HAYAT = [HAYAT, EMEKLILIK] as const;
 
-export type HasarPrimKiyasHedef = { mod: "sektor" } | { mod: "sirket"; sirketKodu: number };
+export type HasarPrimKiyasHedef = TsbKiyasHedef;
+
+export type HasarPrimKiyasOzet = {
+  hp: HasarPrimOranlariDetay;
+  baslik: string;
+  peerSayisi: number;
+  olcekSegment?: OlcekSegmentHarfi;
+};
 
 export type HasarPrimBransSecenek = { value: string; label: string };
 
@@ -65,12 +74,6 @@ export type HasarPrimTabloSatir = {
   sirketAdi: string;
   hp: HasarPrimOranlariDetay;
   sira: number;
-};
-
-export type HasarPrimKiyasOzet = {
-  hp: HasarPrimOranlariDetay;
-  baslik: string;
-  peerSayisi: number;
 };
 
 export type HasarPrimTrendNokta = {
@@ -148,6 +151,7 @@ export function hasarPrimKiyasOzet(
   bransAp: string,
   kiyas: HasarPrimKiyasHedef,
   sirketListesi: { kod: number; ad: string }[],
+  odakSirketKodu: number,
 ): HasarPrimKiyasOzet {
   const lookup = buildGelirTidyDonemLookup(rows, donem);
   const peers = segmentPeerSirketKodlari(rows, donem, pool).filter((k) => lookup.has(k));
@@ -157,6 +161,18 @@ export function hasarPrimKiyasOzet(
       hp: hasarPrimOranlariDetaySektorFromLookup(lookup, peers, { bransAp }),
       baslik: `Sektör toplamı (n = ${peers.length})`,
       peerSayisi: peers.length,
+    };
+  }
+  if (kiyas.mod === "olcek") {
+    const es = olcekSegmentEsleri(rows, donem, pool, odakSirketKodu);
+    const olcekPeers = es.kodlar.filter((k) => lookup.has(k));
+    return {
+      hp: hasarPrimOranlariDetaySektorFromLookup(lookup, olcekPeers, { bransAp }),
+      baslik: es.segment
+        ? `${es.segment} Segmenti Ortalama (${olcekPeers.length} şirket)`
+        : `Benzer ölçek ortalaması (${olcekPeers.length} şirket)`,
+      peerSayisi: olcekPeers.length,
+      olcekSegment: es.segment ?? undefined,
     };
   }
   const ad = sirketListesi.find((s) => s.kod === kiyas.sirketKodu)?.ad ?? `Şirket ${kiyas.sirketKodu}`;

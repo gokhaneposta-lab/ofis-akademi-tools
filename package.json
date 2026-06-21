@@ -18,6 +18,7 @@
     "tsb:split-gelir-tidy": "node scripts/tsb-split-gelir-tidy-by-donem.mjs",
     "tsb:meta": "npx --yes tsx scripts/tsb-write-meta.ts",
     "tsb:segment-xlsx": "npx --yes tsx scripts/tsb-segment-export-xlsx.ts",
+    "tsb:olcek-segment-xlsx": "npx --yes tsx scripts/tsb-olcek-segment-export-xlsx.ts",
     "butce:import-mizan": "node scripts/butce-import-mizan.mjs",
     "butce:gen-brans": "node scripts/gen-brans-json.mjs"
   },

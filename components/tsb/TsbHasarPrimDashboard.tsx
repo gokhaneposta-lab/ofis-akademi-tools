@@ -28,6 +28,10 @@ import {
   applyUrlSirketOrDefault,
   useTsbDashboardUrlPrefs,
 } from "@/components/tsb/useTsbDashboardUrlPrefs";
+import TsbKiyasModuControls from "@/components/tsb/TsbKiyasModuControls";
+import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
+import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
+import { kiyasHedefFromModu, type TsbKiyasModu } from "@/lib/tsbKiyasHedef";
 import {
   cn,
   tsb,
@@ -292,7 +296,7 @@ export default function TsbHasarPrimDashboard() {
   const [bransAp, setBransAp] = useState(HAYATDISI);
   const [tarifeSecim, setTarifeSecim] = useState("");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
-  const [kiyasModu, setKiyasModu] = useState<"sektor" | "sirket">("sektor");
+  const [kiyasModu, setKiyasModu] = useState<TsbKiyasModu>("sektor");
   const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
 
   useEffect(() => {
@@ -410,11 +414,10 @@ export default function TsbHasarPrimDashboard() {
     [sirketListesi, sirketKodu],
   );
 
-  const kiyasHedef: HasarPrimKiyasHedef = useMemo(() => {
-    if (kiyasModu === "sektor") return { mod: "sektor" };
-    if (kiyasSirketKodu === "") return { mod: "sektor" };
-    return { mod: "sirket", sirketKodu: kiyasSirketKodu };
-  }, [kiyasModu, kiyasSirketKodu]);
+  const kiyasHedef: HasarPrimKiyasHedef = useMemo(
+    () => kiyasHedefFromModu(kiyasModu, kiyasSirketKodu),
+    [kiyasModu, kiyasSirketKodu],
+  );
 
   useEffect(() => {
     if (kiyasModu !== "sirket" || kiyasListe.length === 0) return;
@@ -433,13 +436,26 @@ export default function TsbHasarPrimDashboard() {
   );
 
   const kiyasOzet = useMemo(() => {
-    if (!rows || !donem) return null;
-    return hasarPrimKiyasOzet(rows, donem, pool, kirisum.bransAp, kiyasHedef, sirketListesi);
-  }, [rows, donem, pool, kirisum.bransAp, kiyasHedef, sirketListesi]);
+    if (!rows || !donem || sirketKodu === "") return null;
+    return hasarPrimKiyasOzet(rows, donem, pool, kirisum.bransAp, kiyasHedef, sirketListesi, sirketKodu);
+  }, [rows, donem, pool, kirisum.bransAp, kiyasHedef, sirketListesi, sirketKodu]);
 
   const secilenAd =
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
     (sirketKodu === "" ? "" : `Şirket ${sirketKodu}`);
+
+  const { kayit: olcekKayit } = useOlcekSegmentKayit(
+    rows && donem && sirketKodu !== ""
+      ? {
+          kaynak: "gelir",
+          rows,
+          donem,
+          pool,
+          sirketKodu,
+          sirketAdi: secilenAd,
+        }
+      : null,
+  );
 
   const onceYilVarMi = !!(donemOnceki && tumDonemler.includes(donemOnceki));
 
@@ -562,29 +578,27 @@ export default function TsbHasarPrimDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
-          <TsbFilterField label="Sağ blok kıyası">
-            <div className={tsb.btnGroup}>
-              <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
-                Sektör toplamı
-              </TsbToggleButton>
-              <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => setKiyasModu("sirket")}>
-                Diğer şirket
-              </TsbToggleButton>
-            </div>
+          <TsbFilterField label="Sağ blok kıyası" className="sm:col-span-2">
+            <TsbKiyasModuControls
+              kiyasModu={kiyasModu}
+              onKiyasModuChange={setKiyasModu}
+              sektorPeerSayisi={
+                kiyasModu === "sektor" && rows && donem
+                  ? listSirketleriGelirDonemForPool(rows, donem, pool).length
+                  : undefined
+              }
+              olcekSegment={kiyasOzet?.olcekSegment}
+              olcekPeerSayisi={kiyasModu === "olcek" ? kiyasOzet?.peerSayisi : undefined}
+              kiyasListe={kiyasListe}
+              kiyasSirketKodu={kiyasSirketKodu}
+              onKiyasSirketKoduChange={setKiyasSirketKodu}
+              selectId="hp-kiyas-sirket"
+            />
           </TsbFilterField>
-          {kiyasModu === "sirket" && (
-            <TsbFilterField label="Kıyas şirketi">
-              <TsbSelect className={tsb.selectWide} value={String(kiyasSirketKodu)} onChange={(e) => setKiyasSirketKodu(Number(e.target.value))}>
-                {kiyasListe.map((s) => (
-                  <option key={s.kod} value={s.kod}>
-                    {s.kod} — {s.ad}
-                  </option>
-                ))}
-              </TsbSelect>
-            </TsbFilterField>
-          )}
         </TsbFilterGrid>
       </TsbFilterBar>
+
+      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} /> : null}
 
       {secilenSatir && kiyasOzet && (
         <div className="grid gap-3 lg:grid-cols-2">

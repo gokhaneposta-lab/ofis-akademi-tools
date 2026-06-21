@@ -12,6 +12,8 @@ import {
   type HasarPrimOranlari,
 } from "./tsbHasarPrimOrani";
 import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
+import type { TsbKiyasHedef } from "./tsbKiyasHedef";
+import { olcekSegmentEsleri, type OlcekSegmentHarfi } from "./tsbOlcekSegment";
 import {
   buildGelirTidyDonemLookup,
   gelirTidyCell,
@@ -251,9 +253,7 @@ function sektorOranlarFromPeerHams(list: FinansalKiyaslamaHamOlcum[]): FinansalK
   };
 }
 
-export type FinansalKiyasHedef =
-  | { mod: "sektor" }
-  | { mod: "sirket"; sirketKodu: number };
+export type FinansalKiyasHedef = TsbKiyasHedef;
 
 function oranlarFromSkorHam(
   m: ReturnType<typeof hamMetrikFromLookup> | null,
@@ -284,6 +284,8 @@ export type FinansalKiyaslamaDonemPaketi = {
   kiyasHp: HasarPrimOranlari;
   kiyasMod: FinansalKiyasHedef["mod"];
   peerSayisi: number;
+  kiyasOlcekSegment?: OlcekSegmentHarfi;
+  kiyasOlcekPeerSayisi?: number;
 };
 
 export function finansalKiyaslamaDonemPaketi(
@@ -306,22 +308,41 @@ export function finansalKiyaslamaDonemPaketi(
   const sirketSkorHam = lookup.has(sirketKodu) ? hamMetrikFromLookup(lookup, sirketKodu) : null;
   const sirketHp = hasarPrimOranlariFromLookup(lookup, sirketKodu);
 
-  const kiyasHam =
-    kiyasHedef.mod === "sektor"
-      ? sektorHam
-      : hamOlcumFromLookup(lookup, kiyasHedef.sirketKodu);
-  const kiyasSkorHam =
-    kiyasHedef.mod === "sektor"
-      ? null
-      : lookup.has(kiyasHedef.sirketKodu)
-        ? hamMetrikFromLookup(lookup, kiyasHedef.sirketKodu)
-        : null;
-  const kiyasOran =
-    kiyasHedef.mod === "sektor" ? sektorOran : oranlarFromSkorHam(kiyasSkorHam);
-  const kiyasHp =
-    kiyasHedef.mod === "sektor"
-      ? sektorHp
-      : hasarPrimOranlariFromLookup(lookup, kiyasHedef.sirketKodu);
+  let kiyasHam: FinansalKiyaslamaHamOlcum | null;
+  let kiyasSkorHam: ReturnType<typeof hamMetrikFromLookup> | null;
+  let kiyasOran: FinansalKiyaslamaSektorOranlar | null;
+  let kiyasHp: HasarPrimOranlari;
+  let kiyasOlcekSegment: OlcekSegmentHarfi | undefined;
+  let kiyasOlcekPeerSayisi: number | undefined;
+  let kiyasPeerSayisi = peerHams.length;
+
+  if (kiyasHedef.mod === "sektor") {
+    kiyasHam = sektorHam;
+    kiyasSkorHam = null;
+    kiyasOran = sektorOran;
+    kiyasHp = sektorHp;
+  } else if (kiyasHedef.mod === "olcek") {
+    const es = olcekSegmentEsleri(rows, donem, pool, sirketKodu);
+    kiyasOlcekSegment = es.segment ?? undefined;
+    const olcekPeers = es.kodlar.filter((k) => lookup.has(k));
+    kiyasOlcekPeerSayisi = olcekPeers.length;
+    kiyasPeerSayisi = olcekPeers.length;
+    const olcekPeerHams = olcekPeers
+      .map((pk) => hamOlcumFromLookup(lookup, pk))
+      .filter((x): x is FinansalKiyaslamaHamOlcum => x !== null);
+    kiyasHam = aggregateSektorHamOlcumleri(olcekPeerHams);
+    kiyasSkorHam = null;
+    kiyasOran = olcekPeerHams.length > 0 ? sektorOranlarFromPeerHams(olcekPeerHams) : null;
+    kiyasHp = hasarPrimOranlariSektorFromLookup(lookup, olcekPeers);
+  } else {
+    kiyasHam = hamOlcumFromLookup(lookup, kiyasHedef.sirketKodu);
+    kiyasSkorHam = lookup.has(kiyasHedef.sirketKodu)
+      ? hamMetrikFromLookup(lookup, kiyasHedef.sirketKodu)
+      : null;
+    kiyasOran = oranlarFromSkorHam(kiyasSkorHam);
+    kiyasHp = hasarPrimOranlariFromLookup(lookup, kiyasHedef.sirketKodu);
+    kiyasPeerSayisi = 1;
+  }
 
   return {
     donem,
@@ -334,7 +355,9 @@ export function finansalKiyaslamaDonemPaketi(
     kiyasOran,
     kiyasHp,
     kiyasMod: kiyasHedef.mod,
-    peerSayisi: peerHams.length,
+    peerSayisi: kiyasPeerSayisi,
+    kiyasOlcekSegment,
+    kiyasOlcekPeerSayisi,
   };
 }
 

@@ -7,7 +7,9 @@ import TsbVeriDurumuBand from "@/components/tsb/TsbVeriDurumuBand";
 import { tsb } from "@/components/tsb/tsbDashboardUi";
 import { TSB_DASHBOARD_GROUPS, TSB_DASHBOARD_PANELS } from "@/lib/tsbDashboardPanels";
 import { loadSektorOzeti } from "@/lib/tsbSektorOzeti";
+import { loadOlcekSegmentCache } from "@/lib/tsbOlcekSegmentCache.server";
 import { loadTsbVeriDurumu } from "@/lib/tsbVeriDurumu";
+import TsbOlcekSegmentHubKart from "@/components/tsb/TsbOlcekSegmentHubKart";
 import { TSB_SEO, tsbPageMetadata } from "@/lib/tsbSeo";
 
 export const metadata: Metadata = tsbPageMetadata(TSB_SEO.hub);
@@ -15,6 +17,7 @@ export const metadata: Metadata = tsbPageMetadata(TSB_SEO.hub);
 export default async function SigortaTsbHubPage() {
   const veriDurumu = loadTsbVeriDurumu();
   const sektorOzeti = loadSektorOzeti();
+  const olcekSegment = loadOlcekSegmentCache();
 
   return (
     <>
@@ -61,6 +64,12 @@ export default async function SigortaTsbHubPage() {
 
         <main className={tsb.main}>
           <TsbSektorOzeti data={sektorOzeti} />
+
+          {olcekSegment ? (
+            <div className="mt-4">
+              <TsbOlcekSegmentHubKart data={olcekSegment} />
+            </div>
+          ) : null}
 
           {TSB_DASHBOARD_GROUPS.map((group) => {
             const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === group.id);

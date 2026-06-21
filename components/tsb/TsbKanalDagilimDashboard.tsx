@@ -15,6 +15,7 @@ import {
   ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
   daraltmaFromUiState,
   isTsbToplamSirketKodu,
+  sirketSegmentFromKodu,
   resolveDefaultSirketKodu,
   TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
   TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL,
@@ -23,6 +24,8 @@ import {
   uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
 import { TsbSirketSektorGrafikLegend } from "@/components/tsb/TsbRenkAciklama";
+import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
+import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import {
   TSB_TUM_BRANS_LABEL,
@@ -237,6 +240,21 @@ export default function TsbKanalDagilimDashboard() {
     return buildKanalDagilimKiyas(rows, secilenDonem, segment, daraltma, effectiveSirketKodu);
   }, [rows, secilenDonem, segment, daraltma, effectiveSirketKodu]);
 
+  const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
+  const primSegment =
+    rows && effectiveSirketKodu !== null ? sirketSegmentFromKodu(rows, effectiveSirketKodu) : segment;
+  const { kayit: olcekKayit, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
+    effectiveSirketKodu !== null && secilenDonem
+      ? {
+          kaynak: "prim",
+          donem: secilenDonem,
+          segment: primSegment,
+          sirketKodu: effectiveSirketKodu,
+          sirketAdi: secilenAd,
+        }
+      : null,
+  );
+
   if (error) return <TsbError message={error} />;
   if (!rows) return <TsbLoading />;
   if (sirketler.length === 0) {
@@ -252,7 +270,6 @@ export default function TsbKanalDagilimDashboard() {
   const kanalSektorPayi = kanalBazindaSirketSektorPayYuzde(kiyas.sirket, kiyas.sektor);
   const genelKanalPayi =
     kiyas.sektor.genelToplam > 0 ? (kiyas.sirket.genelToplam / kiyas.sektor.genelToplam) * 100 : null;
-  const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
 
   const tumBransLabel = TSB_TUM_BRANS_LABEL[segment];
 
@@ -342,6 +359,10 @@ export default function TsbKanalDagilimDashboard() {
           </TsbFilterField>
         </TsbFilterGrid>
       </TsbFilterBar>
+
+      {secilenAd ? (
+        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} yukleniyor={olcekYukleniyor} />
+      ) : null}
 
       <div className={tsb.chartPanel}>
         <p className="text-xs font-semibold text-slate-800">Kanal payları — yüzde (yan yana)</p>

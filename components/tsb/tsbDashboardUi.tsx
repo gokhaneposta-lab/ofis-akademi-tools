@@ -121,6 +121,13 @@ export const tsb = {
   sektorOzetiSira: "w-5 shrink-0 text-center text-[11px] font-semibold tabular-nums text-slate-500",
   sektorOzetiDeger:
     "shrink-0 justify-self-end whitespace-nowrap rounded px-1 py-0.5 text-[11px] font-semibold tabular-nums",
+  olcekSegmentKart:
+    "rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 shadow-[0_1px_4px_rgba(15,23,42,0.05)] sm:px-4",
+  olcekSegmentMetodolojiWrap: "mt-2 border-t border-slate-100 pt-2",
+  olcekSegmentMetodolojiBtn:
+    "cursor-pointer text-[11px] font-semibold text-emerald-800 hover:text-emerald-950 hover:underline",
+  olcekSegmentMetodolojiPanel:
+    "mt-2 rounded-lg border border-slate-200/80 bg-slate-50/60 px-3 py-2 text-[11px] leading-relaxed text-slate-600",
   filterField: "block min-w-0",
   filterLabel: "mb-0.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-500",
   filterMicroHint: "mt-0.5 text-[10px] leading-snug text-slate-500",

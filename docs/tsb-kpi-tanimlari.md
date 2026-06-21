@@ -214,6 +214,40 @@ Aynı havuz içinde skora göre sıralama: **üst üçte birlik → A**, **orta 
 - **SAFİ** ve **yatırım geliri (segment)** kalemleri düşük ağırlıkta da olsa SEDDK / `673` bağlamında karşılaştırmayı tamamlar.
 - Ağırlıklar **varsayılan**dır; ürün veya regülasyon görüşüne göre `SEGMENT_SKOR_KPI_VARSAYILAN` kopyalanıp özelleştirilebilir (toplamlarının **1** olması gerekir).
 
+### 6.5 Ölçek segmenti (A+ … D) — performanstan ayrı
+
+**Amaç:** “Bu şirket **ne kadar büyük**?” — peer kıyasında **benzer ölçek** seçimi. Karlılık/VÖK **dahil değil**.
+
+**Peer havuzu:** §6.1 ile aynı (`HD` | `HAYAT_EMEKLILIK`).
+
+**KPI ve ağırlıklar (toplam %100):**
+
+| KPI | Ham metrik | Ağırlık |
+|-----|------------|---------|
+| Brüt prim | `brutPrimFromLookup` (GT `60001` + `62001`) | **%50** |
+| Özsermaye | BL Pasif `5` | **%30** |
+| Toplam aktif | BL Aktif `1` + `2` | **%20** |
+
+Her KPI: peer içi min–max → 0–100 → ağırlıklı ortalama = **ölçek skoru (0–100)**.
+
+**Segment dağılımı** (skora göre azalan sıra):
+
+| Harf | Havuz payı |
+|------|------------|
+| **A+** | İlk %10 |
+| **A** | Sonraki %20 |
+| **B** | Sonraki %40 |
+| **C** | Sonraki %20 |
+| **D** | Son %10 |
+
+**Çıktı alanları:** `olcekSkoru`, `olcekSirasi`, `olcekSegmenti` (A+…D), `olcekSegmentAdiTr`.
+
+**Uygulama:** `lib/tsbOlcekSegment.ts` — `olcekSegmentHavuzuFromRows`, `sirketOlcekSegmentFromRows`.
+
+**Excel:** `npm run tsb:olcek-segment-xlsx` → `data/tsb/out/olcek-segment-{donem}.xlsx`.
+
+**Not:** §6.2–6.4 **performans skoru** (SAFİ, VÖK, yatırım…) ile karıştırılmamalı; dashboard’da iki katman ayrı gösterilir.
+
 ---
 
 ## 7. Finansal karşılaştırma tablosu (görünen etiketler)

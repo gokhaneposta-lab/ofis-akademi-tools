@@ -16,6 +16,7 @@ import {
   isTsbToplamSirketKodu,
   listSirketlerSegmentDonem,
   resolveDefaultSirketKodu,
+  sirketSegmentFromKodu,
   TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
   TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL,
   uniqueAnaBransForSegment,
@@ -23,6 +24,8 @@ import {
   uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
+import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
+import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import {
   cn,
   tsb,
@@ -404,6 +407,20 @@ export default function TsbPrimTrend12Dashboard() {
     return sirketler.find((s) => s.kod === effectiveSirket)?.ad ?? "";
   }, [sirketler, effectiveSirket]);
 
+  const primSegment =
+    rows && effectiveSirket !== null ? sirketSegmentFromKodu(rows, effectiveSirket) : segment;
+  const { kayit: olcekKayit, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
+    effectiveSirket !== null && secilenBitis
+      ? {
+          kaynak: "prim",
+          donem: secilenBitis,
+          segment: primSegment,
+          sirketKodu: effectiveSirket,
+          sirketAdi,
+        }
+      : null,
+  );
+
   const seri = useMemo(() => {
     if (!rows || effectiveSirket === null) return null;
     return buildSon12AyPrimTrend(rows, donemler, secilenBitis, kanal, segment, effectiveSirket, trendFilter);
@@ -518,6 +535,10 @@ export default function TsbPrimTrend12Dashboard() {
           </TsbFilterField>
         </TsbFilterGrid>
       </TsbFilterBar>
+
+      {sirketAdi ? (
+        <TsbOlcekSegmentRozeti sirketAdi={sirketAdi} kayit={olcekKayit} yukleniyor={olcekYukleniyor} />
+      ) : null}
 
       {seri && seri.length > 0 && seriAylik && sirketAdi && (
         <>

@@ -6,6 +6,12 @@ import {
   applyUrlSirketOrDefault,
   useTsbDashboardUrlPrefs,
 } from "@/components/tsb/useTsbDashboardUrlPrefs";
+import TsbKiyasModuControls, { kiyasBaslikFromModu } from "@/components/tsb/TsbKiyasModuControls";
+import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
+import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
+import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
+import { kiyasHedefFromModu, type TsbKiyasModu } from "@/lib/tsbKiyasHedef";
+import { olcekSegmentPeerKodlariFromCache, primSegmentToOlcekPool } from "@/lib/tsbOlcekSegmentCache";
 import {
   cn,
   tsb,
@@ -28,6 +34,7 @@ import {
   daraltmaFromUiState,
   isTsbToplamSirketKodu,
   listSirketlerSegmentDonem,
+  countSirketlerSegmentDonem,
   prevYearPeriod,
   resolveDefaultSirketKodu,
   sirketSegmentFromKodu,
@@ -98,7 +105,7 @@ export default function TsbBransDegisimDashboard() {
   const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
   const [segment, setSegment] = useState<TsbSektorSegment>(urlPrefs.segment ?? "hayatdisi");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
-  const [kiyasModu, setKiyasModu] = useState<"sektor" | "sirket">("sektor");
+  const [kiyasModu, setKiyasModu] = useState<TsbKiyasModu>("sektor");
   const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
 
   const branchLookup = useTsbBranchLookupFetch();
@@ -178,16 +185,55 @@ export default function TsbBransDegisimDashboard() {
     setKiyasSirketKodu(kiyasListe[0].kod);
   }, [kiyasModu, kiyasListe, kiyasSirketKodu]);
 
+  const { cache: olcekCache } = useOlcekSegmentCache();
+
+  const olcekPeer = useMemo(() => {
+    if (effectiveSirketKodu === null || !secilenDonem) return null;
+    return olcekSegmentPeerKodlariFromCache(
+      olcekCache,
+      secilenDonem,
+      primSegmentToOlcekPool(segment),
+      effectiveSirketKodu,
+    );
+  }, [olcekCache, secilenDonem, segment, effectiveSirketKodu]);
+
   const kiyasHedef: BransDegisimKiyasHedef = useMemo(() => {
     if (kiyasModu === "sektor") return { mod: "sektor" };
+    if (kiyasModu === "olcek") {
+      if (!olcekPeer?.segment || olcekPeer.kodlar.length === 0) return { mod: "sektor" };
+      return {
+        mod: "olcek",
+        sirketKodlari: olcekPeer.kodlar,
+        segment: olcekPeer.segment,
+      };
+    }
     if (kiyasSirketKodu === "") return { mod: "sektor" };
     return { mod: "sirket", sirketKodu: kiyasSirketKodu };
-  }, [kiyasModu, kiyasSirketKodu]);
+  }, [kiyasModu, kiyasSirketKodu, olcekPeer]);
 
   const tablo = useMemo(() => {
     if (!rows || !secilenDonem || effectiveSirketKodu === null) return null;
     return buildBransDegisimTablosu(rows, secilenDonem, kanal, effectiveSirketKodu, daraltma, kiyasHedef);
   }, [rows, secilenDonem, kanal, effectiveSirketKodu, daraltma, kiyasHedef]);
+
+  const sektorPeerSayisi = useMemo(() => {
+    if (!rows || !secilenDonem) return undefined;
+    return countSirketlerSegmentDonem(rows, secilenDonem, segment);
+  }, [rows, secilenDonem, segment]);
+
+  const secilenAdEarly = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
+  const { kayit: olcekKayit, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
+    effectiveSirketKodu !== null && secilenDonem
+      ? {
+          kaynak: "prim",
+          donem: secilenDonem,
+          segment,
+          sirketKodu: effectiveSirketKodu,
+          sirketAdi: secilenAdEarly,
+          cache: olcekCache,
+        }
+      : null,
+  );
 
   if (error) return <TsbError message={error} />;
   if (!rows) return <TsbLoading />;
@@ -207,16 +253,22 @@ export default function TsbBransDegisimDashboard() {
     );
   }
 
-  const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
+  const secilenAd = secilenAdEarly;
   const kolonBaslik = tablo.kirisumModu === "anaBransH" ? "Branş" : "Tarife grubu";
 
-  const kiyasBaslik =
-    tablo.kiyasMod === "sektor"
-      ? `Sektör toplamı (n = ${tablo.peerSayisi})`
-      : (kiyasListe.find((s) => s.kod === kiyasSirketKodu)?.ad ?? "Kıyas şirketi");
+  const kiyasBaslik = kiyasBaslikFromModu(tablo.kiyasMod, {
+    sektorPeerSayisi: tablo.peerSayisi,
+    olcekSegment: tablo.kiyasOlcekSegment,
+    olcekPeerSayisi: tablo.kiyasMod === "olcek" ? tablo.peerSayisi : undefined,
+    sirketAdi: kiyasListe.find((s) => s.kod === kiyasSirketKodu)?.ad,
+  });
 
   const kiyasBaslikKisa =
-    tablo.kiyasMod === "sektor" ? "Sektör toplamı" : kiyasBaslik.slice(0, 42) + (kiyasBaslik.length > 42 ? "…" : "");
+    tablo.kiyasMod === "sektor"
+      ? "Sektör toplamı"
+      : tablo.kiyasMod === "olcek"
+        ? `${tablo.kiyasOlcekSegment ?? "Benzer ölçek"} ort.`
+        : kiyasBaslik.slice(0, 42) + (kiyasBaslik.length > 42 ? "…" : "");
 
   const blokBaslik =
     tablo.tabloHavuzu === "hayatdisi"
@@ -329,43 +381,26 @@ export default function TsbBransDegisimDashboard() {
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
                   Sağ blok — kıyas
                 </span>
-                <div className={cn(tsb.btnGroup, "mt-1")}>
-                  <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
-                    Sektör toplamı
-                  </TsbToggleButton>
-                  <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => setKiyasModu("sirket")}>
-                    Diğer şirket
-                  </TsbToggleButton>
-                </div>
-                {kiyasModu === "sektor" ? (
-                  <p className="mt-1.5 rounded-md border border-slate-200/80 bg-slate-50 px-3 py-2 text-xs text-slate-700">
-                    <strong>Sektör toplamı</strong> (n = {tablo.peerSayisi})
-                    <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">
-                      {HAVUZ_LABEL[tablo.tabloHavuzu]} havuzundaki tüm şirketlerin Σ primi.
-                    </span>
-                  </p>
-                ) : kiyasListe.length === 0 ? (
-                  <p className="mt-1.5 rounded-md border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                    Bu havuzda kıyaslanacak başka şirket yok.
-                  </p>
-                ) : (
-                  <TsbSelect
-                    className="mt-1.5"
-                    value={kiyasSirketKodu === "" ? "" : String(kiyasSirketKodu)}
-                    onChange={(e) => setKiyasSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
-                  >
-                    {kiyasListe.map((s) => (
-                      <option key={s.kod} value={s.kod}>
-                        {s.ad} ({s.kod})
-                      </option>
-                    ))}
-                  </TsbSelect>
-                )}
+                <TsbKiyasModuControls
+                  kiyasModu={kiyasModu}
+                  onKiyasModuChange={setKiyasModu}
+                  sektorPeerSayisi={sektorPeerSayisi}
+                  olcekSegment={olcekPeer?.segment}
+                  olcekPeerSayisi={olcekPeer?.kodlar.length}
+                  kiyasListe={kiyasListe}
+                  kiyasSirketKodu={kiyasSirketKodu}
+                  onKiyasSirketKoduChange={setKiyasSirketKodu}
+                  selectId="bd-kiyas-sirket"
+                />
               </div>
             </div>
           </div>
         </TsbFilterGrid>
       </TsbFilterBar>
+
+      {secilenAd ? (
+        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} yukleniyor={olcekYukleniyor} />
+      ) : null}
 
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>
         <strong>{blokBaslik}</strong> · <strong>Değişim %</strong> ve <strong>Δ pp</strong> önceki yıla göre:{" "}

@@ -21,12 +21,15 @@ import {
 } from "@/components/tsb/tsbDashboardUi";
 import type { BransSiraSatir } from "@/lib/tsbBransSira";
 import { buildBransSiraTablosu, listSirketlerSiraOzeti } from "@/lib/tsbBransSira";
+import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
+import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import type { TsbKanalField, TsbPrimDaraltmaModu, TsbPrimRow } from "@/lib/tsbPrimDashboard";
 import {
   daraltmaFromUiState,
   isTsbToplamSirketKodu,
   prevYearPeriod,
   resolveDefaultSirketKodu,
+  sirketSegmentFromKodu,
   uniqueSortedPeriods,
 } from "@/lib/tsbPrimDashboard";
 
@@ -149,6 +152,21 @@ export default function TsbBransSiraDashboard() {
     return buildBransSiraTablosu(rows, secilenDonem, kanal, effectiveSirketKodu, daraltma);
   }, [rows, secilenDonem, kanal, effectiveSirketKodu, daraltma]);
 
+  const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
+  const primSegment =
+    rows && effectiveSirketKodu !== null ? sirketSegmentFromKodu(rows, effectiveSirketKodu) : "hayatdisi";
+  const { kayit: olcekKayit, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
+    effectiveSirketKodu !== null && secilenDonem
+      ? {
+          kaynak: "prim",
+          donem: secilenDonem,
+          segment: primSegment,
+          sirketKodu: effectiveSirketKodu,
+          sirketAdi: secilenAd,
+        }
+      : null,
+  );
+
   if (error) return <TsbError message={error} />;
   if (!rows) return <TsbLoading />;
   if (sirketler.length === 0) {
@@ -162,7 +180,6 @@ export default function TsbBransSiraDashboard() {
     );
   }
 
-  const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
   const kolonBaslik = tablo.kirisumModu === "anaBransH" ? "Branş" : "Tarife grubu";
   const gosterHd = tablo.hayatdisiPortfoy.prim > 0;
   const gosterHy = tablo.hayatPortfoy.prim > 0;
@@ -228,6 +245,10 @@ export default function TsbBransSiraDashboard() {
           </TsbFilterField>
         </TsbFilterGrid>
       </TsbFilterBar>
+
+      {secilenAd ? (
+        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} yukleniyor={olcekYukleniyor} />
+      ) : null}
 
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>
         <strong>Sıra:</strong> Kanaldaki prim üretimine göre sektör içi yarışma sırası (1 en yüksek prim).{" "}

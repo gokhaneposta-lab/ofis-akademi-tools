@@ -1,6 +1,7 @@
 import type { TsbBranchLookupMap } from "./tsbBranchLookup";
 import { tarifeGrubuFromRow } from "./tsbBranchLookup";
 import type { TsbKanalField, TsbPrimDaraltma, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
+import type { OlcekSegmentHarfi } from "./tsbOlcekSegment";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
   channelPremium,
@@ -42,7 +43,13 @@ export const HAYAT_ANA_BRANS_SIRASI: string[] = ["HAYAT", "HASTALIK SAĞLIK", "K
 
 export type BransDegisimKiyasHedef =
   | { mod: "sektor" }
+  | { mod: "olcek"; sirketKodlari: readonly number[]; segment: OlcekSegmentHarfi }
   | { mod: "sirket"; sirketKodu: number };
+
+type KiyasPrimFiltre =
+  | { kind: "sektor" }
+  | { kind: "olcek"; kodlar: readonly number[] }
+  | { kind: "sirket"; kod: number };
 
 function sortAnaBransSirasi(mevcut: Set<string>, sabitSira: readonly string[]): string[] {
   const out: string[] = [];
@@ -110,7 +117,7 @@ function sumGrupKey(
   key: string,
   grupModu: "anaBransH" | "tarifeGrubu",
   lookup: TsbBranchLookupMap | null,
-  sirketKodu: number | null,
+  filtre: KiyasPrimFiltre,
 ): number {
   let sum = 0;
   for (const r of rows) {
@@ -120,7 +127,8 @@ function sumGrupKey(
       if (r.anaBransH !== key) continue;
     } else if (tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup) !== key) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
-    if (sirketKodu !== null && r.sirketKodu !== sirketKodu) continue;
+    if (filtre.kind === "sirket" && r.sirketKodu !== filtre.kod) continue;
+    if (filtre.kind === "olcek" && !filtre.kodlar.includes(r.sirketKodu)) continue;
     sum += channelPremium(r, channel);
   }
   return sum;
@@ -152,8 +160,9 @@ export type BransDegisimOzet = {
   donemBu: string;
   donemOnceki: string;
   tabloHavuzu: TsbSektorSegment;
-  kiyasMod: "sektor" | "sirket";
+  kiyasMod: "sektor" | "olcek" | "sirket";
   peerSayisi: number;
+  kiyasOlcekSegment?: OlcekSegmentHarfi;
   branslar: BransDegisimSatir[];
   /** Yalnızca hayat dışı havuzunda */
   trafikHaricToplam: BransDegisimSatir | null;
@@ -170,14 +179,20 @@ function buildSatir(
   sirketKodu: number,
   grupModu: "anaBransH" | "tarifeGrubu",
   lookup: TsbBranchLookupMap | null,
-  kiyasKodu: number | null,
+  kiyasFiltre: KiyasPrimFiltre,
 ): BransDegisimSatir {
-  const sektorPayOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, null);
-  const sektorPayBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, null);
-  const sirketPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, sirketKodu);
-  const sirketPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, sirketKodu);
-  const kiyasPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, kiyasKodu);
-  const kiyasPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, kiyasKodu);
+  const sektorPayOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, { kind: "sektor" });
+  const sektorPayBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, { kind: "sektor" });
+  const sirketPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, {
+    kind: "sirket",
+    kod: sirketKodu,
+  });
+  const sirketPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, {
+    kind: "sirket",
+    kod: sirketKodu,
+  });
+  const kiyasPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, kiyasFiltre);
+  const kiyasPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, kiyasFiltre);
 
   const payOncekiYuzde = sektorPayOnceki > 0 ? (sirketPrimOnceki / sektorPayOnceki) * 100 : 0;
   const payBuYuzde = sektorPayBu > 0 ? (sirketPrimBu / sektorPayBu) * 100 : 0;
@@ -223,8 +238,8 @@ function aggregateToplam(
   let sektorPayOnceki = 0;
   let sektorPayBu = 0;
   for (const key of keys) {
-    sektorPayOnceki += sumGrupKey(rows, donemOnceki, channel, grup, key, grupModu, lookup, null);
-    sektorPayBu += sumGrupKey(rows, donemBu, channel, grup, key, grupModu, lookup, null);
+    sektorPayOnceki += sumGrupKey(rows, donemOnceki, channel, grup, key, grupModu, lookup, { kind: "sektor" });
+    sektorPayBu += sumGrupKey(rows, donemBu, channel, grup, key, grupModu, lookup, { kind: "sektor" });
   }
 
   const payOncekiYuzde = sektorPayOnceki > 0 ? (sirketPrimOnceki / sektorPayOnceki) * 100 : 0;
@@ -257,8 +272,21 @@ export function buildBransDegisimTablosu(
   if (!donemOnceki) return null;
 
   const tabloHavuzu = sirketSegmentFromKodu(rows, sirketKodu);
-  const kiyasKodu = kiyasHedef.mod === "sirket" ? kiyasHedef.sirketKodu : null;
-  const peerSayisi = countSirketlerSegmentDonem(rows, donemBu, tabloHavuzu);
+  let kiyasFiltre: KiyasPrimFiltre;
+  let peerSayisi: number;
+  let kiyasOlcekSegment: OlcekSegmentHarfi | undefined;
+
+  if (kiyasHedef.mod === "sektor") {
+    kiyasFiltre = { kind: "sektor" };
+    peerSayisi = countSirketlerSegmentDonem(rows, donemBu, tabloHavuzu);
+  } else if (kiyasHedef.mod === "olcek") {
+    kiyasFiltre = { kind: "olcek", kodlar: kiyasHedef.sirketKodlari };
+    peerSayisi = kiyasHedef.sirketKodlari.length;
+    kiyasOlcekSegment = kiyasHedef.segment;
+  } else {
+    kiyasFiltre = { kind: "sirket", kod: kiyasHedef.sirketKodu };
+    peerSayisi = 1;
+  }
 
   const grupModu = daraltma.kind;
   const lookup = daraltma.kind === "tarifeGrubu" ? daraltma.lookup : null;
@@ -275,7 +303,7 @@ export function buildBransDegisimTablosu(
   }
 
   const branslar = sirali.map((b) =>
-    buildSatir(b, tabloHavuzu, rows, donemOnceki, donemBu, channel, sirketKodu, grupModu, lookup, kiyasKodu),
+    buildSatir(b, tabloHavuzu, rows, donemOnceki, donemBu, channel, sirketKodu, grupModu, lookup, kiyasFiltre),
   );
 
   const trafikHaricToplam =
@@ -330,6 +358,7 @@ export function buildBransDegisimTablosu(
     tabloHavuzu,
     kiyasMod: kiyasHedef.mod,
     peerSayisi,
+    kiyasOlcekSegment,
     branslar,
     trafikHaricToplam,
     toplam,

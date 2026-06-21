@@ -20,6 +20,10 @@ import {
   applyUrlSirketOrDefault,
   useTsbDashboardUrlPrefs,
 } from "@/components/tsb/useTsbDashboardUrlPrefs";
+import TsbKiyasModuControls, { kiyasBaslikFromModu } from "@/components/tsb/TsbKiyasModuControls";
+import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
+import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
+import { kiyasHedefFromModu, type TsbKiyasModu } from "@/lib/tsbKiyasHedef";
 import {
   cn,
   tsb,
@@ -51,7 +55,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
   const [pool, setPool] = useState<SegmentSkorPool>(urlPrefs.pool ?? "HD");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [donem, setDonem] = useState<string>("");
-  const [kiyasModu, setKiyasModu] = useState<"sektor" | "sirket">("sektor");
+  const [kiyasModu, setKiyasModu] = useState<TsbKiyasModu>("sektor");
   const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
 
   useEffect(() => {
@@ -121,11 +125,10 @@ export default function TsbFinansalKarsilastirmaDashboard() {
     [sirketListesi, sirketKodu],
   );
 
-  const kiyasHedef: FinansalKiyasHedef = useMemo(() => {
-    if (kiyasModu === "sektor") return { mod: "sektor" };
-    if (kiyasSirketKodu === "") return { mod: "sektor" };
-    return { mod: "sirket", sirketKodu: kiyasSirketKodu };
-  }, [kiyasModu, kiyasSirketKodu]);
+  const kiyasHedef: FinansalKiyasHedef = useMemo(
+    () => kiyasHedefFromModu(kiyasModu, kiyasSirketKodu),
+    [kiyasModu, kiyasSirketKodu],
+  );
 
   useEffect(() => {
     if (kiyasModu !== "sirket" || kiyasListe.length === 0) return;
@@ -147,15 +150,30 @@ export default function TsbFinansalKarsilastirmaDashboard() {
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
     (sirketKodu === "" ? "" : `Şirket ${sirketKodu}`);
 
+  const { kayit: olcekKayit } = useOlcekSegmentKayit(
+    rows && donem && sirketKodu !== ""
+      ? {
+          kaynak: "gelir",
+          rows,
+          donem,
+          pool,
+          sirketKodu,
+          sirketAdi: secilenAd,
+        }
+      : null,
+  );
+
   const kiyasBaslik = useMemo(() => {
-    if (kiyasModu === "sektor") {
-      return paketBu
-        ? `Sektör toplamı (n = ${paketBu.peerSayisi})`
-        : "Sektör toplamı";
+    if (kiyasModu === "sirket") {
+      const ad = kiyasListe.find((s) => s.kod === kiyasSirketKodu)?.ad;
+      return ad ?? "Kıyas şirketi";
     }
-    const ad = kiyasListe.find((s) => s.kod === kiyasSirketKodu)?.ad;
-    return ad ?? "Kıyas şirketi";
-  }, [kiyasModu, pool, paketBu, kiyasListe, kiyasSirketKodu]);
+    return kiyasBaslikFromModu(kiyasModu, {
+      sektorPeerSayisi: paketBu?.peerSayisi,
+      olcekSegment: paketBu?.kiyasOlcekSegment,
+      olcekPeerSayisi: paketBu?.kiyasOlcekPeerSayisi,
+    });
+  }, [kiyasModu, paketBu, kiyasListe, kiyasSirketKodu]);
 
   if (error) return <TsbError message={error} />;
   if (tumDonemler.length === 0 && !error) return <TsbLoading message="Dönem listesi yükleniyor…" />;
@@ -242,45 +260,17 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
                   Sağ blok — kıyas
                 </span>
-                <div className={cn(tsb.btnGroup, "mt-1")}>
-                  <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => setKiyasModu("sektor")}>
-                    Sektör toplamı
-                  </TsbToggleButton>
-                  <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => setKiyasModu("sirket")}>
-                    Diğer şirket
-                  </TsbToggleButton>
-                </div>
-                {kiyasModu === "sektor" ? (
-                  <p className="mt-1.5 rounded-md border border-slate-200/80 bg-slate-50 px-3 py-2 text-xs text-slate-700">
-                    {paketBu ? (
-                      <>
-                        <strong>Sektör toplamı</strong> (n = {paketBu.peerSayisi})
-                      </>
-                    ) : (
-                      <strong>Sektör toplamı</strong>
-                    )}
-                    <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">
-                      Havuzdaki tüm şirketlerin Σ&apos;si — TL satırları toplam; oranlarda Σ pay / Σ payda.
-                    </span>
-                  </p>
-                ) : kiyasListe.length === 0 ? (
-                  <p className="mt-1.5 rounded-md border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                    Bu havuzda kıyaslanacak başka şirket yok.
-                  </p>
-                ) : (
-                  <TsbSelect
-                    id="fk-kiyas-sirket"
-                    className="mt-1.5"
-                    value={kiyasSirketKodu === "" ? "" : String(kiyasSirketKodu)}
-                    onChange={(e) => setKiyasSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
-                  >
-                    {kiyasListe.map((s) => (
-                      <option key={s.kod} value={s.kod}>
-                        {s.ad} ({s.kod})
-                      </option>
-                    ))}
-                  </TsbSelect>
-                )}
+                <TsbKiyasModuControls
+                  kiyasModu={kiyasModu}
+                  onKiyasModuChange={setKiyasModu}
+                  sektorPeerSayisi={paketBu?.peerSayisi}
+                  olcekSegment={paketBu?.kiyasOlcekSegment}
+                  olcekPeerSayisi={paketBu?.kiyasOlcekPeerSayisi}
+                  kiyasListe={kiyasListe}
+                  kiyasSirketKodu={kiyasSirketKodu}
+                  onKiyasSirketKoduChange={setKiyasSirketKodu}
+                  selectId="fk-kiyas-sirket"
+                />
               </div>
             </div>
           </div>
@@ -291,6 +281,8 @@ export default function TsbFinansalKarsilastirmaDashboard() {
           <span className="text-emerald-800">Artış yeşil</span>, <span className="text-red-700">düşüş kırmızı</span>.
         </p>
       </TsbFilterBar>
+
+      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} /> : null}
 
       <TsbTableShell>
         <table className={cn(tsb.table, "min-w-[820px]")}>

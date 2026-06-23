@@ -131,6 +131,10 @@ function sumGrupKey(
     if (filtre.kind === "olcek" && !filtre.kodlar.includes(r.sirketKodu)) continue;
     sum += channelPremium(r, channel);
   }
+  // Benzer ölçek kıyası: TL prim satırlarında segment toplamı değil, şirket başına aritmetik ortalama
+  if (filtre.kind === "olcek" && filtre.kodlar.length > 0) {
+    return sum / filtre.kodlar.length;
+  }
   return sum;
 }
 

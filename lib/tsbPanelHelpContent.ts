@@ -54,8 +54,9 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     href: "/sigorta/brans-degisim",
     items: [
       "Sol blok odak şirket; sağ blok sektör toplamı veya seçtiğiniz kıyas şirketi.",
+      "«Benzer ölçek» modunda sağ blok = aynı A+…D segmentindeki şirketlerin branş primi ortalaması (TL; toplam değil).",
       "Değişim % ve Δ pp bir önceki yılın aynı ayına göredir.",
-      "Pay sütunu her zaman odak şirket ÷ sektör mantığındadır.",
+      "Pay sütunu her zaman odak şirket ÷ tam sektör havuzu mantığındadır.",
     ],
   },
   {

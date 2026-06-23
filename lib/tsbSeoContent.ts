@@ -44,6 +44,7 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
       "Kanal prim ve dağılım — merkez, acente, banka, broker payları",
       "Branş değişim ve sıra — pazar payı, yıllık değişim, sektör içi konum",
       "Finansal karşılaştırma — GT/BL KPI, şirket vs sektör",
+      "Ölçek segmentasyonu — A+…D grupları, şirket listesi",
       "Hasar/prim oranı — branş bazlı teknik performans",
     ],
     faqs: [
@@ -72,6 +73,28 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
       {
         question: "Finansal karşılaştırma hangi dönemi kullanır?",
         answer: "Çeyreklik GT/BL tidy verisi — örneğin 2026-1 formatında. Hub'daki veri durumu bandında son finansal çeyrek gösterilir.",
+      },
+    ],
+    blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
+  },
+  olcekSegmentasyon: {
+    heading: "TSB ölçek segmentasyonu — A+…D şirket grupları",
+    paragraphs: [
+      "Sigorta şirketlerini yalnızca performansa göre değil, büyüklük (ölçek) açısından da gruplamak gerekir. Bu panel brüt prim (%50), özsermaye (%30) ve toplam aktif (%20) girdilerini son finansal çeyrek GT/BL verisinden alır; havuz içinde min-max normalize edilmiş ölçek skoruna göre A+ (en büyük %10) … D (en küçük %10) segmentlerine ayırır.",
+      "Hayat dışı (HD) ile hayat–emeklilik şirketleri ayrı havuzlarda sınıflandırılır — dönem seçici yoktur, her zaman son finansal çeyrek kullanılır. Tabloda segmentteki tüm şirketler, üç ölçek girdisi ve sektör/segment sıraları listelenir.",
+      "Finansal karşılaştırma panelindeki «benzer ölçek» kıyası bu sınıflandırmaya dayanır; hangi şirketlerin A+ veya A segmentinde olduğunu görmek için bu listeyi kullanın.",
+    ],
+    faqs: [
+      ...COMMON_FAQS.slice(0, 2),
+      {
+        question: "Ölçek segmenti ile performans segmenti aynı mı?",
+        answer:
+          "Hayır. Ölçek segmenti yalnızca büyüklük (prim, özsermaye, aktif) ile A+…D harflerini üretir. Performans skoru ayrı bir KPI setidir; karıştırılmamalıdır.",
+      },
+      {
+        question: "Neden dönem seçemiyorum?",
+        answer:
+          "Resmi segment güncellemesi yılda bir (yıl sonu GT/BL) yapılır; panel son finansal çeyreği sabit gösterir. Hub'daki veri durumu bandında son çeyrek yazılıdır.",
       },
     ],
     blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],

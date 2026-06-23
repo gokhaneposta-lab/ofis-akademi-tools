@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { OlcekSegmentHarfi } from "@/lib/tsbOlcekSegment";
 import { OLCEK_SEGMENT_HUB_LEGEND, type OlcekSegmentCache } from "@/lib/tsbOlcekSegmentCache";
 import { tsb } from "@/components/tsb/tsbDashboardUi";
@@ -54,6 +55,12 @@ export default function TsbOlcekSegmentHubKart({ data }: HubProps) {
           {data.sonFinDonem ? (
             <p className="mt-1 text-[10px] text-slate-500">Son finansal dönem: {data.sonFinDonem}</p>
           ) : null}
+          <Link
+            href="/sigorta/olcek-segmentasyon"
+            className="mt-2 inline-block text-[11px] font-semibold text-emerald-800 hover:underline"
+          >
+            Tüm şirket listesi →
+          </Link>
         </div>
       </div>
     </section>

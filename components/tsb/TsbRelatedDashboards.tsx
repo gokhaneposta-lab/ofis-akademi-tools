@@ -26,7 +26,7 @@ export default function TsbRelatedDashboards({ currentHref }: Props) {
 
   const intro =
     current?.group === "finansal"
-      ? "Aynı çeyreklik finansal veri setinden başka panel yok; aşağıda aylık prim panellerine geçebilirsiniz."
+      ? "Diğer finansal paneller: çeyreklik KPI karşılaştırması ve ölçek segmentasyonu listesi."
       : current?.group === "prim"
         ? "Diğer aylık prim panelleri ve çeyreklik finansal karşılaştırma."
         : "TSB gösterge panelleri arasında gezinmek için aşağıdaki bağlantıları kullanın.";

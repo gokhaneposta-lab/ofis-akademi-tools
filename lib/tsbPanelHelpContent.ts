@@ -16,6 +16,15 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     ],
   },
   {
+    href: "/sigorta/olcek-segmentasyon",
+    items: [
+      "Dönem seçici yok — sınıflandırma her zaman son finansal çeyreğe (GT/BL) göredir.",
+      "Şirket grubu: hayat dışı (HD) ve hayat–emeklilik ayrı havuzlarda segmentlenir.",
+      "Brüt prim, özsermaye ve toplam aktif ölçek skorunun girdileridir (%50 / %30 / %20).",
+      "A+…D segment filtresi ile o gruptaki tüm şirketleri görebilirsiniz; sektör sırası = havuz geneli, segment sırası = aynı harf içinde.",
+    ],
+  },
+  {
     href: "/sigorta/hasar-prim-orani",
     items: [
       "Hasar/prim (H/P): gerçekleşen hasarın kazanılmış prime oranı. Düşük oran genelde daha iyi teknik sonuç demektir.",

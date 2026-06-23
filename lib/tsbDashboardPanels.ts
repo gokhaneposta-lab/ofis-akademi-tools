@@ -45,6 +45,14 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
     icon: "📋",
     group: "finansal",
   },
+  {
+    href: "/sigorta/olcek-segmentasyon",
+    badge: "Ölçek",
+    title: "Ölçek segmentasyonu",
+    subtitle: "A+…D grupları · şirket listesi · sektör/segment sırası",
+    icon: "🏢",
+    group: "finansal",
+  },
 ] as const;
 
 export const TSB_TEKNIK_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [

@@ -141,6 +141,10 @@ export type OlcekSegmentSirketKayit = {
   segmentSirasi: number;
   segmentPeerSayisi: number;
   peerSayisi: number;
+  /** Ölçek skoru girdileri (son finansal çeyrek TL) */
+  brutPrim?: number;
+  ozsermaye?: number;
+  toplamAktif?: number;
 };
 
 export function olcekSegmentSirketKayit(
@@ -157,6 +161,9 @@ export function olcekSegmentSirketKayit(
     segmentSirasi: sonuc.segmentSirasi,
     segmentPeerSayisi: sonuc.segmentPeerSayisi,
     peerSayisi: sonuc.peerSayisi,
+    brutPrim: sonuc.ham.brutPrim,
+    ozsermaye: sonuc.ham.ozsermaye,
+    toplamAktif: sonuc.ham.toplamAktif,
   };
 }
 

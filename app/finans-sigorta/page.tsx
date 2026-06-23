@@ -157,6 +157,7 @@ export default function FinansSigortaPage() {
               { href: "/sigorta/kanal-prim", label: "Kanal prim", icon: "🏪" },
               { href: "/sigorta/hasar-prim-orani", label: "Hasar / prim", icon: "📉" },
               { href: "/sigorta/finansal-karsilastirma", label: "Finansal KPI", icon: "📋" },
+              { href: "/sigorta/olcek-segmentasyon", label: "Ölçek segment", icon: "🏢" },
             ].map((p) => (
               <Link
                 key={p.href}

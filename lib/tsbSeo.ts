@@ -75,6 +75,19 @@ export const TSB_SEO = {
     jsonLdName: "TSB Finansal Karşılaştırma",
     breadcrumbLabel: "Finansal karşılaştırma",
   },
+  olcekSegmentasyon: {
+    path: "/sigorta/olcek-segmentasyon",
+    title: "TSB Ölçek Segmentasyonu — A+…D Şirket Grupları",
+    description:
+      "TSB finansal verilerinden ölçek segmentasyonu: brüt prim, özsermaye ve toplam aktife göre hayat dışı veya hayat–emeklilik havuzunda A+…D grupları; segmentteki tüm şirketler listelenir.",
+    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_FINANSAL, [
+      "sigorta ölçek segmentasyonu",
+      "TSB şirket büyüklük",
+      "sigorta sektör segment",
+    ]),
+    jsonLdName: "TSB Ölçek Segmentasyonu",
+    breadcrumbLabel: "Ölçek segmentasyonu",
+  },
   hasarPrimOrani: {
     path: "/sigorta/hasar-prim-orani",
     title: "TSB Hasar / Prim Oranı — Branş Bazlı Teknik İstatistikler",

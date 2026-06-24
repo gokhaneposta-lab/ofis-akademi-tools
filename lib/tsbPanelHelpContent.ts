@@ -25,6 +25,16 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     ],
   },
   {
+    href: "/sigorta/sirket-karne",
+    items: [
+      "Prim dönemi = ay (ör. 2026-05). Finansal blok, prim ayına eşlenen son finansal çeyreği kullanır (ör. 2026-1).",
+      "Tüm tablolar ana branş (TSB) kırılımındadır. Branş sırası, branş sıra panelindeki sektör içi sıradır.",
+      "Sektör prim sırası = seçili ayda havuzdaki toplam prim sıralaması.",
+      "Kanal tablosunda «kanalda sektör payı» = o kanaldaki şirket primi ÷ sektör kanal primi.",
+      "PDF/indirme yok — güncel veri için siteye dönün.",
+    ],
+  },
+  {
     href: "/sigorta/hasar-prim-orani",
     items: [
       "Hasar/prim (H/P): gerçekleşen hasarın kazanılmış prime oranı. Düşük oran genelde daha iyi teknik sonuç demektir.",

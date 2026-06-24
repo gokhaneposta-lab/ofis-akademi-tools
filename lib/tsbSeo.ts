@@ -88,6 +88,18 @@ export const TSB_SEO = {
     jsonLdName: "TSB Ölçek Segmentasyonu",
     breadcrumbLabel: "Ölçek segmentasyonu",
   },
+  sirketKarne: {
+    path: "/sigorta/sirket-karne",
+    title: "TSB Şirket Karne — Prim, Finansal ve Kanal Özeti",
+    description:
+      "Tek sigorta şirketi için TSB karne: aylık ve kümülatif prim üretimi, branş pazar payı ve sırası, finansal KPI, kanal dağılımı ve 12 ay trend.",
+    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, TSB_SEO_KEYWORDS_FINANSAL, [
+      "sigorta şirket karne",
+      "TSB şirket özeti",
+    ]),
+    jsonLdName: "TSB Şirket Karne",
+    breadcrumbLabel: "Şirket karne",
+  },
   hasarPrimOrani: {
     path: "/sigorta/hasar-prim-orani",
     title: "TSB Hasar / Prim Oranı — Branş Bazlı Teknik İstatistikler",

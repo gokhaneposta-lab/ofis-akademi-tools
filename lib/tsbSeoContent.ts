@@ -99,6 +99,22 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
     ],
     blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
   },
+  sirketKarne: {
+    heading: "TSB şirket karne — prim, finansal ve kanal özeti",
+    paragraphs: [
+      "Tek bir sigorta şirketi için TSB verilerinden derlenmiş özet panel: aylık ve kümülatif (YTD) prim üretimi, pazar payı, branş sırası, finansal KPI'lar, kanal dağılımı ve son 12 ay aylık trend.",
+      "Prim dönemi ay bazlıdır (ör. 2026-05); finansal blok prim ayına eşlenen son finansal çeyreği kullanır. Tüm kırılımlar ana branş (TSB) dilimindedir.",
+      "Sektör kıyası sıralama ve pay mantığındadır: toplam primde sektör sırası, branş satırında branş sırası, kanalda o kanaldaki sektör payı gösterilir.",
+    ],
+    faqs: [
+      ...COMMON_FAQS.slice(0, 2),
+      {
+        question: "Karne indirilebilir mi?",
+        answer: "Hayır. Güncel veri için panele site üzerinden tekrar gelmeniz gerekir; PDF veya yazdır çıktısı sunulmaz.",
+      },
+    ],
+    blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
+  },
   hasarPrimOrani: {
     heading: "TSB hasar / prim oranı — branş bazlı teknik istatistik",
     paragraphs: [

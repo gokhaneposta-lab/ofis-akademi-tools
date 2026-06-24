@@ -63,13 +63,13 @@ function sortAnaBransSirasi(mevcut: Set<string>, sabitSira: readonly string[]): 
 
 function collectAnaBransKeys(
   rows: TsbPrimRow[],
-  donemOnceki: string,
-  donemBu: string,
+  donemOnceki: string | readonly string[],
+  donemBu: string | readonly string[],
   segment: TsbSektorSegment,
 ): Set<string> {
   const set = new Set<string>();
   for (const r of rows) {
-    if (r.donem !== donemBu && r.donem !== donemOnceki) continue;
+    if (!donemInPeriod(r.donem, donemBu) && !donemInPeriod(r.donem, donemOnceki)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     if (!rowMatchesSegment(r, segment)) continue;
     set.add(r.anaBransH);
@@ -79,19 +79,23 @@ function collectAnaBransKeys(
 
 function collectTarifeKeys(
   rows: TsbPrimRow[],
-  donemOnceki: string,
-  donemBu: string,
+  donemOnceki: string | readonly string[],
+  donemBu: string | readonly string[],
   segment: TsbSektorSegment,
   lookup: TsbBranchLookupMap | null,
 ): Set<string> {
   const set = new Set<string>();
   for (const r of rows) {
-    if (r.donem !== donemBu && r.donem !== donemOnceki) continue;
+    if (!donemInPeriod(r.donem, donemBu) && !donemInPeriod(r.donem, donemOnceki)) continue;
     if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
     if (!rowMatchesSegment(r, segment)) continue;
     set.add(tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup));
   }
   return set;
+}
+
+function donemInPeriod(donem: string, period: string | readonly string[]): boolean {
+  return typeof period === "string" ? donem === period : period.includes(donem);
 }
 
 function narrowAnaKeys(keys: string[], daraltma: Extract<TsbPrimDaraltma, { kind: "anaBransH" }>): string[] {
@@ -111,7 +115,7 @@ function narrowTarifeKeys(keys: string[], daraltma: Extract<TsbPrimDaraltma, { k
 
 function sumGrupKey(
   rows: TsbPrimRow[],
-  donem: string,
+  donem: string | readonly string[],
   channel: TsbKanalField,
   segment: TsbSektorSegment,
   key: string,
@@ -119,23 +123,35 @@ function sumGrupKey(
   lookup: TsbBranchLookupMap | null,
   filtre: KiyasPrimFiltre,
 ): number {
+  const donemler = typeof donem === "string" ? [donem] : donem;
   let sum = 0;
-  for (const r of rows) {
-    if (r.donem !== donem) continue;
-    if (!rowMatchesSegment(r, segment)) continue;
-    if (grupModu === "anaBransH") {
-      if (r.anaBransH !== key) continue;
-    } else if (tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup) !== key) continue;
-    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
-    if (filtre.kind === "sirket" && r.sirketKodu !== filtre.kod) continue;
-    if (filtre.kind === "olcek" && !filtre.kodlar.includes(r.sirketKodu)) continue;
-    sum += channelPremium(r, channel);
+  for (const d of donemler) {
+    for (const r of rows) {
+      if (r.donem !== d) continue;
+      if (!rowMatchesSegment(r, segment)) continue;
+      if (grupModu === "anaBransH") {
+        if (r.anaBransH !== key) continue;
+      } else if (tarifeGrubuFromRow(r.bransKodu, r.tarifeGrubu, lookup) !== key) continue;
+      if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+      if (filtre.kind === "sirket" && r.sirketKodu !== filtre.kod) continue;
+      if (filtre.kind === "olcek" && !filtre.kodlar.includes(r.sirketKodu)) continue;
+      sum += channelPremium(r, channel);
+    }
   }
   // Benzer ölçek kıyası: TL prim satırlarında segment toplamı değil, şirket başına aritmetik ortalama
   if (filtre.kind === "olcek" && filtre.kodlar.length > 0) {
     return sum / filtre.kodlar.length;
   }
   return sum;
+}
+
+/** Prim ayı `YYYY-MM` → o yıl Ocak’tan seçili aya kadar ay listesi. */
+export function ytdMonthsThrough(donem: string): string[] {
+  const m = donem.match(/^(\d{4})-(0[1-9]|1[0-2])$/);
+  if (!m) return [donem];
+  const y = Number(m[1]);
+  const end = Number(m[2]);
+  return Array.from({ length: end }, (_, i) => `${y}-${String(i + 1).padStart(2, "0")}`);
 }
 
 function degisimYuzde(onceki: number, bu: number): number | null {
@@ -177,8 +193,8 @@ function buildSatir(
   etiket: string,
   grup: TsbSektorSegment,
   rows: TsbPrimRow[],
-  donemOnceki: string,
-  donemBu: string,
+  donemOnceki: string | readonly string[],
+  donemBu: string | readonly string[],
   channel: TsbKanalField,
   sirketKodu: number,
   grupModu: "anaBransH" | "tarifeGrubu",
@@ -221,8 +237,8 @@ function aggregateToplam(
   grup: TsbSektorSegment,
   etiket: string,
   rows: TsbPrimRow[],
-  donemOnceki: string,
-  donemBu: string,
+  donemOnceki: string | readonly string[],
+  donemBu: string | readonly string[],
   channel: TsbKanalField,
   grupModu: "anaBransH" | "tarifeGrubu",
   lookup: TsbBranchLookupMap | null,
@@ -274,7 +290,54 @@ export function buildBransDegisimTablosu(
 ): BransDegisimOzet | null {
   const donemOnceki = prevYearPeriod(donemBu);
   if (!donemOnceki) return null;
+  return buildBransDegisimTablosuCore(
+    rows,
+    donemBu,
+    donemOnceki,
+    donemBu,
+    donemOnceki,
+    channel,
+    sirketKodu,
+    daraltma,
+    kiyasHedef,
+  );
+}
 
+/** YTD (Ocak → seçili ay) prim değişim tablosu — aylık tablo ile aynı yapı. */
+export function buildBransDegisimYtdTablosu(
+  rows: TsbPrimRow[],
+  donemBu: string,
+  channel: TsbKanalField,
+  sirketKodu: number,
+  daraltma: TsbPrimDaraltma,
+  kiyasHedef: BransDegisimKiyasHedef = { mod: "sektor" },
+): BransDegisimOzet | null {
+  const donemOnceki = prevYearPeriod(donemBu);
+  if (!donemOnceki) return null;
+  return buildBransDegisimTablosuCore(
+    rows,
+    donemBu,
+    donemOnceki,
+    ytdMonthsThrough(donemBu),
+    ytdMonthsThrough(donemOnceki),
+    channel,
+    sirketKodu,
+    daraltma,
+    kiyasHedef,
+  );
+}
+
+function buildBransDegisimTablosuCore(
+  rows: TsbPrimRow[],
+  donemBuLabel: string,
+  donemOncekiLabel: string,
+  donemBu: string | readonly string[],
+  donemOnceki: string | readonly string[],
+  channel: TsbKanalField,
+  sirketKodu: number,
+  daraltma: TsbPrimDaraltma,
+  kiyasHedef: BransDegisimKiyasHedef,
+): BransDegisimOzet | null {
   const tabloHavuzu = sirketSegmentFromKodu(rows, sirketKodu);
   let kiyasFiltre: KiyasPrimFiltre;
   let peerSayisi: number;
@@ -282,7 +345,7 @@ export function buildBransDegisimTablosu(
 
   if (kiyasHedef.mod === "sektor") {
     kiyasFiltre = { kind: "sektor" };
-    peerSayisi = countSirketlerSegmentDonem(rows, donemBu, tabloHavuzu);
+    peerSayisi = countSirketlerSegmentDonem(rows, donemBuLabel, tabloHavuzu);
   } else if (kiyasHedef.mod === "olcek") {
     kiyasFiltre = { kind: "olcek", kodlar: kiyasHedef.sirketKodlari };
     peerSayisi = kiyasHedef.sirketKodlari.length;
@@ -357,8 +420,8 @@ export function buildBransDegisimTablosu(
 
   return {
     kirisumModu: grupModu,
-    donemBu,
-    donemOnceki,
+    donemBu: donemBuLabel,
+    donemOnceki: donemOncekiLabel,
     tabloHavuzu,
     kiyasMod: kiyasHedef.mod,
     peerSayisi,

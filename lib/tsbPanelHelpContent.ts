@@ -28,6 +28,7 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     href: "/sigorta/sirket-karne",
     items: [
       "Prim dönemi = ay (ör. 2026-05). Finansal blok, prim ayına eşlenen son finansal çeyreği kullanır (ör. 2026-1).",
+      "TSB prim verisi yıl içi kümülatiftir: üst tablo aylık üretim (seçili ay − önceki ay), alt tablo YTD kümülatif (ay satırının kendisi).",
       "Tüm tablolar ana branş (TSB) kırılımındadır. Branş sırası, branş sıra panelindeki sektör içi sıradır.",
       "Sektör prim sırası = seçili ayda havuzdaki toplam prim sıralaması.",
       "Kanal tablosunda «kanalda sektör payı» = o kanaldaki şirket primi ÷ sektör kanal primi.",

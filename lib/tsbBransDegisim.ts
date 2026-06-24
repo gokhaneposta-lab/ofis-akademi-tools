@@ -7,6 +7,7 @@ import {
   channelPremium,
   countSirketlerSegmentDonem,
   isTsbToplamSirketKodu,
+  prevMonthPeriod,
   prevYearPeriod,
   rowMatchesPrimDaraltma,
   rowMatchesSegment,
@@ -145,6 +146,41 @@ function sumGrupKey(
   return sum;
 }
 
+/** TSB prim tidy: ay satırı yıl içi kümülatif → o ayın üretimi (önceki ay düşülür). */
+function sumGrupKeyAylik(
+  rows: TsbPrimRow[],
+  donemKum: string,
+  channel: TsbKanalField,
+  segment: TsbSektorSegment,
+  key: string,
+  grupModu: "anaBransH" | "tarifeGrubu",
+  lookup: TsbBranchLookupMap | null,
+  filtre: KiyasPrimFiltre,
+): number {
+  const kumBu = sumGrupKey(rows, donemKum, channel, segment, key, grupModu, lookup, filtre);
+  const prevAy = prevMonthPeriod(donemKum);
+  if (!prevAy || prevAy.slice(0, 4) !== donemKum.slice(0, 4)) return kumBu;
+  const kumPrev = sumGrupKey(rows, prevAy, channel, segment, key, grupModu, lookup, filtre);
+  return kumBu - kumPrev;
+}
+
+type GrupPrimSumFn = (
+  rows: TsbPrimRow[],
+  donem: string,
+  channel: TsbKanalField,
+  segment: TsbSektorSegment,
+  key: string,
+  grupModu: "anaBransH" | "tarifeGrubu",
+  lookup: TsbBranchLookupMap | null,
+  filtre: KiyasPrimFiltre,
+) => number;
+
+const sumGrupKumulatif: GrupPrimSumFn = (rows, donem, channel, segment, key, grupModu, lookup, filtre) =>
+  sumGrupKey(rows, donem, channel, segment, key, grupModu, lookup, filtre);
+
+const sumGrupAylik: GrupPrimSumFn = (rows, donem, channel, segment, key, grupModu, lookup, filtre) =>
+  sumGrupKeyAylik(rows, donem, channel, segment, key, grupModu, lookup, filtre);
+
 /** Prim ayı `YYYY-MM` → o yıl Ocak’tan seçili aya kadar ay listesi. */
 export function ytdMonthsThrough(donem: string): string[] {
   const m = donem.match(/^(\d{4})-(0[1-9]|1[0-2])$/);
@@ -193,26 +229,27 @@ function buildSatir(
   etiket: string,
   grup: TsbSektorSegment,
   rows: TsbPrimRow[],
-  donemOnceki: string | readonly string[],
-  donemBu: string | readonly string[],
+  donemOnceki: string,
+  donemBu: string,
   channel: TsbKanalField,
   sirketKodu: number,
   grupModu: "anaBransH" | "tarifeGrubu",
   lookup: TsbBranchLookupMap | null,
   kiyasFiltre: KiyasPrimFiltre,
+  sumGrup: GrupPrimSumFn,
 ): BransDegisimSatir {
-  const sektorPayOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, { kind: "sektor" });
-  const sektorPayBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, { kind: "sektor" });
-  const sirketPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, {
+  const sektorPayOnceki = sumGrup(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, { kind: "sektor" });
+  const sektorPayBu = sumGrup(rows, donemBu, channel, grup, etiket, grupModu, lookup, { kind: "sektor" });
+  const sirketPrimOnceki = sumGrup(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, {
     kind: "sirket",
     kod: sirketKodu,
   });
-  const sirketPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, {
+  const sirketPrimBu = sumGrup(rows, donemBu, channel, grup, etiket, grupModu, lookup, {
     kind: "sirket",
     kod: sirketKodu,
   });
-  const kiyasPrimOnceki = sumGrupKey(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, kiyasFiltre);
-  const kiyasPrimBu = sumGrupKey(rows, donemBu, channel, grup, etiket, grupModu, lookup, kiyasFiltre);
+  const kiyasPrimOnceki = sumGrup(rows, donemOnceki, channel, grup, etiket, grupModu, lookup, kiyasFiltre);
+  const kiyasPrimBu = sumGrup(rows, donemBu, channel, grup, etiket, grupModu, lookup, kiyasFiltre);
 
   const payOncekiYuzde = sektorPayOnceki > 0 ? (sirketPrimOnceki / sektorPayOnceki) * 100 : 0;
   const payBuYuzde = sektorPayBu > 0 ? (sirketPrimBu / sektorPayBu) * 100 : 0;
@@ -237,12 +274,13 @@ function aggregateToplam(
   grup: TsbSektorSegment,
   etiket: string,
   rows: TsbPrimRow[],
-  donemOnceki: string | readonly string[],
-  donemBu: string | readonly string[],
+  donemOnceki: string,
+  donemBu: string,
   channel: TsbKanalField,
   grupModu: "anaBransH" | "tarifeGrubu",
   lookup: TsbBranchLookupMap | null,
   keys: string[],
+  sumGrup: GrupPrimSumFn,
 ): BransDegisimSatir {
   let sirketPrimOnceki = 0;
   let sirketPrimBu = 0;
@@ -258,8 +296,8 @@ function aggregateToplam(
   let sektorPayOnceki = 0;
   let sektorPayBu = 0;
   for (const key of keys) {
-    sektorPayOnceki += sumGrupKey(rows, donemOnceki, channel, grup, key, grupModu, lookup, { kind: "sektor" });
-    sektorPayBu += sumGrupKey(rows, donemBu, channel, grup, key, grupModu, lookup, { kind: "sektor" });
+    sektorPayOnceki += sumGrup(rows, donemOnceki, channel, grup, key, grupModu, lookup, { kind: "sektor" });
+    sektorPayBu += sumGrup(rows, donemBu, channel, grup, key, grupModu, lookup, { kind: "sektor" });
   }
 
   const payOncekiYuzde = sektorPayOnceki > 0 ? (sirketPrimOnceki / sektorPayOnceki) * 100 : 0;
@@ -294,17 +332,16 @@ export function buildBransDegisimTablosu(
     rows,
     donemBu,
     donemOnceki,
-    donemBu,
-    donemOnceki,
     channel,
     sirketKodu,
     daraltma,
     kiyasHedef,
+    sumGrupKumulatif,
   );
 }
 
-/** YTD (Ocak → seçili ay) prim değişim tablosu — aylık tablo ile aynı yapı. */
-export function buildBransDegisimYtdTablosu(
+/** TSB ay satırı kümülatif → önceki aydan fark = o ayın üretimi; LY aynı ay ile kıyas. */
+export function buildBransDegisimAylikTablosu(
   rows: TsbPrimRow[],
   donemBu: string,
   channel: TsbKanalField,
@@ -318,25 +355,38 @@ export function buildBransDegisimYtdTablosu(
     rows,
     donemBu,
     donemOnceki,
-    ytdMonthsThrough(donemBu),
-    ytdMonthsThrough(donemOnceki),
     channel,
     sirketKodu,
     daraltma,
     kiyasHedef,
+    sumGrupAylik,
   );
+}
+
+/**
+ * @deprecated TSB verisi zaten yıl içi kümülatif — `buildBransDegisimTablosu` kullanın.
+ * Ay toplamlarını toplamak çift sayım üretir.
+ */
+export function buildBransDegisimYtdTablosu(
+  rows: TsbPrimRow[],
+  donemBu: string,
+  channel: TsbKanalField,
+  sirketKodu: number,
+  daraltma: TsbPrimDaraltma,
+  kiyasHedef: BransDegisimKiyasHedef = { mod: "sektor" },
+): BransDegisimOzet | null {
+  return buildBransDegisimTablosu(rows, donemBu, channel, sirketKodu, daraltma, kiyasHedef);
 }
 
 function buildBransDegisimTablosuCore(
   rows: TsbPrimRow[],
-  donemBuLabel: string,
-  donemOncekiLabel: string,
-  donemBu: string | readonly string[],
-  donemOnceki: string | readonly string[],
+  donemBu: string,
+  donemOnceki: string,
   channel: TsbKanalField,
   sirketKodu: number,
   daraltma: TsbPrimDaraltma,
   kiyasHedef: BransDegisimKiyasHedef,
+  sumGrup: GrupPrimSumFn,
 ): BransDegisimOzet | null {
   const tabloHavuzu = sirketSegmentFromKodu(rows, sirketKodu);
   let kiyasFiltre: KiyasPrimFiltre;
@@ -345,7 +395,7 @@ function buildBransDegisimTablosuCore(
 
   if (kiyasHedef.mod === "sektor") {
     kiyasFiltre = { kind: "sektor" };
-    peerSayisi = countSirketlerSegmentDonem(rows, donemBuLabel, tabloHavuzu);
+    peerSayisi = countSirketlerSegmentDonem(rows, donemBu, tabloHavuzu);
   } else if (kiyasHedef.mod === "olcek") {
     kiyasFiltre = { kind: "olcek", kodlar: kiyasHedef.sirketKodlari };
     peerSayisi = kiyasHedef.sirketKodlari.length;
@@ -370,7 +420,7 @@ function buildBransDegisimTablosuCore(
   }
 
   const branslar = sirali.map((b) =>
-    buildSatir(b, tabloHavuzu, rows, donemOnceki, donemBu, channel, sirketKodu, grupModu, lookup, kiyasFiltre),
+    buildSatir(b, tabloHavuzu, rows, donemOnceki, donemBu, channel, sirketKodu, grupModu, lookup, kiyasFiltre, sumGrup),
   );
 
   const trafikHaricToplam =
@@ -387,6 +437,7 @@ function buildBransDegisimTablosuCore(
             grupModu,
             lookup,
             branslar.filter((s) => s.anaBransH !== TSB_ANA_BRANS_TRAFIK_SORUMLULUK).map((s) => s.anaBransH),
+            sumGrup,
           )
         : aggregateToplam(
             branslar.filter((s) => s.anaBransH !== TSB_TARIFE_GRUBU_TRAFIK),
@@ -399,6 +450,7 @@ function buildBransDegisimTablosuCore(
             grupModu,
             lookup,
             branslar.filter((s) => s.anaBransH !== TSB_TARIFE_GRUBU_TRAFIK).map((s) => s.anaBransH),
+            sumGrup,
           )
       : null;
 
@@ -416,12 +468,13 @@ function buildBransDegisimTablosuCore(
     grupModu,
     lookup,
     branslar.map((s) => s.anaBransH),
+    sumGrup,
   );
 
   return {
     kirisumModu: grupModu,
-    donemBu: donemBuLabel,
-    donemOnceki: donemOncekiLabel,
+    donemBu,
+    donemOnceki,
     tabloHavuzu,
     kiyasMod: kiyasHedef.mod,
     peerSayisi,
@@ -445,6 +498,27 @@ export function buildBransPaySnapshot(tablo: BransDegisimOzet): BransPayDilim[] 
     sirketPay: tk > 0 ? (x.sirketPrimBu / tk) * 100 : 0,
     sektorPay: ts > 0 ? (x.sektorPrimBu / ts) * 100 : 0,
   }));
-  raw.sort((a, b) => b.sektorPay - a.sektorPay);
+  raw.sort((a, b) => b.sirketPay - a.sirketPay);
   return raw;
+}
+
+/** Bu dönem vs kıyas dönemi portföy payları (aylık veya kümülatif tablo satırlarından). */
+export function buildBransPaySnapshotKarsilastirma(tablo: BransDegisimOzet): {
+  bu: BransPayDilim[];
+  onceki: BransPayDilim[];
+} {
+  const detay = tablo.branslar;
+  const tkBu = detay.reduce((a, x) => a + x.sirketPrimBu, 0);
+  const tkOc = detay.reduce((a, x) => a + x.sirketPrimOnceki, 0);
+  const toDilim = (pick: (x: BransDegisimSatir) => number, payda: number): BransPayDilim[] => {
+    if (payda <= 0) return [];
+    return [...detay]
+      .map((x) => ({ etiket: x.anaBransH, sirketPay: (pick(x) / payda) * 100, sektorPay: 0 }))
+      .filter((d) => d.sirketPay > 0.05)
+      .sort((a, b) => b.sirketPay - a.sirketPay);
+  };
+  return {
+    bu: toDilim((x) => x.sirketPrimBu, tkBu),
+    onceki: toDilim((x) => x.sirketPrimOnceki, tkOc),
+  };
 }

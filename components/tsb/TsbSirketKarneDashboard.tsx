@@ -42,7 +42,7 @@ import type { TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import { listSirketlerSegmentDonem, uniqueSortedPeriods } from "@/lib/tsbPrimDashboard";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
-import type { PrimTrendAylikNokta } from "@/lib/tsbPrimTrend12";
+import TsbPrimTrendAylikBarChart from "@/components/tsb/TsbPrimTrendAylikBarChart";
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -141,72 +141,72 @@ function PrimTablo({
   );
 }
 
-const BRANS_PAY_RENK = [
-  "#0d9488",
-  "#0891b2",
-  "#0284c7",
-  "#2563eb",
-  "#4f46e5",
-  "#7c3aed",
-  "#9333ea",
-  "#c026d3",
-  "#db2777",
-  "#e11d48",
-  "#ea580c",
-  "#ca8a04",
-  "#65a30d",
-  "#16a34a",
-  "#64748b",
-];
+const COL_BU = "#059669";
+const COL_ONCEKI = "#94a3b8";
 
-function BransPayGrafik({
-  bu: dilimBu,
-  onceki: dilimOnceki,
-  yilBu,
-  yilOnceki,
+/** Seçili ayın aylık üretiminde branş payı — gruplu dikey sütunlar (okunabilir). */
+function BransPayBarGrafik({
+  bu,
+  onceki,
+  donemBu,
+  donemOnceki,
 }: {
   bu: BransPayDilim[];
   onceki: BransPayDilim[];
-  yilBu: string;
-  yilOnceki: string;
+  donemBu: string;
+  donemOnceki: string;
 }) {
-  const topBu = dilimBu.slice(0, 12);
-  const topOnceki = dilimOnceki.slice(0, 12);
+  const etiketler = [...new Set([...bu.map((d) => d.etiket), ...onceki.map((d) => d.etiket)])]
+    .map((etiket) => ({
+      etiket,
+      payBu: bu.find((d) => d.etiket === etiket)?.sirketPay ?? 0,
+      payOc: onceki.find((d) => d.etiket === etiket)?.sirketPay ?? 0,
+    }))
+    .filter((d) => d.payBu > 0.3 || d.payOc > 0.3)
+    .sort((a, b) => b.payBu - a.payBu)
+    .slice(0, 10);
 
-  function Bar({ dilimler, label }: { dilimler: BransPayDilim[]; label: string }) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="w-10 shrink-0 text-[10px] font-semibold text-slate-600">{label}</span>
-        <div className="flex h-7 min-w-0 flex-1 overflow-hidden rounded-md border border-slate-200">
-          {dilimler.map((d, i) =>
-            d.sirketPay > 0.5 ? (
-              <div
-                key={d.etiket}
-                title={`${d.etiket}: ${pf.format(d.sirketPay)}%`}
-                style={{ width: `${d.sirketPay}%`, backgroundColor: BRANS_PAY_RENK[i % BRANS_PAY_RENK.length] }}
-                className="min-w-[2px]"
-              />
-            ) : null,
-          )}
-        </div>
-      </div>
-    );
+  if (etiketler.length === 0) {
+    return <p className={tsb.filterHint}>Seçili ay için branş payı hesaplanamadı.</p>;
   }
 
+  const maxPay = Math.max(...etiketler.flatMap((d) => [d.payBu, d.payOc]), 1);
+  const barMaxH = 160;
+
   return (
-    <div className="space-y-2">
-      <Bar dilimler={topOnceki} label={yilOnceki} />
-      <Bar dilimler={topBu} label={yilBu} />
-      <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1">
-        {topBu.map((d, i) => (
-          <span key={d.etiket} className="inline-flex items-center gap-1 text-[10px] text-slate-600">
-            <span
-              className="inline-block h-2 w-2 rounded-sm"
-              style={{ backgroundColor: BRANS_PAY_RENK[i % BRANS_PAY_RENK.length] }}
-            />
-            {d.etiket} ({pf.format(d.sirketPay)}%)
-          </span>
-        ))}
+    <div>
+      <div className="mb-2 flex flex-wrap gap-4 text-[10px] text-slate-600">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: COL_BU }} />
+          {donemBu} aylık pay
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: COL_ONCEKI }} />
+          {donemOnceki} aylık pay
+        </span>
+      </div>
+      <div className="overflow-x-auto">
+        <div className="flex min-w-[640px] items-end gap-3 pb-6 pt-2" style={{ minHeight: barMaxH + 48 }}>
+          {etiketler.map(({ etiket, payBu, payOc }) => {
+            const hBu = (payBu / maxPay) * barMaxH;
+            const hOc = (payOc / maxPay) * barMaxH;
+            return (
+              <div key={etiket} className="flex min-w-[56px] flex-1 flex-col items-center">
+                <div className="flex h-[168px] items-end justify-center gap-1">
+                  <div className="flex flex-col items-center justify-end" title={`${donemOnceki}: ${pf.format(payOc)}%`}>
+                    <span className="mb-0.5 text-[9px] tabular-nums text-slate-500">{pf.format(payOc)}%</span>
+                    <div className="w-5 rounded-t-sm" style={{ height: Math.max(hOc, payOc > 0 ? 3 : 0), backgroundColor: COL_ONCEKI }} />
+                  </div>
+                  <div className="flex flex-col items-center justify-end" title={`${donemBu}: ${pf.format(payBu)}%`}>
+                    <span className="mb-0.5 text-[9px] font-semibold tabular-nums text-emerald-800">{pf.format(payBu)}%</span>
+                    <div className="w-5 rounded-t-sm" style={{ height: Math.max(hBu, payBu > 0 ? 3 : 0), backgroundColor: COL_BU }} />
+                  </div>
+                </div>
+                <span className="mt-2 max-w-[72px] text-center text-[9px] leading-tight text-slate-700">{etiket}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -249,48 +249,7 @@ function KanalTablo({ satirlar, donemBu, donemOnceki }: { satirlar: KarneKanalSa
   );
 }
 
-function TrendMiniChart({ seri, sirketAdi }: { seri: PrimTrendAylikNokta[]; sirketAdi: string }) {
-  const W = 720;
-  const H = 220;
-  const pad = { l: 48, r: 16, t: 36, b: 48 };
-  const innerW = W - pad.l - pad.r;
-  const innerH = H - pad.t - pad.b;
-  const maxV = Math.max(...seri.flatMap((p) => [p.sektorAylik, p.sirketAylik]), 1);
-  const n = seri.length;
-  const xAt = (i: number) => pad.l + (i / Math.max(n - 1, 1)) * innerW;
-  const yAt = (v: number) => pad.t + innerH - (v / maxV) * innerH;
-  const ptsSektor = seri.map((p, i) => `${xAt(i)},${yAt(p.sektorAylik)}`).join(" ");
-  const ptsSirket = seri.map((p, i) => `${xAt(i)},${yAt(p.sirketAylik)}`).join(" ");
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label="Son 12 ay aylık prim trendi">
-      <rect width={W} height={H} fill="#fafafa" />
-      <text x={pad.l} y={20} fill="#374151" fontSize={11} fontWeight={600}>
-        Aylık prim üretimi (son {n} ay)
-      </text>
-      <text x={pad.l} y={32} fontSize={9} fill="#64748b">
-        Kırmızı: sektör · Yeşil: {sirketAdi.length > 28 ? `${sirketAdi.slice(0, 26)}…` : sirketAdi}
-      </text>
-      <polyline fill="none" stroke="#dc2626" strokeWidth={2} points={ptsSektor} />
-      <polyline fill="none" stroke="#059669" strokeWidth={2} points={ptsSirket} />
-      {seri.map((p, i) => (
-        <text
-          key={p.donem}
-          x={xAt(i)}
-          y={H - 12}
-          textAnchor="middle"
-          fontSize={8}
-          fill="#64748b"
-          transform={`rotate(-35 ${xAt(i)} ${H - 12})`}
-        >
-          {p.donem.slice(5)}
-        </text>
-      ))}
-    </svg>
-  );
-}
-
-function TrendPayTablo({ seri }: { seri: PrimTrendAylikNokta[] }) {
+function TrendPayTablo({ seri }: { seri: import("@/lib/tsbPrimTrend12").PrimTrendAylikNokta[] }) {
   return (
     <TsbTableShell>
       <table className={cn(tsb.table, "min-w-[480px] text-xs")}>
@@ -547,7 +506,7 @@ export default function TsbSirketKarneDashboard() {
 
           <KarneSection
             title="Prim tablosu — aylık üretim ve pazar payı"
-            subtitle={`Ana branş (TSB) · ${donem} vs ${primPaket.donemOnceki}`}
+            subtitle={`Ana branş (TSB) · ${donem} vs ${primPaket.donemOnceki} — TSB kümülatiften önceki ay düşülerek`}
           >
             <PrimTablo
               satirlar={primPaket.aylikSatirlar}
@@ -559,7 +518,7 @@ export default function TsbSirketKarneDashboard() {
 
           <KarneSection
             title="Kümülatif prim üretim ve pay"
-            subtitle={`YTD Ocak–${donem.slice(5)} · ${yilBu} vs ${yilOnceki}`}
+            subtitle={`YTD Ocak–${donem.slice(5)} · ${yilBu} vs ${yilOnceki} — seçili ayın TSB kümülatif değeri`}
           >
             <PrimTablo
               satirlar={primPaket.ytdSatirlar}
@@ -569,12 +528,15 @@ export default function TsbSirketKarneDashboard() {
             />
           </KarneSection>
 
-          <KarneSection title="Kümülatif prim — branş pay dağılımı" subtitle="Şirket portföyü içindeki branş ağırlıkları (%)">
-            <BransPayGrafik
+          <KarneSection
+            title="Aylık prim — branş pay dağılımı"
+            subtitle={`${donem} vs ${primPaket.donemOnceki} · o ayın üretiminde portföy payı (%)`}
+          >
+            <BransPayBarGrafik
               bu={primPaket.payDilimleriBu}
               onceki={primPaket.payDilimleriOnceki}
-              yilBu={yilBu}
-              yilOnceki={yilOnceki}
+              donemBu={donem}
+              donemOnceki={primPaket.donemOnceki}
             />
           </KarneSection>
 
@@ -654,7 +616,7 @@ export default function TsbSirketKarneDashboard() {
             <TsbLoading message="Finansal veri yükleniyor…" />
           ) : null}
 
-          <KarneSection title="Kanala göre üretim dağılımı" subtitle="Tüm kanallar · kanalda sektör payı">
+          <KarneSection title="Kanala göre üretim dağılımı" subtitle={`${donem} aylık üretim · kanalda sektör payı`}>
             <KanalTablo
               satirlar={primPaket.kanalSatirlari}
               donemBu={donem}
@@ -663,8 +625,13 @@ export default function TsbSirketKarneDashboard() {
           </KarneSection>
 
           {primPaket.trendAylik && primPaket.trendAylik.length > 0 ? (
-            <KarneSection title="Son 12 ay aylık prim trendi" subtitle="Sektör payı = şirket aylık primi ÷ sektör aylık primi">
-              <TrendMiniChart seri={primPaket.trendAylik} sirketAdi={secilenAd} />
+            <KarneSection
+              title="Son 12 ay aylık prim trendi"
+              subtitle="Kümülatif fark = o ayın primi · sektör payı = şirket ÷ sektör aylık prim"
+            >
+              <div className={tsb.chartPanel}>
+                <TsbPrimTrendAylikBarChart seri={primPaket.trendAylik} sirketAdi={secilenAd} />
+              </div>
               <div className="mt-3">
                 <TrendPayTablo seri={primPaket.trendAylik} />
               </div>

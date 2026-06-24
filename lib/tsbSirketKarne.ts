@@ -3,9 +3,15 @@
  */
 
 import type { BransDegisimOzet, BransDegisimSatir, BransPayDilim } from "./tsbBransDegisim";
-import { buildBransDegisimTablosu, buildBransDegisimYtdTablosu, buildBransPaySnapshot } from "./tsbBransDegisim";
+import {
+  buildBransDegisimAylikTablosu,
+  buildBransDegisimTablosu,
+  buildBransPaySnapshotKarsilastirma,
+} from "./tsbBransDegisim";
 import type { BransSiraOzet, BransSiraSatir } from "./tsbBransSira";
 import { buildBransSiraTablosu, listSirketlerSiraOzeti } from "./tsbBransSira";
+import type { KanalDagilimKutu } from "./tsbKanalDagilim";
+import { buildSon12AyPrimTrend, kumulatifSeridenAylikUretim, type PrimTrendAylikNokta } from "./tsbPrimTrend12";
 import {
   aggregateKanalDagilim,
   kanalBazindaSirketSektorPayYuzde,
@@ -13,9 +19,8 @@ import {
   KANAL_DAGILIM_SATIRLARI,
   type KanalDagilimSatirKey,
 } from "./tsbKanalDagilim";
-import { buildSon12AyPrimTrend, kumulatifSeridenAylikUretim, type PrimTrendAylikNokta } from "./tsbPrimTrend12";
 import type { TsbKanalField, TsbPrimDaraltma, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
-import { prevYearPeriod, sirketSegmentFromKodu } from "./tsbPrimDashboard";
+import { prevMonthPeriod, prevYearPeriod, sirketSegmentFromKodu } from "./tsbPrimDashboard";
 
 export type KarnePrimSirasi = {
   sira: number | null;
@@ -96,6 +101,25 @@ function listPortfoySirasi(
     .map((s) => ({ kod: s.kod, toplam: s.toplam }));
 }
 
+function kanalKutuAylik(kum: KanalDagilimKutu, kumPrev: KanalDagilimKutu, donem: string): KanalDagilimKutu {
+  const prevAy = prevMonthPeriod(donem);
+  const yilBasi = !prevAy || prevAy.slice(0, 4) !== donem.slice(0, 4);
+  const diff = (a: number, b: number) => (yilBasi ? a : a - b);
+  const merkez = diff(kum.merkez, kumPrev.merkez);
+  const acente = diff(kum.acente, kumPrev.acente);
+  const banka = diff(kum.banka, kumPrev.banka);
+  const broker = diff(kum.broker, kumPrev.broker);
+  const diger = diff(kum.diger, kumPrev.diger);
+  return {
+    merkez,
+    acente,
+    banka,
+    broker,
+    diger,
+    genelToplam: merkez + acente + banka + broker + diger,
+  };
+}
+
 function buildKanalSatirlari(
   rows: TsbPrimRow[],
   donemBu: string,
@@ -104,10 +128,27 @@ function buildKanalSatirlari(
   daraltma: TsbPrimDaraltma,
   sirketKodu: number,
 ): KarneKanalSatir[] {
-  const sirketBu = aggregateKanalDagilim(rows, donemBu, segment, daraltma, sirketKodu);
-  const sirketOc = aggregateKanalDagilim(rows, donemOnceki, segment, daraltma, sirketKodu);
-  const sektorBu = aggregateKanalDagilim(rows, donemBu, segment, daraltma, null);
-  const sektorOc = aggregateKanalDagilim(rows, donemOnceki, segment, daraltma, null);
+  const prevBu = prevMonthPeriod(donemBu);
+  const prevOc = prevMonthPeriod(donemOnceki);
+
+  const sirketKumBu = aggregateKanalDagilim(rows, donemBu, segment, daraltma, sirketKodu);
+  const sirketKumOc = aggregateKanalDagilim(rows, donemOnceki, segment, daraltma, sirketKodu);
+  const sirketKumBuPrev = prevBu
+    ? aggregateKanalDagilim(rows, prevBu, segment, daraltma, sirketKodu)
+    : sirketKumBu;
+  const sirketKumOcPrev = prevOc
+    ? aggregateKanalDagilim(rows, prevOc, segment, daraltma, sirketKodu)
+    : sirketKumOc;
+
+  const sektorKumBu = aggregateKanalDagilim(rows, donemBu, segment, daraltma, null);
+  const sektorKumOc = aggregateKanalDagilim(rows, donemOnceki, segment, daraltma, null);
+  const sektorKumBuPrev = prevBu ? aggregateKanalDagilim(rows, prevBu, segment, daraltma, null) : sektorKumBu;
+  const sektorKumOcPrev = prevOc ? aggregateKanalDagilim(rows, prevOc, segment, daraltma, null) : sektorKumOc;
+
+  const sirketBu = kanalKutuAylik(sirketKumBu, sirketKumBuPrev, donemBu);
+  const sirketOc = kanalKutuAylik(sirketKumOc, sirketKumOcPrev, donemOnceki);
+  const sektorBu = kanalKutuAylik(sektorKumBu, sektorKumBuPrev, donemBu);
+  const sektorOc = kanalKutuAylik(sektorKumOc, sektorKumOcPrev, donemOnceki);
   const payBu = kanalYuzdeleri(sirketBu);
   const payKanalBu = kanalBazindaSirketSektorPayYuzde(sirketBu, sektorBu);
   const payKanalOc = kanalBazindaSirketSektorPayYuzde(sirketOc, sektorOc);
@@ -145,8 +186,8 @@ export function buildSirketKarnePrimPaket(
   if (!donemOnceki) return null;
 
   const kiyas = { mod: "sektor" as const };
-  const aylik = buildBransDegisimTablosu(rows, donemBu, channel, sirketKodu, daraltma, kiyas);
-  const ytd = buildBransDegisimYtdTablosu(rows, donemBu, channel, sirketKodu, daraltma, kiyas);
+  const aylik = buildBransDegisimAylikTablosu(rows, donemBu, channel, sirketKodu, daraltma, kiyas);
+  const ytd = buildBransDegisimTablosu(rows, donemBu, channel, sirketKodu, daraltma, kiyas);
   if (!aylik || !ytd) return null;
 
   const sira = buildBransSiraTablosu(rows, donemBu, channel, sirketKodu, daraltma);
@@ -176,9 +217,7 @@ export function buildSirketKarnePrimPaket(
     return out;
   }
 
-  const payDilimleriBu = buildBransPaySnapshot(ytd);
-  const ytdOnceki = buildBransDegisimYtdTablosu(rows, donemOnceki, channel, sirketKodu, daraltma, kiyas);
-  const payDilimleriOnceki = ytdOnceki ? buildBransPaySnapshot(ytdOnceki) : [];
+  const paySnap = buildBransPaySnapshotKarsilastirma(aylik);
 
   const trend = buildSon12AyPrimTrend(rows, sortedDonemler, donemBu, channel, segment, sirketKodu, daraltma);
   const trendAylik = trend ? kumulatifSeridenAylikUretim(trend) : null;
@@ -191,8 +230,8 @@ export function buildSirketKarnePrimPaket(
     aylikSatirlar: mapSatirlar(aylik, true),
     ytdSatirlar: mapSatirlar(ytd, false),
     portfoySirasi,
-    payDilimleriBu,
-    payDilimleriOnceki,
+    payDilimleriBu: paySnap.bu,
+    payDilimleriOnceki: paySnap.onceki,
     kanalSatirlari: buildKanalSatirlari(rows, donemBu, donemOnceki, segment, daraltma, sirketKodu),
     trendAylik,
   };

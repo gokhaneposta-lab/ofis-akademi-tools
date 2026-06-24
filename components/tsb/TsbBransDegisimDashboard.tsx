@@ -222,7 +222,7 @@ export default function TsbBransDegisimDashboard() {
   }, [rows, secilenDonem, segment]);
 
   const secilenAdEarly = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
-  const { kayit: olcekKayit, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
+  const { kayit: olcekKayit, finDonem: olcekFinDonem, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
     effectiveSirketKodu !== null && secilenDonem
       ? {
           kaynak: "prim",
@@ -399,7 +399,7 @@ export default function TsbBransDegisimDashboard() {
       </TsbFilterBar>
 
       {secilenAd ? (
-        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} yukleniyor={olcekYukleniyor} />
+        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
       ) : null}
 
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>

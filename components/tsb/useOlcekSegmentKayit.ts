@@ -8,7 +8,7 @@ import {
   type OlcekSegmentSirketKayit,
 } from "@/lib/tsbOlcekSegment";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
-import { olcekSegmentKayitFromCache, primSegmentToOlcekPool, type OlcekSegmentCache } from "@/lib/tsbOlcekSegmentCache";
+import { olcekSegmentKayitFromCache, olcekFinDonemForPrimDonem, primSegmentToOlcekPool, type OlcekSegmentCache } from "@/lib/tsbOlcekSegmentCache";
 import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
 
 type GelirOpts = {
@@ -31,6 +31,7 @@ type PrimOpts = {
 
 export function useOlcekSegmentKayit(opts: GelirOpts | PrimOpts | null): {
   kayit: OlcekSegmentSirketKayit | null;
+  finDonem: string | null;
   yukleniyor: boolean;
 } {
   const { cache, yukleniyor: cacheYukleniyor } = useOlcekSegmentCache();
@@ -41,15 +42,23 @@ export function useOlcekSegmentKayit(opts: GelirOpts | PrimOpts | null): {
     return sonuc ? olcekSegmentSirketKayit(sonuc, opts.sirketAdi) : null;
   }, [opts]);
 
-  const primKayit = useMemo(() => {
-    if (!opts || opts.kaynak !== "prim") return null;
+  const primMeta = useMemo(() => {
+    if (!opts || opts.kaynak !== "prim") return { kayit: null as OlcekSegmentSirketKayit | null, finDonem: null as string | null };
     const activeCache = opts.cache ?? cache;
-    if (!activeCache) return null;
+    if (!activeCache) return { kayit: null, finDonem: null };
     const pool = primSegmentToOlcekPool(opts.segment);
-    return olcekSegmentKayitFromCache(activeCache, opts.donem, pool, opts.sirketKodu);
+    const finDonem = olcekFinDonemForPrimDonem(activeCache, opts.donem);
+    const kayit = olcekSegmentKayitFromCache(activeCache, opts.donem, pool, opts.sirketKodu);
+    return { kayit, finDonem };
   }, [opts, cache]);
 
-  if (!opts) return { kayit: null, yukleniyor: false };
-  if (opts.kaynak === "gelir") return { kayit: gelirKayit, yukleniyor: false };
-  return { kayit: primKayit, yukleniyor: cacheYukleniyor && !opts.cache };
+  if (!opts) return { kayit: null, finDonem: null, yukleniyor: false };
+  if (opts.kaynak === "gelir") {
+    return { kayit: gelirKayit, finDonem: opts.donem, yukleniyor: false };
+  }
+  return {
+    kayit: primMeta.kayit,
+    finDonem: primMeta.finDonem,
+    yukleniyor: cacheYukleniyor && !opts.cache,
+  };
 }

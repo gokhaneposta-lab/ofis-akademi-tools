@@ -155,7 +155,7 @@ export default function TsbBransSiraDashboard() {
   const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
   const primSegment =
     rows && effectiveSirketKodu !== null ? sirketSegmentFromKodu(rows, effectiveSirketKodu) : "hayatdisi";
-  const { kayit: olcekKayit, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
+  const { kayit: olcekKayit, finDonem: olcekFinDonem, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
     effectiveSirketKodu !== null && secilenDonem
       ? {
           kaynak: "prim",
@@ -247,7 +247,7 @@ export default function TsbBransSiraDashboard() {
       </TsbFilterBar>
 
       {secilenAd ? (
-        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} yukleniyor={olcekYukleniyor} />
+        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
       ) : null}
 
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>

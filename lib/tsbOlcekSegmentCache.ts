@@ -37,13 +37,46 @@ export type OlcekSegmentCache = {
 };
 
 export function resolveOlcekFinDonem(primDonem: string, gelirDonemler: string[]): string | null {
+  if (gelirDonemler.length === 0) return null;
   if (gelirDonemler.includes(primDonem)) return primDonem;
-  const sorted = [...gelirDonemler].sort();
+
+  const prim = parsePrimOrFinDonemRef(primDonem);
+  if (!prim) return gelirDonemler[gelirDonemler.length - 1] ?? null;
+
+  const primEndKey = prim.y * 12 + prim.endMonth;
+
   let best: string | null = null;
-  for (const d of sorted) {
-    if (d <= primDonem) best = d;
+  let bestEndKey = -1;
+
+  for (const fd of gelirDonemler) {
+    const fin = parseFinCeyrekDonem(fd);
+    if (!fin) continue;
+    const finEndKey = fin.y * 12 + fin.endMonth;
+    if (finEndKey <= primEndKey && finEndKey >= bestEndKey) {
+      bestEndKey = finEndKey;
+      best = fd;
+    }
   }
-  return best ?? sorted[sorted.length - 1] ?? null;
+
+  return best ?? gelirDonemler[gelirDonemler.length - 1] ?? null;
+}
+
+/** Finansal çeyrek `YYYY-Q` → çeyrek son ay (Q1→3 … Q4→12). */
+function parseFinCeyrekDonem(donem: string): { y: number; endMonth: number } | null {
+  const m = donem.match(/^(\d{4})-([1-4])$/);
+  if (!m) return null;
+  const q = Number(m[2]);
+  if (!Number.isFinite(q) || q < 1 || q > 4) return null;
+  return { y: Number(m[1]), endMonth: q * 3 };
+}
+
+/** Prim ayı `YYYY-MM` veya fin çeyreği `YYYY-Q`. */
+function parsePrimOrFinDonemRef(donem: string): { y: number; endMonth: number } | null {
+  const fin = parseFinCeyrekDonem(donem);
+  if (fin) return fin;
+  const m = donem.match(/^(\d{4})-(0[1-9]|1[0-2])$/);
+  if (!m) return null;
+  return { y: Number(m[1]), endMonth: Number(m[2]) };
 }
 
 export function olcekSegmentKayitFromCache(
@@ -52,12 +85,20 @@ export function olcekSegmentKayitFromCache(
   pool: SegmentSkorPool,
   sirketKodu: number,
 ): OlcekSegmentSirketKayit | null {
-  if (!cache) return null;
-  const finDonem = resolveOlcekFinDonem(donem, cache.donemler);
-  if (!finDonem) return null;
+  const finDonem = cache ? resolveOlcekFinDonem(donem, cache.donemler) : null;
+  if (!cache || !finDonem) return null;
   const poolData = cache.byDonem[finDonem]?.[pool];
   if (!poolData) return null;
   return poolData.sirketler.find((s) => s.sirketKodu === sirketKodu) ?? null;
+}
+
+/** Prim/ay döneminden eşleşen finansal çeyrek — rozet ve kıyas tutarlılığı için. */
+export function olcekFinDonemForPrimDonem(
+  cache: OlcekSegmentCache | null,
+  primDonem: string,
+): string | null {
+  if (!cache) return null;
+  return resolveOlcekFinDonem(primDonem, cache.donemler);
 }
 
 export function olcekSegmentPeerKodlariFromCache(

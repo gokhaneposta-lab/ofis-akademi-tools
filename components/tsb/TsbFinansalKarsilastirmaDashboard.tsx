@@ -151,7 +151,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
     (sirketKodu === "" ? "" : `Şirket ${sirketKodu}`);
 
-  const { kayit: olcekKayit } = useOlcekSegmentKayit(
+  const { kayit: olcekKayit, finDonem: olcekFinDonem } = useOlcekSegmentKayit(
     rows && donem && sirketKodu !== ""
       ? {
           kaynak: "gelir",
@@ -291,7 +291,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
         </p>
       </TsbFilterBar>
 
-      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} /> : null}
+      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
 
       <TsbTableShell>
         <table className={cn(tsb.table, "min-w-[820px]")}>

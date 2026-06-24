@@ -444,7 +444,7 @@ export default function TsbHasarPrimDashboard() {
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
     (sirketKodu === "" ? "" : `Şirket ${sirketKodu}`);
 
-  const { kayit: olcekKayit } = useOlcekSegmentKayit(
+  const { kayit: olcekKayit, finDonem: olcekFinDonem } = useOlcekSegmentKayit(
     rows && donem && sirketKodu !== ""
       ? {
           kaynak: "gelir",
@@ -598,7 +598,7 @@ export default function TsbHasarPrimDashboard() {
         </TsbFilterGrid>
       </TsbFilterBar>
 
-      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} /> : null}
+      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
 
       {secilenSatir && kiyasOzet && (
         <div className="grid gap-3 lg:grid-cols-2">

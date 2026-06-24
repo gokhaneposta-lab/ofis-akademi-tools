@@ -409,7 +409,7 @@ export default function TsbPrimTrend12Dashboard() {
 
   const primSegment =
     rows && effectiveSirket !== null ? sirketSegmentFromKodu(rows, effectiveSirket) : segment;
-  const { kayit: olcekKayit, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
+  const { kayit: olcekKayit, finDonem: olcekFinDonem, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
     effectiveSirket !== null && secilenBitis
       ? {
           kaynak: "prim",
@@ -537,7 +537,7 @@ export default function TsbPrimTrend12Dashboard() {
       </TsbFilterBar>
 
       {sirketAdi ? (
-        <TsbOlcekSegmentRozeti sirketAdi={sirketAdi} kayit={olcekKayit} yukleniyor={olcekYukleniyor} />
+        <TsbOlcekSegmentRozeti sirketAdi={sirketAdi} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
       ) : null}
 
       {seri && seri.length > 0 && seriAylik && sirketAdi && (

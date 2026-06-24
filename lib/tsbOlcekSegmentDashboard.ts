@@ -25,7 +25,10 @@ export function filtreOlcekSegmentTablosu(
 ): OlcekSegmentSirketKayit[] {
   const list =
     segment === "tumu" ? [...sirketler] : sirketler.filter((s) => s.olcekSegment === segment);
-  return list.sort((a, b) => a.olcekSirasi - b.olcekSirasi || a.sirketKodu - b.sirketKodu);
+  if (segment === "tumu") {
+    return list.sort((a, b) => a.olcekSirasi - b.olcekSirasi || a.sirketKodu - b.sirketKodu);
+  }
+  return list.sort((a, b) => a.segmentSirasi - b.segmentSirasi || a.sirketKodu - b.sirketKodu);
 }
 
 export function segmentSirasiMetin(s: OlcekSegmentSirketKayit): string {

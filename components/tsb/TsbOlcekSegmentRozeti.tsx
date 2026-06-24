@@ -7,11 +7,13 @@ import { cn, tsb } from "@/components/tsb/tsbDashboardUi";
 type Props = {
   sirketAdi: string;
   kayit: OlcekSegmentSirketKayit | null;
+  /** Finansal çeyrek — prim panellerinde prim ayından eşlenen dönem */
+  finDonem?: string | null;
   yukleniyor?: boolean;
   className?: string;
 };
 
-export default function TsbOlcekSegmentRozeti({ sirketAdi, kayit, yukleniyor, className }: Props) {
+export default function TsbOlcekSegmentRozeti({ sirketAdi, kayit, finDonem, yukleniyor, className }: Props) {
   if (yukleniyor) {
     return (
       <div className={cn(tsb.olcekSegmentKart, className)}>
@@ -52,6 +54,11 @@ export default function TsbOlcekSegmentRozeti({ sirketAdi, kayit, yukleniyor, cl
             )}
             <span className="ml-2 text-slate-500">· Skor: {kayit.olcekSkoru.toFixed(1)}</span>
           </p>
+          {finDonem ? (
+            <p className="mt-0.5 text-[10px] text-slate-500">
+              Sınıflandırma dönemi: <strong className="text-slate-700">{finDonem}</strong> (finansal çeyrek)
+            </p>
+          ) : null}
         </div>
       </div>
 

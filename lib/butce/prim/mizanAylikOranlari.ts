@@ -1,4 +1,4 @@
-import { MIZAN_HESAP_DIREKT } from "../config/constants";
+import { MIZAN_AYLIK_HESAP_BRUT } from "../config/constants";
 import { normalizeBransKodu } from "../textUtils";
 import type { MizanAylikRow } from "../types";
 import { kumuldenAylikArtis, normalizeAylikOranlar, varsayilanAylikDagilim } from "./primDagilim";
@@ -34,7 +34,7 @@ function bransAylikOranlari(
   rows: MizanAylikRow[],
   yillar: number[],
   brans: string,
-  hesap = MIZAN_HESAP_DIREKT,
+  hesap = MIZAN_AYLIK_HESAP_BRUT,
 ): number[] | null {
   const oranlar: number[][] = [];
   for (const yil of yillar) {
@@ -58,13 +58,13 @@ export type MizanAylikOranSonuc = {
 };
 
 /**
- * MIZAN aylık kümülatif 60001 → branş bazlı aylık pay oranları.
+ * MIZAN aylık kümülatif brüt prim (kod 0111) → branş bazlı aylık pay oranları.
  * Yıllık primi 12'ye eşit bölmüyor; geçmiş aylık üretim payını uygular.
  */
 export function aylikOranlariFromMizan(
   rows: MizanAylikRow[],
   referansYillar: number[],
-  hesap = MIZAN_HESAP_DIREKT,
+  hesap = MIZAN_AYLIK_HESAP_BRUT,
 ): MizanAylikOranSonuc {
   if (rows.length === 0 || referansYillar.length === 0) {
     return {

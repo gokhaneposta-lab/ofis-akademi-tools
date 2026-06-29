@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { importMizanFromBuffer } from "@/lib/butce/import/mizanImport";
+import { importMizanAylikFromBuffer } from "@/lib/butce/import/mizanAylikImport";
 import { importSatisButceFromBuffer } from "@/lib/butce/import/satisButceImport";
 import { importTarifeMapFromBuffer } from "@/lib/butce/import/tarifeMapImport";
 import { importUretimFromBuffer } from "@/lib/butce/import/uretimImport";
 import {
   BUTCE_META_JSON,
   BUTCE_MIZAN_JSON,
+  BUTCE_MIZAN_AYLIK_JSON,
   BUTCE_SATIS_BUTCE_JSON,
   BUTCE_TARIFE_MAP_JSON,
   BUTCE_URETIM_JSON,
@@ -72,6 +74,14 @@ export async function POST(request: Request) {
       await writePrivateFile(BUTCE_MIZAN_JSON, JSON.stringify(rows));
       meta = { ...meta, ...mizanMeta };
       logs.push(log);
+
+      const aylik = importMizanAylikFromBuffer(buf);
+      if (aylik.rows.length > 0) {
+        await writePrivateFile(BUTCE_MIZAN_AYLIK_JSON, JSON.stringify(aylik.rows));
+        meta.mizanAylikGuncellemeIso = new Date().toISOString();
+        meta.mizanAylikSatirSayisi = aylik.rows.length;
+        logs.push(aylik.log);
+      }
     }
 
     if (kind === "butce_map" || kind === "tarife_map") {
@@ -103,6 +113,7 @@ export async function POST(request: Request) {
     const storage = storageDurumu();
     const outFiles: string[] = [];
     if (kind === "mizan" || kind === "butce_map") outFiles.push(BUTCE_MIZAN_JSON);
+    if (kind === "butce_map" && meta.mizanAylikSatirSayisi) outFiles.push(BUTCE_MIZAN_AYLIK_JSON);
     if (kind === "butce_map" || kind === "tarife_map") outFiles.push(BUTCE_TARIFE_MAP_JSON);
     if (kind === "satis_butce") outFiles.push(BUTCE_SATIS_BUTCE_JSON);
     if (kind === "uretim") outFiles.push(BUTCE_URETIM_JSON);

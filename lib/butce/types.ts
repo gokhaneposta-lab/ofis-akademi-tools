@@ -52,11 +52,16 @@ export type ButceMeta = {
   schemaVersion: 2;
   butceYili: number;
   mizanGuncellemeIso?: string;
+  mizanKaynak?: "aylik-gt-koprusu" | "butce-map";
   mizanYilMin?: number;
   mizanYilMax?: number;
   mizanSatirSayisi?: number;
   mizanAylikGuncellemeIso?: string;
   mizanAylikSatirSayisi?: number;
+  mizanAylikFullSatirSayisi?: number;
+  mizanAylikYilMin?: number;
+  mizanAylikYilMax?: number;
+  bilancoAylikSatirSayisi?: number;
   tarifeMapGuncellemeIso?: string;
   tarifeMapSatirSayisi?: number;
   satisButceGuncellemeIso?: string;

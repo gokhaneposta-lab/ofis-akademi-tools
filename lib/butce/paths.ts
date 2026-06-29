@@ -4,6 +4,8 @@ import { tmpdir } from "os";
 /** Sunucu tarafı — gitignore (yerel); Vercel'de Blob veya /tmp. */
 export const BUTCE_MIZAN_JSON = "mizan-tidy.json";
 export const BUTCE_MIZAN_AYLIK_JSON = "mizan-aylik-tidy.json";
+export const BUTCE_MIZAN_AYLIK_FULL_JSON = "mizan-aylik-full.json";
+export const BUTCE_BILANCO_AYLIK_JSON = "bilanco-aylik-tidy.json";
 export const BUTCE_META_JSON = "meta.json";
 export const BUTCE_ORAN_AYAR_JSON = "oran-ayarlar.json";
 export const BUTCE_PRIM_BRANS_JSON = "prim-brans-hedef.json";

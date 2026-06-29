@@ -6,6 +6,8 @@ import {
   loadUretimRows,
 } from "@/lib/butce/loadData";
 import { DagitimMotoru } from "@/lib/butce/prim/dagitimMotoru";
+import { BUTCE_PRIM_BRANS_JSON } from "@/lib/butce/paths";
+import { writePrivateFile } from "@/lib/butce/storage";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -54,6 +56,17 @@ export async function POST(request: Request) {
     mizanYedek: body.mizanYedek ?? true,
     tarifeHedefleri: body.tarifeHedefleri,
   });
+
+  const hedefler: Record<string, number> = {};
+  for (const b of sonuc.bransOzet) hedefler[b.bransKodu] = b.hedefPrim;
+  await writePrivateFile(
+    BUTCE_PRIM_BRANS_JSON,
+    JSON.stringify({
+      guncellemeIso: new Date().toISOString(),
+      referansEtiket: body.referansEtiket ?? "2024",
+      hedefler,
+    }),
+  );
 
   return NextResponse.json({ ok: true, ...sonuc });
 }

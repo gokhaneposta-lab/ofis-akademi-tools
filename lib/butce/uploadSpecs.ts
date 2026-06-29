@@ -36,6 +36,7 @@ export const BUTCE_MAP_MIZAN_SPEC: UploadSpec = {
   ],
   checks: [
     "MIZAN sayfası var mı?",
+    "İsteğe bağlı MIZAN_AY sayfası (aylık kümülatif, A:yıl B:ay C:hesap D:branş E:tutar)",
     "En az bir geçmiş yıl (ör. 2022–2025) ve 7xx branş kodları var mı?",
     "TOPLAM satırları otomatik atlanır — sorun değil.",
     "Import sonrası ~50.000+ satır normaldir (branş × hesap × yıl).",

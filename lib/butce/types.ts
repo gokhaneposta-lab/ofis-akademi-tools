@@ -6,6 +6,30 @@ export type MizanRow = {
   tutar: number;
 };
 
+/** MIZAN aylık kümülatif — branş × hesap × ay. */
+export type MizanAylikRow = {
+  yil: number;
+  ay: number;
+  hesap: string;
+  bransKodu: string;
+  tutar: number;
+};
+
+export type PrimBransHedefStore = Record<string, number>;
+
+export type AylikPrimStore = {
+  butceYili: number;
+  referansYil: number;
+  kaynak: "mizan_aylik" | "manuel" | "varsayilan";
+  genelOranlar: number[];
+  satirlar: Array<{
+    bransKodu: string;
+    aylar: number[];
+    toplam: number;
+  }>;
+  guncellemeIso: string;
+};
+
 export type BransOranAyar = {
   referans: string;
   oran: number;
@@ -31,6 +55,8 @@ export type ButceMeta = {
   mizanYilMin?: number;
   mizanYilMax?: number;
   mizanSatirSayisi?: number;
+  mizanAylikGuncellemeIso?: string;
+  mizanAylikSatirSayisi?: number;
   tarifeMapGuncellemeIso?: string;
   tarifeMapSatirSayisi?: number;
   satisButceGuncellemeIso?: string;

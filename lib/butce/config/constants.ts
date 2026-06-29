@@ -57,3 +57,9 @@ export const REFERANS_YIL_SECENEKLERI: Readonly<Record<string, readonly number[]
 
 export const MIZAN_HESAP_DIREKT = "60001";
 export const MIZAN_HESAP_ENDIREKT = "600012";
+
+/**
+ * Aylık GT dosyasında branş kırılımı GT satır kodu diliyle gelir (muhasebe kodu değil).
+ * Aylık dağılım mevsimselliği brüt yazılan prim (kod 0111) üzerinden hesaplanır.
+ */
+export const MIZAN_AYLIK_HESAP_BRUT = "0111";

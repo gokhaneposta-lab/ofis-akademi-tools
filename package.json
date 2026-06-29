@@ -19,7 +19,10 @@
     "tsb:meta": "npx --yes tsx scripts/tsb-write-meta.ts",
     "tsb:segment-xlsx": "npx --yes tsx scripts/tsb-segment-export-xlsx.ts",
     "tsb:olcek-segment-xlsx": "npx --yes tsx scripts/tsb-olcek-segment-export-xlsx.ts",
+    "tsb:brans-esleme-xlsx": "node scripts/tsb-export-brans-esleme-xlsx.mjs",
     "butce:import-mizan": "node scripts/butce-import-mizan.mjs",
+    "butce:import-aylik-gt": "node scripts/butce-import-aylik-gt.mjs",
+    "butce:recon-oran": "npx --yes tsx scripts/butce-recon-oran.ts",
     "butce:gen-brans": "node scripts/gen-brans-json.mjs"
   },
   "dependencies": {

@@ -41,21 +41,9 @@ function isLeafBrans(b) {
   return /^\d{3}$/.test(b) && b[0] === "7";
 }
 
-/**
- * Kümülatif (ay → değer) haritasını yıl içi aylık artışa çevirir.
- * Eksik aylar atlanır; son bilinen kümülatif taşınır (Şubat varsa Ocak yoksa
- * Şubat = Şubat kümülatif, mantıklı toplam korunur).
- */
-function decumulate(monthMap) {
-  const out = [];
-  let lastCum = 0;
-  for (let m = 1; m <= 12; m++) {
-    if (!monthMap.has(m)) continue;
-    const cum = monthMap.get(m);
-    out.push([m, cum - lastCum]);
-    lastCum = cum;
-  }
-  return out;
+/** Ay haritasını (ham kümülatif NET) sıralı [ay, tutar] dizisine çevirir. */
+function aylikSirali(monthMap) {
+  return [...monthMap.entries()].sort((a, b) => a[0] - b[0]);
 }
 
 function importAylikGt(excelPath, butceYili) {
@@ -105,13 +93,13 @@ function importAylikGt(excelPath, butceYili) {
     }
   }
 
-  // GT tidy üret
+  // GT tidy üret — ham kümülatif NET (aylık çevrimi tüketici yapar)
   const gtFull = [];
   const gtPrim = [];
   for (const [key, byYear] of gtGroups) {
     const [brans, kod] = key.split("|");
     for (const [yil, byMonth] of byYear) {
-      for (const [ay, tutar] of decumulate(byMonth)) {
+      for (const [ay, tutar] of aylikSirali(byMonth)) {
         const row = { yil, ay, hesap: kod, bransKodu: brans, tutar };
         gtFull.push(row);
         if (PRIM_KODLAR.has(kod)) gtPrim.push(row);
@@ -119,11 +107,11 @@ function importAylikGt(excelPath, butceYili) {
     }
   }
 
-  // Bilanço tidy üret
+  // Bilanço tidy üret — ham kümülatif bakiye seviyesi
   const bil = [];
   for (const [hesap, byYear] of bilGroups) {
     for (const [yil, byMonth] of byYear) {
-      for (const [ay, tutar] of decumulate(byMonth)) {
+      for (const [ay, tutar] of aylikSirali(byMonth)) {
         bil.push({ yil, ay, hesap, tutar });
       }
     }

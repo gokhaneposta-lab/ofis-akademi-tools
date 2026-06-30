@@ -55,6 +55,14 @@ export async function loadPrimBransHedef(): Promise<PrimBransHedefStore | null> 
   return parsed.hedefler ?? null;
 }
 
+/** Prim dağıtımından kaydedilen direkt/endirekt branş kırılımı (gelir tablosu F12/F15). */
+export async function loadPrimBransEndirekt(): Promise<Record<string, number>> {
+  const raw = await readPrivateFile(BUTCE_PRIM_BRANS_JSON);
+  if (!raw) return {};
+  const parsed = JSON.parse(raw) as { endirekt?: Record<string, number> };
+  return parsed.endirekt ?? {};
+}
+
 export async function loadAylikPrim(): Promise<AylikPrimStore | null> {
   const raw = await readPrivateFile(BUTCE_AYLIK_PRIM_JSON);
   if (!raw) return null;

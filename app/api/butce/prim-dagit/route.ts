@@ -59,12 +59,20 @@ export async function POST(request: Request) {
 
   const hedefler: Record<string, number> = {};
   for (const b of sonuc.bransOzet) hedefler[b.bransKodu] = b.hedefPrim;
+  const direkt: Record<string, number> = {};
+  const endirekt: Record<string, number> = {};
+  for (const b of sonuc.bransDirektEndirekt) {
+    direkt[b.bransKodu] = b.direktPrim;
+    endirekt[b.bransKodu] = b.endirektPrim;
+  }
   await writePrivateFile(
     BUTCE_PRIM_BRANS_JSON,
     JSON.stringify({
       guncellemeIso: new Date().toISOString(),
       referansEtiket: body.referansEtiket ?? "2024",
       hedefler,
+      direkt,
+      endirekt,
     }),
   );
 

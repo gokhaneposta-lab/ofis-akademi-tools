@@ -21,10 +21,12 @@ export default async function PrimHedefiPage() {
       durum={{
         hasMizan: durum.hasMizan,
         hasTarifeMap: durum.hasTarifeMap,
+        hasTarifeBransPay: durum.hasTarifeBransPay,
         hasSatisButce: durum.hasSatisButce,
         hasUretim: durum.hasUretim,
         mizanSatir: durum.mizanSatir,
         tarifeMapSatir: durum.tarifeMapSatir,
+        tarifeBransPaySatir: durum.tarifeBransPaySatir,
         satisButceSatir: durum.satisButceSatir,
         uretimSatir: durum.uretimSatir,
         butceYili: durum.butceYili,

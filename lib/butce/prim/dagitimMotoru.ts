@@ -13,6 +13,7 @@ import type {
   PrimDagitimLog,
   PrimDagitimOzet,
   SatisButceRow,
+  TarifeBransPayRow,
   TarifeMapRow,
   UretimRow,
 } from "../types";
@@ -24,6 +25,8 @@ type UretimNorm = UretimRow & {
   kanal3Norm: string;
   tarifeNorm: string;
 };
+
+type Kaynak = "tarife_brans_pay" | "uretim" | "mizan";
 
 export type DagitimInput = {
   satisRows: SatisButceRow[];
@@ -128,14 +131,21 @@ export class DagitimMotoru {
   private uretim: UretimNorm[];
   private tarifeBrans: Record<string, Set<string>>;
   private mizanBransTarife: MizanBransTarife[];
+  private tarifeBransPay: TarifeBransPayRow[];
 
   constructor(
     uretim: UretimRow[],
     tarifeMap: TarifeMapRow[],
     mizan: MizanRow[],
+    tarifeBransPay: TarifeBransPayRow[] = [],
   ) {
     this.uretim = uretimWithNorm(uretim);
     this.tarifeBrans = tarifeToBransSet(tarifeMap);
+    this.tarifeBransPay = tarifeBransPay.map((r) => ({
+      ...r,
+      tarifeGrubu: normalizeText(r.tarifeGrubu),
+      bransKodu: normalizeBransKodu(r.bransKodu),
+    }));
     const tarifeByBrans = new Map(tarifeMap.map((r) => [r.bransKodu, r.tarifeGrubu]));
     this.mizanBransTarife = mizan.map((m) => ({
       ...m,
@@ -152,12 +162,16 @@ export class DagitimMotoru {
       tarifeHedefleri,
     } = input;
 
+    const refYears = REFERANS_YIL_SECENEKLERI[referansEtiket] ?? [2024];
+    if (this.tarifeBransPay.length > 0) {
+      return this.dagitTarifeBransPay(satisRows, hedefKolon, tarifeHedefleri, refYears, referansEtiket);
+    }
+
     let dagitimRows = satisRows;
     if (tarifeHedefleri && Object.keys(tarifeHedefleri).length > 0) {
       dagitimRows = dagitimHazirla(satisRows, tarifeHedefleri);
     }
 
-    const refYears = REFERANS_YIL_SECENEKLERI[referansEtiket] ?? [2024];
     const detay: PrimDagitimDetay[] = [];
     const log: PrimDagitimLog[] = [];
 
@@ -232,6 +246,93 @@ export class DagitimMotoru {
     return { detay, bransOzet, bransDirektEndirekt, log, ozet };
   }
 
+  private tarifeHedefMap(
+    satisRows: SatisButceRow[],
+    hedefKolon: keyof Pick<SatisButceRow, "hedefPrim" | "oncekiYil1" | "oncekiYil2" | "tahminYilsonu">,
+    tarifeHedefleri?: Record<string, number>,
+  ): Record<string, number> {
+    if (tarifeHedefleri && Object.keys(tarifeHedefleri).length > 0) {
+      const out: Record<string, number> = {};
+      for (const [k, v] of Object.entries(tarifeHedefleri)) out[normalizeText(k)] = Number(v) || 0;
+      return out;
+    }
+
+    const out: Record<string, number> = {};
+    for (const row of satisRows) {
+      const tarife = normalizeText(row.tarifeGrubu);
+      out[tarife] = (out[tarife] ?? 0) + Math.max(0, row[hedefKolon]);
+    }
+    return out;
+  }
+
+  private dagitTarifeBransPay(
+    satisRows: SatisButceRow[],
+    hedefKolon: keyof Pick<SatisButceRow, "hedefPrim" | "oncekiYil1" | "oncekiYil2" | "tahminYilsonu">,
+    tarifeHedefleri: Record<string, number> | undefined,
+    refYears: readonly number[],
+    referansEtiket: string,
+  ): DagitimSonuc {
+    const hedefler = this.tarifeHedefMap(satisRows, hedefKolon, tarifeHedefleri);
+    const detay: PrimDagitimDetay[] = [];
+    const log: PrimDagitimLog[] = [];
+
+    for (const [tarifeGrubu, hedef] of Object.entries(hedefler)) {
+      if (hedef <= 0) continue;
+      const shares = this.tarifeBransPaylari(tarifeGrubu, refYears);
+      if (Object.keys(shares).length === 0) {
+        log.push({
+          kanal1: "TARIFE_GRUBU",
+          kanal2: "PAY_TABLOSU",
+          tarifeGrubu,
+          hedefPrim: hedef,
+          eslesme: "tarife_brans_pay_yok",
+          mesaj: "Tarife-branş pay tablosunda referans yıl için dağılım yok — dağıtılamadı",
+        });
+        continue;
+      }
+
+      const satisSatir = satisRows.findIndex((r) => normalizeText(r.tarifeGrubu) === tarifeGrubu);
+      for (const [bransKodu, pay] of Object.entries(shares)) {
+        if (pay <= 0) continue;
+        detay.push({
+          satisSatir,
+          sirket: "BS",
+          kanal1: "TARIFE_GRUBU",
+          kanal2: "PAY_TABLOSU",
+          tarifeGrubu,
+          bransKodu,
+          hedefPrim: hedef * pay,
+          pay,
+          primTipi: "direkt",
+          kaynak: "tarife_brans_pay",
+          eslesme: "tarife_brans_pay",
+        });
+      }
+    }
+
+    const bransOzet = this.bransOzet(detay);
+    const bransDirektEndirekt = this.bransDirektEndirekt(detay);
+    const ozet = this.ozetIstatistik(detay, log, referansEtiket);
+
+    return { detay, bransOzet, bransDirektEndirekt, log, ozet };
+  }
+
+  private tarifeBransPaylari(tgn: string, refYears: readonly number[]): Record<string, number> {
+    const yearShares: Record<string, number>[] = [];
+    for (const yil of refYears) {
+      const sub = this.tarifeBransPay.filter((r) => r.yil === yil && r.tarifeGrubu === tgn);
+      const total = sub.reduce((a, r) => a + Math.max(0, r.netPrim), 0);
+      if (total <= 0) continue;
+      const map = new Map<string, number>();
+      for (const r of sub) {
+        map.set(r.bransKodu, (map.get(r.bransKodu) ?? 0) + Math.max(0, r.netPrim));
+      }
+      const shares = payDict(map);
+      if (Object.keys(shares).length > 0) yearShares.push(shares);
+    }
+    return ortalamaPaylar(yearShares);
+  }
+
   private hesaplaPaylar(
     kanal1: string,
     kanal2: string,
@@ -239,7 +340,7 @@ export class DagitimMotoru {
     refYears: readonly number[],
     endirekt: boolean,
     mizanYedek: boolean,
-  ): { shares: Record<string, number>; kaynak: "uretim" | "mizan"; eslesme: string } {
+  ): { shares: Record<string, number>; kaynak: Kaynak; eslesme: string } {
     const k1n = normalizeText(kanal1);
     const k3n = normalizeText(kanal2);
     const tgn = normalizeText(tarife);

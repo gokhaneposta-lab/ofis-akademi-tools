@@ -49,9 +49,11 @@ export const REFERANS_YIL_SECENEKLERI: Readonly<Record<string, readonly number[]
   "2024": [2024],
   "2023": [2023],
   "2025": [2025],
+  "2026": [2026],
   "2022": [2022],
   "Son 2 Yıl Ortalaması (2023-2024)": [2023, 2024],
   "Son 2 Yıl Ortalaması (2024-2025)": [2024, 2025],
+  "Son 2 Yıl Ortalaması (2025-2026)": [2025, 2026],
   "Son 3 Yıl Ortalaması (2023-2025)": [2023, 2024, 2025],
 };
 

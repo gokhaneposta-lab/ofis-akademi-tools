@@ -73,6 +73,34 @@ export const BUTCE_MAP_TARIFE_SPEC: UploadSpec = {
   comingSoon: false,
 };
 
+export const BUTCE_TARIFE_BRANS_PAY_SPEC: UploadSpec = {
+  id: "tarife_brans_pay",
+  title: "Tarife grubu × hazine branşı pay tablosu",
+  summary:
+    "Geçmiş üretimde tarife grubu priminin hangi 7xx hazine branşlarına dağıldığını gösterir. A motoru yeni bütçe hedeflerini bu paylara göre dağıtır.",
+  fileHint: "2023-2025 tarifegrubu hazine branşı pay.xlsx (2026 dahil olabilir)",
+  sheetName: "İlk sayfa okunur",
+  steps: [
+    "Tarife grubu × hazine branşı üretim/pay raporunu alın.",
+    "2026 geldikçe aynı formatta yükleyin; sistem en son yılları referans seçeneğinde kullanır.",
+    "Prim hedefi sayfasında «Tarife-branş pay» ile yükleyin.",
+  ],
+  columns: [
+    { col: "A", field: "Şirket", example: "BS" },
+    { col: "B", field: "Tarife Grup Adı", example: "YANGIN" },
+    { col: "C", field: "Hazine Branş Kod", example: "701" },
+    { col: "D", field: "Hazine Branş Ad", example: "YANGIN VE DOĞAL AFETLER" },
+    { col: "E", field: "Tanzim Yıl", example: "2025" },
+    { col: "F", field: "Tanzim Ay", example: "12" },
+    { col: "G", field: "Net Prim TL", example: "797149442" },
+  ],
+  checks: [
+    "Aynı tarife grubu altında birden fazla 7xx branş olabilir; bu beklenen durumdur.",
+    "Yıllar 2023–2025 veya 2026 dahil olabilir.",
+    "Net Prim TL aylık satırlarsa sistem yıl içinde toplar; yıl sonu payı bu toplamdan çıkar.",
+  ],
+};
+
 export const BUTCE_PRIM_SPEC: UploadSpec = {
   id: "satis_butce",
   title: "Bütçe GT Çalışma — SATIS_BUTCE_ sayfası",

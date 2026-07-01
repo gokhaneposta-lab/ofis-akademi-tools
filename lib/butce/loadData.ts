@@ -7,6 +7,7 @@ import {
   BUTCE_ORAN_AYAR_JSON,
   BUTCE_PRIM_BRANS_JSON,
   BUTCE_SATIS_BUTCE_JSON,
+  BUTCE_TARIFE_BRANS_PAY_JSON,
   BUTCE_TARIFE_MAP_JSON,
   BUTCE_URETIM_JSON,
 } from "./paths";
@@ -19,6 +20,7 @@ import type {
   OranAyarStore,
   PrimBransHedefStore,
   SatisButceRow,
+  TarifeBransPayRow,
   TarifeMapRow,
   UretimRow,
 } from "./types";
@@ -49,18 +51,29 @@ export async function loadMizanAylikRows(): Promise<MizanAylikRow[]> {
 }
 
 export async function loadPrimBransHedef(): Promise<PrimBransHedefStore | null> {
+  const store = await loadPrimBransHedefStore();
+  return store?.hedefler ?? null;
+}
+
+export type PrimBransHedefFile = {
+  guncellemeIso?: string;
+  referansEtiket?: string;
+  tarifeHedefleri?: Record<string, number>;
+  hedefler?: PrimBransHedefStore;
+  direkt?: Record<string, number>;
+  endirekt?: Record<string, number>;
+};
+
+export async function loadPrimBransHedefStore(): Promise<PrimBransHedefFile | null> {
   const raw = await readPrivateFile(BUTCE_PRIM_BRANS_JSON);
   if (!raw) return null;
-  const parsed = JSON.parse(raw) as { hedefler?: PrimBransHedefStore };
-  return parsed.hedefler ?? null;
+  return JSON.parse(raw) as PrimBransHedefFile;
 }
 
 /** Prim dağıtımından kaydedilen direkt/endirekt branş kırılımı (gelir tablosu F12/F15). */
 export async function loadPrimBransEndirekt(): Promise<Record<string, number>> {
-  const raw = await readPrivateFile(BUTCE_PRIM_BRANS_JSON);
-  if (!raw) return {};
-  const parsed = JSON.parse(raw) as { endirekt?: Record<string, number> };
-  return parsed.endirekt ?? {};
+  const store = await loadPrimBransHedefStore();
+  return store?.endirekt ?? {};
 }
 
 export async function loadAylikPrim(): Promise<AylikPrimStore | null> {
@@ -73,6 +86,21 @@ export async function loadTarifeMapRows(): Promise<TarifeMapRow[]> {
   const raw = await readPrivateFile(BUTCE_TARIFE_MAP_JSON);
   if (!raw) return [];
   return JSON.parse(raw) as TarifeMapRow[];
+}
+
+export async function loadTarifeBransPayRows(): Promise<TarifeBransPayRow[]> {
+  const raw = await readPrivateFile(BUTCE_TARIFE_BRANS_PAY_JSON);
+  if (!raw) return [];
+  const parsed = JSON.parse(raw) as TarifeBransPayRow[];
+  return parsed.map((r) => ({
+    sirket: String(r.sirket ?? ""),
+    tarifeGrubu: String(r.tarifeGrubu),
+    bransKodu: String(r.bransKodu),
+    hazineBransAd: String(r.hazineBransAd ?? ""),
+    yil: Number(r.yil),
+    ay: Number(r.ay),
+    netPrim: Number(r.netPrim),
+  }));
 }
 
 export async function loadSatisButceRows(): Promise<SatisButceRow[]> {
@@ -104,18 +132,21 @@ export async function butceDataDurumu() {
   const mizan = await loadMizanRows();
   const mizanAylik = await loadMizanAylikRows();
   const tarifeMap = await loadTarifeMapRows();
+  const tarifeBransPay = await loadTarifeBransPayRows();
   const satisButce = await loadSatisButceRows();
   const uretim = await loadUretimRows();
   return {
     hasMizan: mizan.length > 0,
     hasMizanAylik: mizanAylik.length > 0,
     hasTarifeMap: tarifeMap.length > 0,
+    hasTarifeBransPay: tarifeBransPay.length > 0,
     hasSatisButce: satisButce.length > 0,
     hasUretim: uretim.length > 0,
     hasPrimBransHedef: (await loadPrimBransHedef()) != null,
     mizanSatir: mizan.length,
     mizanAylikSatir: mizanAylik.length,
     tarifeMapSatir: tarifeMap.length,
+    tarifeBransPaySatir: tarifeBransPay.length,
     satisButceSatir: satisButce.length,
     uretimSatir: uretim.length,
     butceYili: meta?.butceYili ?? BUTCE_YILI_VARSAYILAN,

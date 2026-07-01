@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ButceUploadGuide from "@/components/butce/ButceUploadGuide";
+import BransDagitimIzTable from "@/components/butce/BransDagitimIzTable";
 import { REFERANS_YIL_SECENEKLERI } from "@/lib/butce/config/constants";
-import { BUTCE_MAP_TARIFE_SPEC, BUTCE_PRIM_SPEC } from "@/lib/butce/uploadSpecs";
+import { BUTCE_MAP_TARIFE_SPEC, BUTCE_PRIM_SPEC, BUTCE_TARIFE_BRANS_PAY_SPEC } from "@/lib/butce/uploadSpecs";
+import type { BransTarifeIzleme } from "@/lib/butce/prim/bransDagitimTrace";
 import type {
   PrimBransOzet,
   PrimDagitimDetay,
@@ -26,10 +28,12 @@ type TarifeOzet = {
 type Durum = {
   hasMizan: boolean;
   hasTarifeMap: boolean;
+  hasTarifeBransPay: boolean;
   hasSatisButce: boolean;
   hasUretim: boolean;
   mizanSatir: number;
   tarifeMapSatir: number;
+  tarifeBransPaySatir: number;
   satisButceSatir: number;
   uretimSatir: number;
   butceYili: number;
@@ -127,7 +131,7 @@ function UploadBlock({
 
 export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
   const [tarifeRows, setTarifeRows] = useState<TarifeOzet[]>(initialTarifeOzet);
-  const [referans, setReferans] = useState("2024");
+  const [referans, setReferans] = useState("Son 2 Yıl Ortalaması (2024-2025)");
   const [mizanYedek, setMizanYedek] = useState(true);
   const [dagitBusy, setDagitBusy] = useState(false);
   const [dagitErr, setDagitErr] = useState<string | null>(null);
@@ -135,10 +139,12 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
   const [detay, setDetay] = useState<PrimDagitimDetay[] | null>(null);
   const [log, setLog] = useState<PrimDagitimLog[] | null>(null);
   const [ozet, setOzet] = useState<PrimDagitimOzet | null>(null);
+  const [izleme, setIzleme] = useState<BransTarifeIzleme | null>(null);
+  const [izlemeBrans, setIzlemeBrans] = useState("701");
+  const [izlemeTarife, setIzlemeTarife] = useState("YANGIN");
 
   const butceYili = durum.butceYili;
-  const hazir =
-    durum.hasSatisButce && durum.hasTarifeMap && durum.hasMizan;
+  const hazir = durum.hasSatisButce && durum.hasTarifeBransPay;
 
   function updateTarife(idx: number, field: "yeniHedef" | "artisOrani", value: number) {
     setTarifeRows((prev) => {
@@ -165,7 +171,13 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
       const res = await fetch("/api/butce/prim-dagit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ referansEtiket: referans, mizanYedek, tarifeHedefleri }),
+        body: JSON.stringify({
+          referansEtiket: referans,
+          mizanYedek,
+          tarifeHedefleri,
+          izlemeBrans,
+          izlemeTarife,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -176,6 +188,7 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
       setDetay(data.detay ?? []);
       setLog(data.log ?? []);
       setOzet(data.ozet ?? null);
+      setIzleme(data.izleme ?? null);
     } catch (e) {
       setDagitErr(e instanceof Error ? e.message : "Bağlantı hatası");
     } finally {
@@ -186,9 +199,8 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
   return (
     <div className="space-y-6">
       <section className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-950">
-        <strong>Prim hedefi akışı:</strong> SATIS_BUTCE yükle → tarife hedeflerini düzenle → A
-        motoru ile 7xx branşlara dağıt. Üretim Excel (2023_2025_Prim) yüklü değilse MIZAN yedek
-        kullanılır.
+        <strong>Prim hedefi akışı:</strong> SATIS_BUTCE yükle → tarife hedeflerini düzenle →
+        tarife-branş pay tablosundaki geçmiş dağılıma göre 7xx branşlara dağıt.
       </section>
 
       <section className="space-y-3">
@@ -209,6 +221,13 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
             loadedLabel={`MIZAN ${durum.mizanSatir.toLocaleString("tr-TR")} · TARIFE ${durum.tarifeMapSatir}`}
           />
           <UploadBlock
+            title="Tarife-branş pay — geçmiş üretim dağılımı"
+            kind="tarife_brans_pay"
+            butceYili={butceYili}
+            loaded={durum.hasTarifeBransPay}
+            loadedLabel={`${durum.tarifeBransPaySatir.toLocaleString("tr-TR")} satır`}
+          />
+          <UploadBlock
             title="Üretim (opsiyonel) — 2023_2025_Prim"
             kind="uretim"
             butceYili={butceYili}
@@ -217,6 +236,7 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
           />
         </div>
         <ButceUploadGuide spec={BUTCE_PRIM_SPEC} />
+        <ButceUploadGuide spec={BUTCE_TARIFE_BRANS_PAY_SPEC} />
         <ButceUploadGuide spec={BUTCE_MAP_TARIFE_SPEC} />
       </section>
 
@@ -310,7 +330,7 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
         </div>
         {!hazir && (
           <p className="mt-2 text-sm text-amber-800">
-            Dağıtım için SATIS_BUTCE, TARIFE_MAP ve MIZAN gerekli.
+            Dağıtım için SATIS_BUTCE ve tarife-branş pay tablosu gerekli.
           </p>
         )}
         {dagitErr && <p className="mt-2 text-sm text-red-700">{dagitErr}</p>}
@@ -350,6 +370,53 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
                   ))}
               </tbody>
             </table>
+          </div>
+        </section>
+      )}
+
+      {izleme && (
+        <section className="rounded-xl border border-indigo-200 bg-white p-4 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900">
+            Branş dağılım izi — nasıl hesaplandı?
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Tarife hedefinin SATIS_BUTCE satırlarına, oradan seçilen branşa nasıl gittiğini gösterir.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <label className="text-sm">
+              Branş
+              <input
+                type="text"
+                value={izlemeBrans}
+                onChange={(e) => setIzlemeBrans(e.target.value)}
+                className="ml-2 w-20 rounded border border-slate-300 px-2 py-1 font-mono text-sm"
+              />
+            </label>
+            <label className="text-sm">
+              Tarife
+              <select
+                value={izlemeTarife}
+                onChange={(e) => setIzlemeTarife(e.target.value)}
+                className="ml-2 rounded border border-slate-300 px-2 py-1 text-sm"
+              >
+                {tarifeRows.map((r) => (
+                  <option key={r.tarifeGrubu} value={r.tarifeGrubu}>
+                    {r.tarifeGrubu}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              disabled={dagitBusy}
+              onClick={dagit}
+              className="self-end rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 disabled:opacity-50"
+            >
+              İz tablosunu yenile
+            </button>
+          </div>
+          <div className="mt-4">
+            <BransDagitimIzTable iz={izleme} />
           </div>
         </section>
       )}

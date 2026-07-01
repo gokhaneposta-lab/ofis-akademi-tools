@@ -64,6 +64,10 @@ export type ButceMeta = {
   bilancoAylikSatirSayisi?: number;
   tarifeMapGuncellemeIso?: string;
   tarifeMapSatirSayisi?: number;
+  tarifeBransPayGuncellemeIso?: string;
+  tarifeBransPaySatirSayisi?: number;
+  tarifeBransPayYilMin?: number;
+  tarifeBransPayYilMax?: number;
   satisButceGuncellemeIso?: string;
   satisButceSatirSayisi?: number;
   uretimGuncellemeIso?: string;
@@ -100,6 +104,16 @@ export type UretimRow = {
   netPrim: number;
 };
 
+export type TarifeBransPayRow = {
+  sirket: string;
+  tarifeGrubu: string;
+  bransKodu: string;
+  hazineBransAd: string;
+  yil: number;
+  ay: number;
+  netPrim: number;
+};
+
 export type PrimDagitimDetay = {
   satisSatir: number;
   sirket: string;
@@ -110,7 +124,7 @@ export type PrimDagitimDetay = {
   hedefPrim: number;
   pay: number;
   primTipi: "direkt" | "endirekt";
-  kaynak: "uretim" | "mizan";
+  kaynak: "tarife_brans_pay" | "uretim" | "mizan";
   eslesme: string;
 };
 

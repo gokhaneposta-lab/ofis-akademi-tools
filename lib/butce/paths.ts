@@ -11,6 +11,7 @@ export const BUTCE_ORAN_AYAR_JSON = "oran-ayarlar.json";
 export const BUTCE_PRIM_BRANS_JSON = "prim-brans-hedef.json";
 export const BUTCE_AYLIK_PRIM_JSON = "aylik-prim.json";
 export const BUTCE_TARIFE_MAP_JSON = "tarife-map.json";
+export const BUTCE_TARIFE_BRANS_PAY_JSON = "tarife-brans-pay.json";
 export const BUTCE_SATIS_BUTCE_JSON = "satis-butce.json";
 export const BUTCE_URETIM_JSON = "uretim.json";
 

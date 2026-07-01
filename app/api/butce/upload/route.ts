@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { importMizanFromBuffer } from "@/lib/butce/import/mizanImport";
 import { importMizanAylikFromBuffer } from "@/lib/butce/import/mizanAylikImport";
 import { importSatisButceFromBuffer } from "@/lib/butce/import/satisButceImport";
+import { importTarifeBransPayFromBuffer } from "@/lib/butce/import/tarifeBransPayImport";
 import { importTarifeMapFromBuffer } from "@/lib/butce/import/tarifeMapImport";
 import { importUretimFromBuffer } from "@/lib/butce/import/uretimImport";
 import {
@@ -9,6 +10,7 @@ import {
   BUTCE_MIZAN_JSON,
   BUTCE_MIZAN_AYLIK_JSON,
   BUTCE_SATIS_BUTCE_JSON,
+  BUTCE_TARIFE_BRANS_PAY_JSON,
   BUTCE_TARIFE_MAP_JSON,
   BUTCE_URETIM_JSON,
 } from "@/lib/butce/paths";
@@ -24,7 +26,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-const KINDS = new Set(["mizan", "butce_map", "tarife_map", "satis_butce", "uretim"]);
+const KINDS = new Set(["mizan", "butce_map", "tarife_map", "tarife_brans_pay", "satis_butce", "uretim"]);
 
 export async function POST(request: Request) {
   const blobUyari = vercelBlobGerekliMesaji();
@@ -55,7 +57,7 @@ export async function POST(request: Request) {
 
   if (!KINDS.has(kind)) {
     return NextResponse.json(
-      { error: "kind: mizan | butce_map | tarife_map | satis_butce | uretim" },
+      { error: "kind: mizan | butce_map | tarife_map | tarife_brans_pay | satis_butce | uretim" },
       { status: 400 },
     );
   }
@@ -100,6 +102,17 @@ export async function POST(request: Request) {
       logs.push(log);
     }
 
+    if (kind === "tarife_brans_pay") {
+      const { rows, log } = importTarifeBransPayFromBuffer(buf);
+      await writePrivateFile(BUTCE_TARIFE_BRANS_PAY_JSON, JSON.stringify(rows));
+      const yillar = rows.map((r) => r.yil);
+      meta.tarifeBransPayGuncellemeIso = new Date().toISOString();
+      meta.tarifeBransPaySatirSayisi = rows.length;
+      meta.tarifeBransPayYilMin = Math.min(...yillar);
+      meta.tarifeBransPayYilMax = Math.max(...yillar);
+      logs.push(log);
+    }
+
     if (kind === "uretim") {
       const { rows, log } = importUretimFromBuffer(buf);
       await writePrivateFile(BUTCE_URETIM_JSON, JSON.stringify(rows));
@@ -115,6 +128,7 @@ export async function POST(request: Request) {
     if (kind === "mizan" || kind === "butce_map") outFiles.push(BUTCE_MIZAN_JSON);
     if (kind === "butce_map" && meta.mizanAylikSatirSayisi) outFiles.push(BUTCE_MIZAN_AYLIK_JSON);
     if (kind === "butce_map" || kind === "tarife_map") outFiles.push(BUTCE_TARIFE_MAP_JSON);
+    if (kind === "tarife_brans_pay") outFiles.push(BUTCE_TARIFE_BRANS_PAY_JSON);
     if (kind === "satis_butce") outFiles.push(BUTCE_SATIS_BUTCE_JSON);
     if (kind === "uretim") outFiles.push(BUTCE_URETIM_JSON);
 

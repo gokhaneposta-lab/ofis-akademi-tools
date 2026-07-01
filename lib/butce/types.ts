@@ -62,6 +62,8 @@ export type ButceMeta = {
   mizanAylikYilMin?: number;
   mizanAylikYilMax?: number;
   bilancoAylikSatirSayisi?: number;
+  kpkVadeGuncellemeIso?: string;
+  kpkVadeSatirSayisi?: number;
   tarifeMapGuncellemeIso?: string;
   tarifeMapSatirSayisi?: number;
   tarifeBransPayGuncellemeIso?: string;
@@ -112,6 +114,21 @@ export type TarifeBransPayRow = {
   yil: number;
   ay: number;
   netPrim: number;
+};
+
+export type BilancoAylikRow = {
+  yil: number;
+  ay: number;
+  hesap: string;
+  tutar: number;
+};
+
+export type KpkVadeRow = {
+  bransKodu: string;
+  hazineBransAd: string;
+  vadeAy: number;
+  kazanimYontemi: string;
+  aciklama: string;
 };
 
 export type PrimDagitimDetay = {

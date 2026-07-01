@@ -90,9 +90,8 @@ export default function AylikDagilimClient({
     <div className="space-y-6">
       <section className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-950">
         <strong>Mantık:</strong> Yıllık branş hedefini 12&apos;ye <em>eşit bölmüyoruz</em>.
-        Geçmiş yıl MIZAN&apos;da hesap <strong>60001</strong> kümülatif tutarlardan aylık artış
-        çıkarılır; her branş (701, 702…) kendi aylık payını alır. MIZAN_AY yoksa varsayılan veya
-        manuel oran kullanılır.
+        Aylık GT ve Bilanço Mizanı&apos;ndaki geçmiş aylık üretim ritmi kullanılır; her branş
+        kendi geçmiş aylık payına göre dağılır. Veri yoksa varsayılan veya manuel oran kullanılır.
       </section>
 
       {!durum.hasPrimBransHedef && (
@@ -104,9 +103,8 @@ export default function AylikDagilimClient({
 
       {!durum.hasMizanAylik && (
         <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <strong>MIZAN_AY</strong> sayfası yüklü değil — BUTCE_MAP&apos;e aylık kümülatif mizan
-          ekleyip yeniden yükleyin (A:yıl, B:ay, C:hesap, D:branş, E:tutar). Şimdilik varsayılan /
-          manuel oran kullanılır.
+          Aylık GT ve Bilanço Mizanı henüz yüklenmedi. Veriyi <strong>Veri yükleme</strong>{" "}
+          sekmesinden yükleyene kadar varsayılan / manuel oran kullanılır.
         </p>
       )}
 
@@ -119,7 +117,7 @@ export default function AylikDagilimClient({
         </p>
         <div className="mt-3 flex flex-wrap items-end gap-4">
           <label className="text-sm">
-            <span className="text-slate-600">Referans yıl (MIZAN)</span>
+            <span className="text-slate-600">Referans yıl</span>
             <input
               type="number"
               value={referansYil}
@@ -133,7 +131,7 @@ export default function AylikDagilimClient({
             onClick={() => hesapla(false)}
             className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
-            {busy ? "Hesaplanıyor…" : "MIZAN paylarıyla hesapla"}
+            {busy ? "Hesaplanıyor…" : "Geçmiş aylık paylarla hesapla"}
           </button>
         </div>
         <div className="mt-4 grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

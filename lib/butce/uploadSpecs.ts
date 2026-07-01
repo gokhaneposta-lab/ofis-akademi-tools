@@ -15,10 +15,10 @@ export type UploadSpec = {
 
 export const BUTCE_MAP_MIZAN_SPEC: UploadSpec = {
   id: "mizan",
-  title: "BUTCE_MAP.xlsx — MIZAN sayfası",
+  title: "Yıl Sonu Mizan",
   summary:
-    "Geçmiş yıl sonu branş mizanı. Teknik oranlar (Faz 1) bu veriden hesaplanır: her branş için pay ÷ baz oranları, Excel GT ağırlıklı yıl birleştirmesi.",
-  fileHint: "BUTCE_MAP.xlsx (veya aynı yapıda Excel; .xlsx / .xls)",
+    "Geçmiş yıl sonu branş mizanı. Teknik oranlar ve GT oranları bu veriden hesaplanır.",
+  fileHint: "Yıl, hesap kodu, branş kodu ve tutar içeren mizan dosyası",
   sheetName: "MIZAN",
   steps: [
     "Finans / bütçe ekibinden güncel BUTCE_MAP dosyasını alın.",
@@ -51,13 +51,13 @@ export const BUTCE_MAP_MIZAN_SPEC: UploadSpec = {
 /** Aynı dosyada; ileride prim hedefi / 7xx dağıtım importu için. */
 export const BUTCE_MAP_TARIFE_SPEC: UploadSpec = {
   id: "tarife_map",
-  title: "BUTCE_MAP.xlsx — TARIFE_MAP sayfası",
-  summary: "Tarife grubu ↔ 7xx hazine branş eşlemesi. Prim hedefi dağıtımında kullanılacak.",
-  fileHint: "Aynı BUTCE_MAP.xlsx dosyası",
+  title: "Tarife Grubu Sabit Tanımları",
+  summary: "Hazine branş kodu, branş adı, ana branş ve tarife grubu gibi nadiren değişen sabit tanımlar.",
+  fileHint: "Sabit tanım tablosu; sadece tanım değişirse güncellenir",
   sheetName: "TARIFE_MAP",
   steps: [
-    "Aynı BUTCE_MAP.xlsx dosyasını yükleyin (MIZAN ile birlikte import edilir).",
-    "Prim hedefi sayfasında «BUTCE_MAP — MIZAN + TARIFE_MAP» ile yükleyin.",
+    "Sabit branş/tarife tanım tablosunu alın.",
+    "Tanımlar değiştiyse Veri yükleme sayfasından güncelleyin.",
   ],
   columns: [
     { col: "A", field: "Branş kodu", example: "701" },
@@ -75,15 +75,15 @@ export const BUTCE_MAP_TARIFE_SPEC: UploadSpec = {
 
 export const BUTCE_TARIFE_BRANS_PAY_SPEC: UploadSpec = {
   id: "tarife_brans_pay",
-  title: "Tarife grubu × hazine branşı pay tablosu",
+  title: "Tarife Grubu → Hazine Branşı Dağılımı",
   summary:
-    "Geçmiş üretimde tarife grubu priminin hangi 7xx hazine branşlarına dağıldığını gösterir. A motoru yeni bütçe hedeflerini bu paylara göre dağıtır.",
-  fileHint: "2023-2025 tarifegrubu hazine branşı pay.xlsx (2026 dahil olabilir)",
+    "Geçmiş üretimde bir tarife grubunun priminin hangi 7xx hazine branşlarına dağıldığını gösterir. Yeni bütçe hedefleri bu paylara göre branşlara bölünür.",
+  fileHint: "Tarife grubu, hazine branş kodu, tanzim yılı/ayı ve net prim içeren üretim dağılımı",
   sheetName: "İlk sayfa okunur",
   steps: [
     "Tarife grubu × hazine branşı üretim/pay raporunu alın.",
     "2026 geldikçe aynı formatta yükleyin; sistem en son yılları referans seçeneğinde kullanır.",
-    "Prim hedefi sayfasında «Tarife-branş pay» ile yükleyin.",
+    "Veri yükleme sayfasında bu karttan yükleyin.",
   ],
   columns: [
     { col: "A", field: "Şirket", example: "BS" },
@@ -103,14 +103,14 @@ export const BUTCE_TARIFE_BRANS_PAY_SPEC: UploadSpec = {
 
 export const BUTCE_PRIM_SPEC: UploadSpec = {
   id: "satis_butce",
-  title: "Bütçe GT Çalışma — SATIS_BUTCE_ sayfası",
-  summary: "GM prim hedefi (kanal × tarife × şirket). 7xx branş dağıtımının girdisi.",
-  fileHint: "Bütçe GT Çalışma_v8.xlsx (veya eşdeğeri)",
+  title: "Bütçe Prim Hedefi",
+  summary: "Üst yönetim / GM tarafından belirlenen prim hedefleri. Kanal ve tarife grubu bazında hedef tutarlar buradan gelir.",
+  fileHint: "Kanal, tarife grubu ve hedef prim kolonlarını içeren bütçe hedef dosyası",
   sheetName: "SATIS_BUTCE_",
   steps: [
-    "Bütçe GT Çalışma_v8.xlsx dosyasını alın.",
-    "Prim hedefi sayfasında «SATIS_BUTCE_» olarak yükleyin.",
-    "Tarife hedeflerini düzenleyip A motoru ile dağıtın.",
+    "Kanal ve tarife grubu bazındaki bütçe prim hedeflerini alın.",
+    "Veri yükleme sayfasında Bütçe Prim Hedefi kartından yükleyin.",
+    "Sonra Prim hedefi sayfasında hedefleri kontrol edip A motoru ile dağıtın.",
   ],
   columns: [
     { col: "A–C", field: "Şirket, kanal1, kanal2", example: "BS, ACENTE, …" },
@@ -122,4 +122,54 @@ export const BUTCE_PRIM_SPEC: UploadSpec = {
     "D kolonu tarife grubu dolu mu?",
   ],
   comingSoon: false,
+};
+
+export const BUTCE_AYLIK_GT_BILANCO_SPEC: UploadSpec = {
+  id: "aylik_gt_bilanco",
+  title: "Aylık GT ve Bilanço Mizanı",
+  summary:
+    "GT ve bilanço hesaplarının aylık kümülatif gerçekleşen durumunu verir. Aylık dağılım, teknik oranlar, gelir tablosu ve bilanço adımlarını besler.",
+  fileHint: "Dönem, şirket, hesap no, hesap adı ve net tutar içeren aylık mizan",
+  sheetName: "İlk sayfa okunur",
+  steps: [
+    "Eldeki en güncel aylık GT ve bilanço mizanını alın.",
+    "Bütçe döneminde yeni yıl kapanışı veya yeni ay geldikçe tekrar yükleyin.",
+    "Sistem GT prim, yıl sonu mizan ve bilanço verilerini bu dosyadan üretir.",
+  ],
+  columns: [
+    { col: "A", field: "Dönem", example: "31.12.2025" },
+    { col: "B", field: "Şirket", example: "Sigorta" },
+    { col: "C", field: "Hesap No", example: "7010111" },
+    { col: "D", field: "Hesap Adı", example: "BRÜT YAZILAN PRİMLER" },
+    { col: "E", field: "Net", example: "845300911" },
+  ],
+  checks: [
+    "Sigorta satırları bulunmalı.",
+    "7xx ile başlayan hesaplar branşlı GT verisi olarak okunur.",
+    "1/2/3/4/5/6 ile başlayan hesaplar bilanço ve şirket geneli hesaplar için saklanır.",
+  ],
+};
+
+export const BUTCE_KPK_VADE_SPEC: UploadSpec = {
+  id: "kpk_vade",
+  title: "KPK Vade Tanımları",
+  summary:
+    "7xx hazine branşlarının kazanılmamış prim karşılığı hesaplarında kullanılacak varsayılan vade ve kazanım mantığını tanımlar.",
+  fileHint: "Branş kodu, branş adı, vade ayı ve kazanım yöntemi içeren sabit tablo",
+  sheetName: "İlk sayfa okunur",
+  steps: [
+    "KPK hesabında kullanılacak branş bazlı vade varsayımlarını hazırlayın.",
+    "Tanımlar her yıl değişmiyorsa tekrar yüklemeniz gerekmez.",
+  ],
+  columns: [
+    { col: "A", field: "Hazine Branş Kod", example: "701" },
+    { col: "B", field: "Hazine Branş Ad", example: "YANGIN VE DOĞAL AFETLER" },
+    { col: "C", field: "KPK Vade Ay", example: "12" },
+    { col: "D", field: "Kazanım Yöntemi", example: "Gün esaslı" },
+    { col: "E", field: "Açıklama", example: "Standart yıllık poliçe" },
+  ],
+  checks: [
+    "Her aktif 7xx branş için bir satır olması önerilir.",
+    "Bu tablo V2 KPK/ertelenmiş hesaplarda kullanılacaktır.",
+  ],
 };

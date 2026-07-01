@@ -1,6 +1,7 @@
 import { BUTCE_YILI_VARSAYILAN } from "./config/constants";
 import {
   BUTCE_AYLIK_PRIM_JSON,
+  BUTCE_KPK_VADE_JSON,
   BUTCE_META_JSON,
   BUTCE_MIZAN_AYLIK_JSON,
   BUTCE_MIZAN_JSON,
@@ -15,6 +16,7 @@ import { readPrivateFile } from "./storage";
 import type {
   AylikPrimStore,
   ButceMeta,
+  KpkVadeRow,
   MizanAylikRow,
   MizanRow,
   OranAyarStore,
@@ -103,6 +105,12 @@ export async function loadTarifeBransPayRows(): Promise<TarifeBransPayRow[]> {
   }));
 }
 
+export async function loadKpkVadeRows(): Promise<KpkVadeRow[]> {
+  const raw = await readPrivateFile(BUTCE_KPK_VADE_JSON);
+  if (!raw) return [];
+  return JSON.parse(raw) as KpkVadeRow[];
+}
+
 export async function loadSatisButceRows(): Promise<SatisButceRow[]> {
   const raw = await readPrivateFile(BUTCE_SATIS_BUTCE_JSON);
   if (!raw) return [];
@@ -133,6 +141,7 @@ export async function butceDataDurumu() {
   const mizanAylik = await loadMizanAylikRows();
   const tarifeMap = await loadTarifeMapRows();
   const tarifeBransPay = await loadTarifeBransPayRows();
+  const kpkVade = await loadKpkVadeRows();
   const satisButce = await loadSatisButceRows();
   const uretim = await loadUretimRows();
   return {
@@ -140,6 +149,7 @@ export async function butceDataDurumu() {
     hasMizanAylik: mizanAylik.length > 0,
     hasTarifeMap: tarifeMap.length > 0,
     hasTarifeBransPay: tarifeBransPay.length > 0,
+    hasKpkVade: kpkVade.length > 0,
     hasSatisButce: satisButce.length > 0,
     hasUretim: uretim.length > 0,
     hasPrimBransHedef: (await loadPrimBransHedef()) != null,
@@ -147,6 +157,7 @@ export async function butceDataDurumu() {
     mizanAylikSatir: mizanAylik.length,
     tarifeMapSatir: tarifeMap.length,
     tarifeBransPaySatir: tarifeBransPay.length,
+    kpkVadeSatir: kpkVade.length,
     satisButceSatir: satisButce.length,
     uretimSatir: uretim.length,
     butceYili: meta?.butceYili ?? BUTCE_YILI_VARSAYILAN,

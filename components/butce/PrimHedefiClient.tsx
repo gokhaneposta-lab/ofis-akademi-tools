@@ -1,11 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
-import ButceUploadGuide from "@/components/butce/ButceUploadGuide";
 import BransDagitimIzTable from "@/components/butce/BransDagitimIzTable";
 import { REFERANS_YIL_SECENEKLERI } from "@/lib/butce/config/constants";
-import { BUTCE_MAP_TARIFE_SPEC, BUTCE_PRIM_SPEC, BUTCE_TARIFE_BRANS_PAY_SPEC } from "@/lib/butce/uploadSpecs";
 import type { BransTarifeIzleme } from "@/lib/butce/prim/bransDagitimTrace";
 import type {
   PrimBransOzet,
@@ -46,87 +44,6 @@ type Props = {
 
 function fmt(n: number) {
   return n.toLocaleString("tr-TR", { maximumFractionDigits: 0 });
-}
-
-function UploadBlock({
-  title,
-  kind,
-  butceYili,
-  loaded,
-  loadedLabel,
-  accept = ".xlsx,.xls",
-}: {
-  title: string;
-  kind: string;
-  butceYili: number;
-  loaded: boolean;
-  loadedLabel?: string;
-  accept?: string;
-}) {
-  const router = useRouter();
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setBusy(true);
-    setMsg(null);
-    setErr(null);
-    const fd = new FormData(e.currentTarget);
-    fd.set("kind", kind);
-    fd.set("butceYili", String(butceYili));
-    try {
-      const res = await fetch("/api/butce/upload", { method: "POST", body: fd });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setErr(data.detail ?? data.error ?? "Yükleme başarısız");
-        return;
-      }
-      setMsg(data.log ?? "Yüklendi");
-      router.refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Bağlantı hatası");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-        <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-            loaded ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-900"
-          }`}
-        >
-          {loaded ? "Yüklü" : "Bekliyor"}
-        </span>
-      </div>
-      {loaded && loadedLabel && (
-        <p className="mt-2 text-xs text-slate-600">{loadedLabel}</p>
-      )}
-      <form onSubmit={onSubmit} className="mt-3 flex flex-wrap items-end gap-2">
-        <input
-          type="file"
-          name="file"
-          accept={accept}
-          required={!loaded}
-          className="text-sm file:mr-2 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm"
-        />
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-lg bg-slate-800 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
-        >
-          {busy ? "Yükleniyor…" : "Yükle"}
-        </button>
-      </form>
-      {msg && <p className="mt-2 text-xs text-emerald-700">{msg}</p>}
-      {err && <p className="mt-2 text-xs text-red-700">{err}</p>}
-    </div>
-  );
 }
 
 export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
@@ -199,46 +116,20 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
   return (
     <div className="space-y-6">
       <section className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-950">
-        <strong>Prim hedefi akışı:</strong> SATIS_BUTCE yükle → tarife hedeflerini düzenle →
-        tarife-branş pay tablosundaki geçmiş dağılıma göre 7xx branşlara dağıt.
+        <strong>Prim hedefi akışı:</strong> Tarife grubu hedeflerini kontrol et → referans yılı seç →
+        geçmiş tarife-branş paylarına göre 7xx branşlara dağıt.
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-900">Adım 1 — Veri dosyaları</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <UploadBlock
-            title="Bütçe GT — SATIS_BUTCE_"
-            kind="satis_butce"
-            butceYili={butceYili}
-            loaded={durum.hasSatisButce}
-            loadedLabel={`${durum.satisButceSatir.toLocaleString("tr-TR")} satır`}
-          />
-          <UploadBlock
-            title="BUTCE_MAP — MIZAN + TARIFE_MAP"
-            kind="butce_map"
-            butceYili={butceYili}
-            loaded={durum.hasMizan && durum.hasTarifeMap}
-            loadedLabel={`MIZAN ${durum.mizanSatir.toLocaleString("tr-TR")} · TARIFE ${durum.tarifeMapSatir}`}
-          />
-          <UploadBlock
-            title="Tarife-branş pay — geçmiş üretim dağılımı"
-            kind="tarife_brans_pay"
-            butceYili={butceYili}
-            loaded={durum.hasTarifeBransPay}
-            loadedLabel={`${durum.tarifeBransPaySatir.toLocaleString("tr-TR")} satır`}
-          />
-          <UploadBlock
-            title="Üretim (opsiyonel) — 2023_2025_Prim"
-            kind="uretim"
-            butceYili={butceYili}
-            loaded={durum.hasUretim}
-            loadedLabel={`${durum.uretimSatir.toLocaleString("tr-TR")} satır`}
-          />
-        </div>
-        <ButceUploadGuide spec={BUTCE_PRIM_SPEC} />
-        <ButceUploadGuide spec={BUTCE_TARIFE_BRANS_PAY_SPEC} />
-        <ButceUploadGuide spec={BUTCE_MAP_TARIFE_SPEC} />
-      </section>
+      {!hazir && (
+        <section className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          Bu hesap için <strong>Bütçe Prim Hedefi</strong> ve{" "}
+          <strong>Tarife Grubu → Hazine Branşı Dağılımı</strong> verileri gerekli. Dosyaları{" "}
+          <Link href="/butce/veri-yukle" className="font-semibold underline">
+            Veri yükleme
+          </Link>{" "}
+          sekmesinden yükleyin.
+        </section>
+      )}
 
       {tarifeRows.length > 0 && (
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">

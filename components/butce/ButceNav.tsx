@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const LINKS = [
-  { href: "/butce", label: "Ana sayfa" },
+  { href: "/butce/veri-yukle", label: "Veri yükleme" },
   { href: "/butce/prim-hedefi", label: "Prim hedefi" },
   { href: "/butce/aylik-dagilim", label: "Aylık dağılım" },
   { href: "/butce/oranlar", label: "Teknik oranlar" },

@@ -1,6 +1,9 @@
+import { existsSync, readFileSync } from "fs";
 import { BUTCE_YILI_VARSAYILAN } from "./config/constants";
 import {
   BUTCE_AYLIK_PRIM_JSON,
+  BUTCE_KPK_KAPANIS_JSON,
+  BUTCE_KPK_VADE_DEFAULT_JSON,
   BUTCE_KPK_VADE_JSON,
   BUTCE_META_JSON,
   BUTCE_MIZAN_AYLIK_JSON,
@@ -16,6 +19,7 @@ import { readPrivateFile } from "./storage";
 import type {
   AylikPrimStore,
   ButceMeta,
+  KpkKapanisTahminStore,
   KpkVadeRow,
   MizanAylikRow,
   MizanRow,
@@ -107,8 +111,26 @@ export async function loadTarifeBransPayRows(): Promise<TarifeBransPayRow[]> {
 
 export async function loadKpkVadeRows(): Promise<KpkVadeRow[]> {
   const raw = await readPrivateFile(BUTCE_KPK_VADE_JSON);
-  if (!raw) return [];
-  return JSON.parse(raw) as KpkVadeRow[];
+  if (raw) return JSON.parse(raw) as KpkVadeRow[];
+
+  if (existsSync(BUTCE_KPK_VADE_DEFAULT_JSON)) {
+    return JSON.parse(readFileSync(BUTCE_KPK_VADE_DEFAULT_JSON, "utf8")) as KpkVadeRow[];
+  }
+
+  return [];
+}
+
+export async function kpkVadeKaynagi(): Promise<"yuklu" | "varsayilan" | null> {
+  const raw = await readPrivateFile(BUTCE_KPK_VADE_JSON);
+  if (raw) return "yuklu";
+  if (existsSync(BUTCE_KPK_VADE_DEFAULT_JSON)) return "varsayilan";
+  return null;
+}
+
+export async function loadKpkKapanisTahmin(): Promise<KpkKapanisTahminStore | null> {
+  const raw = await readPrivateFile(BUTCE_KPK_KAPANIS_JSON);
+  if (!raw) return null;
+  return JSON.parse(raw) as KpkKapanisTahminStore;
 }
 
 export async function loadSatisButceRows(): Promise<SatisButceRow[]> {
@@ -142,6 +164,8 @@ export async function butceDataDurumu() {
   const tarifeMap = await loadTarifeMapRows();
   const tarifeBransPay = await loadTarifeBransPayRows();
   const kpkVade = await loadKpkVadeRows();
+  const kpkVadeKaynak = await kpkVadeKaynagi();
+  const kpkVadeBransSayisi = new Set(kpkVade.map((r) => r.bransKodu)).size;
   const satisButce = await loadSatisButceRows();
   const uretim = await loadUretimRows();
   return {
@@ -150,6 +174,8 @@ export async function butceDataDurumu() {
     hasTarifeMap: tarifeMap.length > 0,
     hasTarifeBransPay: tarifeBransPay.length > 0,
     hasKpkVade: kpkVade.length > 0,
+    kpkVadeKaynak,
+    kpkVadeBransSayisi,
     hasSatisButce: satisButce.length > 0,
     hasUretim: uretim.length > 0,
     hasPrimBransHedef: (await loadPrimBransHedef()) != null,

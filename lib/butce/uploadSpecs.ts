@@ -154,22 +154,22 @@ export const BUTCE_KPK_VADE_SPEC: UploadSpec = {
   id: "kpk_vade",
   title: "KPK Vade Tanımları",
   summary:
-    "7xx hazine branşlarının kazanılmamış prim karşılığı hesaplarında kullanılacak varsayılan vade ve kazanım mantığını tanımlar.",
-  fileHint: "Branş kodu, branş adı, vade ayı ve kazanım yöntemi içeren sabit tablo",
+    "7xx hazine branşları için ay bazında ortalama poliçe vadesi (gün). KPK hesabında başlangıç–bitiş tarihi farkı bu tablodan okunur.",
+  fileHint: "Branş kodu, branş adı, ay (1–12) ve ortalama vade (gün) içeren tablo",
   sheetName: "İlk sayfa okunur",
   steps: [
-    "KPK hesabında kullanılacak branş bazlı vade varsayımlarını hazırlayın.",
-    "Tanımlar her yıl değişmiyorsa tekrar yüklemeniz gerekmez.",
+    "Son 3 yıl üretiminden hesaplanmış branş × ay ortalama vade tablosunu hazırlayın.",
+    "Tablo sık değişmez; yeni dosya yüklerseniz mevcut tanımın üzerine yazılır.",
   ],
   columns: [
-    { col: "A", field: "Hazine Branş Kod", example: "701" },
-    { col: "B", field: "Hazine Branş Ad", example: "YANGIN VE DOĞAL AFETLER" },
-    { col: "C", field: "KPK Vade Ay", example: "12" },
-    { col: "D", field: "Kazanım Yöntemi", example: "Gün esaslı" },
-    { col: "E", field: "Açıklama", example: "Standart yıllık poliçe" },
+    { col: "A", field: "Branş Kod", example: "701" },
+    { col: "B", field: "Branş Ad", example: "YANGIN" },
+    { col: "C", field: "Ay", example: "11" },
+    { col: "D", field: "Vade", example: "362.38" },
   ],
   checks: [
-    "Her aktif 7xx branş için bir satır olması önerilir.",
-    "Bu tablo V2 KPK/ertelenmiş hesaplarda kullanılacaktır.",
+    "Her 7xx branş için 1–12 arası aylar tanımlı olmalı.",
+    "Vade, poliçe başlangıç–bitiş tarihi arasındaki ortalama gün sayısıdır (ör. tarımsal sezon etkisi ay bazında farklılaşır).",
+    "Yükleme yapılmazsa sistemdeki varsayılan tablo kullanılır.",
   ],
 };

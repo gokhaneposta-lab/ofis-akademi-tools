@@ -94,10 +94,14 @@ export default async function VeriYuklePage() {
         kind="kpk_vade"
         butceYili={durum.butceYili}
         status={durum.hasKpkVade ? "loaded" : "optional"}
-        statusText={durum.hasKpkVade ? `${fmt(durum.kpkVadeSatir)} branş` : undefined}
-        neden="Kazanılmamış prim karşılığı hesaplarında kullanılacak branş bazlı vade varsayımlarını tutar."
-        neYuklenmeli="7xx hazine branşı, vade ayı, kazanım yöntemi ve açıklama içeren sabit tablo."
-        feeds="Gelir tablosu ve bilanço V2’de KPK hesapları."
+        statusText={
+          durum.hasKpkVade
+            ? `${fmt(durum.kpkVadeBransSayisi)} branş × 12 ay (${durum.kpkVadeKaynak === "yuklu" ? "yüklenmiş" : "varsayılan"})`
+            : undefined
+        }
+        neden="KPK hesabında her branşın poliçe ortalama yaşam süresi ay bazında farklıdır (ör. 777 tarımsal sezon). Başlangıç–bitiş tarihi farkı bu tablodan okunur."
+        neYuklenmeli="Branş Kod, Branş Ad, Ay (1–12) ve Vade (gün) kolonları. Son 3 yıl üretim ortalaması; sık güncellenmez."
+        feeds="Gelir tablosu ve bilanço KPK hesapları."
         spec={BUTCE_KPK_VADE_SPEC}
       />
     </div>

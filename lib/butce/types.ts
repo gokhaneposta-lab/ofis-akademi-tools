@@ -64,6 +64,7 @@ export type ButceMeta = {
   bilancoAylikSatirSayisi?: number;
   kpkVadeGuncellemeIso?: string;
   kpkVadeSatirSayisi?: number;
+  kpkKapanisGuncellemeIso?: string;
   tarifeMapGuncellemeIso?: string;
   tarifeMapSatirSayisi?: number;
   tarifeBransPayGuncellemeIso?: string;
@@ -123,12 +124,24 @@ export type BilancoAylikRow = {
   tutar: number;
 };
 
+/** Branş × ay ortalama poliçe vadesi (gün) — 3 yıllık üretim ortalaması. */
 export type KpkVadeRow = {
   bransKodu: string;
-  hazineBransAd: string;
-  vadeAy: number;
-  kazanimYontemi: string;
-  aciklama: string;
+  bransAd: string;
+  ay: number;
+  vadeGun: number;
+};
+
+/** Önceki yıl kapanış prim tahmini — tarife × ay manuel müdahale. */
+export type KpkKapanisTahminStore = {
+  butceYili: number;
+  oncekiYil: number;
+  sonGercekAy: number;
+  /** tarife → sabit büyüme oranı override (null = otomatik YoY) */
+  tarifeBuyumeOran?: Record<string, number>;
+  /** tarife → ay → TL override */
+  tarifeAylikOverride?: Record<string, Record<number, number>>;
+  guncellemeIso: string;
 };
 
 export type PrimDagitimDetay = {

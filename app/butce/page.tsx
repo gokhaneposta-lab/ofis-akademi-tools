@@ -14,10 +14,11 @@ const STEPS = [
   { href: "/butce/veri-yukle", title: "1. Veri yükleme", desc: "Bütçe için gerekli iş verilerini yükle", needs: "Hedef, dağılım, mizan, sabit tanımlar" },
   { href: "/butce/prim-hedefi", title: "2. Prim hedefi", desc: "Tarife hedefi → 7xx branş hedefi", needs: "Bütçe Prim Hedefi + Tarife-Branş Dağılımı" },
   { href: "/butce/aylik-dagilim", title: "3. Aylık dağılım", desc: "Yıllık branş hedefi → 12 ay", needs: "Prim hedefi + Aylık GT mizanı" },
-  { href: "/butce/oranlar", title: "4. Teknik oranlar", desc: "Gerçekleşen veriden oran kontrolü", needs: "Aylık GT ve Bilanço Mizanı" },
-  { href: "/butce/gelir-tablosu", title: "5. Gelir tablosu", desc: "Prim ve oranlardan GT projeksiyonu", needs: "Oranlar + prim" },
-  { href: "/butce/bilanco", title: "6. Bilanço", desc: "Bilanço projeksiyonu", needs: "Aylık mizan + gelir tablosu" },
-  { href: "/butce/export", title: "7. Excel export", desc: "Rapor indir", needs: "Tamamlanmış adımlar" },
+  { href: "/butce/kpk-kapanis", title: "4. KPK kapanış", desc: "Önceki yıl eksik aylar + devreden KPK", needs: "Mizan + tarife pay + KPK vade" },
+  { href: "/butce/oranlar", title: "5. Teknik oranlar", desc: "Gerçekleşen veriden oran kontrolü", needs: "Aylık GT ve Bilanço Mizanı" },
+  { href: "/butce/gelir-tablosu", title: "6. Gelir tablosu", desc: "Prim, KPK ve oranlardan GT projeksiyonu", needs: "Oranlar + prim + KPK" },
+  { href: "/butce/bilanco", title: "7. Bilanço", desc: "Bilanço projeksiyonu", needs: "Aylık mizan + gelir tablosu" },
+  { href: "/butce/export", title: "8. Excel export", desc: "Rapor indir", needs: "Tamamlanmış adımlar" },
 ];
 
 export default async function ButceHomePage() {
@@ -72,7 +73,12 @@ export default async function ButceHomePage() {
           </div>
           <div>
             <dt className="text-slate-500">KPK vade tanımları</dt>
-            {durumRozet(durum.hasKpkVade, `${durum.kpkVadeSatir.toLocaleString("tr-TR")} branş`)}
+            {durumRozet(
+              durum.hasKpkVade,
+              durum.hasKpkVade
+                ? `${durum.kpkVadeBransSayisi.toLocaleString("tr-TR")} branş × 12 ay (${durum.kpkVadeKaynak === "yuklu" ? "yüklenmiş" : "varsayılan"})`
+                : undefined,
+            )}
           </div>
           <div>
             <dt className="text-slate-500">Bütçe Hedefi (SATIS_BUTCE_)</dt>

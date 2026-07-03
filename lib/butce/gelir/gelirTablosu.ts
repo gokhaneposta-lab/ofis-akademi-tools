@@ -1,7 +1,9 @@
 import { HAZINE_BRANS_KODLARI, HAZINE_BRANS_SIRASI } from "../config/brans";
 import { AYLAR } from "../config/constants";
 import { normalizeBransKodu } from "../textUtils";
-import type { AylikPrimStore, MizanRow, OranAyarStore } from "../types";
+import { buildKpkSonuc, kpkHucreOverride } from "../kpk/buildKpkSonuc";
+import { KPK_GT_SATIRLARI } from "../kpk/kpkMotoru";
+import type { AylikPrimStore, KpkVadeRow, MizanAylikRow, MizanRow, OranAyarStore, TarifeBransPayRow, KpkKapanisTahminStore } from "../types";
 import { GelirTablosuMotoru, type GtEksikGirdi } from "./gtMotoru";
 
 /** Gelir tablosunda gösterilecek GT satırları (Excel satır no + sunum). */
@@ -17,7 +19,7 @@ export type GtGosterimSatir = {
 export const GT_GOSTERIM_SATIRLARI: GtGosterimSatir[] = [
   { satir: 11, ad: "Brüt yazılan prim", seviye: 0, kalin: true },
   { satir: 19, ad: "Reasüransa devredilen prim (-)", seviye: 1 },
-  { satir: 21, ad: "Kazanılmamış prim karş. değişim", seviye: 1, disGirdi: true },
+  { satir: 21, ad: "Kazanılmamış prim karş. değişim", seviye: 1 },
   { satir: 31, ad: "Devam eden riskler karş.", seviye: 1, disGirdi: true },
   { satir: 86, ad: "Rücu ve sovtaj gelirleri (+)", seviye: 1 },
   { satir: 9, ad: "HAYAT DIŞI TEKNİK GELİR", seviye: 0, kalin: true },
@@ -64,8 +66,39 @@ export function buildGelirTablosu(opts: {
   endirektPrim?: Record<string, number>;
   aylikPrim?: AylikPrimStore | null;
   oranAyar?: OranAyarStore;
+  mizanAylik?: MizanAylikRow[];
+  tarifeBransPay?: TarifeBransPayRow[];
+  kpkVade?: KpkVadeRow[];
+  kapanisTahmin?: KpkKapanisTahminStore | null;
 }): GelirTablosuSonuc {
-  const { mizan, butceYili, primHedefleri, endirektPrim = {}, aylikPrim, oranAyar = {} } = opts;
+  const {
+    mizan,
+    butceYili,
+    primHedefleri,
+    endirektPrim = {},
+    aylikPrim,
+    oranAyar = {},
+    mizanAylik = [],
+    tarifeBransPay = [],
+    kpkVade = [],
+    kapanisTahmin,
+  } = opts;
+
+  const kpkSonuc =
+    kpkVade.length > 0
+      ? buildKpkSonuc({
+          butceYili,
+          mizan,
+          mizanAylik,
+          tarifeBransPay,
+          vadeRows: kpkVade,
+          aylikPrim,
+          oranAyar,
+          kapanisTahmin,
+        })
+      : null;
+
+  const kpkByBrans = new Map(kpkSonuc?.branslar.map((b) => [b.bransKodu, b]) ?? []);
 
   const motor = new GelirTablosuMotoru(mizan, butceYili, oranAyar);
 
@@ -84,7 +117,9 @@ export function buildGelirTablosu(opts: {
     const brut = primHedefleri[kod] ?? 0;
     if (brut <= 0) continue;
     const endirekt = endirektPrim[kod] ?? 0;
-    const tumDegerler = motor.hesaplaBrans(kod, brut, endirekt);
+    const kpkBrans = kpkByBrans.get(kod);
+    const disHucreler = kpkBrans ? kpkHucreOverride(kpkBrans) : {};
+    const tumDegerler = motor.hesaplaBrans(kod, brut, endirekt, disHucreler);
 
     const degerler: Record<number, number> = {};
     for (const s of GOSTERIM_SATIR_NOLARI) degerler[s] = tumDegerler.get(s) ?? 0;
@@ -97,13 +132,18 @@ export function buildGelirTablosu(opts: {
     // Aylık: tüm satırları branşın prim mevsimselliğine göre dağıt.
     const paylar = aylikPaylar[kod] ?? null;
     const bransAylik: Record<number, number[]> = {};
+    const kpkAylikSatirlar = new Set<number>(KPK_GT_SATIRLARI as unknown as number[]);
     for (const s of GOSTERIM_SATIR_NOLARI) {
       const yillik = degerler[s];
-      const aylar = paylar
-        ? paylar.map((p) => yillik * p)
-        : Array.from({ length: 12 }, () => yillik / 12);
-      bransAylik[s] = aylar;
-      for (let i = 0; i < 12; i++) aylikToplam[s][i] += aylar[i];
+      if (kpkBrans && kpkAylikSatirlar.has(s) && kpkBrans.gtAylik[s]) {
+        bransAylik[s] = [...kpkBrans.gtAylik[s]!];
+      } else {
+        const paylarLocal = paylar;
+        bransAylik[s] = paylarLocal
+          ? paylarLocal.map((p) => yillik * p)
+          : Array.from({ length: 12 }, () => yillik / 12);
+      }
+      for (let i = 0; i < 12; i++) aylikToplam[s][i] += bransAylik[s]![i] ?? 0;
     }
     aylikBrans[kod] = bransAylik;
   }

@@ -116,9 +116,9 @@ export default async function VeriYuklePage() {
             ? `${fmt(durum.faaliyetGiderHesapSayisi)} hesap, ${fmt(durum.faaliyetGiderSatir)} ay×tutar satırı`
             : undefined
         }
-        neden="Personel, yönetim, AR-GE, pazarlama gibi şirket geneli faaliyet giderleri GT'de dış girdi olarak gelir. Branş kolonu yok — tutarlar F368 (61402 branş payı) ile prim hedefi olan tüm branşlara dağıtılır."
-        neYuklenmeli="61402, 61403, 61404, 61405 … hesap kodları için ay bazında şirket geneli bütçe tutarları. Oca–Ara kolonlu geniş tablo da olur."
-        feeds="Gelir tablosu — Faaliyet giderleri (F176) ve alt kalemler (personel, yönetim …)."
+        neden="61402–61406 (personel, yönetim, AR-GE, pazarlama, dış hizmet) şirket geneli import edilir; F368 ile branşlara dağıtılır. 61408/61409 import değil — brüt prim × F383/F388 oranıyla GT'de otomatik hesaplanır."
+        neYuklenmeli="61402–61406 hesap kodları, ay bazında şirket geneli bütçe tutarları. Oca–Ara kolonlu geniş tablo da olur."
+        feeds="Gelir tablosu — F190–F194 (import) + F200/F201 (orandan) → F176 faaliyet giderleri."
         spec={BUTCE_FAALIYET_GIDER_SPEC}
       />
     </div>

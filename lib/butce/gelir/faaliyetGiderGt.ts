@@ -1,9 +1,9 @@
-import { faaliyetHesapGtSatir, FAALIYET_GT_SATIRLARI } from "../config/faaliyetGiderMap";
+import { faaliyetImportHesapGtSatir, FAALIYET_IMPORT_GT_SATIRLARI } from "../config/faaliyetGiderMap";
 import { MizanOranServisi } from "../oran/mizanOranlar";
 import { normalizeBransKodu } from "../textUtils";
 import type { FaaliyetGiderRow, MizanRow, OranAyarStore } from "../types";
 
-export { FAALIYET_GT_SATIRLARI };
+export { FAALIYET_IMPORT_GT_SATIRLARI as FAALIYET_GT_SATIRLARI };
 
 export type FaaliyetGiderBransSonuc = {
   bransKodu: string;
@@ -69,7 +69,7 @@ export function buildFaaliyetGiderSonuc(opts: {
   }
 
   for (const row of filtered) {
-    const gtSatir = faaliyetHesapGtSatir(row.hesap);
+    const gtSatir = faaliyetImportHesapGtSatir(row.hesap);
     if (gtSatir == null) continue;
 
     const gtTutar = -Math.abs(row.tutar);

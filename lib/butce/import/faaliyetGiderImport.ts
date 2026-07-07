@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { faaliyetHesapGtSatir } from "../config/faaliyetGiderMap";
+import { faaliyetImportHesapGtSatir } from "../config/faaliyetGiderMap";
 import { normalizeBransKodu, normalizeText } from "../textUtils";
 import type { FaaliyetGiderRow } from "../types";
 
@@ -101,7 +101,7 @@ export function importFaaliyetGiderFromBuffer(
   if (hasAyCol) {
     for (const row of rawRows) {
       const hesap = normalizeHesap(cell(row, "Hesap No", "Hesap", "Mizan Hesap", "Hesap Kodu"));
-      if (!hesap || faaliyetHesapGtSatir(hesap) == null) continue;
+      if (!hesap || faaliyetImportHesapGtSatir(hesap) == null) continue;
 
       const ay = parseAy(cell(row, "Ay"));
       if (ay == null) continue;
@@ -127,7 +127,7 @@ export function importFaaliyetGiderFromBuffer(
   } else if (wideCols.length >= 3) {
     for (const row of rawRows) {
       const hesap = normalizeHesap(cell(row, "Hesap No", "Hesap", "Mizan Hesap", "Hesap Kodu"));
-      if (!hesap || faaliyetHesapGtSatir(hesap) == null) continue;
+      if (!hesap || faaliyetImportHesapGtSatir(hesap) == null) continue;
 
       const hesapAd = String(cell(row, "Hesap Adı", "Hesap Ad") ?? "").trim() || undefined;
 
@@ -150,7 +150,7 @@ export function importFaaliyetGiderFromBuffer(
 
   if (rows.length === 0) {
     throw new Error(
-      "Faaliyet gider satırı okunamadı — 61402–61409 hesap kodları, ay ve tutar kolonlarını kontrol edin.",
+      "Faaliyet gider satırı okunamadı — 61402–61406 hesap kodları, ay ve tutar kolonlarını kontrol edin (61408/61409 import edilmez, orandan hesaplanır).",
     );
   }
 

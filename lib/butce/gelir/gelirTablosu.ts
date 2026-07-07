@@ -107,6 +107,8 @@ export function buildGelirTablosu(opts: {
 
   const kpkByBrans = new Map(kpkSonuc?.branslar.map((b) => [b.bransKodu, b]) ?? []);
 
+  const aktifBranslar = HAZINE_BRANS_SIRASI.filter((k) => (primHedefleri[k] ?? 0) > 0);
+
   const faaliyetSonuc =
     faaliyetGider.length > 0
       ? buildFaaliyetGiderSonuc({
@@ -114,7 +116,7 @@ export function buildGelirTablosu(opts: {
           rows: faaliyetGider,
           mizan,
           oranAyar,
-          bransKodlari: HAZINE_BRANS_SIRASI,
+          aktifBransKodlari: aktifBranslar,
         })
       : null;
   const faaliyetByBrans = new Map(faaliyetSonuc?.map((b) => [b.bransKodu, b]) ?? []);

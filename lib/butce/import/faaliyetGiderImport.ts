@@ -69,6 +69,17 @@ function monthColumns(headers: string[]): { key: string; ay: number }[] {
   return out;
 }
 
+function parseBransOptional(value: unknown): string | undefined {
+  if (value == null || value === "") return undefined;
+  const s = String(value).trim();
+  if (!s) return undefined;
+  const nk = normalizeText(s);
+  if (nk === "SIGORTA" || nk === "SIRKET" || nk === "TOPLAM" || nk === "-") return undefined;
+  const kod = normalizeBransKodu(value);
+  if (!/^7\d\d$/.test(kod)) return undefined;
+  return kod;
+}
+
 export function importFaaliyetGiderFromBuffer(
   buffer: Buffer,
   butceYili: number,
@@ -98,11 +109,9 @@ export function importFaaliyetGiderFromBuffer(
       const tutar = parseTutar(cell(row, "Tutar", "Net", "Tutar TL", "Bütçe"));
       if (tutar == null) continue;
 
-      const bransRaw = cell(row, "Branş Kod", "Branş", "Hazine Branş Kod");
-      const bransKodu = bransRaw != null && String(bransRaw).trim() !== "" ? normalizeBransKodu(bransRaw) : undefined;
-      if (bransKodu && !/^7\d\d$/.test(bransKodu)) continue;
+      const bransKodu = parseBransOptional(cell(row, "Branş Kod", "Branş", "Hazine Branş Kod"));
 
-      const key = `${hesap}-${bransKodu ?? "SIRKET"}-${ay}`;
+      const key = `${hesap}-${bransKodu ?? "SIRKET-F368"}-${ay}`;
       if (seen.has(key)) continue;
       seen.add(key);
 
@@ -126,7 +135,7 @@ export function importFaaliyetGiderFromBuffer(
         const tutar = parseTutar(row[key]);
         if (tutar == null) continue;
 
-        const dedupeKey = `${hesap}-SIRKET-${ay}`;
+        const dedupeKey = `${hesap}-SIRKET-F368-${ay}`;
         if (seen.has(dedupeKey)) continue;
         seen.add(dedupeKey);
 

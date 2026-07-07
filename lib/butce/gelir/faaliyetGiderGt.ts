@@ -15,20 +15,34 @@ function bosAylik(): number[] {
   return Array.from({ length: 12 }, () => 0);
 }
 
-function branchShares(mizan: MizanRow[], butceYili: number, oranAyar: OranAyarStore): Record<string, number> {
+function branchShares(
+  mizan: MizanRow[],
+  butceYili: number,
+  oranAyar: OranAyarStore,
+  aktifBransKodlari: readonly string[],
+): Record<string, number> {
+  const aktifSet = new Set(aktifBransKodlari.map(normalizeBransKodu));
   const servis = new MizanOranServisi(mizan, butceYili);
   const tablo = servis.tumBranslarTablosu("F368", oranAyar["F368"] ?? {});
   const out: Record<string, number> = {};
   let toplam = 0;
   for (const r of tablo) {
+    if (!aktifSet.has(r.bransKodu)) continue;
     const o = Math.abs(r.oran);
     if (o > 0) {
       out[r.bransKodu] = o;
       toplam += o;
     }
   }
-  if (toplam <= 0) return out;
-  for (const k of Object.keys(out)) out[k] = out[k]! / toplam;
+  if (toplam > 0) {
+    for (const k of Object.keys(out)) out[k] = out[k]! / toplam;
+    return out;
+  }
+  // Mizan yoksa veya F368 sıfırsa: aktif branşlara eşit dağıt (tek branşa yığma)
+  const n = aktifBransKodlari.length;
+  if (n === 0) return {};
+  const pay = 1 / n;
+  for (const kod of aktifBransKodlari) out[normalizeBransKodu(kod)] = pay;
   return out;
 }
 
@@ -38,16 +52,19 @@ export function buildFaaliyetGiderSonuc(opts: {
   rows: FaaliyetGiderRow[];
   mizan: MizanRow[];
   oranAyar?: OranAyarStore;
-  bransKodlari: readonly string[];
+  /** Gelir tablosunda prim hedefi olan branşlar — F368 payı bunlar arasında normalize edilir. */
+  aktifBransKodlari: readonly string[];
 }): FaaliyetGiderBransSonuc[] | null {
   const filtered = opts.rows.filter((r) => r.butceYili === opts.butceYili);
   if (filtered.length === 0) return null;
 
-  const shares = branchShares(opts.mizan, opts.butceYili, opts.oranAyar ?? {});
-  const bransSet = new Set(opts.bransKodlari.map(normalizeBransKodu));
+  const aktifBrans = opts.aktifBransKodlari.map(normalizeBransKodu);
+  if (aktifBrans.length === 0) return null;
+
+  const shares = branchShares(opts.mizan, opts.butceYili, opts.oranAyar ?? {}, aktifBrans);
 
   const byBrans = new Map<string, FaaliyetGiderBransSonuc>();
-  for (const kod of bransSet) {
+  for (const kod of aktifBrans) {
     byBrans.set(kod, { bransKodu: kod, gtYillik: {}, gtAylik: {} });
   }
 
@@ -68,10 +85,11 @@ export function buildFaaliyetGiderSonuc(opts: {
       continue;
     }
 
+    // Branş boş / şirket geneli → F368 oranlarıyla tüm aktif branşlara dağıt
     for (const [bransKodu, pay] of Object.entries(shares)) {
-      if (!bransSet.has(bransKodu)) continue;
       const payli = gtTutar * pay;
-      const b = byBrans.get(bransKodu)!;
+      const b = byBrans.get(bransKodu);
+      if (!b) continue;
       if (!b.gtAylik[gtSatir]) b.gtAylik[gtSatir] = bosAylik();
       b.gtAylik[gtSatir]![ayIdx] += payli;
       b.gtYillik[gtSatir] = (b.gtYillik[gtSatir] ?? 0) + payli;

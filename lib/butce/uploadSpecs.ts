@@ -183,21 +183,20 @@ export const BUTCE_FAALIYET_GIDER_SPEC: UploadSpec = {
   sheetName: "İlk sayfa okunur",
   steps: [
     "Finans ekibinden bütçe yılı faaliyet gider tablosunu alın (61402 personel, 61403 yönetim, 61404 AR-GE, 61405 pazarlama …).",
-    "Tutarları pozitif gider olarak girin; sistem GT'de gider işaretine çevirir.",
-    "Branş kolonu boş bırakılırsa tutarlar geçmiş 61402 branş paylarına (F368) göre dağıtılır.",
+    "Tutarları pozitif gider olarak girin; branş kolonu kullanmayın — veri şirket genelidir.",
+    "Import sonrası her tutar, geçmiş 61402 branş paylarına (GT F368 oranı) göre prim hedefi olan tüm 7xx branşlara dağıtılır.",
     "Yeni dosya yüklerseniz mevcut faaliyet gider bütçesinin üzerine yazılır.",
   ],
   columns: [
     { col: "A", field: "Hesap No", example: "61402", note: "61402–61409 arası faaliyet hesapları" },
     { col: "B", field: "Hesap Adı", example: "PERSONEL GİDERLERİ", note: "İsteğe bağlı" },
     { col: "C", field: "Ay", example: "3", note: "1–12; geniş formatta Oca–Ara kolonları da okunur" },
-    { col: "D", field: "Tutar", example: "12500000", note: "Aylık bütçe tutarı (TL, pozitif)" },
-    { col: "E", field: "Branş Kod", example: "701", note: "İsteğe bağlı — boş = şirket geneli" },
+    { col: "D", field: "Tutar", example: "12500000", note: "Aylık bütçe tutarı (TL, pozitif, şirket geneli)" },
   ],
   checks: [
     "61402, 61403, 61404, 61405, 61406, 61408, 61409 hesapları desteklenir.",
-    "Uzun format: Hesap No + Ay + Tutar. Geniş format: Hesap No + 12 ay kolonu.",
-    "Import sonrası gelir tablosunda Faaliyet giderleri (F176) satırı güncellenir.",
+    "Branş kolonu olmamalı veya boş olmalı — dolu 7xx kodu ancak o branşa özel manuel giriş içindir.",
+    "Şirket geneli tutarlar F368 (61402 branş payı) ile prim hedefi olan branşlara bölünür; tek branşa yazılmaz.",
   ],
   errors: [
     "«Faaliyet gider satırı okunamadı» → Hesap kodu 6140x mi, ay 1–12 mi, tutar dolu mu kontrol edin.",

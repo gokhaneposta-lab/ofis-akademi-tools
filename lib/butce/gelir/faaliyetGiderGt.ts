@@ -38,7 +38,7 @@ export function buildFaaliyetGiderSonuc(opts: {
   rows: FaaliyetGiderRow[];
   mizan: MizanRow[];
   oranAyar?: OranAyarStore;
-  bransKodlari: string[];
+  bransKodlari: readonly string[];
 }): FaaliyetGiderBransSonuc[] | null {
   const filtered = opts.rows.filter((r) => r.butceYili === opts.butceYili);
   if (filtered.length === 0) return null;

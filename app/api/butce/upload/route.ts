@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { importAylikGtBilancoFromBuffer } from "@/lib/butce/import/aylikGtBilancoImport";
+import { importFaaliyetGiderFromBuffer } from "@/lib/butce/import/faaliyetGiderImport";
 import { importKpkVadeFromBuffer } from "@/lib/butce/import/kpkVadeImport";
 import { importMizanFromBuffer } from "@/lib/butce/import/mizanImport";
 import { importMizanAylikFromBuffer } from "@/lib/butce/import/mizanAylikImport";
@@ -10,6 +11,7 @@ import { importUretimFromBuffer } from "@/lib/butce/import/uretimImport";
 import {
   BUTCE_META_JSON,
   BUTCE_BILANCO_AYLIK_JSON,
+  BUTCE_FAALIYET_GIDER_JSON,
   BUTCE_KPK_VADE_JSON,
   BUTCE_MIZAN_AYLIK_FULL_JSON,
   BUTCE_MIZAN_JSON,
@@ -38,6 +40,7 @@ const KINDS = new Set([
   "tarife_brans_pay",
   "aylik_gt_bilanco",
   "kpk_vade",
+  "faaliyet_gider",
   "satis_butce",
   "uretim",
 ]);
@@ -71,7 +74,7 @@ export async function POST(request: Request) {
 
   if (!KINDS.has(kind)) {
     return NextResponse.json(
-      { error: "kind: mizan | butce_map | tarife_map | tarife_brans_pay | aylik_gt_bilanco | kpk_vade | satis_butce | uretim" },
+      { error: "kind: mizan | butce_map | tarife_map | tarife_brans_pay | aylik_gt_bilanco | kpk_vade | faaliyet_gider | satis_butce | uretim" },
       { status: 400 },
     );
   }
@@ -157,6 +160,14 @@ export async function POST(request: Request) {
       logs.push(log);
     }
 
+    if (kind === "faaliyet_gider") {
+      const { rows, log } = importFaaliyetGiderFromBuffer(buf, butceYili);
+      await writePrivateFile(BUTCE_FAALIYET_GIDER_JSON, JSON.stringify(rows));
+      meta.faaliyetGiderGuncellemeIso = new Date().toISOString();
+      meta.faaliyetGiderSatirSayisi = rows.length;
+      logs.push(log);
+    }
+
     if (kind === "uretim") {
       const { rows, log } = importUretimFromBuffer(buf);
       await writePrivateFile(BUTCE_URETIM_JSON, JSON.stringify(rows));
@@ -177,6 +188,7 @@ export async function POST(request: Request) {
       outFiles.push(BUTCE_MIZAN_JSON, BUTCE_MIZAN_AYLIK_JSON, BUTCE_MIZAN_AYLIK_FULL_JSON, BUTCE_BILANCO_AYLIK_JSON);
     }
     if (kind === "kpk_vade") outFiles.push(BUTCE_KPK_VADE_JSON);
+    if (kind === "faaliyet_gider") outFiles.push(BUTCE_FAALIYET_GIDER_JSON);
     if (kind === "satis_butce") outFiles.push(BUTCE_SATIS_BUTCE_JSON);
     if (kind === "uretim") outFiles.push(BUTCE_URETIM_JSON);
 

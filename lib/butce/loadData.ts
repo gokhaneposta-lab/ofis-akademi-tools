@@ -14,6 +14,7 @@ import {
   BUTCE_TARIFE_BRANS_PAY_JSON,
   BUTCE_TARIFE_MAP_JSON,
   BUTCE_URETIM_JSON,
+  BUTCE_FAALIYET_GIDER_JSON,
 } from "./paths";
 import { readPrivateFile } from "./storage";
 import type {
@@ -21,6 +22,7 @@ import type {
   ButceMeta,
   KpkKapanisTahminStore,
   KpkVadeRow,
+  FaaliyetGiderRow,
   MizanAylikRow,
   MizanRow,
   OranAyarStore,
@@ -145,6 +147,12 @@ export async function loadUretimRows(): Promise<UretimRow[]> {
   return JSON.parse(raw) as UretimRow[];
 }
 
+export async function loadFaaliyetGiderRows(): Promise<FaaliyetGiderRow[]> {
+  const raw = await readPrivateFile(BUTCE_FAALIYET_GIDER_JSON);
+  if (!raw) return [];
+  return JSON.parse(raw) as FaaliyetGiderRow[];
+}
+
 export async function loadButceMeta(): Promise<ButceMeta | null> {
   const raw = await readPrivateFile(BUTCE_META_JSON);
   if (!raw) return null;
@@ -168,6 +176,7 @@ export async function butceDataDurumu() {
   const kpkVadeBransSayisi = new Set(kpkVade.map((r) => r.bransKodu)).size;
   const satisButce = await loadSatisButceRows();
   const uretim = await loadUretimRows();
+  const faaliyetGider = await loadFaaliyetGiderRows();
   return {
     hasMizan: mizan.length > 0,
     hasMizanAylik: mizanAylik.length > 0,
@@ -178,6 +187,7 @@ export async function butceDataDurumu() {
     kpkVadeBransSayisi,
     hasSatisButce: satisButce.length > 0,
     hasUretim: uretim.length > 0,
+    hasFaaliyetGider: faaliyetGider.length > 0,
     hasPrimBransHedef: (await loadPrimBransHedef()) != null,
     mizanSatir: mizan.length,
     mizanAylikSatir: mizanAylik.length,
@@ -186,6 +196,8 @@ export async function butceDataDurumu() {
     kpkVadeSatir: kpkVade.length,
     satisButceSatir: satisButce.length,
     uretimSatir: uretim.length,
+    faaliyetGiderSatir: faaliyetGider.length,
+    faaliyetGiderHesapSayisi: new Set(faaliyetGider.map((r) => r.hesap)).size,
     butceYili: meta?.butceYili ?? BUTCE_YILI_VARSAYILAN,
     meta,
   };

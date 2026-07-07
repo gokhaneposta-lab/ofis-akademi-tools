@@ -3,7 +3,12 @@ import { AYLAR } from "../config/constants";
 import { normalizeBransKodu } from "../textUtils";
 import { buildKpkSonuc, kpkHucreOverride } from "../kpk/buildKpkSonuc";
 import { KPK_GT_SATIRLARI } from "../kpk/kpkMotoru";
-import type { AylikPrimStore, KpkVadeRow, MizanAylikRow, MizanRow, OranAyarStore, TarifeBransPayRow, KpkKapanisTahminStore } from "../types";
+import type { AylikPrimStore, FaaliyetGiderRow, KpkVadeRow, MizanAylikRow, MizanRow, OranAyarStore, TarifeBransPayRow, KpkKapanisTahminStore } from "../types";
+import {
+  buildFaaliyetGiderSonuc,
+  faaliyetGiderHucreOverride,
+  FAALIYET_GT_SATIRLARI,
+} from "./faaliyetGiderGt";
 import { GelirTablosuMotoru, type GtEksikGirdi } from "./gtMotoru";
 
 /** Gelir tablosunda gösterilecek GT satırları (Excel satır no + sunum). */
@@ -70,6 +75,7 @@ export function buildGelirTablosu(opts: {
   tarifeBransPay?: TarifeBransPayRow[];
   kpkVade?: KpkVadeRow[];
   kapanisTahmin?: KpkKapanisTahminStore | null;
+  faaliyetGider?: FaaliyetGiderRow[];
 }): GelirTablosuSonuc {
   const {
     mizan,
@@ -82,6 +88,7 @@ export function buildGelirTablosu(opts: {
     tarifeBransPay = [],
     kpkVade = [],
     kapanisTahmin,
+    faaliyetGider = [],
   } = opts;
 
   const kpkSonuc =
@@ -99,6 +106,18 @@ export function buildGelirTablosu(opts: {
       : null;
 
   const kpkByBrans = new Map(kpkSonuc?.branslar.map((b) => [b.bransKodu, b]) ?? []);
+
+  const faaliyetSonuc =
+    faaliyetGider.length > 0
+      ? buildFaaliyetGiderSonuc({
+          butceYili,
+          rows: faaliyetGider,
+          mizan,
+          oranAyar,
+          bransKodlari: HAZINE_BRANS_SIRASI,
+        })
+      : null;
+  const faaliyetByBrans = new Map(faaliyetSonuc?.map((b) => [b.bransKodu, b]) ?? []);
 
   const motor = new GelirTablosuMotoru(mizan, butceYili, oranAyar);
 
@@ -118,7 +137,11 @@ export function buildGelirTablosu(opts: {
     if (brut <= 0) continue;
     const endirekt = endirektPrim[kod] ?? 0;
     const kpkBrans = kpkByBrans.get(kod);
-    const disHucreler = kpkBrans ? kpkHucreOverride(kpkBrans) : {};
+    const fgBrans = faaliyetByBrans.get(kod);
+    const disHucreler = {
+      ...(kpkBrans ? kpkHucreOverride(kpkBrans) : {}),
+      ...(fgBrans ? faaliyetGiderHucreOverride(fgBrans) : {}),
+    };
     const tumDegerler = motor.hesaplaBrans(kod, brut, endirekt, disHucreler);
 
     const degerler: Record<number, number> = {};
@@ -133,10 +156,13 @@ export function buildGelirTablosu(opts: {
     const paylar = aylikPaylar[kod] ?? null;
     const bransAylik: Record<number, number[]> = {};
     const kpkAylikSatirlar = new Set<number>(KPK_GT_SATIRLARI as unknown as number[]);
+    const faaliyetAylikSatirlar = new Set<number>(FAALIYET_GT_SATIRLARI);
     for (const s of GOSTERIM_SATIR_NOLARI) {
       const yillik = degerler[s];
       if (kpkBrans && kpkAylikSatirlar.has(s) && kpkBrans.gtAylik[s]) {
         bransAylik[s] = [...kpkBrans.gtAylik[s]!];
+      } else if (fgBrans && faaliyetAylikSatirlar.has(s) && fgBrans.gtAylik[s]) {
+        bransAylik[s] = [...fgBrans.gtAylik[s]!];
       } else {
         const paylarLocal = paylar;
         bransAylik[s] = paylarLocal

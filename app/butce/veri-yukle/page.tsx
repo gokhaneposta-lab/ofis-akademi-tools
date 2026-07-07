@@ -3,6 +3,7 @@ import ButceDataUploadCard from "@/components/butce/ButceDataUploadCard";
 import { butceDataDurumu } from "@/lib/butce/loadData";
 import {
   BUTCE_AYLIK_GT_BILANCO_SPEC,
+  BUTCE_FAALIYET_GIDER_SPEC,
   BUTCE_KPK_VADE_SPEC,
   BUTCE_MAP_TARIFE_SPEC,
   BUTCE_PRIM_SPEC,
@@ -103,6 +104,22 @@ export default async function VeriYuklePage() {
         neYuklenmeli="Branş Kod, Branş Ad, Ay (1–12) ve Vade (gün) kolonları. Son 3 yıl üretim ortalaması; sık güncellenmez."
         feeds="Gelir tablosu ve bilanço KPK hesapları."
         spec={BUTCE_KPK_VADE_SPEC}
+      />
+
+      <ButceDataUploadCard
+        title="6. Faaliyet Giderleri (614)"
+        kind="faaliyet_gider"
+        butceYili={durum.butceYili}
+        status={durum.hasFaaliyetGider ? "loaded" : "missing"}
+        statusText={
+          durum.hasFaaliyetGider
+            ? `${fmt(durum.faaliyetGiderHesapSayisi)} hesap, ${fmt(durum.faaliyetGiderSatir)} ay×tutar satırı`
+            : undefined
+        }
+        neden="Personel, yönetim, AR-GE, pazarlama gibi şirket geneli faaliyet giderleri GT'de dış girdi olarak gelir; mizandan otomatik hesaplanmaz."
+        neYuklenmeli="61402, 61403, 61404, 61405 … hesap kodları için ay bazında bütçe tutarları. İsterseniz Oca–Ara kolonlu geniş tablo."
+        feeds="Gelir tablosu — Faaliyet giderleri (F176) ve alt kalemler (personel, yönetim …)."
+        spec={BUTCE_FAALIYET_GIDER_SPEC}
       />
     </div>
   );

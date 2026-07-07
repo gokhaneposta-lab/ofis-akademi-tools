@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   butceDataDurumu,
   loadAylikPrim,
+  loadFaaliyetGiderRows,
   loadKpkKapanisTahmin,
   loadKpkVadeRows,
   loadMizanAylikRows,
@@ -34,7 +35,7 @@ export async function GET() {
     );
   }
 
-  const [mizan, endirekt, aylikPrim, oranAyar, mizanAylik, tarifeBransPay, kpkVade, kapanisTahmin] =
+  const [mizan, endirekt, aylikPrim, oranAyar, mizanAylik, tarifeBransPay, kpkVade, kapanisTahmin, faaliyetGider] =
     await Promise.all([
       loadMizanRows(),
       loadPrimBransEndirekt(),
@@ -44,6 +45,7 @@ export async function GET() {
       loadTarifeBransPayRows(),
       loadKpkVadeRows(),
       loadKpkKapanisTahmin(),
+      loadFaaliyetGiderRows(),
     ]);
 
   const sonuc = buildGelirTablosu({
@@ -57,12 +59,14 @@ export async function GET() {
     tarifeBransPay,
     kpkVade,
     kapanisTahmin,
+    faaliyetGider,
   });
 
   return NextResponse.json({
     ok: true,
     hasAylikPrim: aylikPrim != null,
     hasKpkVade: kpkVade.length > 0,
+    hasFaaliyetGider: faaliyetGider.length > 0,
     ...sonuc,
   });
 }

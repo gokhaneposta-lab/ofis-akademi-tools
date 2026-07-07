@@ -75,6 +75,8 @@ export type ButceMeta = {
   satisButceSatirSayisi?: number;
   uretimGuncellemeIso?: string;
   uretimSatirSayisi?: number;
+  faaliyetGiderGuncellemeIso?: string;
+  faaliyetGiderSatirSayisi?: number;
 };
 
 export type TarifeMapRow = {
@@ -122,6 +124,17 @@ export type BilancoAylikRow = {
   ay: number;
   hesap: string;
   tutar: number;
+};
+
+/** Şirket geneli faaliyet giderleri — mizan 614xx, ay bazında bütçe tutarı. */
+export type FaaliyetGiderRow = {
+  butceYili: number;
+  hesap: string;
+  hesapAd?: string;
+  ay: number;
+  tutar: number;
+  /** Boş = şirket geneli; F368 branş payı ile dağıtılır. */
+  bransKodu?: string;
 };
 
 /** Branş × ay ortalama poliçe vadesi (gün) — 3 yıllık üretim ortalaması. */

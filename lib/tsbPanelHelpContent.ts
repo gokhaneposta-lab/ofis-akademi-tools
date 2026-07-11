@@ -25,23 +25,12 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     ],
   },
   {
-    href: "/sigorta/sirket-merkezi",
-    items: [
-      "Önce havuz (hayat dışı / hayat–emeklilik), prim ayı ve şirketi seçin. URL ?sirket= ve ?sekme= ile paylaşılabilir.",
-      "Özet sekmesi tam şirket karnesidir (prim, finansal, kanal, 12 ay trend). Diğer sekmeler KPI önizleme + ilgili panele filtreli link sunar.",
-      "Finansal ve teknik önizlemeler prim ayına eşlenen son GT çeyreğini kullanır; detay için «Panele git» linklerini kullanın.",
-      "Kısa URL: /sigorta/sirket/[kod] (ör. /sigorta/sirket/1004) aynı merkeze yönlendirir.",
-    ],
-  },
-  {
     href: "/sigorta/sirket-karne",
     items: [
-      "Prim dönemi = ay (ör. 2026-05). Finansal blok, prim ayına eşlenen son finansal çeyreği kullanır (ör. 2026-1).",
-      "TSB prim verisi yıl içi kümülatiftir: üst tablo aylık üretim (seçili ay − önceki ay), alt tablo YTD kümülatif (ay satırının kendisi).",
-      "Tüm tablolar ana branş (TSB) kırılımındadır. Branş sırası, branş sıra panelindeki sektör içi sıradır.",
-      "Sektör prim sırası = seçili ayda havuzdaki toplam prim sıralaması.",
-      "Kanal tablosunda «kanalda sektör payı» = o kanaldaki şirket primi ÷ sektör kanal primi.",
-      "PDF/indirme yok — güncel veri için siteye dönün.",
+      "Önce havuz (hayat dışı / hayat–emeklilik), prim ayı ve şirketi seçin. URL ?sirket= ve ?sekme= ile paylaşılabilir.",
+      "Özet sekmesi: aylık/YTD prim, finansal KPI, kanal dağılımı ve 12 ay trend. TSB prim verisi yıl içi kümülatiftir.",
+      "Finansal, Teknik, Prim ve Pazar sekmeleri KPI önizleme + ilgili panele filtreli link sunar.",
+      "Kısa URL: /sigorta/sirket/[kod] (ör. /sigorta/sirket/1004) aynı karneye yönlendirir. PDF/indirme yok.",
     ],
   },
   {

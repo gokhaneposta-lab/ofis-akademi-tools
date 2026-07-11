@@ -15,8 +15,8 @@ export default function SigortaSirketKarnePage() {
       title="Şirket karne"
       description={
         <>
-          Tek şirket için özet görünüm: aylık ve kümülatif prim, branş payı, finansal KPI&apos;lar, kanal dağılımı
-          ve son 12 ay trendi — ana branş (TSB) kırılımında.
+          Tek şirket için merkezi görünüm: özet karne (prim, finansal, kanal, trend), finansal/teknik/prim/pazar
+          sekmeleri ve ilgili panellere filtreli geçiş.
         </>
       }
       sourceNote={<TsbSourceNote />}

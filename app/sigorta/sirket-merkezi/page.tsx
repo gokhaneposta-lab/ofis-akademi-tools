@@ -1,28 +1,21 @@
-import type { Metadata } from "next";
-import TsbRelatedDashboards from "@/components/tsb/TsbRelatedDashboards";
-import TsbSirketMerkeziDashboard from "@/components/tsb/TsbSirketMerkeziDashboard";
-import { TsbPageLayout } from "@/components/tsb/TsbPageLayout";
-import TsbSourceNote from "@/components/tsb/tsbSourceNote";
-import { TSB_SEO, tsbPageMetadata } from "@/lib/tsbSeo";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = tsbPageMetadata(TSB_SEO.sirketMerkezi);
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default function SigortaSirketMerkeziPage() {
-  return (
-    <TsbPageLayout
-      seoPageId="sirketMerkezi"
-      currentHref="/sigorta/sirket-merkezi"
-      title="Şirket merkezi"
-      description={
-        <>
-          Tek şirket için merkezi görünüm: özet karne, finansal ve teknik KPI önizlemeleri, prim ve pazar
-          sekmeleri — ilgili TSB panellerine filtreli geçiş.
-        </>
-      }
-      sourceNote={<TsbSourceNote />}
-    >
-      <TsbSirketMerkeziDashboard />
-      <TsbRelatedDashboards currentHref="/sigorta/sirket-merkezi" />
-    </TsbPageLayout>
-  );
+/** Eski URL — /sigorta/sirket-merkezi → şirket karne */
+export default async function SigortaSirketMerkeziRedirectPage({ searchParams }: PageProps) {
+  const sp = await searchParams;
+  const q = new URLSearchParams();
+  for (const [key, value] of Object.entries(sp)) {
+    if (value == null) continue;
+    if (Array.isArray(value)) {
+      for (const v of value) q.append(key, v);
+    } else {
+      q.set(key, value);
+    }
+  }
+  const s = q.toString();
+  redirect(s ? `/sigorta/sirket-karne?${s}` : "/sigorta/sirket-karne");
 }

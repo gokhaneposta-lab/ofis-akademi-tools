@@ -1,5 +1,5 @@
 import type { TsbSektorSegment } from "./tsbPrimDashboard";
-import type { TsbSirketMerkeziSekme } from "./tsbSirketMerkezi";
+import type { TsbSirketKarneSekme } from "./tsbSirketKarneSekmeler";
 import type { SegmentSkorPool } from "./tsbSirketSegmentSkor";
 
 export type TsbDashboardUrlPrefs = {
@@ -7,7 +7,7 @@ export type TsbDashboardUrlPrefs = {
   donem?: string;
   pool?: SegmentSkorPool;
   segment?: TsbSektorSegment;
-  sekme?: TsbSirketMerkeziSekme;
+  sekme?: TsbSirketKarneSekme;
 };
 
 export function buildTsbDashboardHref(path: string, prefs: TsbDashboardUrlPrefs): string {

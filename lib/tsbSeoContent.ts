@@ -102,32 +102,15 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
   sirketKarne: {
     heading: "TSB şirket karne — prim, finansal ve kanal özeti",
     paragraphs: [
-      "Tek bir sigorta şirketi için TSB verilerinden derlenmiş özet panel: aylık ve kümülatif (YTD) prim üretimi, pazar payı, branş sırası, finansal KPI'lar, kanal dağılımı ve son 12 ay aylık trend.",
+      "Tek bir sigorta şirketi için TSB verilerinden derlenmiş panel: Özet sekmesinde aylık ve kümülatif prim, pazar payı, finansal KPI, kanal dağılımı ve 12 ay trend; diğer sekmelerde KPI önizleme ve ilgili panellere filtreli geçiş.",
       "Prim dönemi ay bazlıdır (ör. 2026-05); finansal blok prim ayına eşlenen son finansal çeyreği kullanır. Tüm kırılımlar ana branş (TSB) dilimindedir.",
-      "Sektör kıyası sıralama ve pay mantığındadır: toplam primde sektör sırası, branş satırında branş sırası, kanalda o kanaldaki sektör payı gösterilir.",
+      "URL paylaşılabilir (?sirket=, ?donem=, ?segment=, ?sekme=). Kısa yol /sigorta/sirket/[kod] aynı karneye yönlendirir.",
     ],
     faqs: [
       ...COMMON_FAQS.slice(0, 2),
       {
         question: "Karne indirilebilir mi?",
         answer: "Hayır. Güncel veri için panele site üzerinden tekrar gelmeniz gerekir; PDF veya yazdır çıktısı sunulmaz.",
-      },
-    ],
-    blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
-  },
-  sirketMerkezi: {
-    heading: "TSB şirket merkezi — tek şirket analiz hub'ı",
-    paragraphs: [
-      "Bir sigorta şirketini merkez alan sekme tabanlı görünüm: Özet sekmesinde tam karne; Finansal, Teknik, Prim ve Pazar sekmelerinde KPI önizleme ve ilgili TSB panellerine filtreli geçiş.",
-      "Şirket, havuz ve prim ayı seçildiğinde URL paylaşılabilir (?sirket=, ?donem=, ?segment=, ?sekme=). Kısa yol /sigorta/sirket/[kod] aynı merkeze yönlendirir.",
-      "Rakip ürünlerdeki «şirket listesi» fikrini Ofis Akademi metodolojisi ve mevcut panellerle birleştirir; ölçek segmenti rozeti ve sektör sırası üst şeritte görünür.",
-    ],
-    faqs: [
-      ...COMMON_FAQS.slice(0, 2),
-      {
-        question: "Şirket merkezi ile şirket karne farkı nedir?",
-        answer:
-          "Merkez, karnenin özet sekmesi + diğer analiz alanlarına geçiş köprüsüdür. Tam karne hâlâ ayrı panel olarak durur; merkezdeki Özet sekmesi aynı içeriği gösterir.",
       },
     ],
     blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],

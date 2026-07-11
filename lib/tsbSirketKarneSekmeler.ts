@@ -1,36 +1,36 @@
 import { buildTsbDashboardHref, type TsbDashboardUrlPrefs } from "./tsbDashboardDeepLink";
 import type { SegmentSkorPool } from "./tsbSirketSegmentSkor";
 
-export type TsbSirketMerkeziSekme = "ozet" | "finansal" | "teknik" | "prim" | "pazar";
+export type TsbSirketKarneSekme = "ozet" | "finansal" | "teknik" | "prim" | "pazar";
 
-export const TSB_SIRKET_MERKEZI_SEKMELER: readonly {
-  id: TsbSirketMerkeziSekme;
+export const TSB_SIRKET_KARNE_SEKMELER: readonly {
+  id: TsbSirketKarneSekme;
   label: string;
   description: string;
 }[] = [
-  { id: "ozet", label: "Özet", description: "Karne — prim, finansal, kanal ve trend" },
+  { id: "ozet", label: "Özet", description: "Prim, finansal, kanal ve 12 ay trend" },
   { id: "finansal", label: "Finansal", description: "GT ve bilanço KPI önizleme" },
   { id: "teknik", label: "Teknik", description: "Hasar/prim ve teknik sonuç" },
   { id: "prim", label: "Prim", description: "Kanal ve branş üretim panelleri" },
   { id: "pazar", label: "Pazar", description: "Branş payı ve sıralama" },
 ] as const;
 
-export type TsbSirketMerkeziPanelLink = {
+export type TsbSirketKarnePanelLink = {
   href: string;
   title: string;
   subtitle: string;
   badge: string;
 };
 
-const MERKEZI_PATH = "/sigorta/sirket-merkezi";
+const KARNE_PATH = "/sigorta/sirket-karne";
 
-export function parseSirketMerkeziSekme(raw: string | null | undefined): TsbSirketMerkeziSekme {
+export function parseSirketKarneSekme(raw: string | null | undefined): TsbSirketKarneSekme {
   if (raw === "finansal" || raw === "teknik" || raw === "prim" || raw === "pazar") return raw;
   return "ozet";
 }
 
-export function sirketMerkeziPrefs(
-  prefs: TsbDashboardUrlPrefs & { sekme?: TsbSirketMerkeziSekme },
+export function sirketKarnePrefs(
+  prefs: TsbDashboardUrlPrefs & { sekme?: TsbSirketKarneSekme },
 ): string {
   const q = new URLSearchParams();
   if (prefs.sirket != null) q.set("sirket", String(prefs.sirket));
@@ -38,17 +38,17 @@ export function sirketMerkeziPrefs(
   if (prefs.segment) q.set("segment", prefs.segment);
   if (prefs.sekme && prefs.sekme !== "ozet") q.set("sekme", prefs.sekme);
   const s = q.toString();
-  return s ? `${MERKEZI_PATH}?${s}` : MERKEZI_PATH;
+  return s ? `${KARNE_PATH}?${s}` : KARNE_PATH;
 }
 
-export function sirketMerkeziHref(kod: number, sekme?: TsbSirketMerkeziSekme): string {
-  return sirketMerkeziPrefs({ sirket: kod, sekme });
+export function sirketKarneHref(kod: number, sekme?: TsbSirketKarneSekme): string {
+  return sirketKarnePrefs({ sirket: kod, sekme });
 }
 
-export function sirketMerkeziPanelLinks(
+export function sirketKarnePanelLinks(
   prefs: TsbDashboardUrlPrefs & { finDonem?: string | null },
-  sekme: TsbSirketMerkeziSekme,
-): TsbSirketMerkeziPanelLink[] {
+  sekme: TsbSirketKarneSekme,
+): TsbSirketKarnePanelLink[] {
   const pool: SegmentSkorPool = prefs.segment === "hayat" ? "HAYAT_EMEKLILIK" : "HD";
   const finDonem = prefs.finDonem ?? prefs.donem;
   const base: TsbDashboardUrlPrefs = {
@@ -135,12 +135,6 @@ export function sirketMerkeziPanelLinks(
           title: "Branş sıra özeti",
           subtitle: "Sektör içi sıra ve YoY Δ sıra",
           badge: "Sıra",
-        },
-        {
-          href: buildTsbDashboardHref("/sigorta/sirket-karne", base),
-          title: "Şirket karne",
-          subtitle: "Tam karne görünümü (ayrı panel)",
-          badge: "Karne",
         },
       ];
     default:

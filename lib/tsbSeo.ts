@@ -92,26 +92,14 @@ export const TSB_SEO = {
     path: "/sigorta/sirket-karne",
     title: "TSB Şirket Karne — Prim, Finansal ve Kanal Özeti",
     description:
-      "Tek sigorta şirketi için TSB karne: aylık ve kümülatif prim üretimi, branş pazar payı ve sırası, finansal KPI, kanal dağılımı ve 12 ay trend.",
+      "Tek sigorta şirketi için TSB karne: özet (prim, finansal, kanal, trend), finansal/teknik/prim/pazar sekmeleri ve ilgili panellere filtreli geçiş.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, TSB_SEO_KEYWORDS_FINANSAL, [
       "sigorta şirket karne",
       "TSB şirket özeti",
+      "sigorta şirket analizi",
     ]),
     jsonLdName: "TSB Şirket Karne",
     breadcrumbLabel: "Şirket karne",
-  },
-  sirketMerkezi: {
-    path: "/sigorta/sirket-merkezi",
-    title: "TSB Şirket Merkezi — Tek Şirket Analiz Hub'ı",
-    description:
-      "Sigorta şirketi için merkezi TSB görünümü: özet karne, finansal ve teknik KPI önizlemeleri, prim ve pazar sekmeleri; ilgili panellere filtreli geçiş.",
-    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, TSB_SEO_KEYWORDS_FINANSAL, [
-      "sigorta şirket analizi",
-      "TSB şirket merkezi",
-      "sigorta şirket karşılaştırma",
-    ]),
-    jsonLdName: "TSB Şirket Merkezi",
-    breadcrumbLabel: "Şirket merkezi",
   },
   hasarPrimOrani: {
     path: "/sigorta/hasar-prim-orani",

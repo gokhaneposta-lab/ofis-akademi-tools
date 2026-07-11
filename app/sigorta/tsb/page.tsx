@@ -61,23 +61,23 @@ export default async function SigortaTsbHubPage() {
             <TsbVeriDurumuBand data={veriDurumu} />
             <div className="mt-4">
               <Link
-                href="/sigorta/sirket-merkezi"
+                href="/sigorta/sirket-karne"
                 className={`group block ${tsb.dataPanel} border-emerald-200/80 bg-gradient-to-r from-emerald-50/80 to-teal-50/60 p-4 transition hover:border-emerald-300 hover:shadow-[0_2px_12px_rgba(15,23,42,0.08)]`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <span className="inline-block rounded-md bg-emerald-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                      Yeni
+                      Öne çıkan
                     </span>
                     <h2 className="mt-2 text-base font-bold text-slate-900 group-hover:text-emerald-900">
-                      Şirket merkezi
+                      Şirket karne
                     </h2>
                     <p className="mt-1 max-w-xl text-sm text-slate-600">
-                      Tek şirket seçin — özet karne, finansal/teknik önizleme ve prim panellerine tek tıkla geçin.
+                      Tek şirket seçin — özet karne, sekmeler ve finansal/teknik/prim panellerine tek tıkla geçin.
                     </p>
                   </div>
                   <span className="shrink-0 text-sm font-semibold text-emerald-800 group-hover:underline">
-                    Merkeze git →
+                    Karneye git →
                   </span>
                 </div>
               </Link>

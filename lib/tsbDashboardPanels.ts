@@ -38,11 +38,11 @@ export const TSB_DASHBOARD_GROUPS: readonly TsbDashboardGroupMeta[] = [
 
 export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
-    href: "/sigorta/sirket-merkezi",
-    badge: "Merkez",
-    title: "Şirket merkezi",
-    subtitle: "Tek şirket · özet · sekmeli geçiş · panellere link",
-    icon: "🏛️",
+    href: "/sigorta/sirket-karne",
+    badge: "Karne",
+    title: "Şirket karne",
+    subtitle: "Tek şirket · özet · sekmeler · panellere geçiş",
+    icon: "📋",
     group: "finansal",
   },
   {
@@ -59,14 +59,6 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
     title: "Ölçek segmentasyonu",
     subtitle: "A+…D grupları · şirket listesi · sektör/segment sırası",
     icon: "🏢",
-    group: "finansal",
-  },
-  {
-    href: "/sigorta/sirket-karne",
-    badge: "Karne",
-    title: "Şirket karne",
-    subtitle: "Tek şirket özeti · prim · finansal · kanal · trend",
-    icon: "📋",
     group: "finansal",
   },
 ] as const;

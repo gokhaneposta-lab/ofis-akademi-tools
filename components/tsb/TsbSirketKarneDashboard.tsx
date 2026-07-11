@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   applyUrlSirketOrDefault,
   useTsbDashboardUrlPrefs,
 } from "@/components/tsb/useTsbDashboardUrlPrefs";
 import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
 import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
+import TsbSirketKarneOzet, {
+  type TsbSirketKarneOzetControlled,
+} from "@/components/tsb/TsbSirketKarneOzet";
 import {
   cn,
   tsb,
@@ -16,36 +20,28 @@ import {
   TsbFilterGrid,
   TsbLoading,
   TsbSelect,
-  TsbTableShell,
   TsbToggleButton,
-  tsbDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
-import type { BransPayDilim } from "@/lib/tsbBransDegisim";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
 import {
-  FINANSAL_KIYASLAMA_SATIRLARI,
-  finansalKiyaslamaDegisim,
   finansalKiyaslamaDonemPaketi,
   finansalKiyaslamaSatirSayisal,
-  formatFinansalDegisim,
   formatFinansalHucre,
-  oncekiYilDonem,
 } from "@/lib/tsbFinansalKarsilastirmaData";
 import { olcekFinDonemForPrimDonem } from "@/lib/tsbOlcekSegmentCache";
 import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
-import {
-  buildSirketKarnePrimPaket,
-  type KarneKanalSatir,
-  type KarnePrimSatir,
-} from "@/lib/tsbSirketKarne";
+import { buildSirketKarnePrimPaket } from "@/lib/tsbSirketKarne";
 import type { TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import { listSirketlerSegmentDonem, uniqueSortedPeriods } from "@/lib/tsbPrimDashboard";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
-import TsbPrimTrendAylikBarChart from "@/components/tsb/TsbPrimTrendAylikBarChart";
-
-const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
-const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+import {
+  parseSirketKarneSekme,
+  sirketKarnePanelLinks,
+  sirketKarnePrefs,
+  TSB_SIRKET_KARNE_SEKMELER,
+  type TsbSirketKarneSekme,
+} from "@/lib/tsbSirketKarneSekmeler";
 
 const SEGMENT_LABEL: Record<TsbSektorSegment, string> = {
   hayatdisi: "Hayat dışı",
@@ -57,265 +53,79 @@ const POOL_FOR_SEGMENT: Record<TsbSektorSegment, SegmentSkorPool> = {
   hayat: "HAYAT_EMEKLILIK",
 };
 
-export type TsbSirketKarneControlled = {
-  segment: TsbSektorSegment;
-  donem: string;
-  sirketKodu: number | "";
-  setSegment: (s: TsbSektorSegment) => void;
-  setDonem: (d: string) => void;
-  setSirketKodu: (k: number | "") => void;
-};
+const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 
-export type TsbSirketKarneDashboardProps = {
-  /** Şirket merkezi gibi üst bileşen filtreleri yönetiyorsa */
-  controlled?: TsbSirketKarneControlled;
-  hideFilters?: boolean;
-  hideHero?: boolean;
-};
+type KpiCard = { label: string; value: string; hint?: string };
 
-function fmtPrim(v: number): string {
-  return `${nf.format(v)} TL`;
-}
-
-function fmtPct(v: number | null): string {
-  if (v === null) return "—";
-  return `${pf.format(v)}%`;
-}
-
-function fmtPp(v: number): string {
-  const sign = v > 0 ? "+" : "";
-  return `${sign}${pf.format(v)} pp`;
-}
-
-function KarneSection({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
-}) {
+function MerkeziKpiGrid({ items }: { items: KpiCard[] }) {
+  if (items.length === 0) return null;
   return (
-    <section className={cn(tsb.dataPanel, "overflow-hidden p-0")}>
-      <div className="border-b border-teal-900/10 bg-gradient-to-r from-teal-800 to-teal-700 px-4 py-3 text-white">
-        <h2 className="text-sm font-bold uppercase tracking-wide">{title}</h2>
-        {subtitle ? <p className="mt-0.5 text-[11px] text-teal-100/90">{subtitle}</p> : null}
-      </div>
-      <div className="p-3">{children}</div>
-    </section>
-  );
-}
-
-function PrimTablo({
-  satirlar,
-  donemBu,
-  donemOnceki,
-  showSirasi,
-}: {
-  satirlar: KarnePrimSatir[];
-  donemBu: string;
-  donemOnceki: string;
-  showSirasi: boolean;
-}) {
-  return (
-    <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[720px] text-xs")}>
-        <thead className={tsb.thead}>
-          <tr>
-            <th className={cn(tsb.thSticky, "text-left")}>Ana branş</th>
-            <th className={cn(tsb.th, "text-right")}>Prim {donemBu}</th>
-            <th className={cn(tsb.th, "text-right")}>Δ vs {donemOnceki}</th>
-            <th className={cn(tsb.th, "text-right")}>Pazar payı</th>
-            <th className={cn(tsb.th, "text-right")}>Δ pay (pp)</th>
-            {showSirasi ? <th className={cn(tsb.th, "text-center")}>Branş sırası</th> : null}
-          </tr>
-        </thead>
-        <tbody>
-          {satirlar.map((s) => {
-            const toplam = s.anaBransH.includes("TOPLAM") || s.anaBransH.includes("PORTFÖY");
-            return (
-              <tr key={s.anaBransH} className={cn(tsb.tbodyRow, toplam && "bg-slate-50 font-semibold")}>
-                <td className={cn(tsb.tdSticky, toplam && "bg-slate-50")}>{s.anaBransH}</td>
-                <td className={cn(tsb.td, "text-right tabular-nums")}>{fmtPrim(s.sirketPrimBu)}</td>
-                <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(s.sirketDegisim))}>
-                  {fmtPct(s.sirketDegisim)}
-                </td>
-                <td className={cn(tsb.td, "text-right tabular-nums")}>{pf.format(s.payBuYuzde)}%</td>
-                <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(s.payDegisimPp))}>
-                  {fmtPp(s.payDegisimPp)}
-                </td>
-                {showSirasi ? (
-                  <td className={cn(tsb.td, "text-center tabular-nums")}>{s.bransSirasi}</td>
-                ) : null}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </TsbTableShell>
-  );
-}
-
-const COL_BU = "#059669";
-const COL_ONCEKI = "#94a3b8";
-
-/** Seçili ayın aylık üretiminde branş payı — gruplu dikey sütunlar (okunabilir). */
-function BransPayBarGrafik({
-  bu,
-  onceki,
-  donemBu,
-  donemOnceki,
-}: {
-  bu: BransPayDilim[];
-  onceki: BransPayDilim[];
-  donemBu: string;
-  donemOnceki: string;
-}) {
-  const etiketler = [...new Set([...bu.map((d) => d.etiket), ...onceki.map((d) => d.etiket)])]
-    .map((etiket) => ({
-      etiket,
-      payBu: bu.find((d) => d.etiket === etiket)?.sirketPay ?? 0,
-      payOc: onceki.find((d) => d.etiket === etiket)?.sirketPay ?? 0,
-    }))
-    .filter((d) => d.payBu > 0.3 || d.payOc > 0.3)
-    .sort((a, b) => b.payBu - a.payBu)
-    .slice(0, 10);
-
-  if (etiketler.length === 0) {
-    return <p className={tsb.filterHint}>Seçili ay için branş payı hesaplanamadı.</p>;
-  }
-
-  const maxPay = Math.max(...etiketler.flatMap((d) => [d.payBu, d.payOc]), 1);
-  const barMaxH = 160;
-
-  return (
-    <div>
-      <div className="mb-2 flex flex-wrap gap-4 text-[10px] text-slate-600">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: COL_BU }} />
-          {donemBu} aylık pay
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: COL_ONCEKI }} />
-          {donemOnceki} aylık pay
-        </span>
-      </div>
-      <div className="overflow-x-auto">
-        <div className="flex min-w-[640px] items-end gap-3 pb-6 pt-2" style={{ minHeight: barMaxH + 48 }}>
-          {etiketler.map(({ etiket, payBu, payOc }) => {
-            const hBu = (payBu / maxPay) * barMaxH;
-            const hOc = (payOc / maxPay) * barMaxH;
-            return (
-              <div key={etiket} className="flex min-w-[56px] flex-1 flex-col items-center">
-                <div className="flex h-[168px] items-end justify-center gap-1">
-                  <div className="flex flex-col items-center justify-end" title={`${donemOnceki}: ${pf.format(payOc)}%`}>
-                    <span className="mb-0.5 text-[9px] tabular-nums text-slate-500">{pf.format(payOc)}%</span>
-                    <div className="w-5 rounded-t-sm" style={{ height: Math.max(hOc, payOc > 0 ? 3 : 0), backgroundColor: COL_ONCEKI }} />
-                  </div>
-                  <div className="flex flex-col items-center justify-end" title={`${donemBu}: ${pf.format(payBu)}%`}>
-                    <span className="mb-0.5 text-[9px] font-semibold tabular-nums text-emerald-800">{pf.format(payBu)}%</span>
-                    <div className="w-5 rounded-t-sm" style={{ height: Math.max(hBu, payBu > 0 ? 3 : 0), backgroundColor: COL_BU }} />
-                  </div>
-                </div>
-                <span className="mt-2 max-w-[72px] text-center text-[9px] leading-tight text-slate-700">{etiket}</span>
-              </div>
-            );
-          })}
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      {items.map((k) => (
+        <div key={k.label} className={cn(tsb.dataPanel, "p-3")}>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{k.label}</p>
+          <p className="mt-1 text-base font-bold tabular-nums text-slate-900">{k.value}</p>
+          {k.hint ? <p className="mt-0.5 text-[10px] text-slate-500">{k.hint}</p> : null}
         </div>
-      </div>
+      ))}
     </div>
   );
 }
 
-function KanalTablo({ satirlar, donemBu, donemOnceki }: { satirlar: KarneKanalSatir[]; donemBu: string; donemOnceki: string }) {
+function PanelLinkGrid({
+  links,
+}: {
+  links: ReturnType<typeof sirketKarnePanelLinks>;
+}) {
+  if (links.length === 0) return null;
   return (
-    <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[680px] text-xs")}>
-        <thead className={tsb.thead}>
-          <tr>
-            <th className={cn(tsb.thSticky, "text-left")}>Kanal</th>
-            <th className={cn(tsb.th, "text-right")}>Üretim {donemBu}</th>
-            <th className={cn(tsb.th, "text-right")}>Pay (%)</th>
-            <th className={cn(tsb.th, "text-right")}>Δ vs {donemOnceki}</th>
-            <th className={cn(tsb.th, "text-right")}>Kanalda sektör payı</th>
-            <th className={cn(tsb.th, "text-right")}>Δ pay (pp)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {satirlar.map((s) => (
-            <tr key={s.key} className={tsb.tbodyRow}>
-              <td className={tsb.tdSticky}>{s.label}</td>
-              <td className={cn(tsb.td, "text-right tabular-nums")}>{fmtPrim(s.uretimBu)}</td>
-              <td className={cn(tsb.td, "text-right tabular-nums")}>{pf.format(s.payBuYuzde)}%</td>
-              <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(s.degisimYuzde))}>
-                {fmtPct(s.degisimYuzde)}
-              </td>
-              <td className={cn(tsb.td, "text-right tabular-nums")}>
-                {s.kanaldaSektorPayBu !== null ? `${pf.format(s.kanaldaSektorPayBu)}%` : "—"}
-              </td>
-              <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(s.kanaldaPayDegisimPp))}>
-                {s.kanaldaPayDegisimPp !== null ? fmtPp(s.kanaldaPayDegisimPp) : "—"}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </TsbTableShell>
+    <div className="grid gap-2 sm:grid-cols-2">
+      {links.map((p) => (
+        <Link
+          key={p.href}
+          href={p.href}
+          className={cn(
+            tsb.dataPanel,
+            "group p-3 transition hover:border-emerald-300/80 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]",
+          )}
+        >
+          <span className="inline-block rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+            {p.badge}
+          </span>
+          <h3 className="mt-1 text-sm font-semibold text-slate-900 group-hover:text-emerald-800">{p.title}</h3>
+          <p className="mt-0.5 text-xs text-slate-600">{p.subtitle}</p>
+          <p className="mt-2 text-right text-[11px] font-semibold text-emerald-800 group-hover:underline">
+            Panele git →
+          </p>
+        </Link>
+      ))}
+    </div>
   );
 }
 
-function TrendPayTablo({ seri }: { seri: import("@/lib/tsbPrimTrend12").PrimTrendAylikNokta[] }) {
-  return (
-    <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[480px] text-xs")}>
-        <thead className={tsb.thead}>
-          <tr>
-            <th className={cn(tsb.th, "text-left")}>Ay</th>
-            <th className={cn(tsb.th, "text-right")}>Şirket aylık prim</th>
-            <th className={cn(tsb.th, "text-right")}>Sektör aylık prim</th>
-            <th className={cn(tsb.th, "text-right")}>Sektör payı (%)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {seri.map((p) => (
-            <tr key={p.donem} className={tsb.tbodyRow}>
-              <td className={tsb.td}>{p.donem}</td>
-              <td className={cn(tsb.td, "text-right tabular-nums")}>{fmtPrim(p.sirketAylik)}</td>
-              <td className={cn(tsb.td, "text-right tabular-nums")}>{fmtPrim(p.sektorAylik)}</td>
-              <td className={cn(tsb.td, "text-right tabular-nums")}>{pf.format(p.payYuzde)}%</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </TsbTableShell>
-  );
-}
-
-export default function TsbSirketKarneDashboard({
-  controlled,
-  hideFilters = false,
-  hideHero = false,
-}: TsbSirketKarneDashboardProps = {}) {
+export default function TsbSirketKarneDashboard() {
   const urlPrefs = useTsbDashboardUrlPrefs();
   const { cache: olcekCache } = useOlcekSegmentCache();
   const [primRows, setPrimRows] = useState<TsbPrimRow[] | null>(null);
   const [gelirRows, setGelirRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [gelirDonemler, setGelirDonemler] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [segmentInternal, setSegmentInternal] = useState<TsbSektorSegment>(
-    urlPrefs.segment ?? "hayatdisi",
-  );
-  const [donemInternal, setDonemInternal] = useState("");
-  const [sirketKoduInternal, setSirketKoduInternal] = useState<number | "">("");
+  const [segment, setSegment] = useState<TsbSektorSegment>(urlPrefs.segment ?? "hayatdisi");
+  const [donem, setDonem] = useState("");
+  const [sirketKodu, setSirketKodu] = useState<number | "">("");
+  const [sekme, setSekme] = useState<TsbSirketKarneSekme>(parseSirketKarneSekme(urlPrefs.sekme));
 
-  const segment = controlled?.segment ?? segmentInternal;
-  const donem = controlled?.donem ?? donemInternal;
-  const sirketKodu = controlled?.sirketKodu ?? sirketKoduInternal;
-  const setSegment = controlled?.setSegment ?? setSegmentInternal;
-  const setDonem = controlled?.setDonem ?? setDonemInternal;
-  const setSirketKodu = controlled?.setSirketKodu ?? setSirketKoduInternal;
-  const syncUrlSirket = !controlled;
+  const syncUrl = useCallback(() => {
+    if (typeof window === "undefined" || sirketKodu === "") return;
+    const href = sirketKarnePrefs({
+      sirket: sirketKodu,
+      donem: donem || undefined,
+      segment,
+      sekme,
+    });
+    window.history.replaceState(null, "", href);
+  }, [sirketKodu, donem, segment, sekme]);
 
   useEffect(() => {
     let cancelled = false;
@@ -326,8 +136,7 @@ export default function TsbSirketKarneDashboard({
           setPrimRows(data);
           const periods = uniqueSortedPeriods(data);
           if (periods.length > 0) {
-            setDonemInternal((prev) => {
-              if (controlled?.donem && periods.includes(controlled.donem)) return controlled.donem;
+            setDonem((prev) => {
               if (prev && periods.includes(prev)) return prev;
               if (urlPrefs.donem && periods.includes(urlPrefs.donem)) return urlPrefs.donem;
               return periods[periods.length - 1];
@@ -346,7 +155,7 @@ export default function TsbSirketKarneDashboard({
     return () => {
       cancelled = true;
     };
-  }, [urlPrefs.donem, controlled?.donem]);
+  }, [urlPrefs.donem]);
 
   const sortedPrimDonemler = useMemo(
     () => (primRows ? uniqueSortedPeriods(primRows) : []),
@@ -357,28 +166,20 @@ export default function TsbSirketKarneDashboard({
     () => (donem && olcekCache ? olcekFinDonemForPrimDonem(olcekCache, donem) : null),
     [donem, olcekCache],
   );
-  const finDonemOnceki = useMemo(
-    () => (finDonem ? oncekiYilDonem(finDonem) : null),
-    [finDonem],
-  );
 
   useEffect(() => {
     if (!finDonem || gelirDonemler.length === 0) return;
-    const yuklenecek = [finDonem];
-    if (finDonemOnceki && gelirDonemler.includes(finDonemOnceki)) yuklenecek.push(finDonemOnceki);
     let cancelled = false;
     setGelirRows(null);
-    fetchGelirTidyDonemler(yuklenecek)
+    fetchGelirTidyDonemler([finDonem])
       .then((data) => {
         if (!cancelled) setGelirRows(data);
       })
-      .catch((e: unknown) => {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Finansal veri yüklenemedi");
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, [finDonem, finDonemOnceki, gelirDonemler]);
+  }, [finDonem, gelirDonemler]);
 
   const sirketler = useMemo(() => {
     if (!primRows || !donem) return [];
@@ -389,9 +190,13 @@ export default function TsbSirketKarneDashboard({
   }, [primRows, donem, segment]);
 
   useEffect(() => {
-    if (!syncUrlSirket || sirketler.length === 0) return;
+    if (sirketler.length === 0) return;
     applyUrlSirketOrDefault(sirketler, urlPrefs.sirket, sirketKodu, setSirketKodu, segment);
-  }, [sirketler, segment, sirketKodu, urlPrefs.sirket, syncUrlSirket, setSirketKodu]);
+  }, [sirketler, segment, sirketKodu, urlPrefs.sirket]);
+
+  useEffect(() => {
+    syncUrl();
+  }, [syncUrl]);
 
   const secilenAd = sirketler.find((s) => s.kod === sirketKodu)?.ad ?? "";
   const pool = POOL_FOR_SEGMENT[segment];
@@ -409,40 +214,143 @@ export default function TsbSirketKarneDashboard({
     );
   }, [primRows, sortedPrimDonemler, donem, segment, sirketKodu]);
 
-  const finPaketBu = useMemo(() => {
+  const finPaket = useMemo(() => {
     if (!gelirRows || !finDonem || sirketKodu === "") return null;
     return finansalKiyaslamaDonemPaketi(gelirRows, finDonem, sirketKodu, pool, { mod: "sektor" });
   }, [gelirRows, finDonem, sirketKodu, pool]);
 
-  const finPaketOnceki = useMemo(() => {
-    if (!gelirRows || !finDonemOnceki || sirketKodu === "" || !gelirDonemler.includes(finDonemOnceki))
-      return null;
-    return finansalKiyaslamaDonemPaketi(gelirRows, finDonemOnceki, sirketKodu, pool, { mod: "sektor" });
-  }, [gelirRows, finDonemOnceki, sirketKodu, pool, gelirDonemler]);
+  const { kayit: olcekKayit, finDonem: olcekFinDonem, yukleniyor: olcekYukleniyor } =
+    useOlcekSegmentKayit(
+      primRows && donem && sirketKodu !== ""
+        ? {
+            kaynak: "prim",
+            donem,
+            segment,
+            sirketKodu,
+            sirketAdi: secilenAd,
+            cache: olcekCache,
+          }
+        : null,
+    );
 
-  const { kayit: olcekKayit, finDonem: olcekFinDonem, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
-    primRows && donem && sirketKodu !== ""
-      ? {
-          kaynak: "prim",
-          donem,
-          segment,
-          sirketKodu,
-          sirketAdi: secilenAd,
-          cache: olcekCache,
-        }
-      : null,
-  );
+  const karneControlled: TsbSirketKarneOzetControlled = {
+    segment,
+    donem,
+    sirketKodu,
+    setSegment,
+    setDonem,
+    setSirketKodu,
+  };
 
-  const yilBu = donem.slice(0, 4);
-  const yilOnceki = primPaket?.donemOnceki.slice(0, 4) ?? "";
+  const panelPrefs = {
+    sirket: sirketKodu === "" ? undefined : sirketKodu,
+    donem: donem || undefined,
+    segment,
+    finDonem,
+  };
+
+  const finansalKpis: KpiCard[] = useMemo(() => {
+    if (!finPaket) return [];
+    const row = (id: Parameters<typeof finansalKiyaslamaSatirSayisal>[0]) =>
+      finansalKiyaslamaSatirSayisal(
+        id,
+        finPaket.sirketHam,
+        finPaket.kiyasHam,
+        finPaket.sirketSkorHam,
+        finPaket.kiyasOran,
+        finPaket.kiyasSkorHam,
+        finPaket.sirketHp,
+        finPaket.kiyasHp,
+      ).sirket;
+
+    return [
+      { label: "Brüt prim", value: formatFinansalHucre(row("prim"), "tl"), hint: finDonem ?? undefined },
+      {
+        label: "Safi teknik K/Z",
+        value: formatFinansalHucre(row("safi_teknik"), "tl"),
+      },
+      { label: "Yatırım geliri", value: formatFinansalHucre(row("yatirim"), "tl") },
+      { label: "Net kar", value: formatFinansalHucre(row("net_kar"), "tl") },
+    ];
+  }, [finPaket, finDonem]);
+
+  const teknikKpis: KpiCard[] = useMemo(() => {
+    if (!finPaket) return [];
+    const row = (id: Parameters<typeof finansalKiyaslamaSatirSayisal>[0]) =>
+      finansalKiyaslamaSatirSayisal(
+        id,
+        finPaket.sirketHam,
+        finPaket.kiyasHam,
+        finPaket.sirketSkorHam,
+        finPaket.kiyasOran,
+        finPaket.kiyasSkorHam,
+        finPaket.sirketHp,
+        finPaket.kiyasHp,
+      ).sirket;
+
+    return [
+      { label: "Brüt H/P", value: formatFinansalHucre(row("brut_hp"), "yuzde") },
+      { label: "Net H/P", value: formatFinansalHucre(row("net_hp"), "yuzde") },
+      {
+        label: "Teknik K/Z",
+        value: formatFinansalHucre(row("teknik_kar_zarar"), "tl"),
+      },
+      {
+        label: "Safi teknik / prim",
+        value: formatFinansalHucre(row("oran_safi_prim"), "yuzde"),
+      },
+    ];
+  }, [finPaket]);
+
+  const primKpis: KpiCard[] = useMemo(() => {
+    if (!primPaket) return [];
+    const toplam = primPaket.aylikSatirlar.find(
+      (s) => s.anaBransH.includes("TOPLAM") || s.anaBransH.includes("PORTFÖY"),
+    );
+    const topKanal = [...primPaket.kanalSatirlari].sort((a, b) => b.uretimBu - a.uretimBu)[0];
+    return [
+      {
+        label: "Aylık toplam prim",
+        value: toplam ? `${nf.format(toplam.sirketPrimBu)} TL` : "—",
+        hint: donem,
+      },
+      {
+        label: "Sektör prim sırası",
+        value:
+          primPaket.portfoySirasi.sira !== null
+            ? `${primPaket.portfoySirasi.sira} / ${primPaket.portfoySirasi.katilimci}`
+            : "—",
+      },
+      {
+        label: "Önde kanal",
+        value: topKanal ? `${topKanal.label} (${pf.format(topKanal.payBuYuzde)}%)` : "—",
+      },
+      {
+        label: "Sektör payı (aylık)",
+        value: toplam ? `${pf.format(toplam.payBuYuzde)}%` : "—",
+      },
+    ];
+  }, [primPaket, donem]);
+
+  const pazarKpis: KpiCard[] = useMemo(() => {
+    if (!primPaket) return [];
+    const top3 = [...primPaket.payDilimleriBu]
+      .filter((d) => d.sirketPay > 0.3)
+      .sort((a, b) => b.sirketPay - a.sirketPay)
+      .slice(0, 3);
+    return top3.map((d, i) => ({
+      label: `Branş payı #${i + 1}`,
+      value: `${d.etiket} · ${pf.format(d.sirketPay)}%`,
+      hint: `${donem} aylık üretim`,
+    }));
+  }, [primPaket, donem]);
 
   if (error) return <TsbError message={error} />;
   if (!primRows) return <TsbLoading message="Prim verisi yükleniyor…" />;
 
   return (
     <div className={tsb.dashboardStack}>
-      {!hideFilters ? (
-        <TsbFilterBar>
+      <TsbFilterBar>
         <p className={tsb.filterSectionLabel}>Şirket grubu</p>
         <div className={cn(tsb.btnGroup, "mb-3")}>
           <TsbToggleButton
@@ -473,12 +381,6 @@ export default function TsbSirketKarneDashboard({
               finDonem ? (
                 <>
                   Finansal çeyrek: <strong>{finDonem}</strong>
-                  {primPaket ? (
-                    <>
-                      {" "}
-                      · Karşılaştırma: <strong>{donem}</strong> vs <strong>{primPaket.donemOnceki}</strong>
-                    </>
-                  ) : null}
                 </>
               ) : (
                 "Finansal çeyrek eşlemesi yükleniyor…"
@@ -508,177 +410,114 @@ export default function TsbSirketKarneDashboard({
           </TsbFilterField>
         </TsbFilterGrid>
       </TsbFilterBar>
-      ) : null}
 
-      {secilenAd && primPaket ? (
+      {secilenAd && sirketKodu !== "" ? (
         <>
-          {!hideHero ? (
-          <div className={cn(tsb.dataPanel, "overflow-hidden border-teal-200 bg-gradient-to-br from-teal-900 to-teal-800 p-4 text-white")}>
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-teal-200/90">Şirket karne</p>
-                <h2 className="mt-1 text-lg font-bold">{secilenAd}</h2>
+          <div
+            className={cn(
+              tsb.dataPanel,
+              "overflow-hidden border-teal-200 bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-900 p-4 text-white",
+            )}
+          >
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-teal-200/90">
+                  Şirket karne
+                </p>
+                <h2 className="mt-1 text-xl font-bold leading-tight">{secilenAd}</h2>
                 <p className="mt-1 text-xs text-teal-100/90">
-                  {SEGMENT_LABEL[segment]} · Prim {donem} vs {primPaket.donemOnceki}
+                  {SEGMENT_LABEL[segment]} · Kod {sirketKodu}
+                  {donem ? ` · Prim ${donem}` : ""}
                   {finDonem ? ` · Fin ${finDonem}` : ""}
                 </p>
-                {primPaket.portfoySirasi.sira !== null ? (
+                {primPaket?.portfoySirasi.sira !== null && primPaket ? (
                   <p className="mt-2 inline-block rounded-md bg-white/15 px-2 py-1 text-xs font-semibold">
                     Sektör prim sırası: {primPaket.portfoySirasi.sira} / {primPaket.portfoySirasi.katilimci}
                   </p>
                 ) : null}
               </div>
+              <div className="flex shrink-0 flex-col items-end gap-1 text-right text-[10px] text-teal-100/80">
+                <span>TSB kamu verisi · Ofis Akademi</span>
+                <Link
+                  href={sirketKarnePrefs({ sirket: sirketKodu, donem, segment, sekme })}
+                  className="font-medium text-white/90 underline decoration-white/30 hover:text-white"
+                >
+                  Paylaşılabilir bağlantı
+                </Link>
+              </div>
             </div>
           </div>
-          ) : null}
 
-          {!hideHero ? (
           <TsbOlcekSegmentRozeti
             sirketAdi={secilenAd}
             kayit={olcekKayit}
             finDonem={olcekFinDonem}
             yukleniyor={olcekYukleniyor}
           />
-          ) : null}
 
-          <KarneSection
-            title="Prim tablosu — aylık üretim ve pazar payı"
-            subtitle={`Ana branş (TSB) · ${donem} vs ${primPaket.donemOnceki} — TSB kümülatiften önceki ay düşülerek`}
-          >
-            <PrimTablo
-              satirlar={primPaket.aylikSatirlar}
-              donemBu={donem}
-              donemOnceki={primPaket.donemOnceki}
-              showSirasi
-            />
-          </KarneSection>
+          <nav className={cn(tsb.dataPanel, "p-2")} aria-label="Şirket karne sekmeleri">
+            <div className={cn(tsb.btnGroup, "flex-wrap")}>
+              {TSB_SIRKET_KARNE_SEKMELER.map((t) => (
+                <TsbToggleButton
+                  key={t.id}
+                  pressed={sekme === t.id}
+                  variant="tab"
+                  onClick={() => setSekme(t.id)}
+                  aria-current={sekme === t.id ? "page" : undefined}
+                >
+                  {t.label}
+                </TsbToggleButton>
+              ))}
+            </div>
+            <p className="mt-2 px-1 text-[11px] text-slate-600">
+              {TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === sekme)?.description}
+            </p>
+          </nav>
 
-          <KarneSection
-            title="Kümülatif prim üretim ve pay"
-            subtitle={`YTD Ocak–${donem.slice(5)} · ${yilBu} vs ${yilOnceki} — seçili ayın TSB kümülatif değeri`}
-          >
-            <PrimTablo
-              satirlar={primPaket.ytdSatirlar}
-              donemBu={`${yilBu} YTD`}
-              donemOnceki={`${yilOnceki} YTD`}
-              showSirasi={false}
-            />
-          </KarneSection>
+          {sekme === "ozet" ? (
+            <TsbSirketKarneOzet controlled={karneControlled} hideFilters hideHero />
+          ) : (
+            <div className="space-y-3">
+              {sekme === "finansal" ? (
+                finPaket ? (
+                  <MerkeziKpiGrid items={finansalKpis} />
+                ) : (
+                  <TsbLoading message="Finansal önizleme yükleniyor…" />
+                )
+              ) : null}
+              {sekme === "teknik" ? (
+                finPaket ? (
+                  <MerkeziKpiGrid items={teknikKpis} />
+                ) : (
+                  <TsbLoading message="Teknik önizleme yükleniyor…" />
+                )
+              ) : null}
+              {sekme === "prim" ? (
+                primPaket ? <MerkeziKpiGrid items={primKpis} /> : <TsbLoading message="Prim önizleme…" />
+              ) : null}
+              {sekme === "pazar" ? (
+                primPaket ? (
+                  pazarKpis.length > 0 ? (
+                    <MerkeziKpiGrid items={pazarKpis} />
+                  ) : (
+                    <p className={tsb.filterHint}>Seçili ay için branş payı hesaplanamadı.</p>
+                  )
+                ) : (
+                  <TsbLoading message="Pazar önizleme…" />
+                )
+              ) : null}
 
-          <KarneSection
-            title="Aylık prim — branş pay dağılımı"
-            subtitle={`${donem} vs ${primPaket.donemOnceki} · o ayın üretiminde portföy payı (%)`}
-          >
-            <BransPayBarGrafik
-              bu={primPaket.payDilimleriBu}
-              onceki={primPaket.payDilimleriOnceki}
-              donemBu={donem}
-              donemOnceki={primPaket.donemOnceki}
-            />
-          </KarneSection>
-
-          {finPaketBu && finDonem ? (
-            <KarneSection
-              title="Finansal tablo"
-              subtitle={`Çeyrek ${finDonem}${finPaketOnceki ? ` vs ${finDonemOnceki}` : ""} · yalnızca odak şirket`}
-            >
-              <TsbTableShell>
-                <table className={cn(tsb.table, "min-w-[640px] text-xs")}>
-                  <thead className={tsb.thead}>
-                    <tr>
-                      <th className={cn(tsb.thSticky, "text-left")}>KPI</th>
-                      {finPaketOnceki ? (
-                        <th className={cn(tsb.th, "text-right")}>{finDonemOnceki}</th>
-                      ) : null}
-                      {finPaketOnceki ? <th className={cn(tsb.th, "text-right")}>Δ %</th> : null}
-                      <th className={cn(tsb.th, "text-right")}>{finDonem}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {FINANSAL_KIYASLAMA_SATIRLARI.map((tanim) => {
-                      if (tanim.kind === "spacer") {
-                        return (
-                          <tr key={tanim.id} className="h-2">
-                            <td colSpan={finPaketOnceki ? 4 : 2} />
-                          </tr>
-                        );
-                      }
-                      const buDeg = finansalKiyaslamaSatirSayisal(
-                        tanim.id,
-                        finPaketBu.sirketHam,
-                        finPaketBu.kiyasHam,
-                        finPaketBu.sirketSkorHam,
-                        finPaketBu.kiyasOran,
-                        finPaketBu.kiyasSkorHam,
-                        finPaketBu.sirketHp,
-                        finPaketBu.kiyasHp,
-                      );
-                      const onceDeg = finPaketOnceki
-                        ? finansalKiyaslamaSatirSayisal(
-                            tanim.id,
-                            finPaketOnceki.sirketHam,
-                            finPaketOnceki.kiyasHam,
-                            finPaketOnceki.sirketSkorHam,
-                            finPaketOnceki.kiyasOran,
-                            finPaketOnceki.kiyasSkorHam,
-                            finPaketOnceki.sirketHp,
-                            finPaketOnceki.kiyasHp,
-                          )
-                        : { sirket: null, kiyas: null };
-                      const delta = finansalKiyaslamaDegisim(buDeg.sirket, onceDeg.sirket, tanim.format);
-                      return (
-                        <tr key={tanim.id} className={tsb.tbodyRow}>
-                          <td className={tsb.tdSticky}>{tanim.label}</td>
-                          {finPaketOnceki ? (
-                            <td className={cn(tsb.td, "text-right tabular-nums")}>
-                              {formatFinansalHucre(onceDeg.sirket, tanim.format)}
-                            </td>
-                          ) : null}
-                          {finPaketOnceki ? (
-                            <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(delta.deger))}>
-                              {formatFinansalDegisim(delta.deger, delta.format)}
-                            </td>
-                          ) : null}
-                          <td className={cn(tsb.td, "text-right tabular-nums font-medium")}>
-                            {formatFinansalHucre(buDeg.sirket, tanim.format)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </TsbTableShell>
-            </KarneSection>
-          ) : finDonem ? (
-            <TsbLoading message="Finansal veri yükleniyor…" />
-          ) : null}
-
-          <KarneSection title="Kanala göre üretim dağılımı" subtitle={`${donem} aylık üretim · kanalda sektör payı`}>
-            <KanalTablo
-              satirlar={primPaket.kanalSatirlari}
-              donemBu={donem}
-              donemOnceki={primPaket.donemOnceki}
-            />
-          </KarneSection>
-
-          {primPaket.trendAylik && primPaket.trendAylik.length > 0 ? (
-            <KarneSection
-              title="Son 12 ay aylık prim trendi"
-              subtitle="Kümülatif fark = o ayın primi · sektör payı = şirket ÷ sektör aylık prim"
-            >
-              <div className={tsb.chartPanel}>
-                <TsbPrimTrendAylikBarChart seri={primPaket.trendAylik} sirketAdi={secilenAd} />
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  İlgili paneller
+                </p>
+                <PanelLinkGrid links={sirketKarnePanelLinks(panelPrefs, sekme)} />
               </div>
-              <div className="mt-3">
-                <TrendPayTablo seri={primPaket.trendAylik} />
-              </div>
-            </KarneSection>
-          ) : null}
+            </div>
+          )}
         </>
-      ) : sirketKodu === "" && !hideFilters ? (
-        <p className={tsb.filterHint}>Karneyi görmek için şirket seçin.</p>
-      ) : sirketKodu === "" ? null : (
-        <TsbLoading message="Karne hesaplanıyor…" />
+      ) : (
+        <p className={tsb.filterHint}>Karneyi görmek için yukarıdan bir şirket seçin.</p>
       )}
     </div>
   );

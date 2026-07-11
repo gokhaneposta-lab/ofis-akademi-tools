@@ -57,6 +57,22 @@ const POOL_FOR_SEGMENT: Record<TsbSektorSegment, SegmentSkorPool> = {
   hayat: "HAYAT_EMEKLILIK",
 };
 
+export type TsbSirketKarneControlled = {
+  segment: TsbSektorSegment;
+  donem: string;
+  sirketKodu: number | "";
+  setSegment: (s: TsbSektorSegment) => void;
+  setDonem: (d: string) => void;
+  setSirketKodu: (k: number | "") => void;
+};
+
+export type TsbSirketKarneDashboardProps = {
+  /** Şirket merkezi gibi üst bileşen filtreleri yönetiyorsa */
+  controlled?: TsbSirketKarneControlled;
+  hideFilters?: boolean;
+  hideHero?: boolean;
+};
+
 function fmtPrim(v: number): string {
   return `${nf.format(v)} TL`;
 }
@@ -276,16 +292,30 @@ function TrendPayTablo({ seri }: { seri: import("@/lib/tsbPrimTrend12").PrimTren
   );
 }
 
-export default function TsbSirketKarneDashboard() {
+export default function TsbSirketKarneDashboard({
+  controlled,
+  hideFilters = false,
+  hideHero = false,
+}: TsbSirketKarneDashboardProps = {}) {
   const urlPrefs = useTsbDashboardUrlPrefs();
   const { cache: olcekCache } = useOlcekSegmentCache();
   const [primRows, setPrimRows] = useState<TsbPrimRow[] | null>(null);
   const [gelirRows, setGelirRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [gelirDonemler, setGelirDonemler] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
-  const [donem, setDonem] = useState("");
-  const [sirketKodu, setSirketKodu] = useState<number | "">("");
+  const [segmentInternal, setSegmentInternal] = useState<TsbSektorSegment>(
+    urlPrefs.segment ?? "hayatdisi",
+  );
+  const [donemInternal, setDonemInternal] = useState("");
+  const [sirketKoduInternal, setSirketKoduInternal] = useState<number | "">("");
+
+  const segment = controlled?.segment ?? segmentInternal;
+  const donem = controlled?.donem ?? donemInternal;
+  const sirketKodu = controlled?.sirketKodu ?? sirketKoduInternal;
+  const setSegment = controlled?.setSegment ?? setSegmentInternal;
+  const setDonem = controlled?.setDonem ?? setDonemInternal;
+  const setSirketKodu = controlled?.setSirketKodu ?? setSirketKoduInternal;
+  const syncUrlSirket = !controlled;
 
   useEffect(() => {
     let cancelled = false;
@@ -296,7 +326,8 @@ export default function TsbSirketKarneDashboard() {
           setPrimRows(data);
           const periods = uniqueSortedPeriods(data);
           if (periods.length > 0) {
-            setDonem((prev) => {
+            setDonemInternal((prev) => {
+              if (controlled?.donem && periods.includes(controlled.donem)) return controlled.donem;
               if (prev && periods.includes(prev)) return prev;
               if (urlPrefs.donem && periods.includes(urlPrefs.donem)) return urlPrefs.donem;
               return periods[periods.length - 1];
@@ -315,7 +346,7 @@ export default function TsbSirketKarneDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [urlPrefs.donem]);
+  }, [urlPrefs.donem, controlled?.donem]);
 
   const sortedPrimDonemler = useMemo(
     () => (primRows ? uniqueSortedPeriods(primRows) : []),
@@ -358,9 +389,9 @@ export default function TsbSirketKarneDashboard() {
   }, [primRows, donem, segment]);
 
   useEffect(() => {
-    if (sirketler.length === 0) return;
+    if (!syncUrlSirket || sirketler.length === 0) return;
     applyUrlSirketOrDefault(sirketler, urlPrefs.sirket, sirketKodu, setSirketKodu, segment);
-  }, [sirketler, segment, sirketKodu, urlPrefs.sirket]);
+  }, [sirketler, segment, sirketKodu, urlPrefs.sirket, syncUrlSirket, setSirketKodu]);
 
   const secilenAd = sirketler.find((s) => s.kod === sirketKodu)?.ad ?? "";
   const pool = POOL_FOR_SEGMENT[segment];
@@ -410,7 +441,8 @@ export default function TsbSirketKarneDashboard() {
 
   return (
     <div className={tsb.dashboardStack}>
-      <TsbFilterBar>
+      {!hideFilters ? (
+        <TsbFilterBar>
         <p className={tsb.filterSectionLabel}>Şirket grubu</p>
         <div className={cn(tsb.btnGroup, "mb-3")}>
           <TsbToggleButton
@@ -476,9 +508,11 @@ export default function TsbSirketKarneDashboard() {
           </TsbFilterField>
         </TsbFilterGrid>
       </TsbFilterBar>
+      ) : null}
 
       {secilenAd && primPaket ? (
         <>
+          {!hideHero ? (
           <div className={cn(tsb.dataPanel, "overflow-hidden border-teal-200 bg-gradient-to-br from-teal-900 to-teal-800 p-4 text-white")}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
@@ -496,13 +530,16 @@ export default function TsbSirketKarneDashboard() {
               </div>
             </div>
           </div>
+          ) : null}
 
+          {!hideHero ? (
           <TsbOlcekSegmentRozeti
             sirketAdi={secilenAd}
             kayit={olcekKayit}
             finDonem={olcekFinDonem}
             yukleniyor={olcekYukleniyor}
           />
+          ) : null}
 
           <KarneSection
             title="Prim tablosu — aylık üretim ve pazar payı"
@@ -638,9 +675,9 @@ export default function TsbSirketKarneDashboard() {
             </KarneSection>
           ) : null}
         </>
-      ) : sirketKodu === "" ? (
+      ) : sirketKodu === "" && !hideFilters ? (
         <p className={tsb.filterHint}>Karneyi görmek için şirket seçin.</p>
-      ) : (
+      ) : sirketKodu === "" ? null : (
         <TsbLoading message="Karne hesaplanıyor…" />
       )}
     </div>

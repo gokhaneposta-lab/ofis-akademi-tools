@@ -1,0 +1,524 @@
+"use client";
+
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  applyUrlSirketOrDefault,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
+import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
+import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
+import TsbSirketKarneDashboard, {
+  type TsbSirketKarneControlled,
+} from "@/components/tsb/TsbSirketKarneDashboard";
+import {
+  cn,
+  tsb,
+  TsbError,
+  TsbFilterBar,
+  TsbFilterField,
+  TsbFilterGrid,
+  TsbLoading,
+  TsbSelect,
+  TsbToggleButton,
+} from "@/components/tsb/tsbDashboardUi";
+import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
+import {
+  finansalKiyaslamaDonemPaketi,
+  finansalKiyaslamaSatirSayisal,
+  formatFinansalHucre,
+} from "@/lib/tsbFinansalKarsilastirmaData";
+import { olcekFinDonemForPrimDonem } from "@/lib/tsbOlcekSegmentCache";
+import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
+import { buildSirketKarnePrimPaket } from "@/lib/tsbSirketKarne";
+import type { TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
+import { listSirketlerSegmentDonem, uniqueSortedPeriods } from "@/lib/tsbPrimDashboard";
+import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
+import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
+import {
+  parseSirketMerkeziSekme,
+  sirketMerkeziPanelLinks,
+  sirketMerkeziPrefs,
+  TSB_SIRKET_MERKEZI_SEKMELER,
+  type TsbSirketMerkeziSekme,
+} from "@/lib/tsbSirketMerkezi";
+
+const SEGMENT_LABEL: Record<TsbSektorSegment, string> = {
+  hayatdisi: "Hayat dışı",
+  hayat: "Hayat & emeklilik",
+};
+
+const POOL_FOR_SEGMENT: Record<TsbSektorSegment, SegmentSkorPool> = {
+  hayatdisi: "HD",
+  hayat: "HAYAT_EMEKLILIK",
+};
+
+const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
+
+type KpiCard = { label: string; value: string; hint?: string };
+
+function MerkeziKpiGrid({ items }: { items: KpiCard[] }) {
+  if (items.length === 0) return null;
+  return (
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      {items.map((k) => (
+        <div key={k.label} className={cn(tsb.dataPanel, "p-3")}>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{k.label}</p>
+          <p className="mt-1 text-base font-bold tabular-nums text-slate-900">{k.value}</p>
+          {k.hint ? <p className="mt-0.5 text-[10px] text-slate-500">{k.hint}</p> : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PanelLinkGrid({
+  links,
+}: {
+  links: ReturnType<typeof sirketMerkeziPanelLinks>;
+}) {
+  if (links.length === 0) return null;
+  return (
+    <div className="grid gap-2 sm:grid-cols-2">
+      {links.map((p) => (
+        <Link
+          key={p.href}
+          href={p.href}
+          className={cn(
+            tsb.dataPanel,
+            "group p-3 transition hover:border-emerald-300/80 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]",
+          )}
+        >
+          <span className="inline-block rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+            {p.badge}
+          </span>
+          <h3 className="mt-1 text-sm font-semibold text-slate-900 group-hover:text-emerald-800">{p.title}</h3>
+          <p className="mt-0.5 text-xs text-slate-600">{p.subtitle}</p>
+          <p className="mt-2 text-right text-[11px] font-semibold text-emerald-800 group-hover:underline">
+            Panele git →
+          </p>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+export default function TsbSirketMerkeziDashboard() {
+  const urlPrefs = useTsbDashboardUrlPrefs();
+  const { cache: olcekCache } = useOlcekSegmentCache();
+  const [primRows, setPrimRows] = useState<TsbPrimRow[] | null>(null);
+  const [gelirRows, setGelirRows] = useState<TsbGelirTidyRowLike[] | null>(null);
+  const [gelirDonemler, setGelirDonemler] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [segment, setSegment] = useState<TsbSektorSegment>(urlPrefs.segment ?? "hayatdisi");
+  const [donem, setDonem] = useState("");
+  const [sirketKodu, setSirketKodu] = useState<number | "">("");
+  const [sekme, setSekme] = useState<TsbSirketMerkeziSekme>(parseSirketMerkeziSekme(urlPrefs.sekme));
+
+  const syncUrl = useCallback(() => {
+    if (typeof window === "undefined" || sirketKodu === "") return;
+    const href = sirketMerkeziPrefs({
+      sirket: sirketKodu,
+      donem: donem || undefined,
+      segment,
+      sekme,
+    });
+    window.history.replaceState(null, "", href);
+  }, [sirketKodu, donem, segment, sekme]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/data/tsb/prim-tidy.json")
+      .then((r) => r.json())
+      .then((data: TsbPrimRow[]) => {
+        if (!cancelled) {
+          setPrimRows(data);
+          const periods = uniqueSortedPeriods(data);
+          if (periods.length > 0) {
+            setDonem((prev) => {
+              if (prev && periods.includes(prev)) return prev;
+              if (urlPrefs.donem && periods.includes(urlPrefs.donem)) return urlPrefs.donem;
+              return periods[periods.length - 1];
+            });
+          }
+        }
+      })
+      .catch((e: unknown) => {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Prim verisi yüklenemedi");
+      });
+    fetchGelirTidyDonemIndex()
+      .then((d) => {
+        if (!cancelled) setGelirDonemler(d);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [urlPrefs.donem]);
+
+  const sortedPrimDonemler = useMemo(
+    () => (primRows ? uniqueSortedPeriods(primRows) : []),
+    [primRows],
+  );
+
+  const finDonem = useMemo(
+    () => (donem && olcekCache ? olcekFinDonemForPrimDonem(olcekCache, donem) : null),
+    [donem, olcekCache],
+  );
+
+  useEffect(() => {
+    if (!finDonem || gelirDonemler.length === 0) return;
+    let cancelled = false;
+    setGelirRows(null);
+    fetchGelirTidyDonemler([finDonem])
+      .then((data) => {
+        if (!cancelled) setGelirRows(data);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [finDonem, gelirDonemler]);
+
+  const sirketler = useMemo(() => {
+    if (!primRows || !donem) return [];
+    return listSirketlerSegmentDonem(primRows, donem, "genelToplam", segment, {
+      kind: "anaBransH",
+      anaBransH: null,
+    });
+  }, [primRows, donem, segment]);
+
+  useEffect(() => {
+    if (sirketler.length === 0) return;
+    applyUrlSirketOrDefault(sirketler, urlPrefs.sirket, sirketKodu, setSirketKodu, segment);
+  }, [sirketler, segment, sirketKodu, urlPrefs.sirket]);
+
+  useEffect(() => {
+    syncUrl();
+  }, [syncUrl]);
+
+  const secilenAd = sirketler.find((s) => s.kod === sirketKodu)?.ad ?? "";
+  const pool = POOL_FOR_SEGMENT[segment];
+
+  const primPaket = useMemo(() => {
+    if (!primRows || !donem || sirketKodu === "") return null;
+    return buildSirketKarnePrimPaket(
+      primRows,
+      sortedPrimDonemler,
+      donem,
+      segment,
+      sirketKodu,
+      { kind: "anaBransH", anaBransH: null },
+      "genelToplam",
+    );
+  }, [primRows, sortedPrimDonemler, donem, segment, sirketKodu]);
+
+  const finPaket = useMemo(() => {
+    if (!gelirRows || !finDonem || sirketKodu === "") return null;
+    return finansalKiyaslamaDonemPaketi(gelirRows, finDonem, sirketKodu, pool, { mod: "sektor" });
+  }, [gelirRows, finDonem, sirketKodu, pool]);
+
+  const { kayit: olcekKayit, finDonem: olcekFinDonem, yukleniyor: olcekYukleniyor } =
+    useOlcekSegmentKayit(
+      primRows && donem && sirketKodu !== ""
+        ? {
+            kaynak: "prim",
+            donem,
+            segment,
+            sirketKodu,
+            sirketAdi: secilenAd,
+            cache: olcekCache,
+          }
+        : null,
+    );
+
+  const karneControlled: TsbSirketKarneControlled = {
+    segment,
+    donem,
+    sirketKodu,
+    setSegment,
+    setDonem,
+    setSirketKodu,
+  };
+
+  const panelPrefs = {
+    sirket: sirketKodu === "" ? undefined : sirketKodu,
+    donem: donem || undefined,
+    segment,
+    finDonem,
+  };
+
+  const finansalKpis: KpiCard[] = useMemo(() => {
+    if (!finPaket) return [];
+    const row = (id: Parameters<typeof finansalKiyaslamaSatirSayisal>[0]) =>
+      finansalKiyaslamaSatirSayisal(
+        id,
+        finPaket.sirketHam,
+        finPaket.kiyasHam,
+        finPaket.sirketSkorHam,
+        finPaket.kiyasOran,
+        finPaket.kiyasSkorHam,
+        finPaket.sirketHp,
+        finPaket.kiyasHp,
+      ).sirket;
+
+    return [
+      { label: "Brüt prim", value: formatFinansalHucre(row("prim"), "tl"), hint: finDonem ?? undefined },
+      {
+        label: "Safi teknik K/Z",
+        value: formatFinansalHucre(row("safi_teknik"), "tl"),
+      },
+      { label: "Yatırım geliri", value: formatFinansalHucre(row("yatirim"), "tl") },
+      { label: "Net kar", value: formatFinansalHucre(row("net_kar"), "tl") },
+    ];
+  }, [finPaket, finDonem]);
+
+  const teknikKpis: KpiCard[] = useMemo(() => {
+    if (!finPaket) return [];
+    const row = (id: Parameters<typeof finansalKiyaslamaSatirSayisal>[0]) =>
+      finansalKiyaslamaSatirSayisal(
+        id,
+        finPaket.sirketHam,
+        finPaket.kiyasHam,
+        finPaket.sirketSkorHam,
+        finPaket.kiyasOran,
+        finPaket.kiyasSkorHam,
+        finPaket.sirketHp,
+        finPaket.kiyasHp,
+      ).sirket;
+
+    return [
+      { label: "Brüt H/P", value: formatFinansalHucre(row("brut_hp"), "yuzde") },
+      { label: "Net H/P", value: formatFinansalHucre(row("net_hp"), "yuzde") },
+      {
+        label: "Teknik K/Z",
+        value: formatFinansalHucre(row("teknik_kar_zarar"), "tl"),
+      },
+      {
+        label: "Safi teknik / prim",
+        value: formatFinansalHucre(row("oran_safi_prim"), "yuzde"),
+      },
+    ];
+  }, [finPaket]);
+
+  const primKpis: KpiCard[] = useMemo(() => {
+    if (!primPaket) return [];
+    const toplam = primPaket.aylikSatirlar.find(
+      (s) => s.anaBransH.includes("TOPLAM") || s.anaBransH.includes("PORTFÖY"),
+    );
+    const topKanal = [...primPaket.kanalSatirlari].sort((a, b) => b.uretimBu - a.uretimBu)[0];
+    return [
+      {
+        label: "Aylık toplam prim",
+        value: toplam ? `${nf.format(toplam.sirketPrimBu)} TL` : "—",
+        hint: donem,
+      },
+      {
+        label: "Sektör prim sırası",
+        value:
+          primPaket.portfoySirasi.sira !== null
+            ? `${primPaket.portfoySirasi.sira} / ${primPaket.portfoySirasi.katilimci}`
+            : "—",
+      },
+      {
+        label: "Önde kanal",
+        value: topKanal ? `${topKanal.label} (${pf.format(topKanal.payBuYuzde)}%)` : "—",
+      },
+      {
+        label: "Sektör payı (aylık)",
+        value: toplam ? `${pf.format(toplam.payBuYuzde)}%` : "—",
+      },
+    ];
+  }, [primPaket, donem]);
+
+  const pazarKpis: KpiCard[] = useMemo(() => {
+    if (!primPaket) return [];
+    const top3 = [...primPaket.payDilimleriBu]
+      .filter((d) => d.sirketPay > 0.3)
+      .sort((a, b) => b.sirketPay - a.sirketPay)
+      .slice(0, 3);
+    return top3.map((d, i) => ({
+      label: `Branş payı #${i + 1}`,
+      value: `${d.etiket} · ${pf.format(d.sirketPay)}%`,
+      hint: `${donem} aylık üretim`,
+    }));
+  }, [primPaket, donem]);
+
+  if (error) return <TsbError message={error} />;
+  if (!primRows) return <TsbLoading message="Prim verisi yükleniyor…" />;
+
+  return (
+    <div className={tsb.dashboardStack}>
+      <TsbFilterBar>
+        <p className={tsb.filterSectionLabel}>Şirket grubu</p>
+        <div className={cn(tsb.btnGroup, "mb-3")}>
+          <TsbToggleButton
+            pressed={segment === "hayatdisi"}
+            variant="segment"
+            onClick={() => {
+              setSegment("hayatdisi");
+              setSirketKodu("");
+            }}
+          >
+            Hayat dışı
+          </TsbToggleButton>
+          <TsbToggleButton
+            pressed={segment === "hayat"}
+            variant="segment"
+            onClick={() => {
+              setSegment("hayat");
+              setSirketKodu("");
+            }}
+          >
+            Hayat &amp; emeklilik
+          </TsbToggleButton>
+        </div>
+        <TsbFilterGrid>
+          <TsbFilterField
+            label="Prim dönemi (ay)"
+            hint={
+              finDonem ? (
+                <>
+                  Finansal çeyrek: <strong>{finDonem}</strong>
+                </>
+              ) : (
+                "Finansal çeyrek eşlemesi yükleniyor…"
+              )
+            }
+          >
+            <TsbSelect value={donem} onChange={(e) => setDonem(e.target.value)}>
+              {[...sortedPrimDonemler].reverse().map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </TsbSelect>
+          </TsbFilterField>
+          <TsbFilterField label="Şirket">
+            <TsbSelect
+              value={sirketKodu === "" ? "" : String(sirketKodu)}
+              onChange={(e) => setSirketKodu(e.target.value === "" ? "" : Number(e.target.value))}
+            >
+              <option value="">Seçin…</option>
+              {sirketler.map((s) => (
+                <option key={s.kod} value={s.kod}>
+                  {s.ad} ({s.kod})
+                </option>
+              ))}
+            </TsbSelect>
+          </TsbFilterField>
+        </TsbFilterGrid>
+      </TsbFilterBar>
+
+      {secilenAd && sirketKodu !== "" ? (
+        <>
+          <div
+            className={cn(
+              tsb.dataPanel,
+              "overflow-hidden border-teal-200 bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-900 p-4 text-white",
+            )}
+          >
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-teal-200/90">
+                  Şirket merkezi
+                </p>
+                <h2 className="mt-1 text-xl font-bold leading-tight">{secilenAd}</h2>
+                <p className="mt-1 text-xs text-teal-100/90">
+                  {SEGMENT_LABEL[segment]} · Kod {sirketKodu}
+                  {donem ? ` · Prim ${donem}` : ""}
+                  {finDonem ? ` · Fin ${finDonem}` : ""}
+                </p>
+                {primPaket?.portfoySirasi.sira !== null && primPaket ? (
+                  <p className="mt-2 inline-block rounded-md bg-white/15 px-2 py-1 text-xs font-semibold">
+                    Sektör prim sırası: {primPaket.portfoySirasi.sira} / {primPaket.portfoySirasi.katilimci}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1 text-right text-[10px] text-teal-100/80">
+                <span>TSB kamu verisi · Ofis Akademi</span>
+                <Link
+                  href={sirketMerkeziPrefs({ sirket: sirketKodu, donem, segment, sekme })}
+                  className="font-medium text-white/90 underline decoration-white/30 hover:text-white"
+                >
+                  Paylaşılabilir bağlantı
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <TsbOlcekSegmentRozeti
+            sirketAdi={secilenAd}
+            kayit={olcekKayit}
+            finDonem={olcekFinDonem}
+            yukleniyor={olcekYukleniyor}
+          />
+
+          <nav className={cn(tsb.dataPanel, "p-2")} aria-label="Şirket merkezi sekmeleri">
+            <div className={cn(tsb.btnGroup, "flex-wrap")}>
+              {TSB_SIRKET_MERKEZI_SEKMELER.map((t) => (
+                <TsbToggleButton
+                  key={t.id}
+                  pressed={sekme === t.id}
+                  variant="tab"
+                  onClick={() => setSekme(t.id)}
+                  aria-current={sekme === t.id ? "page" : undefined}
+                >
+                  {t.label}
+                </TsbToggleButton>
+              ))}
+            </div>
+            <p className="mt-2 px-1 text-[11px] text-slate-600">
+              {TSB_SIRKET_MERKEZI_SEKMELER.find((t) => t.id === sekme)?.description}
+            </p>
+          </nav>
+
+          {sekme === "ozet" ? (
+            <TsbSirketKarneDashboard controlled={karneControlled} hideFilters hideHero />
+          ) : (
+            <div className="space-y-3">
+              {sekme === "finansal" ? (
+                finPaket ? (
+                  <MerkeziKpiGrid items={finansalKpis} />
+                ) : (
+                  <TsbLoading message="Finansal önizleme yükleniyor…" />
+                )
+              ) : null}
+              {sekme === "teknik" ? (
+                finPaket ? (
+                  <MerkeziKpiGrid items={teknikKpis} />
+                ) : (
+                  <TsbLoading message="Teknik önizleme yükleniyor…" />
+                )
+              ) : null}
+              {sekme === "prim" ? (
+                primPaket ? <MerkeziKpiGrid items={primKpis} /> : <TsbLoading message="Prim önizleme…" />
+              ) : null}
+              {sekme === "pazar" ? (
+                primPaket ? (
+                  pazarKpis.length > 0 ? (
+                    <MerkeziKpiGrid items={pazarKpis} />
+                  ) : (
+                    <p className={tsb.filterHint}>Seçili ay için branş payı hesaplanamadı.</p>
+                  )
+                ) : (
+                  <TsbLoading message="Pazar önizleme…" />
+                )
+              ) : null}
+
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  İlgili paneller
+                </p>
+                <PanelLinkGrid links={sirketMerkeziPanelLinks(panelPrefs, sekme)} />
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <p className={tsb.filterHint}>Şirket merkezini açmak için yukarıdan bir şirket seçin.</p>
+      )}
+    </div>
+  );
+}

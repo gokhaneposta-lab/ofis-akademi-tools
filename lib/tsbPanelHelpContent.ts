@@ -25,6 +25,15 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     ],
   },
   {
+    href: "/sigorta/sirket-merkezi",
+    items: [
+      "Önce havuz (hayat dışı / hayat–emeklilik), prim ayı ve şirketi seçin. URL ?sirket= ve ?sekme= ile paylaşılabilir.",
+      "Özet sekmesi tam şirket karnesidir (prim, finansal, kanal, 12 ay trend). Diğer sekmeler KPI önizleme + ilgili panele filtreli link sunar.",
+      "Finansal ve teknik önizlemeler prim ayına eşlenen son GT çeyreğini kullanır; detay için «Panele git» linklerini kullanın.",
+      "Kısa URL: /sigorta/sirket/[kod] (ör. /sigorta/sirket/1004) aynı merkeze yönlendirir.",
+    ],
+  },
+  {
     href: "/sigorta/sirket-karne",
     items: [
       "Prim dönemi = ay (ör. 2026-05). Finansal blok, prim ayına eşlenen son finansal çeyreği kullanır (ör. 2026-1).",

@@ -38,6 +38,14 @@ export const TSB_DASHBOARD_GROUPS: readonly TsbDashboardGroupMeta[] = [
 
 export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
+    href: "/sigorta/sirket-merkezi",
+    badge: "Merkez",
+    title: "Şirket merkezi",
+    subtitle: "Tek şirket · özet · sekmeli geçiş · panellere link",
+    icon: "🏛️",
+    group: "finansal",
+  },
+  {
     href: "/sigorta/finansal-karsilastirma",
     badge: "Finansal",
     title: "Finansal karşılaştırma",

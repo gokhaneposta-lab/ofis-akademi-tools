@@ -115,6 +115,23 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
     ],
     blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
   },
+  sirketMerkezi: {
+    heading: "TSB şirket merkezi — tek şirket analiz hub'ı",
+    paragraphs: [
+      "Bir sigorta şirketini merkez alan sekme tabanlı görünüm: Özet sekmesinde tam karne; Finansal, Teknik, Prim ve Pazar sekmelerinde KPI önizleme ve ilgili TSB panellerine filtreli geçiş.",
+      "Şirket, havuz ve prim ayı seçildiğinde URL paylaşılabilir (?sirket=, ?donem=, ?segment=, ?sekme=). Kısa yol /sigorta/sirket/[kod] aynı merkeze yönlendirir.",
+      "Rakip ürünlerdeki «şirket listesi» fikrini Ofis Akademi metodolojisi ve mevcut panellerle birleştirir; ölçek segmenti rozeti ve sektör sırası üst şeritte görünür.",
+    ],
+    faqs: [
+      ...COMMON_FAQS.slice(0, 2),
+      {
+        question: "Şirket merkezi ile şirket karne farkı nedir?",
+        answer:
+          "Merkez, karnenin özet sekmesi + diğer analiz alanlarına geçiş köprüsüdür. Tam karne hâlâ ayrı panel olarak durur; merkezdeki Özet sekmesi aynı içeriği gösterir.",
+      },
+    ],
+    blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
+  },
   hasarPrimOrani: {
     heading: "TSB hasar / prim oranı — branş bazlı teknik istatistik",
     paragraphs: [

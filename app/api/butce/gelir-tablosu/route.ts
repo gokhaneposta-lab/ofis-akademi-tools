@@ -2,10 +2,15 @@ import { NextResponse } from "next/server";
 import {
   butceDataDurumu,
   loadAylikPrim,
+  loadFaaliyetGiderRows,
+  loadKpkKapanisTahmin,
+  loadKpkVadeRows,
+  loadMizanAylikRows,
   loadMizanRows,
   loadOranAyarlar,
   loadPrimBransEndirekt,
   loadPrimBransHedef,
+  loadTarifeBransPayRows,
 } from "@/lib/butce/loadData";
 import { buildGelirTablosu } from "@/lib/butce/gelir/gelirTablosu";
 
@@ -30,12 +35,18 @@ export async function GET() {
     );
   }
 
-  const [mizan, endirekt, aylikPrim, oranAyar] = await Promise.all([
-    loadMizanRows(),
-    loadPrimBransEndirekt(),
-    loadAylikPrim(),
-    loadOranAyarlar(),
-  ]);
+  const [mizan, endirekt, aylikPrim, oranAyar, mizanAylik, tarifeBransPay, kpkVade, kapanisTahmin, faaliyetGider] =
+    await Promise.all([
+      loadMizanRows(),
+      loadPrimBransEndirekt(),
+      loadAylikPrim(),
+      loadOranAyarlar(),
+      loadMizanAylikRows(),
+      loadTarifeBransPayRows(),
+      loadKpkVadeRows(),
+      loadKpkKapanisTahmin(),
+      loadFaaliyetGiderRows(),
+    ]);
 
   const sonuc = buildGelirTablosu({
     mizan,
@@ -44,11 +55,18 @@ export async function GET() {
     endirektPrim: endirekt,
     aylikPrim,
     oranAyar,
+    mizanAylik,
+    tarifeBransPay,
+    kpkVade,
+    kapanisTahmin,
+    faaliyetGider,
   });
 
   return NextResponse.json({
     ok: true,
     hasAylikPrim: aylikPrim != null,
+    hasKpkVade: kpkVade.length > 0,
+    hasFaaliyetGider: faaliyetGider.length > 0,
     ...sonuc,
   });
 }

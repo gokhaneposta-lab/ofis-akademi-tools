@@ -1,10 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
-import ButceUploadGuide from "@/components/butce/ButceUploadGuide";
+import BransDagitimIzTable from "@/components/butce/BransDagitimIzTable";
 import { REFERANS_YIL_SECENEKLERI } from "@/lib/butce/config/constants";
-import { BUTCE_MAP_TARIFE_SPEC, BUTCE_PRIM_SPEC } from "@/lib/butce/uploadSpecs";
+import type { BransTarifeIzleme } from "@/lib/butce/prim/bransDagitimTrace";
 import type {
   PrimBransOzet,
   PrimDagitimDetay,
@@ -26,10 +26,12 @@ type TarifeOzet = {
 type Durum = {
   hasMizan: boolean;
   hasTarifeMap: boolean;
+  hasTarifeBransPay: boolean;
   hasSatisButce: boolean;
   hasUretim: boolean;
   mizanSatir: number;
   tarifeMapSatir: number;
+  tarifeBransPaySatir: number;
   satisButceSatir: number;
   uretimSatir: number;
   butceYili: number;
@@ -44,90 +46,9 @@ function fmt(n: number) {
   return n.toLocaleString("tr-TR", { maximumFractionDigits: 0 });
 }
 
-function UploadBlock({
-  title,
-  kind,
-  butceYili,
-  loaded,
-  loadedLabel,
-  accept = ".xlsx,.xls",
-}: {
-  title: string;
-  kind: string;
-  butceYili: number;
-  loaded: boolean;
-  loadedLabel?: string;
-  accept?: string;
-}) {
-  const router = useRouter();
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setBusy(true);
-    setMsg(null);
-    setErr(null);
-    const fd = new FormData(e.currentTarget);
-    fd.set("kind", kind);
-    fd.set("butceYili", String(butceYili));
-    try {
-      const res = await fetch("/api/butce/upload", { method: "POST", body: fd });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setErr(data.detail ?? data.error ?? "Yükleme başarısız");
-        return;
-      }
-      setMsg(data.log ?? "Yüklendi");
-      router.refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Bağlantı hatası");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-        <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-            loaded ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-900"
-          }`}
-        >
-          {loaded ? "Yüklü" : "Bekliyor"}
-        </span>
-      </div>
-      {loaded && loadedLabel && (
-        <p className="mt-2 text-xs text-slate-600">{loadedLabel}</p>
-      )}
-      <form onSubmit={onSubmit} className="mt-3 flex flex-wrap items-end gap-2">
-        <input
-          type="file"
-          name="file"
-          accept={accept}
-          required={!loaded}
-          className="text-sm file:mr-2 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm"
-        />
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-lg bg-slate-800 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
-        >
-          {busy ? "Yükleniyor…" : "Yükle"}
-        </button>
-      </form>
-      {msg && <p className="mt-2 text-xs text-emerald-700">{msg}</p>}
-      {err && <p className="mt-2 text-xs text-red-700">{err}</p>}
-    </div>
-  );
-}
-
 export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
   const [tarifeRows, setTarifeRows] = useState<TarifeOzet[]>(initialTarifeOzet);
-  const [referans, setReferans] = useState("2024");
+  const [referans, setReferans] = useState("Son 2 Yıl Ortalaması (2024-2025)");
   const [mizanYedek, setMizanYedek] = useState(true);
   const [dagitBusy, setDagitBusy] = useState(false);
   const [dagitErr, setDagitErr] = useState<string | null>(null);
@@ -135,10 +56,12 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
   const [detay, setDetay] = useState<PrimDagitimDetay[] | null>(null);
   const [log, setLog] = useState<PrimDagitimLog[] | null>(null);
   const [ozet, setOzet] = useState<PrimDagitimOzet | null>(null);
+  const [izleme, setIzleme] = useState<BransTarifeIzleme | null>(null);
+  const [izlemeBrans, setIzlemeBrans] = useState("701");
+  const [izlemeTarife, setIzlemeTarife] = useState("YANGIN");
 
   const butceYili = durum.butceYili;
-  const hazir =
-    durum.hasSatisButce && durum.hasTarifeMap && durum.hasMizan;
+  const hazir = durum.hasSatisButce && durum.hasTarifeBransPay;
 
   function updateTarife(idx: number, field: "yeniHedef" | "artisOrani", value: number) {
     setTarifeRows((prev) => {
@@ -165,7 +88,13 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
       const res = await fetch("/api/butce/prim-dagit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ referansEtiket: referans, mizanYedek, tarifeHedefleri }),
+        body: JSON.stringify({
+          referansEtiket: referans,
+          mizanYedek,
+          tarifeHedefleri,
+          izlemeBrans,
+          izlemeTarife,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -176,6 +105,7 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
       setDetay(data.detay ?? []);
       setLog(data.log ?? []);
       setOzet(data.ozet ?? null);
+      setIzleme(data.izleme ?? null);
     } catch (e) {
       setDagitErr(e instanceof Error ? e.message : "Bağlantı hatası");
     } finally {
@@ -186,39 +116,20 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
   return (
     <div className="space-y-6">
       <section className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-950">
-        <strong>Prim hedefi akışı:</strong> SATIS_BUTCE yükle → tarife hedeflerini düzenle → A
-        motoru ile 7xx branşlara dağıt. Üretim Excel (2023_2025_Prim) yüklü değilse MIZAN yedek
-        kullanılır.
+        <strong>Prim hedefi akışı:</strong> Tarife grubu hedeflerini kontrol et → referans yılı seç →
+        geçmiş tarife-branş paylarına göre 7xx branşlara dağıt.
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-900">Adım 1 — Veri dosyaları</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <UploadBlock
-            title="Bütçe GT — SATIS_BUTCE_"
-            kind="satis_butce"
-            butceYili={butceYili}
-            loaded={durum.hasSatisButce}
-            loadedLabel={`${durum.satisButceSatir.toLocaleString("tr-TR")} satır`}
-          />
-          <UploadBlock
-            title="BUTCE_MAP — MIZAN + TARIFE_MAP"
-            kind="butce_map"
-            butceYili={butceYili}
-            loaded={durum.hasMizan && durum.hasTarifeMap}
-            loadedLabel={`MIZAN ${durum.mizanSatir.toLocaleString("tr-TR")} · TARIFE ${durum.tarifeMapSatir}`}
-          />
-          <UploadBlock
-            title="Üretim (opsiyonel) — 2023_2025_Prim"
-            kind="uretim"
-            butceYili={butceYili}
-            loaded={durum.hasUretim}
-            loadedLabel={`${durum.uretimSatir.toLocaleString("tr-TR")} satır`}
-          />
-        </div>
-        <ButceUploadGuide spec={BUTCE_PRIM_SPEC} />
-        <ButceUploadGuide spec={BUTCE_MAP_TARIFE_SPEC} />
-      </section>
+      {!hazir && (
+        <section className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          Bu hesap için <strong>Bütçe Prim Hedefi</strong> ve{" "}
+          <strong>Tarife Grubu → Hazine Branşı Dağılımı</strong> verileri gerekli. Dosyaları{" "}
+          <Link href="/butce/veri-yukle" className="font-semibold underline">
+            Veri yükleme
+          </Link>{" "}
+          sekmesinden yükleyin.
+        </section>
+      )}
 
       {tarifeRows.length > 0 && (
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -310,7 +221,7 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
         </div>
         {!hazir && (
           <p className="mt-2 text-sm text-amber-800">
-            Dağıtım için SATIS_BUTCE, TARIFE_MAP ve MIZAN gerekli.
+            Dağıtım için SATIS_BUTCE ve tarife-branş pay tablosu gerekli.
           </p>
         )}
         {dagitErr && <p className="mt-2 text-sm text-red-700">{dagitErr}</p>}
@@ -350,6 +261,53 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
                   ))}
               </tbody>
             </table>
+          </div>
+        </section>
+      )}
+
+      {izleme && (
+        <section className="rounded-xl border border-indigo-200 bg-white p-4 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900">
+            Branş dağılım izi — nasıl hesaplandı?
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Tarife hedefinin SATIS_BUTCE satırlarına, oradan seçilen branşa nasıl gittiğini gösterir.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <label className="text-sm">
+              Branş
+              <input
+                type="text"
+                value={izlemeBrans}
+                onChange={(e) => setIzlemeBrans(e.target.value)}
+                className="ml-2 w-20 rounded border border-slate-300 px-2 py-1 font-mono text-sm"
+              />
+            </label>
+            <label className="text-sm">
+              Tarife
+              <select
+                value={izlemeTarife}
+                onChange={(e) => setIzlemeTarife(e.target.value)}
+                className="ml-2 rounded border border-slate-300 px-2 py-1 text-sm"
+              >
+                {tarifeRows.map((r) => (
+                  <option key={r.tarifeGrubu} value={r.tarifeGrubu}>
+                    {r.tarifeGrubu}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              disabled={dagitBusy}
+              onClick={dagit}
+              className="self-end rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-800 disabled:opacity-50"
+            >
+              İz tablosunu yenile
+            </button>
+          </div>
+          <div className="mt-4">
+            <BransDagitimIzTable iz={izleme} />
           </div>
         </section>
       )}

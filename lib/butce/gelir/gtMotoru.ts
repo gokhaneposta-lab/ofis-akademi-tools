@@ -84,8 +84,13 @@ export class GelirTablosuMotoru {
     return map.get(brans) ?? 0;
   }
 
-  /** Tek branş için tüm GT hücrelerini değerlendirir (memoize). */
-  hesaplaBrans(brans: string, brutPrim: number, endirektPrim: number): Map<number, number> {
+  /** satir no → tutar (KPK vb. dış girdiler) */
+  hesaplaBrans(
+    brans: string,
+    brutPrim: number,
+    endirektPrim: number,
+    disHucreler: Record<number, number> = {},
+  ): Map<number, number> {
     const self = this;
     const memo = new Map<number, number>();
     const zincir = new Set<number>();
@@ -99,6 +104,7 @@ export class GelirTablosuMotoru {
     }
 
     function cellValue(satir: number): number {
+      if (satir in disHucreler) return disHucreler[satir] ?? 0;
       if (satir === 11) return brutPrim;
       if (satir === 15) return endirektPrim;
       if (memo.has(satir)) return memo.get(satir)!;

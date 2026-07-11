@@ -62,12 +62,21 @@ export type ButceMeta = {
   mizanAylikYilMin?: number;
   mizanAylikYilMax?: number;
   bilancoAylikSatirSayisi?: number;
+  kpkVadeGuncellemeIso?: string;
+  kpkVadeSatirSayisi?: number;
+  kpkKapanisGuncellemeIso?: string;
   tarifeMapGuncellemeIso?: string;
   tarifeMapSatirSayisi?: number;
+  tarifeBransPayGuncellemeIso?: string;
+  tarifeBransPaySatirSayisi?: number;
+  tarifeBransPayYilMin?: number;
+  tarifeBransPayYilMax?: number;
   satisButceGuncellemeIso?: string;
   satisButceSatirSayisi?: number;
   uretimGuncellemeIso?: string;
   uretimSatirSayisi?: number;
+  faaliyetGiderGuncellemeIso?: string;
+  faaliyetGiderSatirSayisi?: number;
 };
 
 export type TarifeMapRow = {
@@ -100,6 +109,54 @@ export type UretimRow = {
   netPrim: number;
 };
 
+export type TarifeBransPayRow = {
+  sirket: string;
+  tarifeGrubu: string;
+  bransKodu: string;
+  hazineBransAd: string;
+  yil: number;
+  ay: number;
+  netPrim: number;
+};
+
+export type BilancoAylikRow = {
+  yil: number;
+  ay: number;
+  hesap: string;
+  tutar: number;
+};
+
+/** Şirket geneli faaliyet giderleri — mizan 614xx, ay bazında bütçe tutarı. */
+export type FaaliyetGiderRow = {
+  butceYili: number;
+  hesap: string;
+  hesapAd?: string;
+  ay: number;
+  tutar: number;
+  /** Boş = şirket geneli; F368 branş payı ile dağıtılır. */
+  bransKodu?: string;
+};
+
+/** Branş × ay ortalama poliçe vadesi (gün) — 3 yıllık üretim ortalaması. */
+export type KpkVadeRow = {
+  bransKodu: string;
+  bransAd: string;
+  ay: number;
+  vadeGun: number;
+};
+
+/** Önceki yıl kapanış prim tahmini — tarife × ay manuel müdahale. */
+export type KpkKapanisTahminStore = {
+  butceYili: number;
+  oncekiYil: number;
+  sonGercekAy: number;
+  /** tarife → sabit büyüme oranı override (null = otomatik YoY) */
+  tarifeBuyumeOran?: Record<string, number>;
+  /** tarife → ay → TL override */
+  tarifeAylikOverride?: Record<string, Record<number, number>>;
+  guncellemeIso: string;
+};
+
 export type PrimDagitimDetay = {
   satisSatir: number;
   sirket: string;
@@ -110,7 +167,7 @@ export type PrimDagitimDetay = {
   hedefPrim: number;
   pay: number;
   primTipi: "direkt" | "endirekt";
-  kaynak: "uretim" | "mizan";
+  kaynak: "tarife_brans_pay" | "uretim" | "mizan";
   eslesme: string;
 };
 

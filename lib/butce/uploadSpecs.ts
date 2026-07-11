@@ -15,10 +15,10 @@ export type UploadSpec = {
 
 export const BUTCE_MAP_MIZAN_SPEC: UploadSpec = {
   id: "mizan",
-  title: "BUTCE_MAP.xlsx — MIZAN sayfası",
+  title: "Yıl Sonu Mizan",
   summary:
-    "Geçmiş yıl sonu branş mizanı. Teknik oranlar (Faz 1) bu veriden hesaplanır: her branş için pay ÷ baz oranları, Excel GT ağırlıklı yıl birleştirmesi.",
-  fileHint: "BUTCE_MAP.xlsx (veya aynı yapıda Excel; .xlsx / .xls)",
+    "Geçmiş yıl sonu branş mizanı. Teknik oranlar ve GT oranları bu veriden hesaplanır.",
+  fileHint: "Yıl, hesap kodu, branş kodu ve tutar içeren mizan dosyası",
   sheetName: "MIZAN",
   steps: [
     "Finans / bütçe ekibinden güncel BUTCE_MAP dosyasını alın.",
@@ -51,13 +51,13 @@ export const BUTCE_MAP_MIZAN_SPEC: UploadSpec = {
 /** Aynı dosyada; ileride prim hedefi / 7xx dağıtım importu için. */
 export const BUTCE_MAP_TARIFE_SPEC: UploadSpec = {
   id: "tarife_map",
-  title: "BUTCE_MAP.xlsx — TARIFE_MAP sayfası",
-  summary: "Tarife grubu ↔ 7xx hazine branş eşlemesi. Prim hedefi dağıtımında kullanılacak.",
-  fileHint: "Aynı BUTCE_MAP.xlsx dosyası",
+  title: "Tarife Grubu Sabit Tanımları",
+  summary: "Hazine branş kodu, branş adı, ana branş ve tarife grubu gibi nadiren değişen sabit tanımlar.",
+  fileHint: "Sabit tanım tablosu; sadece tanım değişirse güncellenir",
   sheetName: "TARIFE_MAP",
   steps: [
-    "Aynı BUTCE_MAP.xlsx dosyasını yükleyin (MIZAN ile birlikte import edilir).",
-    "Prim hedefi sayfasında «BUTCE_MAP — MIZAN + TARIFE_MAP» ile yükleyin.",
+    "Sabit branş/tarife tanım tablosunu alın.",
+    "Tanımlar değiştiyse Veri yükleme sayfasından güncelleyin.",
   ],
   columns: [
     { col: "A", field: "Branş kodu", example: "701" },
@@ -73,16 +73,44 @@ export const BUTCE_MAP_TARIFE_SPEC: UploadSpec = {
   comingSoon: false,
 };
 
+export const BUTCE_TARIFE_BRANS_PAY_SPEC: UploadSpec = {
+  id: "tarife_brans_pay",
+  title: "Tarife Grubu → Hazine Branşı Dağılımı",
+  summary:
+    "Geçmiş üretimde bir tarife grubunun priminin hangi 7xx hazine branşlarına dağıldığını gösterir. Yeni bütçe hedefleri bu paylara göre branşlara bölünür.",
+  fileHint: "Tarife grubu, hazine branş kodu, tanzim yılı/ayı ve net prim içeren üretim dağılımı",
+  sheetName: "İlk sayfa okunur",
+  steps: [
+    "Tarife grubu × hazine branşı üretim/pay raporunu alın.",
+    "2026 geldikçe aynı formatta yükleyin; sistem en son yılları referans seçeneğinde kullanır.",
+    "Veri yükleme sayfasında bu karttan yükleyin.",
+  ],
+  columns: [
+    { col: "A", field: "Şirket", example: "BS" },
+    { col: "B", field: "Tarife Grup Adı", example: "YANGIN" },
+    { col: "C", field: "Hazine Branş Kod", example: "701" },
+    { col: "D", field: "Hazine Branş Ad", example: "YANGIN VE DOĞAL AFETLER" },
+    { col: "E", field: "Tanzim Yıl", example: "2025" },
+    { col: "F", field: "Tanzim Ay", example: "12" },
+    { col: "G", field: "Net Prim TL", example: "797149442" },
+  ],
+  checks: [
+    "Aynı tarife grubu altında birden fazla 7xx branş olabilir; bu beklenen durumdur.",
+    "Yıllar 2023–2025 veya 2026 dahil olabilir.",
+    "Net Prim TL aylık satırlarsa sistem yıl içinde toplar; yıl sonu payı bu toplamdan çıkar.",
+  ],
+};
+
 export const BUTCE_PRIM_SPEC: UploadSpec = {
   id: "satis_butce",
-  title: "Bütçe GT Çalışma — SATIS_BUTCE_ sayfası",
-  summary: "GM prim hedefi (kanal × tarife × şirket). 7xx branş dağıtımının girdisi.",
-  fileHint: "Bütçe GT Çalışma_v8.xlsx (veya eşdeğeri)",
+  title: "Bütçe Prim Hedefi",
+  summary: "Üst yönetim / GM tarafından belirlenen prim hedefleri. Kanal ve tarife grubu bazında hedef tutarlar buradan gelir.",
+  fileHint: "Kanal, tarife grubu ve hedef prim kolonlarını içeren bütçe hedef dosyası",
   sheetName: "SATIS_BUTCE_",
   steps: [
-    "Bütçe GT Çalışma_v8.xlsx dosyasını alın.",
-    "Prim hedefi sayfasında «SATIS_BUTCE_» olarak yükleyin.",
-    "Tarife hedeflerini düzenleyip A motoru ile dağıtın.",
+    "Kanal ve tarife grubu bazındaki bütçe prim hedeflerini alın.",
+    "Veri yükleme sayfasında Bütçe Prim Hedefi kartından yükleyin.",
+    "Sonra Prim hedefi sayfasında hedefleri kontrol edip A motoru ile dağıtın.",
   ],
   columns: [
     { col: "A–C", field: "Şirket, kanal1, kanal2", example: "BS, ACENTE, …" },
@@ -94,4 +122,84 @@ export const BUTCE_PRIM_SPEC: UploadSpec = {
     "D kolonu tarife grubu dolu mu?",
   ],
   comingSoon: false,
+};
+
+export const BUTCE_AYLIK_GT_BILANCO_SPEC: UploadSpec = {
+  id: "aylik_gt_bilanco",
+  title: "Aylık GT ve Bilanço Mizanı",
+  summary:
+    "GT ve bilanço hesaplarının aylık kümülatif gerçekleşen durumunu verir. Aylık dağılım, teknik oranlar, gelir tablosu ve bilanço adımlarını besler.",
+  fileHint: "Dönem, şirket, hesap no, hesap adı ve net tutar içeren aylık mizan",
+  sheetName: "İlk sayfa okunur",
+  steps: [
+    "Eldeki en güncel aylık GT ve bilanço mizanını alın.",
+    "Bütçe döneminde yeni yıl kapanışı veya yeni ay geldikçe tekrar yükleyin.",
+    "Sistem GT prim, yıl sonu mizan ve bilanço verilerini bu dosyadan üretir.",
+  ],
+  columns: [
+    { col: "A", field: "Dönem", example: "31.12.2025" },
+    { col: "B", field: "Şirket", example: "Sigorta" },
+    { col: "C", field: "Hesap No", example: "7010111" },
+    { col: "D", field: "Hesap Adı", example: "BRÜT YAZILAN PRİMLER" },
+    { col: "E", field: "Net", example: "845300911" },
+  ],
+  checks: [
+    "Sigorta satırları bulunmalı.",
+    "7xx ile başlayan hesaplar branşlı GT verisi olarak okunur.",
+    "1/2/3/4/5/6 ile başlayan hesaplar bilanço ve şirket geneli hesaplar için saklanır.",
+  ],
+};
+
+export const BUTCE_KPK_VADE_SPEC: UploadSpec = {
+  id: "kpk_vade",
+  title: "KPK Vade Tanımları",
+  summary:
+    "7xx hazine branşları için ay bazında ortalama poliçe vadesi (gün). KPK hesabında başlangıç–bitiş tarihi farkı bu tablodan okunur.",
+  fileHint: "Branş kodu, branş adı, ay (1–12) ve ortalama vade (gün) içeren tablo",
+  sheetName: "İlk sayfa okunur",
+  steps: [
+    "Son 3 yıl üretiminden hesaplanmış branş × ay ortalama vade tablosunu hazırlayın.",
+    "Tablo sık değişmez; yeni dosya yüklerseniz mevcut tanımın üzerine yazılır.",
+  ],
+  columns: [
+    { col: "A", field: "Branş Kod", example: "701" },
+    { col: "B", field: "Branş Ad", example: "YANGIN" },
+    { col: "C", field: "Ay", example: "11" },
+    { col: "D", field: "Vade", example: "362.38" },
+  ],
+  checks: [
+    "Her 7xx branş için 1–12 arası aylar tanımlı olmalı.",
+    "Vade, poliçe başlangıç–bitiş tarihi arasındaki ortalama gün sayısıdır (ör. tarımsal sezon etkisi ay bazında farklılaşır).",
+    "Yükleme yapılmazsa sistemdeki varsayılan tablo kullanılır.",
+  ],
+};
+
+export const BUTCE_FAALIYET_GIDER_SPEC: UploadSpec = {
+  id: "faaliyet_gider",
+  title: "Faaliyet Giderleri (614)",
+  summary:
+    "Şirket geneli faaliyet giderlerinin ay bazında bütçe tutarları (61402–61406). 61408/61409 import edilmez — gelir tablosunda brüt prim × F383/F388 oranıyla hesaplanır.",
+  fileHint: "61402–61406 hesap kodları, ay ve tutar (veya Oca–Ara kolonları)",
+  sheetName: "İlk sayfa okunur",
+  steps: [
+    "Finans ekibinden bütçe yılı faaliyet gider tablosunu alın: 61402 personel, 61403 yönetim, 61404 AR-GE, 61405 pazarlama, 61406 dış hizmet.",
+    "Tutarları pozitif gider olarak girin — veri şirket genelidir, branş kolonu yok.",
+    "Import sonrası tutarlar F368 (61402 branş payı) ile prim hedefi olan 7xx branşlara dağıtılır.",
+    "61408 ve 61409 bu dosyaya dahil değildir; GT'de brüt prim × teknik oran (0258/0259) ile otomatik gelir.",
+  ],
+  columns: [
+    { col: "A", field: "Hesap No", example: "61402", note: "61402–61406 (61408/61409 hariç)" },
+    { col: "B", field: "Hesap Adı", example: "PERSONEL GİDERLERİ", note: "İsteğe bağlı" },
+    { col: "C", field: "Ay", example: "3", note: "1–12; geniş formatta Oca–Ara kolonları da okunur" },
+    { col: "D", field: "Tutar", example: "12500000", note: "Aylık bütçe tutarı (TL, pozitif, şirket geneli)" },
+  ],
+  checks: [
+    "61402, 61403, 61404, 61405, 61406 import edilir.",
+    "61408/61409 satırları yok sayılır — diğer faaliyet giderleri orandan (F383/F388) hesaplanır.",
+    "Şirket geneli tutarlar F368 ile prim hedefi olan branşlara bölünür.",
+  ],
+  errors: [
+    "«Faaliyet gider satırı okunamadı» → Hesap kodu 6140x mi, ay 1–12 mi, tutar dolu mu kontrol edin.",
+    "«Format okunamadı» → Ya «Ay» kolonu ya da Oca–Ara / 1–12 ay kolonları olmalı.",
+  ],
 };

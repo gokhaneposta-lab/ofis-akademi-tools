@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import {
   loadMizanRows,
   loadSatisButceRows,
+  loadTarifeBransPayRows,
   loadTarifeMapRows,
   loadUretimRows,
 } from "@/lib/butce/loadData";
+import { buildBransTarifeIzleme } from "@/lib/butce/prim/bransDagitimTrace";
 import { DagitimMotoru } from "@/lib/butce/prim/dagitimMotoru";
 import { BUTCE_PRIM_BRANS_JSON } from "@/lib/butce/paths";
 import { writePrivateFile } from "@/lib/butce/storage";
@@ -18,6 +20,8 @@ export async function POST(request: Request) {
     referansEtiket?: string;
     mizanYedek?: boolean;
     tarifeHedefleri?: Record<string, number>;
+    izlemeBrans?: string;
+    izlemeTarife?: string;
   };
   try {
     body = (await request.json()) as typeof body;
@@ -26,6 +30,7 @@ export async function POST(request: Request) {
   }
 
   const satisRows = await loadSatisButceRows();
+  const tarifeBransPay = await loadTarifeBransPayRows();
   const tarifeMap = await loadTarifeMapRows();
   const mizan = await loadMizanRows();
   const uretim = await loadUretimRows();
@@ -36,20 +41,13 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  if (tarifeMap.length === 0) {
+  if (tarifeBransPay.length === 0) {
     return NextResponse.json(
-      { error: "TARIFE_MAP verisi yok — BUTCE_MAP.xlsx yükleyin (MIZAN + TARIFE_MAP)." },
+      { error: "Tarife-branş pay verisi yok — geçmiş üretim pay tablosunu yükleyin." },
       { status: 400 },
     );
   }
-  if (mizan.length === 0) {
-    return NextResponse.json(
-      { error: "MIZAN verisi yok — önce BUTCE_MAP MIZAN yükleyin." },
-      { status: 400 },
-    );
-  }
-
-  const motor = new DagitimMotoru(uretim, tarifeMap, mizan);
+  const motor = new DagitimMotoru(uretim, tarifeMap, mizan, tarifeBransPay);
   const sonuc = motor.dagit({
     satisRows,
     referansEtiket: body.referansEtiket ?? "2024",
@@ -57,6 +55,7 @@ export async function POST(request: Request) {
     tarifeHedefleri: body.tarifeHedefleri,
   });
 
+  const tarifeHedefleri = body.tarifeHedefleri ?? {};
   const hedefler: Record<string, number> = {};
   for (const b of sonuc.bransOzet) hedefler[b.bransKodu] = b.hedefPrim;
   const direkt: Record<string, number> = {};
@@ -70,11 +69,21 @@ export async function POST(request: Request) {
     JSON.stringify({
       guncellemeIso: new Date().toISOString(),
       referansEtiket: body.referansEtiket ?? "2024",
+      tarifeHedefleri,
       hedefler,
       direkt,
       endirekt,
     }),
   );
+  const izlemeBrans = body.izlemeBrans ?? "701";
+  const izlemeTarife = body.izlemeTarife ?? "YANGIN";
+  const izleme = buildBransTarifeIzleme(
+    sonuc.detay,
+    satisRows,
+    tarifeHedefleri,
+    izlemeBrans,
+    izlemeTarife,
+  );
 
-  return NextResponse.json({ ok: true, ...sonuc });
+  return NextResponse.json({ ok: true, ...sonuc, izleme });
 }

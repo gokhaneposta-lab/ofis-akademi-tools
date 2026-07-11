@@ -6,13 +6,18 @@ export const BUTCE_MIZAN_JSON = "mizan-tidy.json";
 export const BUTCE_MIZAN_AYLIK_JSON = "mizan-aylik-tidy.json";
 export const BUTCE_MIZAN_AYLIK_FULL_JSON = "mizan-aylik-full.json";
 export const BUTCE_BILANCO_AYLIK_JSON = "bilanco-aylik-tidy.json";
+export const BUTCE_KPK_VADE_JSON = "kpk-vade.json";
+export const BUTCE_KPK_KAPANIS_JSON = "kpk-kapanis-tahmin.json";
+export const BUTCE_KPK_VADE_DEFAULT_JSON = join(process.cwd(), "data", "butce", "defaults", "kpk-vade.json");
 export const BUTCE_META_JSON = "meta.json";
 export const BUTCE_ORAN_AYAR_JSON = "oran-ayarlar.json";
 export const BUTCE_PRIM_BRANS_JSON = "prim-brans-hedef.json";
 export const BUTCE_AYLIK_PRIM_JSON = "aylik-prim.json";
 export const BUTCE_TARIFE_MAP_JSON = "tarife-map.json";
+export const BUTCE_TARIFE_BRANS_PAY_JSON = "tarife-brans-pay.json";
 export const BUTCE_SATIS_BUTCE_JSON = "satis-butce.json";
 export const BUTCE_URETIM_JSON = "uretim.json";
+export const BUTCE_FAALIYET_GIDER_JSON = "faaliyet-gider.json";
 
 /** @deprecated use localPrivateDir() */
 export const BUTCE_PRIVATE_DIR = join(process.cwd(), "data", "butce", "private");

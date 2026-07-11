@@ -43,6 +43,7 @@ import TsbHazirSorguChips from "@/components/tsb/TsbHazirSorguChips";
 import { tsbHazirSorgularKarne } from "@/lib/tsbHazirSorgular";
 import {
   parseSirketKarneSekme,
+  karneSekmeAciklamasi,
   sirketKarnePanelLinks,
   sirketKarnePrefs,
   TSB_SIRKET_KARNE_SEKMELER,
@@ -436,7 +437,7 @@ export default function TsbSirketKarneDashboard() {
               ))}
             </div>
             <p className="mt-2 px-1 text-sm text-slate-600">
-              {TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === sekme)?.description}
+              {karneSekmeAciklamasi(sekme, donem, finDonem)}
             </p>
           </nav>
 

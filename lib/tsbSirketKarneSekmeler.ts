@@ -1,5 +1,6 @@
 import { buildTsbDashboardHref, type TsbDashboardUrlPrefs } from "./tsbDashboardDeepLink";
 import type { SegmentSkorPool } from "./tsbSirketSegmentSkor";
+import { formatPrimYtdAralikKisa } from "./tsbPrimDonemEtiket";
 
 export type TsbSirketKarneSekme = "ozet" | "finansal" | "teknik" | "prim" | "pazar";
 
@@ -8,7 +9,7 @@ export const TSB_SIRKET_KARNE_SEKMELER: readonly {
   label: string;
   description: string;
 }[] = [
-  { id: "ozet", label: "Özet", description: "Prim, finansal, kanal ve 12 ay trend" },
+  { id: "ozet", label: "Özet", description: "YTD prim, finansal, kanal ve trend" },
   { id: "finansal", label: "Finansal", description: "GT ve bilanço KPI önizleme" },
   { id: "teknik", label: "Teknik", description: "Hasar/prim ve teknik sonuç" },
   { id: "prim", label: "Prim", description: "Kanal ve branş üretim panelleri" },
@@ -27,6 +28,39 @@ const KARNE_PATH = "/sigorta/sirket-karne";
 export function parseSirketKarneSekme(raw: string | null | undefined): TsbSirketKarneSekme {
   if (raw === "finansal" || raw === "teknik" || raw === "prim" || raw === "pazar") return raw;
   return "ozet";
+}
+
+/** Seçili prim dönemine göre sekme alt açıklaması. */
+export function karneSekmeAciklamasi(
+  sekme: TsbSirketKarneSekme,
+  donem: string,
+  finDonem?: string | null,
+): string {
+  const ytdKisa = donem ? formatPrimYtdAralikKisa(donem) : null;
+  switch (sekme) {
+    case "ozet":
+      return ytdKisa
+        ? `YTD ${ytdKisa} · kümülatif prim, finansal, kanal ve aylık trend`
+        : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "ozet")!.description;
+    case "finansal":
+      return finDonem
+        ? `Çeyrek ${finDonem} · GT ve bilanço KPI önizleme`
+        : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "finansal")!.description;
+    case "teknik":
+      return finDonem
+        ? `Çeyrek ${finDonem} · hasar/prim ve teknik sonuç`
+        : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "teknik")!.description;
+    case "prim":
+      return ytdKisa
+        ? `YTD ${ytdKisa} · kümülatif üretim ve kanal panelleri`
+        : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "prim")!.description;
+    case "pazar":
+      return donem
+        ? `${donem} aylık üretim · branş payı ve sıralama`
+        : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "pazar")!.description;
+    default:
+      return "";
+  }
 }
 
 export function sirketKarnePrefs(

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import type { SirketKarnePrimPaket } from "@/lib/tsbSirketKarne";
+import { formatPrimYtdAralik } from "@/lib/tsbPrimDonemEtiket";
 import {
   cn,
   tsb,
@@ -110,7 +111,8 @@ function buildKarnePrimPerformansKpis(
   const topKanal = [...primPaket.kanalSatirlari].sort((a, b) => b.payBuYuzde - a.payBuYuzde)[0];
   const yilBu = donem.slice(0, 4);
   const yilOnceki = primPaket.donemOnceki.slice(0, 4);
-  const ayEtiket = `Ocak–${donem.slice(5)}`;
+  const ytdEtiketBu = formatPrimYtdAralik(donem);
+  const ytdEtiketOnceki = formatPrimYtdAralik(primPaket.donemOnceki);
   const degisim = toplamYtd.sirketDegisim;
   const degisimRenk =
     degisim === null || !Number.isFinite(degisim)
@@ -137,12 +139,12 @@ function buildKarnePrimPerformansKpis(
       donutColor: degisimRenk,
       rows: [
         {
-          label: `${yilBu} (${ayEtiket})`,
+          label: ytdEtiketBu,
           value: tsbFormatPrim(toplamYtd.sirketPrimBu),
           bold: true,
         },
         {
-          label: `${yilOnceki} (${ayEtiket})`,
+          label: ytdEtiketOnceki,
           value: tsbFormatPrim(toplamYtd.sirketPrimOnceki),
         },
         {

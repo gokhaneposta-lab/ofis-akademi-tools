@@ -35,6 +35,7 @@ import {
   type FinansalKiyaslamaDonemPaketi,
   type FinansalKiyaslamaSatirTanim,
 } from "@/lib/tsbFinansalKarsilastirmaData";
+import { formatPrimYtdAralikKisa } from "@/lib/tsbPrimDonemEtiket";
 import { olcekFinDonemForPrimDonem } from "@/lib/tsbOlcekSegmentCache";
 import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
 import {
@@ -750,7 +751,7 @@ export default function TsbSirketKarneOzet({
 
           <KarneSection
             title="Kümülatif prim üretim ve pay"
-            subtitle={`YTD Ocak–${donem.slice(5)} · ${yilBu} vs ${yilOnceki}`}
+            subtitle={`YTD ${formatPrimYtdAralikKisa(donem)} · ${yilBu} vs ${yilOnceki}`}
           >
             <PrimTablo
               satirlar={primPaket.ytdSatirlar}

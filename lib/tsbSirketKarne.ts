@@ -10,7 +10,6 @@ import {
 } from "./tsbBransDegisim";
 import type { BransSiraOzet, BransSiraSatir } from "./tsbBransSira";
 import { buildBransSiraTablosu, listSirketlerSiraOzeti } from "./tsbBransSira";
-import type { KanalDagilimKutu } from "./tsbKanalDagilim";
 import { buildSon12AyPrimTrend, kumulatifSeridenAylikUretim, type PrimTrendAylikNokta } from "./tsbPrimTrend12";
 import {
   aggregateKanalDagilim,
@@ -20,7 +19,7 @@ import {
   type KanalDagilimSatirKey,
 } from "./tsbKanalDagilim";
 import type { TsbKanalField, TsbPrimDaraltma, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
-import { prevMonthPeriod, prevYearPeriod, sirketSegmentFromKodu } from "./tsbPrimDashboard";
+import { prevYearPeriod, sirketSegmentFromKodu } from "./tsbPrimDashboard";
 
 export type KarnePrimSirasi = {
   sira: number | null;
@@ -101,25 +100,6 @@ function listPortfoySirasi(
     .map((s) => ({ kod: s.kod, toplam: s.toplam }));
 }
 
-function kanalKutuAylik(kum: KanalDagilimKutu, kumPrev: KanalDagilimKutu, donem: string): KanalDagilimKutu {
-  const prevAy = prevMonthPeriod(donem);
-  const yilBasi = !prevAy || prevAy.slice(0, 4) !== donem.slice(0, 4);
-  const diff = (a: number, b: number) => (yilBasi ? a : a - b);
-  const merkez = diff(kum.merkez, kumPrev.merkez);
-  const acente = diff(kum.acente, kumPrev.acente);
-  const banka = diff(kum.banka, kumPrev.banka);
-  const broker = diff(kum.broker, kumPrev.broker);
-  const diger = diff(kum.diger, kumPrev.diger);
-  return {
-    merkez,
-    acente,
-    banka,
-    broker,
-    diger,
-    genelToplam: merkez + acente + banka + broker + diger,
-  };
-}
-
 function buildKanalSatirlari(
   rows: TsbPrimRow[],
   donemBu: string,
@@ -128,27 +108,12 @@ function buildKanalSatirlari(
   daraltma: TsbPrimDaraltma,
   sirketKodu: number,
 ): KarneKanalSatir[] {
-  const prevBu = prevMonthPeriod(donemBu);
-  const prevOc = prevMonthPeriod(donemOnceki);
-
-  const sirketKumBu = aggregateKanalDagilim(rows, donemBu, segment, daraltma, sirketKodu);
-  const sirketKumOc = aggregateKanalDagilim(rows, donemOnceki, segment, daraltma, sirketKodu);
-  const sirketKumBuPrev = prevBu
-    ? aggregateKanalDagilim(rows, prevBu, segment, daraltma, sirketKodu)
-    : sirketKumBu;
-  const sirketKumOcPrev = prevOc
-    ? aggregateKanalDagilim(rows, prevOc, segment, daraltma, sirketKodu)
-    : sirketKumOc;
-
-  const sektorKumBu = aggregateKanalDagilim(rows, donemBu, segment, daraltma, null);
-  const sektorKumOc = aggregateKanalDagilim(rows, donemOnceki, segment, daraltma, null);
-  const sektorKumBuPrev = prevBu ? aggregateKanalDagilim(rows, prevBu, segment, daraltma, null) : sektorKumBu;
-  const sektorKumOcPrev = prevOc ? aggregateKanalDagilim(rows, prevOc, segment, daraltma, null) : sektorKumOc;
-
-  const sirketBu = kanalKutuAylik(sirketKumBu, sirketKumBuPrev, donemBu);
-  const sirketOc = kanalKutuAylik(sirketKumOc, sirketKumOcPrev, donemOnceki);
-  const sektorBu = kanalKutuAylik(sektorKumBu, sektorKumBuPrev, donemBu);
-  const sektorOc = kanalKutuAylik(sektorKumOc, sektorKumOcPrev, donemOnceki);
+  // TSB prim tidy yıl içi kümülatif — Kanal dağılım paneli ile aynı mantık.
+  // Önceki aydan fark almak, TSB revizyonlarında sahte negatif "aylık üretim" üretir.
+  const sirketBu = aggregateKanalDagilim(rows, donemBu, segment, daraltma, sirketKodu);
+  const sirketOc = aggregateKanalDagilim(rows, donemOnceki, segment, daraltma, sirketKodu);
+  const sektorBu = aggregateKanalDagilim(rows, donemBu, segment, daraltma, null);
+  const sektorOc = aggregateKanalDagilim(rows, donemOnceki, segment, daraltma, null);
   const payBu = kanalYuzdeleri(sirketBu);
   const payKanalBu = kanalBazindaSirketSektorPayYuzde(sirketBu, sektorBu);
   const payKanalOc = kanalBazindaSirketSektorPayYuzde(sirketOc, sektorOc);

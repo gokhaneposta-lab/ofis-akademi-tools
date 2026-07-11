@@ -261,7 +261,7 @@ function KanalTablo({ satirlar, donemBu, donemOnceki }: { satirlar: KarneKanalSa
         <thead className={tsb.thead}>
           <tr>
             <th className={cn(tsb.thSticky, "text-left")}>Kanal</th>
-            <th className={cn(tsb.th, "text-right")}>Üretim {donemBu}</th>
+            <th className={cn(tsb.th, "text-right")}>YTD prim {donemBu}</th>
             <th className={cn(tsb.th, "text-right")}>Pay (%)</th>
             <th className={cn(tsb.th, "text-right")}>Δ vs {donemOnceki}</th>
             <th className={cn(tsb.th, "text-right")}>Kanalda sektör payı</th>
@@ -679,7 +679,10 @@ export default function TsbSirketKarneOzet({
             <TsbLoading message="Finansal veri yükleniyor…" />
           ) : null}
 
-          <KarneSectionFold title="Kanala göre üretim dağılımı" subtitle={`${donem} aylık üretim · kanalda sektör payı`}>
+          <KarneSectionFold
+            title="Kanala göre üretim dağılımı"
+            subtitle={`${donem} yıl başından kümülatif · kanal payı · kanalda sektör payı`}
+          >
             <KanalTablo
               satirlar={primPaket.kanalSatirlari}
               donemBu={donem}

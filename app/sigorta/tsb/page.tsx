@@ -94,10 +94,10 @@ export default async function SigortaTsbHubPage() {
             const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === group.id);
             return (
               <section key={group.id} aria-labelledby={`tsb-group-${group.id}`}>
-                <h2 id={`tsb-group-${group.id}`} className="text-lg font-bold text-slate-900 sm:text-xl">
+                <h2 id={`tsb-group-${group.id}`} className={tsb.hubGroupTitle}>
                   {group.title}
                 </h2>
-                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-600">{group.description}</p>
+                <p className={tsb.hubGroupLead}>{group.description}</p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {panels.map((p) => (
                     <Link key={p.href} href={p.href} className={tsb.hubPanelCard}>

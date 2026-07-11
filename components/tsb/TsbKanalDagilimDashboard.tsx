@@ -110,7 +110,7 @@ function KanalYuzdeGroupedBars({
         >
           <div className="flex h-[188px] w-full items-end justify-center gap-2.5 border-b border-slate-200/70 px-0.5 pb-0.5">
             <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold tabular-nums text-gray-900">
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold tabular-nums text-slate-900">
                 <span className={`inline-block h-2 w-2 shrink-0 rounded-sm ${KANAL_RENK_SIRKET[key]}`} aria-hidden />
                 {pf.format(ys[key])}%
               </span>
@@ -122,7 +122,7 @@ function KanalYuzdeGroupedBars({
               />
             </div>
             <div className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
-              <span className="inline-flex items-center gap-1 text-[10px] tabular-nums text-gray-700">
+              <span className="inline-flex items-center gap-1 text-[10px] tabular-nums text-slate-700">
                 <span className={`inline-block h-2 w-2 shrink-0 rounded-sm ${KANAL_RENK_SEKTOR[key]}`} aria-hidden />
                 {pf.format(yk[key])}%
               </span>
@@ -134,7 +134,7 @@ function KanalYuzdeGroupedBars({
               />
             </div>
           </div>
-          <p className="mt-2 max-w-[6.5rem] text-center text-[10px] font-medium leading-tight text-gray-800">{label}</p>
+          <p className="mt-2 max-w-[6.5rem] text-center text-[10px] font-medium leading-tight text-slate-800">{label}</p>
           <p className="mt-0.5 text-center text-[9px] tabular-nums text-slate-600">
             Kanalda{" "}
             {kanalSektorPayi[key] !== null ? (

@@ -29,6 +29,7 @@ import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import {
   cn,
   tsb,
+  tsbChart,
   TsbError,
   TsbFilterBar,
   TsbFilterField,
@@ -51,8 +52,8 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 const nfMn = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0, minimumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
-const COL_SEKTOR = "#dc2626";
-const COL_SIRKET = "#059669";
+const COL_SEKTOR = tsbChart.sektor;
+const COL_SIRKET = tsbChart.sirketBrut;
 
 const CHART_W = 800;
 const CHART_H = 400;
@@ -149,7 +150,7 @@ function TrendSvg({
         <tspan fill={COL_SEKTOR} fontWeight={700}>
           Sektör
         </tspan>
-        <tspan fill="#64748b"> — kırmızı · </tspan>
+        <tspan fill="#64748b"> — gri · </tspan>
         <tspan fill={COL_SIRKET} fontWeight={700}>
           {adKisa}
         </tspan>
@@ -259,7 +260,7 @@ function AylikUretimBarSvg({ seri, sirketAdi }: { seri: PrimTrendAylikNokta[]; s
         <tspan fill={COL_SEKTOR} fontWeight={700}>
           Sektör
         </tspan>
-        <tspan fill="#64748b"> — kırmızı sütun · </tspan>
+        <tspan fill="#64748b"> — gri sütun · </tspan>
         <tspan fill={COL_SIRKET} fontWeight={700}>
           {adKisa}
         </tspan>
@@ -468,7 +469,7 @@ export default function TsbPrimTrend12Dashboard() {
         <p className={tsb.filterHint}>
           Seçtiğiniz <strong>bitiş ayına</strong> kadar geriye dönük en fazla <strong>12 ay</strong>. Üst grafik{" "}
           <strong>yıl içi kümülatif</strong> prim; alt grafik <strong>aylık üretim</strong> (ardışık aylar arası fark).
-          Sektör <strong className="text-red-600">kırmızı</strong>, şirket{" "}
+          Sektör <strong className="text-slate-600">gri</strong>, şirket{" "}
           <strong className="text-emerald-700">yeşil</strong>.
         </p>
       </TsbFilterBar>

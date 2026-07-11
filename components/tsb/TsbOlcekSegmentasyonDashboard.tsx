@@ -73,13 +73,13 @@ export default function TsbOlcekSegmentasyonDashboard() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className={tsb.dashboardStack}>
       <TsbFilterBar>
         <TsbFilterGrid>
           <TsbFilterField label="Şirket grubu">
-            <div className="flex flex-wrap gap-1">
+            <div className={tsb.btnGroup}>
               {(Object.keys(POOL_LABELS) as SegmentSkorPool[]).map((p) => (
-                <TsbToggleButton key={p} pressed={pool === p} onClick={() => setPool(p)}>
+                <TsbToggleButton key={p} pressed={pool === p} variant="segment" onClick={() => setPool(p)}>
                   {POOL_LABELS[p]}
                 </TsbToggleButton>
               ))}
@@ -95,14 +95,15 @@ export default function TsbOlcekSegmentasyonDashboard() {
       </TsbFilterBar>
 
       {segmentDagilimi ? (
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Ölçek segmenti filtresi">
-          <TsbToggleButton pressed={segment === "tumu"} onClick={() => setSegment("tumu")}>
+        <div className={tsb.btnGroup} role="group" aria-label="Ölçek segmenti filtresi">
+          <TsbToggleButton pressed={segment === "tumu"} variant="segment" onClick={() => setSegment("tumu")}>
             Tümü ({sonPool.poolData.peerSayisi})
           </TsbToggleButton>
           {OLCEK_SEGMENT_HUB_LEGEND.map((item) => (
             <TsbToggleButton
               key={item.harf}
               pressed={segment === item.harf}
+              variant="segment"
               onClick={() => setSegment(item.harf)}
             >
               <span className="mr-1 font-bold">{item.harf}</span>

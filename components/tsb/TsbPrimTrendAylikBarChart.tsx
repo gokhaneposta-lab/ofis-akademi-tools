@@ -1,9 +1,10 @@
 "use client";
 
 import type { PrimTrendAylikNokta } from "@/lib/tsbPrimTrend12";
+import { tsbChart } from "@/components/tsb/tsbDashboardUi";
 
-const COL_SEKTOR = "#dc2626";
-const COL_SIRKET = "#059669";
+const COL_SEKTOR = tsbChart.sektor;
+const COL_SIRKET = tsbChart.sirketBrut;
 const CHART_W = 800;
 const CHART_H = 400;
 
@@ -69,7 +70,7 @@ export default function TsbPrimTrendAylikBarChart({ seri, sirketAdi, className }
         <tspan fill={COL_SEKTOR} fontWeight={700}>
           Sektör
         </tspan>
-        <tspan fill="#64748b"> — kırmızı sütun · </tspan>
+        <tspan fill="#64748b"> — gri sütun · </tspan>
         <tspan fill={COL_SIRKET} fontWeight={700}>
           {adKisa}
         </tspan>

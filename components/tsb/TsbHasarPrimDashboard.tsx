@@ -523,7 +523,7 @@ export default function TsbHasarPrimDashboard() {
           <TsbFilterField label="Havuz">
             <div className={tsb.btnGroup}>
               {(["HD", "HAYAT_EMEKLILIK"] as const).map((p) => (
-                <TsbToggleButton key={p} pressed={pool === p} onClick={() => setPool(p)}>
+                <TsbToggleButton key={p} pressed={pool === p} variant="segment" onClick={() => setPool(p)}>
                   {POOL_LABELS[p]}
                 </TsbToggleButton>
               ))}
@@ -540,10 +540,10 @@ export default function TsbHasarPrimDashboard() {
           </TsbFilterField>
           <TsbFilterField label="Kırılım">
             <div className={tsb.btnGroup}>
-              <TsbToggleButton pressed={kirisumModu === "bransAp"} onClick={() => setKirisumModu("bransAp")}>
+              <TsbToggleButton pressed={kirisumModu === "bransAp"} variant="segment" onClick={() => setKirisumModu("bransAp")}>
                 Branş (GT)
               </TsbToggleButton>
-              <TsbToggleButton pressed={kirisumModu === "tarifeGrubu"} onClick={() => setKirisumModu("tarifeGrubu")}>
+              <TsbToggleButton pressed={kirisumModu === "tarifeGrubu"} variant="segment" onClick={() => setKirisumModu("tarifeGrubu")}>
                 Tarife grubu
               </TsbToggleButton>
             </div>

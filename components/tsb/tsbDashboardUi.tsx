@@ -168,6 +168,8 @@ export const tsb = {
 
   hubFeaturedCard:
     "group block rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/50 p-4 shadow-sm ring-1 ring-emerald-900/[0.05] transition hover:border-emerald-300 hover:shadow-md sm:p-5",
+  hubGroupTitle: "text-lg font-bold text-slate-900 sm:text-xl",
+  hubGroupLead: "mt-1 max-w-2xl text-sm leading-relaxed text-slate-600",
   hubPanelCard:
     "group rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-emerald-300/80 hover:shadow-md sm:p-4",
   hubPanelBadge:
@@ -228,6 +230,8 @@ export const tsbChart = {
   sirketBrut: "#059669",
   sirketNet: "#2563eb",
   sektor: "#64748b",
+  /** Önceki dönem / kıyas serisi */
+  onceki: "#94a3b8",
 } as const;
 
 /** Kötü / iyi delta (metrik bağlamına göre kullanın). */

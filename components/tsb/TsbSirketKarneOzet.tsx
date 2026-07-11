@@ -19,6 +19,7 @@ import {
   TsbTableShell,
   TsbToggleButton,
   tsbDeltaRenk,
+  tsbChart,
   tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 import type { BransPayDilim } from "@/lib/tsbBransDegisim";
@@ -358,8 +359,8 @@ function PrimTablo({
   );
 }
 
-const COL_BU = "#059669";
-const COL_ONCEKI = "#94a3b8";
+const COL_BU = tsbChart.sirketBrut;
+const COL_ONCEKI = tsbChart.onceki;
 
 /** Seçili ayın aylık üretiminde branş payı — gruplu dikey sütunlar (okunabilir). */
 function BransPayBarGrafik({

@@ -296,39 +296,47 @@ export function tsbFormatPp(v: number | null | undefined): string {
   return `${sign}${degisimPf.format(v)} pp`;
 }
 
-/** Yardım metninde yeşil / gri / kırmızı / sarı kelimelerini renklendirir. */
+/** Yardım metninde tam kelime olarak geçen renk adlarını vurgular (hasarın → sarı parçalanmaz). */
+const PANEL_HELP_COLOR_WORD =
+  /(?<![\p{L}])(yeşil|gri|kırmızı|sarı)(?![\p{L}])/giu;
+
+function panelHelpColorSpan(word: string, key: number): ReactNode {
+  const lower = word.toLowerCase();
+  if (lower === "yeşil") {
+    return (
+      <span key={key} className="font-semibold text-emerald-700">
+        {word}
+      </span>
+    );
+  }
+  if (lower === "gri") {
+    return (
+      <span key={key} className="font-semibold text-slate-600">
+        {word}
+      </span>
+    );
+  }
+  if (lower === "kırmızı") {
+    return (
+      <span key={key} className="font-semibold text-rose-700">
+        {word}
+      </span>
+    );
+  }
+  if (lower === "sarı") {
+    return (
+      <span key={key} className="font-semibold text-amber-700">
+        {word}
+      </span>
+    );
+  }
+  return word;
+}
+
 export function tsbPanelHelpRenderText(text: string): ReactNode {
-  const parts = text.split(/(yeşil|gri|kırmızı|sarı)/gi);
+  const parts = text.split(PANEL_HELP_COLOR_WORD);
   return parts.map((part, i) => {
-    const lower = part.toLowerCase();
-    if (lower === "yeşil") {
-      return (
-        <span key={i} className="font-semibold text-emerald-700">
-          {part}
-        </span>
-      );
-    }
-    if (lower === "gri") {
-      return (
-        <span key={i} className="font-semibold text-slate-600">
-          {part}
-        </span>
-      );
-    }
-    if (lower === "kırmızı") {
-      return (
-        <span key={i} className="font-semibold text-rose-700">
-          {part}
-        </span>
-      );
-    }
-    if (lower === "sarı") {
-      return (
-        <span key={i} className="font-semibold text-amber-700">
-          {part}
-        </span>
-      );
-    }
+    if (i % 2 === 1) return panelHelpColorSpan(part, i);
     return part;
   });
 }

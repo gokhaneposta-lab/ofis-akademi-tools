@@ -115,6 +115,14 @@ export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
     icon: "〰️",
     group: "prim",
   },
+  {
+    href: "/sigorta/pazar-yogunlasma",
+    badge: "HHI",
+    title: "Pazar yoğunlaşması",
+    subtitle: "Branş bazında HHI · top-5 pay · 12 ay trend",
+    icon: "📊",
+    group: "prim",
+  },
 ] as const;
 
 /** Tüm paneller (finansal + teknik + prim), hub sırası */

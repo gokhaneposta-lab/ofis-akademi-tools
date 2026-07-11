@@ -125,6 +125,12 @@ export function sirketKarnePanelLinks(
     case "pazar":
       return [
         {
+          href: buildTsbDashboardHref("/sigorta/pazar-yogunlasma", base),
+          title: "Pazar yoğunlaşması (HHI)",
+          subtitle: "Branş bazında yoğunlaşma endeksi ve top-5 pay",
+          badge: "HHI",
+        },
+        {
           href: buildTsbDashboardHref("/sigorta/brans-degisim", base),
           title: "Branş değişim tablosu",
           subtitle: "Pazar payı ve yıllık değişim",

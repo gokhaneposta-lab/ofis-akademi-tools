@@ -155,6 +155,15 @@ export const TSB_SEO = {
     jsonLdName: "TSB Son 12 Ay Prim Trendi",
     breadcrumbLabel: "Son 12 ay prim trendi",
   },
+  pazarYogunlasma: {
+    path: "/sigorta/pazar-yogunlasma",
+    title: "TSB Prim — Pazar Yoğunlaşması (HHI) ve Top-5 Pay",
+    description:
+      "TSB prim istatistikleri: ana branş bazında HHI (Herfindahl–Hirschman) endeksi, ilk 5 şirket payı ve son 12 ay yoğunlaşma trendi.",
+    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB pazar payı", "HHI sigorta", "pazar yoğunlaşması"]),
+    jsonLdName: "TSB Pazar Yoğunlaşması",
+    breadcrumbLabel: "Pazar yoğunlaşması",
+  },
 } as const satisfies Record<string, TsbSeoPage>;
 
 export type TsbSeoPageId = keyof typeof TSB_SEO;

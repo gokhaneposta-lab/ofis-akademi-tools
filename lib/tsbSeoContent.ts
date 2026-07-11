@@ -213,6 +213,23 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
     ],
     blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
   },
+  pazarYogunlasma: {
+    heading: "TSB pazar yoğunlaşması — HHI ve top-5 pay",
+    paragraphs: [
+      "Her ana branş için seçili ayın aylık prim paylarından HHI (Herfindahl–Hirschman) endeksi hesaplanır. Tek oyunculu pazar 10.000'e yaklaşır; paylar dağıldıkça endeks düşer.",
+      "Top-5 pay ve tam şirket listesi aynı branş/kanal filtresinde gösterilir. 12 aylık HHI trendi yoğunlaşmanın artıp azaldığını izlemek için kullanılır.",
+      "Rekabet analizi, branş stratejisi ve birleşme-düzenleme bağlamında sektör yapısını hızlı okumak için uygundur.",
+    ],
+    faqs: [
+      ...COMMON_FAQS.slice(0, 2),
+      {
+        question: "HHI nasıl yorumlanır?",
+        answer:
+          "2.500 üzeri yüksek, 1.500–2.500 orta, 1.500 altı düşük yoğunlaşma olarak gösterilir. Kesin eşikler sektöre göre değişebilir; panel trend ve top-5 pay ile birlikte okunmalıdır.",
+      },
+    ],
+    blogSlugs: ["tsb-kanal-brans-prim-rehberi"],
+  },
 };
 
 export function tsbSeoContentFor(pageId: TsbSeoPageId | "hub"): TsbSeoContent {

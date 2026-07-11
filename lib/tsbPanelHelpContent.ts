@@ -74,6 +74,14 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
       "Yeşil çizgi odak şirket, kırmızı çizgi sektör toplamıdır.",
     ],
   },
+  {
+    href: "/sigorta/pazar-yogunlasma",
+    items: [
+      "HHI: her şirketin pazar payının karesi toplamı. Yüksek değer = daha az şirketde toplanmış pazar.",
+      "Hesap aylık prim üzerinden yapılır; branş ve kanal filtresi değişince endeks de değişir.",
+      "URL'de şirket seçiliyse tabloda odak şirket vurgulanır.",
+    ],
+  },
 ] as const;
 
 export function tsbPanelHelpForHref(href: string): readonly string[] {

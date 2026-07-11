@@ -35,6 +35,8 @@ import type { TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
 import { listSirketlerSegmentDonem, uniqueSortedPeriods } from "@/lib/tsbPrimDashboard";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
+import TsbHazirSorguChips from "@/components/tsb/TsbHazirSorguChips";
+import { tsbHazirSorgularKarne } from "@/lib/tsbHazirSorgular";
 import {
   parseSirketKarneSekme,
   sirketKarnePanelLinks,
@@ -345,6 +347,16 @@ export default function TsbSirketKarneDashboard() {
     }));
   }, [primPaket, donem]);
 
+  const hazirSorgular = useMemo(() => {
+    if (sirketKodu === "" || !donem) return [];
+    return tsbHazirSorgularKarne({
+      sirketKodu,
+      donem,
+      segment,
+      olcekCache,
+    });
+  }, [sirketKodu, donem, segment, olcekCache]);
+
   if (error) return <TsbError message={error} />;
   if (!primRows) return <TsbLoading message="Prim verisi yükleniyor…" />;
 
@@ -441,6 +453,8 @@ export default function TsbSirketKarneDashboard() {
             finDonem={olcekFinDonem}
             yukleniyor={olcekYukleniyor}
           />
+
+          <TsbHazirSorguChips sorgular={hazirSorgular} />
 
           <nav className={cn(tsb.dataPanel, "p-3 sm:p-4")} aria-label="Şirket karne sekmeleri">
             <div className={cn(tsb.btnGroup, "flex-wrap")}>

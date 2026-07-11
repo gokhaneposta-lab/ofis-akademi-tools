@@ -51,6 +51,7 @@ export type SirketKarnePrimPaket = {
   aylikSatirlar: KarnePrimSatir[];
   ytdSatirlar: KarnePrimSatir[];
   portfoySirasi: KarnePrimSirasi;
+  portfoySirasiOnceki: KarnePrimSirasi;
   payDilimleriBu: BransPayDilim[];
   payDilimleriOnceki: BransPayDilim[];
   kanalSatirlari: KarneKanalSatir[];
@@ -160,6 +161,8 @@ export function buildSirketKarnePrimPaket(
 
   const liste = listPortfoySirasi(rows, donemBu, channel, daraltma, segment);
   const portfoySirasi = portfoyPrimSirasi(liste, sirketKodu);
+  const listeOnceki = listPortfoySirasi(rows, donemOnceki, channel, daraltma, segment);
+  const portfoySirasiOnceki = portfoyPrimSirasi(listeOnceki, sirketKodu);
 
   const siraMap = new Map(
     siraSatirlariForSegment(sira, aylik.tabloHavuzu).map((s) => [s.anaBransH, s]),
@@ -195,6 +198,7 @@ export function buildSirketKarnePrimPaket(
     aylikSatirlar: mapSatirlar(aylik, true),
     ytdSatirlar: mapSatirlar(ytd, false),
     portfoySirasi,
+    portfoySirasiOnceki,
     payDilimleriBu: paySnap.bu,
     payDilimleriOnceki: paySnap.onceki,
     kanalSatirlari: buildKanalSatirlari(rows, donemBu, donemOnceki, segment, daraltma, sirketKodu),

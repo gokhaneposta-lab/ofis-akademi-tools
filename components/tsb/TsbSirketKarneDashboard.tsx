@@ -11,7 +11,12 @@ import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import TsbSirketKarneOzet, {
   type TsbSirketKarneOzetControlled,
 } from "@/components/tsb/TsbSirketKarneOzet";
-import { KarnePrimPerformansGrid } from "@/components/tsb/TsbKarnePerformansKpi";
+import {
+  KarneFinansalPerformansGrid,
+  KarnePazarPerformansGrid,
+  KarnePrimPerformansGrid,
+  KarneTeknikPerformansGrid,
+} from "@/components/tsb/TsbKarnePerformansKpi";
 import {
   cn,
   tsb,
@@ -19,18 +24,14 @@ import {
   TsbFilterBar,
   TsbFilterField,
   TsbFilterGrid,
-  TsbKpiCard,
-  TsbKpiGrid,
   TsbLoading,
   TsbSelect,
   TsbToggleButton,
-  tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
 import {
   finansalKiyaslamaDonemPaketi,
-  finansalKiyaslamaSatirSayisal,
-  formatFinansalHucre,
+  oncekiYilDonem,
 } from "@/lib/tsbFinansalKarsilastirmaData";
 import { olcekFinDonemForPrimDonem } from "@/lib/tsbOlcekSegmentCache";
 import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
@@ -59,21 +60,6 @@ const POOL_FOR_SEGMENT: Record<TsbSektorSegment, SegmentSkorPool> = {
   hayatdisi: "HD",
   hayat: "HAYAT_EMEKLILIK",
 };
-
-const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
-
-type KpiCard = { label: string; value: string; hint?: string; accent?: boolean };
-
-function MerkeziKpiGrid({ items }: { items: KpiCard[] }) {
-  if (items.length === 0) return null;
-  return (
-    <TsbKpiGrid>
-      {items.map((k) => (
-        <TsbKpiCard key={k.label} label={k.label} value={k.value} hint={k.hint} accent={k.accent} />
-      ))}
-    </TsbKpiGrid>
-  );
-}
 
 function PanelLinkGrid({
   links,
@@ -165,11 +151,20 @@ export default function TsbSirketKarneDashboard() {
     [donem, olcekCache],
   );
 
+  const finDonemOnceki = useMemo(
+    () => (finDonem ? oncekiYilDonem(finDonem) : null),
+    [finDonem],
+  );
+
   useEffect(() => {
     if (!finDonem || gelirDonemler.length === 0) return;
+    const yuklenecek = [finDonem];
+    if (finDonemOnceki && gelirDonemler.includes(finDonemOnceki)) {
+      yuklenecek.push(finDonemOnceki);
+    }
     let cancelled = false;
     setGelirRows(null);
-    fetchGelirTidyDonemler([finDonem])
+    fetchGelirTidyDonemler(yuklenecek)
       .then((data) => {
         if (!cancelled) setGelirRows(data);
       })
@@ -177,7 +172,7 @@ export default function TsbSirketKarneDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [finDonem, gelirDonemler]);
+  }, [finDonem, finDonemOnceki, gelirDonemler]);
 
   const sirketler = useMemo(() => {
     if (!primRows || !donem) return [];
@@ -217,6 +212,14 @@ export default function TsbSirketKarneDashboard() {
     return finansalKiyaslamaDonemPaketi(gelirRows, finDonem, sirketKodu, pool, { mod: "sektor" });
   }, [gelirRows, finDonem, sirketKodu, pool]);
 
+  const finPaketOnceki = useMemo(() => {
+    if (!gelirRows || !finDonemOnceki || sirketKodu === "") return null;
+    if (!gelirDonemler.includes(finDonemOnceki)) return null;
+    return finansalKiyaslamaDonemPaketi(gelirRows, finDonemOnceki, sirketKodu, pool, {
+      mod: "sektor",
+    });
+  }, [gelirRows, finDonemOnceki, sirketKodu, pool, gelirDonemler]);
+
   const { kayit: olcekKayit, finDonem: olcekFinDonem, yukleniyor: olcekYukleniyor } =
     useOlcekSegmentKayit(
       primRows && donem && sirketKodu !== ""
@@ -246,72 +249,6 @@ export default function TsbSirketKarneDashboard() {
     segment,
     finDonem,
   };
-
-  const finansalKpis: KpiCard[] = useMemo(() => {
-    if (!finPaket) return [];
-    const row = (id: Parameters<typeof finansalKiyaslamaSatirSayisal>[0]) =>
-      finansalKiyaslamaSatirSayisal(
-        id,
-        finPaket.sirketHam,
-        finPaket.kiyasHam,
-        finPaket.sirketSkorHam,
-        finPaket.kiyasOran,
-        finPaket.kiyasSkorHam,
-        finPaket.sirketHp,
-        finPaket.kiyasHp,
-      ).sirket;
-
-    return [
-      { label: "Brüt prim", value: formatFinansalHucre(row("prim"), "tl"), hint: finDonem ?? undefined },
-      {
-        label: "Safi teknik K/Z",
-        value: formatFinansalHucre(row("safi_teknik"), "tl"),
-      },
-      { label: "Yatırım geliri", value: formatFinansalHucre(row("yatirim"), "tl") },
-      { label: "Net kar", value: formatFinansalHucre(row("net_kar"), "tl") },
-    ];
-  }, [finPaket, finDonem]);
-
-  const teknikKpis: KpiCard[] = useMemo(() => {
-    if (!finPaket) return [];
-    const row = (id: Parameters<typeof finansalKiyaslamaSatirSayisal>[0]) =>
-      finansalKiyaslamaSatirSayisal(
-        id,
-        finPaket.sirketHam,
-        finPaket.kiyasHam,
-        finPaket.sirketSkorHam,
-        finPaket.kiyasOran,
-        finPaket.kiyasSkorHam,
-        finPaket.sirketHp,
-        finPaket.kiyasHp,
-      ).sirket;
-
-    return [
-      { label: "Brüt H/P", value: formatFinansalHucre(row("brut_hp"), "yuzde") },
-      { label: "Net H/P", value: formatFinansalHucre(row("net_hp"), "yuzde") },
-      {
-        label: "Teknik K/Z",
-        value: formatFinansalHucre(row("teknik_kar_zarar"), "tl"),
-      },
-      {
-        label: "Safi teknik / prim",
-        value: formatFinansalHucre(row("oran_safi_prim"), "yuzde"),
-      },
-    ];
-  }, [finPaket]);
-
-  const pazarKpis: KpiCard[] = useMemo(() => {
-    if (!primPaket) return [];
-    const top3 = [...primPaket.payDilimleriBu]
-      .filter((d) => d.sirketPay > 0.3)
-      .sort((a, b) => b.sirketPay - a.sirketPay)
-      .slice(0, 3);
-    return top3.map((d, i) => ({
-      label: `Branş payı #${i + 1}`,
-      value: `${d.etiket} · ${pf.format(d.sirketPay)}%`,
-      hint: `${donem} aylık üretim`,
-    }));
-  }, [primPaket, donem]);
 
   const hazirSorgular = useMemo(() => {
     if (sirketKodu === "" || !donem) return [];
@@ -451,15 +388,25 @@ export default function TsbSirketKarneDashboard() {
           ) : (
             <div className="space-y-3">
               {sekme === "finansal" ? (
-                finPaket ? (
-                  <MerkeziKpiGrid items={finansalKpis} />
+                finPaket && finDonem ? (
+                  <KarneFinansalPerformansGrid
+                    finPaket={finPaket}
+                    finPaketOnceki={finPaketOnceki}
+                    finDonem={finDonem}
+                    finDonemOnceki={finDonemOnceki}
+                  />
                 ) : (
                   <TsbLoading message="Finansal önizleme yükleniyor…" />
                 )
               ) : null}
               {sekme === "teknik" ? (
-                finPaket ? (
-                  <MerkeziKpiGrid items={teknikKpis} />
+                finPaket && finDonem ? (
+                  <KarneTeknikPerformansGrid
+                    finPaket={finPaket}
+                    finPaketOnceki={finPaketOnceki}
+                    finDonem={finDonem}
+                    finDonemOnceki={finDonemOnceki}
+                  />
                 ) : (
                   <TsbLoading message="Teknik önizleme yükleniyor…" />
                 )
@@ -473,11 +420,7 @@ export default function TsbSirketKarneDashboard() {
               ) : null}
               {sekme === "pazar" ? (
                 primPaket ? (
-                  pazarKpis.length > 0 ? (
-                    <MerkeziKpiGrid items={pazarKpis} />
-                  ) : (
-                    <p className={tsb.filterHint}>Seçili ay için branş payı hesaplanamadı.</p>
-                  )
+                  <KarnePazarPerformansGrid primPaket={primPaket} />
                 ) : (
                   <TsbLoading message="Pazar önizleme…" />
                 )

@@ -4,9 +4,18 @@ import { useMemo } from "react";
 import type { SirketKarnePrimPaket } from "@/lib/tsbSirketKarne";
 import { formatPrimYtdAralik } from "@/lib/tsbPrimDonemEtiket";
 import {
+  finansalKiyaslamaDegisim,
+  finansalKiyaslamaSatirSayisal,
+  formatFinansalDegisim,
+  formatFinansalHucre,
+  type FinansalKiyaslamaDonemPaketi,
+  type FinansalKiyaslamaSatirFormat,
+} from "@/lib/tsbFinansalKarsilastirmaData";
+import {
   cn,
   tsb,
   tsbFormatDegisimYuzde,
+  tsbFormatPp,
   tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 
@@ -21,6 +30,16 @@ type KarnePerformansKpi = {
   donutColor: string;
   rows: KpiRow[];
 };
+
+type FinSatirId = Parameters<typeof finansalKiyaslamaSatirSayisal>[0];
+
+export function formatSiraDegisim(onceki: number | null, bu: number | null): string {
+  if (onceki === null || bu === null) return "—";
+  const diff = onceki - bu;
+  if (diff === 0) return "Sabit";
+  if (diff > 0) return `${diff} ↑`;
+  return `${Math.abs(diff)} ↓`;
+}
 
 function KpiDonut({
   pct,
@@ -103,6 +122,96 @@ function KarnePerformansCard({ kpi }: { kpi: KarnePerformansKpi }) {
   );
 }
 
+function KarnePerformansGridSection({
+  eyebrow,
+  kpis,
+}: {
+  eyebrow: string;
+  kpis: KarnePerformansKpi[];
+}) {
+  if (kpis.length === 0) return null;
+  return (
+    <section aria-label={eyebrow}>
+      <p className={tsb.karnePerformansEyebrow}>{eyebrow}</p>
+      <div className={tsb.karnePerformansGrid}>
+        {kpis.map((kpi) => (
+          <KarnePerformansCard key={kpi.title} kpi={kpi} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function finSayisal(paket: FinansalKiyaslamaDonemPaketi, id: FinSatirId): number | null {
+  return finansalKiyaslamaSatirSayisal(
+    id,
+    paket.sirketHam,
+    paket.kiyasHam,
+    paket.sirketSkorHam,
+    paket.kiyasOran,
+    paket.kiyasSkorHam,
+    paket.sirketHp,
+    paket.kiyasHp,
+  ).sirket;
+}
+
+function degisimRenk(deger: number | null): string {
+  if (deger === null || !Number.isFinite(deger)) return "#94a3b8";
+  return deger >= 0 ? "#f97316" : "#ef4444";
+}
+
+function buildFinKpiCard(
+  title: string,
+  id: FinSatirId,
+  format: FinansalKiyaslamaSatirFormat,
+  buPaket: FinansalKiyaslamaDonemPaketi,
+  oncePaket: FinansalKiyaslamaDonemPaketi | null,
+  buDonem: string,
+  onceDonem: string | null,
+): KarnePerformansKpi {
+  const buVal = finSayisal(buPaket, id);
+  const onceVal = oncePaket ? finSayisal(oncePaket, id) : null;
+  const delta = finansalKiyaslamaDegisim(buVal, onceVal, format);
+
+  if (format === "yuzde" || format === "oran") {
+    const donutPct = buVal !== null ? Math.min(buVal * 100, 100) : 0;
+    return {
+      title,
+      donutPct,
+      donutLabel: formatFinansalHucre(buVal, format),
+      donutColor: "#059669",
+      rows: [
+        { label: buDonem, value: formatFinansalHucre(buVal, format), bold: true },
+        {
+          label: onceDonem ?? "Geçen yıl",
+          value: formatFinansalHucre(onceVal, format),
+        },
+        { label: "Değişim", value: formatFinansalDegisim(delta.deger, delta.format) },
+      ],
+    };
+  }
+
+  const donutPct =
+    delta.deger !== null && delta.format === "yuzdeDegisim"
+      ? Math.min(Math.abs(delta.deger * 100), 100)
+      : 0;
+
+  return {
+    title,
+    donutPct,
+    donutLabel: formatFinansalDegisim(delta.deger, delta.format),
+    donutColor: degisimRenk(delta.deger),
+    rows: [
+      { label: buDonem, value: formatFinansalHucre(buVal, format), bold: true },
+      {
+        label: onceDonem ?? "Geçen yıl",
+        value: formatFinansalHucre(onceVal, format),
+      },
+      { label: "Değişim", value: formatFinansalDegisim(delta.deger, delta.format) },
+    ],
+  };
+}
+
 function buildKarnePrimPerformansKpis(
   primPaket: SirketKarnePrimPaket,
   donem: string,
@@ -110,7 +219,6 @@ function buildKarnePrimPerformansKpis(
   const toplamYtd = primPaket.ytd.toplam;
   const topKanal = [...primPaket.kanalSatirlari].sort((a, b) => b.payBuYuzde - a.payBuYuzde)[0];
   const yilBu = donem.slice(0, 4);
-  const yilOnceki = primPaket.donemOnceki.slice(0, 4);
   const ytdEtiketBu = formatPrimYtdAralik(donem);
   const ytdEtiketOnceki = formatPrimYtdAralik(primPaket.donemOnceki);
   const degisim = toplamYtd.sirketDegisim;
@@ -123,11 +231,15 @@ function buildKarnePrimPerformansKpis(
 
   const sira = primPaket.portfoySirasi.sira;
   const katilimci = primPaket.portfoySirasi.katilimci;
+  const siraOnceki = primPaket.portfoySirasiOnceki.sira;
+  const katilimciOnceki = primPaket.portfoySirasiOnceki.katilimci;
   const siraPct =
     sira !== null && katilimci > 0 ? ((katilimci - sira + 1) / katilimci) * 100 : 0;
 
   const kanalPay = topKanal?.payBuYuzde ?? 0;
   const pazarPay = toplamYtd.payBuYuzde;
+  const pazarPayOnceki = toplamYtd.payOncekiYuzde;
+  const payDegisimPp = toplamYtd.payDegisimPp;
   const pazarDonutArc = Math.min((pazarPay / 20) * 100, 100);
 
   return [
@@ -161,17 +273,17 @@ function buildKarnePrimPerformansKpis(
       donutColor: "#059669",
       rows: [
         {
-          label: "Sıra",
+          label: donem,
           value: sira !== null ? `${sira} / ${katilimci}` : "—",
           bold: true,
         },
         {
-          label: "Katılımcı",
-          value: katilimci > 0 ? String(katilimci) : "—",
+          label: primPaket.donemOnceki,
+          value: siraOnceki !== null ? `${siraOnceki} / ${katilimciOnceki}` : "—",
         },
         {
-          label: `${yilBu} YTD prim`,
-          value: tsbFormatPrim(toplamYtd.sirketPrimBu),
+          label: "Değişim",
+          value: formatSiraDegisim(siraOnceki, sira),
         },
       ],
     },
@@ -203,21 +315,95 @@ function buildKarnePrimPerformansKpis(
       donutColor: "#0891b2",
       rows: [
         {
-          label: "Pazar payı",
+          label: ytdEtiketBu,
           value: `%${pf.format(pazarPay)}`,
           bold: true,
         },
         {
-          label: `${yilBu} şirket`,
-          value: tsbFormatPrim(toplamYtd.sirketPrimBu),
+          label: ytdEtiketOnceki,
+          value: `%${pf.format(pazarPayOnceki)}`,
         },
         {
-          label: `${yilBu} sektör`,
-          value: tsbFormatPrim(toplamYtd.sektorPrimBu),
+          label: "Değişim",
+          value: tsbFormatPp(payDegisimPp),
         },
       ],
     },
   ];
+}
+
+function buildFinansalPerformansKpis(
+  finPaket: FinansalKiyaslamaDonemPaketi,
+  finPaketOnceki: FinansalKiyaslamaDonemPaketi | null,
+  finDonem: string,
+  finDonemOnceki: string | null,
+): KarnePerformansKpi[] {
+  const defs: { title: string; id: FinSatirId; format: FinansalKiyaslamaSatirFormat }[] = [
+    { title: "Brüt prim", id: "prim", format: "tl" },
+    { title: "Safi teknik K/Z", id: "safi_teknik", format: "tl" },
+    { title: "Yatırım geliri", id: "yatirim", format: "tl" },
+    { title: "Net kar", id: "net_kar", format: "tl" },
+  ];
+  return defs.map((d) =>
+    buildFinKpiCard(d.title, d.id, d.format, finPaket, finPaketOnceki, finDonem, finDonemOnceki),
+  );
+}
+
+function buildTeknikPerformansKpis(
+  finPaket: FinansalKiyaslamaDonemPaketi,
+  finPaketOnceki: FinansalKiyaslamaDonemPaketi | null,
+  finDonem: string,
+  finDonemOnceki: string | null,
+): KarnePerformansKpi[] {
+  const defs: { title: string; id: FinSatirId; format: FinansalKiyaslamaSatirFormat }[] = [
+    { title: "Brüt H/P", id: "brut_hp", format: "yuzde" },
+    { title: "Net H/P", id: "net_hp", format: "yuzde" },
+    { title: "Teknik K/Z", id: "teknik_kar_zarar", format: "tl" },
+    { title: "Safi teknik / prim", id: "oran_safi_prim", format: "yuzde" },
+  ];
+  return defs.map((d) =>
+    buildFinKpiCard(d.title, d.id, d.format, finPaket, finPaketOnceki, finDonem, finDonemOnceki),
+  );
+}
+
+function buildPazarPerformansKpis(primPaket: SirketKarnePrimPaket): KarnePerformansKpi[] {
+  const onceMap = new Map(primPaket.payDilimleriOnceki.map((d) => [d.etiket, d]));
+  const top3 = [...primPaket.payDilimleriBu]
+    .filter((d) => d.sirketPay > 0.3)
+    .sort((a, b) => b.sirketPay - a.sirketPay)
+    .slice(0, 3);
+
+  return top3.map((d, i) => {
+    const oc = onceMap.get(d.etiket);
+    const payOnceki = oc?.sirketPay ?? null;
+    const ppDegisim =
+      payOnceki !== null && payOnceki !== undefined ? d.sirketPay - payOnceki : null;
+
+    return {
+      title: `Branş payı #${i + 1}`,
+      donutPct: Math.min(d.sirketPay, 100),
+      donutLabel: `%${pf.format(d.sirketPay)}`,
+      donutColor: "#0891b2",
+      rows: [
+        {
+          label: primPaket.donemBu,
+          value: `${d.etiket} · %${pf.format(d.sirketPay)}`,
+          bold: true,
+        },
+        {
+          label: primPaket.donemOnceki,
+          value:
+            payOnceki !== null && payOnceki !== undefined
+              ? `%${pf.format(payOnceki)}`
+              : "—",
+        },
+        {
+          label: "Değişim",
+          value: tsbFormatPp(ppDegisim),
+        },
+      ],
+    };
+  });
 }
 
 export function KarnePrimPerformansGrid({
@@ -228,14 +414,46 @@ export function KarnePrimPerformansGrid({
   donem: string;
 }) {
   const kpis = useMemo(() => buildKarnePrimPerformansKpis(primPaket, donem), [primPaket, donem]);
-  return (
-    <section aria-label="Performans özeti">
-      <p className={tsb.karnePerformansEyebrow}>Performans özeti</p>
-      <div className={tsb.karnePerformansGrid}>
-        {kpis.map((kpi) => (
-          <KarnePerformansCard key={kpi.title} kpi={kpi} />
-        ))}
-      </div>
-    </section>
+  return <KarnePerformansGridSection eyebrow="Performans özeti" kpis={kpis} />;
+}
+
+export function KarneFinansalPerformansGrid({
+  finPaket,
+  finPaketOnceki,
+  finDonem,
+  finDonemOnceki,
+}: {
+  finPaket: FinansalKiyaslamaDonemPaketi;
+  finPaketOnceki: FinansalKiyaslamaDonemPaketi | null;
+  finDonem: string;
+  finDonemOnceki: string | null;
+}) {
+  const kpis = useMemo(
+    () => buildFinansalPerformansKpis(finPaket, finPaketOnceki, finDonem, finDonemOnceki),
+    [finPaket, finPaketOnceki, finDonem, finDonemOnceki],
   );
+  return <KarnePerformansGridSection eyebrow="Finansal özet" kpis={kpis} />;
+}
+
+export function KarneTeknikPerformansGrid({
+  finPaket,
+  finPaketOnceki,
+  finDonem,
+  finDonemOnceki,
+}: {
+  finPaket: FinansalKiyaslamaDonemPaketi;
+  finPaketOnceki: FinansalKiyaslamaDonemPaketi | null;
+  finDonem: string;
+  finDonemOnceki: string | null;
+}) {
+  const kpis = useMemo(
+    () => buildTeknikPerformansKpis(finPaket, finPaketOnceki, finDonem, finDonemOnceki),
+    [finPaket, finPaketOnceki, finDonem, finDonemOnceki],
+  );
+  return <KarnePerformansGridSection eyebrow="Teknik özet" kpis={kpis} />;
+}
+
+export function KarnePazarPerformansGrid({ primPaket }: { primPaket: SirketKarnePrimPaket }) {
+  const kpis = useMemo(() => buildPazarPerformansKpis(primPaket), [primPaket]);
+  return <KarnePerformansGridSection eyebrow="Pazar özeti" kpis={kpis} />;
 }

@@ -31,6 +31,8 @@ import {
   formatFinansalDegisim,
   formatFinansalHucre,
   oncekiYilDonem,
+  type FinansalKiyaslamaDonemPaketi,
+  type FinansalKiyaslamaSatirTanim,
 } from "@/lib/tsbFinansalKarsilastirmaData";
 import { olcekFinDonemForPrimDonem } from "@/lib/tsbOlcekSegmentCache";
 import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
@@ -102,7 +104,7 @@ function KarneSection({
         <h2 className="text-base font-bold text-slate-900 sm:text-lg">{title}</h2>
         {subtitle ? <p className="mt-1 text-sm text-slate-500">{subtitle}</p> : null}
       </div>
-      <div className="p-4 sm:p-5">{children}</div>
+      <div className="min-w-0 p-4 sm:p-5">{children}</div>
     </section>
   );
 }
@@ -128,8 +130,179 @@ function KarneSectionFold({
           <span className="mt-1 shrink-0 text-xs font-semibold text-emerald-700">Göster</span>
         </div>
       </summary>
-      <div className="p-4 sm:p-5">{children}</div>
+      <div className="min-w-0 p-4 sm:p-5">{children}</div>
     </details>
+  );
+}
+
+/** Geniş tablolar — mobilde yatay kaydırma ipucu + taşma düzeltmesi. */
+function KarneTableScroll({ children }: { children: ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <p className="mb-2 text-[11px] font-medium text-slate-400 sm:hidden">
+        Tabloyu yatay kaydırarak tüm sütunları görebilirsiniz →
+      </p>
+      <div className="-mx-4 overflow-x-auto overscroll-x-contain px-4 sm:mx-0 sm:px-0">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+const thMobil = "max-sm:static max-sm:z-auto max-sm:border-r-0 max-sm:bg-slate-50/95";
+const tdMobil =
+  "max-sm:static max-sm:z-auto max-sm:border-r-0 max-sm:bg-transparent max-sm:even:bg-transparent max-sm:group-hover:bg-transparent";
+
+function finansalKarneSatirHesap(
+  tanim: FinansalKiyaslamaSatirTanim,
+  finPaketBu: FinansalKiyaslamaDonemPaketi,
+  finPaketOnceki: FinansalKiyaslamaDonemPaketi | null,
+) {
+  if (tanim.kind === "spacer") return null;
+  const buDeg = finansalKiyaslamaSatirSayisal(
+    tanim.id,
+    finPaketBu.sirketHam,
+    finPaketBu.kiyasHam,
+    finPaketBu.sirketSkorHam,
+    finPaketBu.kiyasOran,
+    finPaketBu.kiyasSkorHam,
+    finPaketBu.sirketHp,
+    finPaketBu.kiyasHp,
+  );
+  const onceDeg = finPaketOnceki
+    ? finansalKiyaslamaSatirSayisal(
+        tanim.id,
+        finPaketOnceki.sirketHam,
+        finPaketOnceki.kiyasHam,
+        finPaketOnceki.sirketSkorHam,
+        finPaketOnceki.kiyasOran,
+        finPaketOnceki.kiyasSkorHam,
+        finPaketOnceki.sirketHp,
+        finPaketOnceki.kiyasHp,
+      )
+    : { sirket: null, kiyas: null };
+  const delta = finPaketOnceki
+    ? finansalKiyaslamaDegisim(buDeg.sirket, onceDeg.sirket, tanim.format)
+    : null;
+  return { tanim, buDeg, onceDeg, delta };
+}
+
+function FinansalKarneTablo({
+  finPaketBu,
+  finPaketOnceki,
+  finDonem,
+  finDonemOnceki,
+}: {
+  finPaketBu: FinansalKiyaslamaDonemPaketi;
+  finPaketOnceki: FinansalKiyaslamaDonemPaketi | null;
+  finDonem: string;
+  finDonemOnceki: string | null;
+}) {
+  return (
+    <>
+      <div className="space-y-2 sm:hidden">
+        {FINANSAL_KIYASLAMA_SATIRLARI.map((tanim) => {
+          if (tanim.kind === "spacer") {
+            return <div key={tanim.id} className="h-1" aria-hidden />;
+          }
+          const satir = finansalKarneSatirHesap(tanim, finPaketBu, finPaketOnceki);
+          if (!satir) return null;
+          const { buDeg, onceDeg, delta } = satir;
+          return (
+            <div
+              key={tanim.id}
+              className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-3 ring-1 ring-slate-900/[0.03]"
+            >
+              <p className="text-[11px] font-bold uppercase leading-snug tracking-wide text-slate-700">
+                {tanim.label}
+              </p>
+              <dl className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-2">
+                {finPaketOnceki && finDonemOnceki ? (
+                  <>
+                    <div>
+                      <dt className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                        {finDonemOnceki}
+                      </dt>
+                      <dd className="mt-0.5 text-sm font-medium tabular-nums text-slate-800">
+                        {formatFinansalHucre(onceDeg.sirket, tanim.format)}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] font-bold uppercase tracking-wide text-slate-400">Δ</dt>
+                      <dd
+                        className={cn(
+                          "mt-0.5 inline-block rounded-md px-1.5 py-0.5 text-sm font-semibold tabular-nums",
+                          tsbDeltaRenk(delta?.deger),
+                        )}
+                      >
+                        {delta ? formatFinansalDegisim(delta.deger, delta.format) : "—"}
+                      </dd>
+                    </div>
+                  </>
+                ) : null}
+                <div className={finPaketOnceki ? "col-span-2 border-t border-slate-200/80 pt-2" : "col-span-2"}>
+                  <dt className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">{finDonem}</dt>
+                  <dd className="mt-0.5 text-base font-bold tabular-nums text-slate-900">
+                    {formatFinansalHucre(buDeg.sirket, tanim.format)}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="hidden sm:block">
+        <KarneTableScroll>
+          <TsbTableShell>
+            <table className={cn(tsb.table, "min-w-[640px]")}>
+            <thead className={tsb.thead}>
+              <tr>
+                <th className={cn(tsb.thSticky, thMobil, "text-left")}>KPI</th>
+                {finPaketOnceki ? (
+                  <th className={cn(tsb.th, "text-right")}>{finDonemOnceki}</th>
+                ) : null}
+                {finPaketOnceki ? <th className={cn(tsb.th, "text-right")}>Δ %</th> : null}
+                <th className={cn(tsb.th, "text-right")}>{finDonem}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {FINANSAL_KIYASLAMA_SATIRLARI.map((tanim) => {
+                if (tanim.kind === "spacer") {
+                  return (
+                    <tr key={tanim.id} className="h-2">
+                      <td colSpan={finPaketOnceki ? 4 : 2} />
+                    </tr>
+                  );
+                }
+                const satir = finansalKarneSatirHesap(tanim, finPaketBu, finPaketOnceki);
+                if (!satir) return null;
+                const { buDeg, onceDeg, delta } = satir;
+                return (
+                  <tr key={tanim.id} className={tsb.tbodyRow}>
+                    <td className={cn(tsb.tdSticky, tdMobil)}>{tanim.label}</td>
+                    {finPaketOnceki ? (
+                      <td className={cn(tsb.td, "text-right tabular-nums")}>
+                        {formatFinansalHucre(onceDeg.sirket, tanim.format)}
+                      </td>
+                    ) : null}
+                    {finPaketOnceki ? (
+                      <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(delta?.deger))}>
+                        {delta ? formatFinansalDegisim(delta.deger, delta.format) : "—"}
+                      </td>
+                    ) : null}
+                    <td className={cn(tsb.td, "text-right tabular-nums font-medium")}>
+                      {formatFinansalHucre(buDeg.sirket, tanim.format)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            </table>
+          </TsbTableShell>
+        </KarneTableScroll>
+      </div>
+    </>
   );
 }
 
@@ -145,11 +318,12 @@ function PrimTablo({
   showSirasi: boolean;
 }) {
   return (
-    <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[720px]")}>
-        <thead className={tsb.thead}>
-          <tr>
-            <th className={cn(tsb.thSticky, "text-left")}>Ana branş</th>
+    <KarneTableScroll>
+      <TsbTableShell>
+        <table className={cn(tsb.table, "min-w-[720px]")}>
+          <thead className={tsb.thead}>
+            <tr>
+              <th className={cn(tsb.thSticky, thMobil, "text-left")}>Ana branş</th>
             <th className={cn(tsb.th, "text-right")}>Prim {donemBu}</th>
             <th className={cn(tsb.th, "text-right")}>Δ vs {donemOnceki}</th>
             <th className={cn(tsb.th, "text-right")}>Pazar payı</th>
@@ -162,7 +336,7 @@ function PrimTablo({
             const toplam = s.anaBransH.includes("TOPLAM") || s.anaBransH.includes("PORTFÖY");
             return (
               <tr key={s.anaBransH} className={cn(tsb.tbodyRow, toplam && "bg-slate-50 font-semibold")}>
-                <td className={cn(tsb.tdSticky, toplam && "bg-slate-50")}>{s.anaBransH}</td>
+                <td className={cn(tsb.tdSticky, tdMobil, toplam && "max-sm:bg-slate-50 bg-slate-50")}>{s.anaBransH}</td>
                 <td className={cn(tsb.td, "text-right tabular-nums")}>{fmtPrim(s.sirketPrimBu)}</td>
                 <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(s.sirketDegisim))}>
                   {fmtPct(s.sirketDegisim)}
@@ -178,8 +352,9 @@ function PrimTablo({
             );
           })}
         </tbody>
-      </table>
-    </TsbTableShell>
+        </table>
+      </TsbTableShell>
+    </KarneTableScroll>
   );
 }
 
@@ -256,11 +431,12 @@ function BransPayBarGrafik({
 
 function KanalTablo({ satirlar, donemBu, donemOnceki }: { satirlar: KarneKanalSatir[]; donemBu: string; donemOnceki: string }) {
   return (
-    <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[680px]")}>
-        <thead className={tsb.thead}>
-          <tr>
-            <th className={cn(tsb.thSticky, "text-left")}>Kanal</th>
+    <KarneTableScroll>
+      <TsbTableShell>
+        <table className={cn(tsb.table, "min-w-[680px]")}>
+          <thead className={tsb.thead}>
+            <tr>
+              <th className={cn(tsb.thSticky, thMobil, "text-left")}>Kanal</th>
             <th className={cn(tsb.th, "text-right")}>YTD prim {donemBu}</th>
             <th className={cn(tsb.th, "text-right")}>Pay (%)</th>
             <th className={cn(tsb.th, "text-right")}>Δ vs {donemOnceki}</th>
@@ -271,7 +447,7 @@ function KanalTablo({ satirlar, donemBu, donemOnceki }: { satirlar: KarneKanalSa
         <tbody>
           {satirlar.map((s) => (
             <tr key={s.key} className={tsb.tbodyRow}>
-              <td className={tsb.tdSticky}>{s.label}</td>
+              <td className={cn(tsb.tdSticky, tdMobil)}>{s.label}</td>
               <td className={cn(tsb.td, "text-right tabular-nums")}>{fmtPrim(s.uretimBu)}</td>
               <td className={cn(tsb.td, "text-right tabular-nums")}>{pf.format(s.payBuYuzde)}%</td>
               <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(s.degisimYuzde))}>
@@ -286,14 +462,16 @@ function KanalTablo({ satirlar, donemBu, donemOnceki }: { satirlar: KarneKanalSa
             </tr>
           ))}
         </tbody>
-      </table>
-    </TsbTableShell>
+        </table>
+      </TsbTableShell>
+    </KarneTableScroll>
   );
 }
 
 function TrendPayTablo({ seri }: { seri: import("@/lib/tsbPrimTrend12").PrimTrendAylikNokta[] }) {
   return (
-    <TsbTableShell>
+    <KarneTableScroll>
+      <TsbTableShell>
       <table className={cn(tsb.table, "min-w-[480px]")}>
         <thead className={tsb.thead}>
           <tr>
@@ -314,7 +492,8 @@ function TrendPayTablo({ seri }: { seri: import("@/lib/tsbPrimTrend12").PrimTren
           ))}
         </tbody>
       </table>
-    </TsbTableShell>
+      </TsbTableShell>
+    </KarneTableScroll>
   );
 }
 
@@ -608,72 +787,12 @@ export default function TsbSirketKarneOzet({
               title="Finansal tablo"
               subtitle={`Çeyrek ${finDonem}${finPaketOnceki ? ` vs ${finDonemOnceki}` : ""}`}
             >
-              <TsbTableShell>
-                <table className={cn(tsb.table, "min-w-[640px]")}>
-                  <thead className={tsb.thead}>
-                    <tr>
-                      <th className={cn(tsb.thSticky, "text-left")}>KPI</th>
-                      {finPaketOnceki ? (
-                        <th className={cn(tsb.th, "text-right")}>{finDonemOnceki}</th>
-                      ) : null}
-                      {finPaketOnceki ? <th className={cn(tsb.th, "text-right")}>Δ %</th> : null}
-                      <th className={cn(tsb.th, "text-right")}>{finDonem}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {FINANSAL_KIYASLAMA_SATIRLARI.map((tanim) => {
-                      if (tanim.kind === "spacer") {
-                        return (
-                          <tr key={tanim.id} className="h-2">
-                            <td colSpan={finPaketOnceki ? 4 : 2} />
-                          </tr>
-                        );
-                      }
-                      const buDeg = finansalKiyaslamaSatirSayisal(
-                        tanim.id,
-                        finPaketBu.sirketHam,
-                        finPaketBu.kiyasHam,
-                        finPaketBu.sirketSkorHam,
-                        finPaketBu.kiyasOran,
-                        finPaketBu.kiyasSkorHam,
-                        finPaketBu.sirketHp,
-                        finPaketBu.kiyasHp,
-                      );
-                      const onceDeg = finPaketOnceki
-                        ? finansalKiyaslamaSatirSayisal(
-                            tanim.id,
-                            finPaketOnceki.sirketHam,
-                            finPaketOnceki.kiyasHam,
-                            finPaketOnceki.sirketSkorHam,
-                            finPaketOnceki.kiyasOran,
-                            finPaketOnceki.kiyasSkorHam,
-                            finPaketOnceki.sirketHp,
-                            finPaketOnceki.kiyasHp,
-                          )
-                        : { sirket: null, kiyas: null };
-                      const delta = finansalKiyaslamaDegisim(buDeg.sirket, onceDeg.sirket, tanim.format);
-                      return (
-                        <tr key={tanim.id} className={tsb.tbodyRow}>
-                          <td className={tsb.tdSticky}>{tanim.label}</td>
-                          {finPaketOnceki ? (
-                            <td className={cn(tsb.td, "text-right tabular-nums")}>
-                              {formatFinansalHucre(onceDeg.sirket, tanim.format)}
-                            </td>
-                          ) : null}
-                          {finPaketOnceki ? (
-                            <td className={cn(tsb.td, "text-right tabular-nums", tsbDeltaRenk(delta.deger))}>
-                              {formatFinansalDegisim(delta.deger, delta.format)}
-                            </td>
-                          ) : null}
-                          <td className={cn(tsb.td, "text-right tabular-nums font-medium")}>
-                            {formatFinansalHucre(buDeg.sirket, tanim.format)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </TsbTableShell>
+              <FinansalKarneTablo
+                finPaketBu={finPaketBu}
+                finPaketOnceki={finPaketOnceki}
+                finDonem={finDonem}
+                finDonemOnceki={finDonemOnceki}
+              />
             </KarneSection>
           ) : finDonem ? (
             <TsbLoading message="Finansal veri yükleniyor…" />

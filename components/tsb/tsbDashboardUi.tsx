@@ -151,7 +151,7 @@ export const tsb = {
 
   caption: "text-sm leading-relaxed text-slate-500",
   dataPanel:
-    "overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm ring-1 ring-slate-900/[0.03]",
+    "rounded-2xl border border-slate-200/70 bg-white shadow-sm ring-1 ring-slate-900/[0.03]",
   dataPanelHeader: "border-b border-slate-100 px-4 py-3.5 sm:px-5 sm:py-4",
   dataPanelTitle: "text-base font-bold text-slate-900 sm:text-lg",
   dataPanelBody: "p-4 sm:p-5",

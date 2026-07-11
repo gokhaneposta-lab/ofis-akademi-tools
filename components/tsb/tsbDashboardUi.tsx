@@ -197,6 +197,16 @@ export const tsb = {
   kpiValueAccent: "text-emerald-800",
   kpiHint: "mt-1.5 pl-2 text-xs leading-snug text-slate-500",
 
+  karnePerformansEyebrow:
+    "mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500",
+  karnePerformansGrid: "grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4",
+  karnePerformansCard:
+    "rounded-xl border border-slate-200/90 bg-white px-3 py-3.5 shadow-sm ring-1 ring-slate-900/[0.03] sm:px-4 sm:py-4",
+  karnePerformansTitle:
+    "border-b border-slate-100 pb-2 text-center text-xs font-bold uppercase tracking-wide text-slate-800 sm:text-[13px]",
+  karnePerformansRowLabel: "text-[11px] text-slate-500 sm:text-xs",
+  karnePerformansRowValue: "text-right text-[11px] font-semibold tabular-nums text-slate-700 sm:text-xs",
+
   tableShell:
     "overflow-x-auto rounded-2xl border border-slate-200/70 bg-white shadow-sm ring-1 ring-slate-900/[0.03]",
   table: "w-full min-w-[640px] border-collapse text-left text-[0.8125rem] text-slate-800 sm:text-sm",

@@ -11,6 +11,7 @@ import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import TsbSirketKarneOzet, {
   type TsbSirketKarneOzetControlled,
 } from "@/components/tsb/TsbSirketKarneOzet";
+import { KarnePrimPerformansGrid } from "@/components/tsb/TsbKarnePerformansKpi";
 import {
   cn,
   tsb,
@@ -298,40 +299,6 @@ export default function TsbSirketKarneDashboard() {
     ];
   }, [finPaket]);
 
-  const primKpis: KpiCard[] = useMemo(() => {
-    if (!primPaket) return [];
-    const toplamYtd = primPaket.ytd.toplam;
-    const topKanal = [...primPaket.kanalSatirlari].sort((a, b) => b.payBuYuzde - a.payBuYuzde)[0];
-    const yilBu = donem.slice(0, 4);
-    const ytdHint = `YTD Ocak–${donem.slice(5)} · ${yilBu}`;
-    return [
-      {
-        label: "Kümül prim",
-        value: tsbFormatPrim(toplamYtd.sirketPrimBu),
-        hint: ytdHint,
-        accent: true,
-      },
-      {
-        label: "Sektör prim sırası",
-        value:
-          primPaket.portfoySirasi.sira !== null
-            ? `${primPaket.portfoySirasi.sira} / ${primPaket.portfoySirasi.katilimci}`
-            : "—",
-        hint: `${ytdHint} · portföy toplamına göre`,
-      },
-      {
-        label: "Önde kanal",
-        value: topKanal ? `${topKanal.label} (${pf.format(topKanal.payBuYuzde)}%)` : "—",
-        hint: `${ytdHint} · kanal payı`,
-      },
-      {
-        label: "Kümül pazar payı",
-        value: `${pf.format(toplamYtd.payBuYuzde)}%`,
-        hint: `Şirket primi / sektör primi · YTD Ocak–${donem.slice(5)}`,
-      },
-    ];
-  }, [primPaket, donem]);
-
   const pazarKpis: KpiCard[] = useMemo(() => {
     if (!primPaket) return [];
     const top3 = [...primPaket.payDilimleriBu]
@@ -475,7 +442,9 @@ export default function TsbSirketKarneDashboard() {
 
           {sekme === "ozet" ? (
             <div className="space-y-5">
-              {primPaket ? <MerkeziKpiGrid items={primKpis} /> : null}
+              {primPaket && donem ? (
+                <KarnePrimPerformansGrid primPaket={primPaket} donem={donem} />
+              ) : null}
               <TsbSirketKarneOzet controlled={karneControlled} hideFilters hideHero />
             </div>
           ) : (
@@ -495,7 +464,11 @@ export default function TsbSirketKarneDashboard() {
                 )
               ) : null}
               {sekme === "prim" ? (
-                primPaket ? <MerkeziKpiGrid items={primKpis} /> : <TsbLoading message="Prim önizleme…" />
+                primPaket && donem ? (
+                  <KarnePrimPerformansGrid primPaket={primPaket} donem={donem} />
+                ) : (
+                  <TsbLoading message="Prim önizleme…" />
+                )
               ) : null}
               {sekme === "pazar" ? (
                 primPaket ? (

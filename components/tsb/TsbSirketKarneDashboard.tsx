@@ -301,13 +301,14 @@ export default function TsbSirketKarneDashboard() {
   const primKpis: KpiCard[] = useMemo(() => {
     if (!primPaket) return [];
     const toplamYtd = primPaket.ytd.toplam;
-    const topKanal = [...primPaket.kanalSatirlari].sort((a, b) => b.uretimBu - a.uretimBu)[0];
+    const topKanal = [...primPaket.kanalSatirlari].sort((a, b) => b.payBuYuzde - a.payBuYuzde)[0];
     const yilBu = donem.slice(0, 4);
+    const ytdHint = `YTD Ocak–${donem.slice(5)} · ${yilBu}`;
     return [
       {
         label: "Kümül prim",
         value: tsbFormatPrim(toplamYtd.sirketPrimBu),
-        hint: `YTD Ocak–${donem.slice(5)} · ${yilBu}`,
+        hint: ytdHint,
         accent: true,
       },
       {
@@ -316,10 +317,12 @@ export default function TsbSirketKarneDashboard() {
           primPaket.portfoySirasi.sira !== null
             ? `${primPaket.portfoySirasi.sira} / ${primPaket.portfoySirasi.katilimci}`
             : "—",
+        hint: `${ytdHint} · portföy toplamına göre`,
       },
       {
         label: "Önde kanal",
         value: topKanal ? `${topKanal.label} (${pf.format(topKanal.payBuYuzde)}%)` : "—",
+        hint: `${ytdHint} · kanal payı`,
       },
       {
         label: "Kümül pazar payı",

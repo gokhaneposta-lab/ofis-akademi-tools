@@ -18,6 +18,7 @@ import {
   TsbTableShell,
   TsbToggleButton,
   tsbSiraDeltaRenk,
+  tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 import type { BransSiraSatir } from "@/lib/tsbBransSira";
 import { buildBransSiraTablosu, listSirketlerSiraOzeti } from "@/lib/tsbBransSira";
@@ -74,7 +75,7 @@ function Satir({
   return (
     <tr className={cn(tsb.tbodyRow, rowCls)}>
       <td className={cn(tsb.tdSticky, "whitespace-nowrap text-xs", stickyBg)}>{satir.anaBransH}</td>
-      <td className={cn(tsb.td, "text-right")}>{nf.format(satir.prim)}</td>
+      <td className={cn(tsb.td, "text-right")}>{tsbFormatPrim(satir.prim)}</td>
       <td className={cn(tsb.td, "text-right text-slate-600")}>{agirlikHucre(satir.sirketAgirlikBuYuzde)}</td>
       <td className={cn(tsb.td, "text-right text-slate-600")}>{agirlikHucre(satir.sektorAgirlikBuYuzde)}</td>
       <td className={cn(tsb.td, "text-center font-medium")}>{siraBuStr}</td>

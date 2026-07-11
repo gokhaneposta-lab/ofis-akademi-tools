@@ -18,10 +18,13 @@ import {
   TsbFilterBar,
   TsbFilterField,
   TsbFilterGrid,
+  TsbKpiCard,
+  TsbKpiGrid,
   TsbLoading,
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
+  tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 
 const KANALLAR: { value: TsbKanalField; label: string }[] = [
@@ -33,7 +36,6 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
   { value: "merkez", label: "Merkez" },
 ];
 
-const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1, minimumFractionDigits: 0 });
 const hhiFmt = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 
@@ -186,30 +188,20 @@ export default function TsbPazarYogunlasmaDashboard() {
         <p className={tsb.filterHint}>Seçili filtreler için pazar yoğunlaşması hesaplanamadı.</p>
       ) : (
         <>
-          <div className={tsb.kpiGrid}>
-            <div className={tsb.kpiCard}>
-              <p className={tsb.kpiLabel}>HHI</p>
-              <p className={tsb.kpiValue}>{hhiFmt.format(paket.hhi)}</p>
-              <p className={tsb.kpiHint}>{yorumDetay?.etiket}</p>
-            </div>
-            <div className={tsb.kpiCard}>
-              <p className={tsb.kpiLabel}>Katılımcı şirket</p>
-              <p className={tsb.kpiValue}>{paket.katilimci}</p>
-              <p className={tsb.kpiHint}>{secilenDonem} aylık üretim</p>
-            </div>
-            <div className={tsb.kpiCard}>
-              <p className={tsb.kpiLabel}>Sektör primi</p>
-              <p className={tsb.kpiValue}>{nf.format(paket.sektorPrim)} TL</p>
-              <p className={tsb.kpiHint}>{anaBransH}</p>
-            </div>
-            <div className={tsb.kpiCard}>
-              <p className={tsb.kpiLabel}>Top-5 pay</p>
-              <p className={tsb.kpiValue}>
-                {pf.format(paket.top5.reduce((s, x) => s + x.payYuzde, 0))}%
-              </p>
-              <p className={tsb.kpiHint}>İlk 5 şirketin toplam payı</p>
-            </div>
-          </div>
+          <TsbKpiGrid>
+            <TsbKpiCard label="HHI" value={hhiFmt.format(paket.hhi)} hint={yorumDetay?.etiket} accent />
+            <TsbKpiCard label="Katılımcı şirket" value={paket.katilimci} hint={`${secilenDonem} aylık üretim`} />
+            <TsbKpiCard
+              label="Sektör primi"
+              value={tsbFormatPrim(paket.sektorPrim)}
+              hint={anaBransH}
+            />
+            <TsbKpiCard
+              label="Top-5 pay"
+              value={`${pf.format(paket.top5.reduce((s, x) => s + x.payYuzde, 0))}%`}
+              hint="İlk 5 şirketin toplam payı"
+            />
+          </TsbKpiGrid>
 
           {yorumDetay ? (
             <p className="rounded-lg border border-slate-200/80 bg-slate-50/80 px-3 py-2.5 text-sm text-slate-700">
@@ -249,7 +241,7 @@ export default function TsbPazarYogunlasmaDashboard() {
                           </span>
                         ) : null}
                       </td>
-                      <td className={cn(tsb.td, "text-right tabular-nums")}>{nf.format(s.prim)}</td>
+                      <td className={cn(tsb.td, "text-right tabular-nums")}>{tsbFormatPrim(s.prim)}</td>
                       <td className={cn(tsb.td, "text-right tabular-nums")}>{pf.format(s.payYuzde)}%</td>
                     </tr>
                   );

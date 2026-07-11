@@ -43,6 +43,7 @@ import {
   TsbToggleButton,
   tsbDeltaRenk,
   tsbFormatPp,
+  tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 
 const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
@@ -375,11 +376,11 @@ export default function TsbKanalDagilimDashboard() {
         <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-t border-slate-100 pt-3 text-[11px] text-slate-600">
           <span>
             Şirket toplam prim:{" "}
-            <strong className="tabular-nums text-slate-900">{nf.format(kiyas.sirket.genelToplam)}</strong> ₺
+            <strong className="tabular-nums text-slate-900">{tsbFormatPrim(kiyas.sirket.genelToplam)}</strong>
           </span>
           <span>
             Sektör toplam prim:{" "}
-            <strong className="tabular-nums text-slate-900">{nf.format(kiyas.sektor.genelToplam)}</strong> ₺
+            <strong className="tabular-nums text-slate-900">{tsbFormatPrim(kiyas.sektor.genelToplam)}</strong>
           </span>
         </div>
       </div>
@@ -406,9 +407,9 @@ export default function TsbKanalDagilimDashboard() {
               return (
                 <tr key={key} className={tsb.tbodyRow}>
                   <td className={cn(tsb.td, "font-medium")}>{label}</td>
-                  <td className={cn(tsb.td, "text-right")}>{nf.format(kiyas.sirket[key])}</td>
+                  <td className={cn(tsb.td, "text-right")}>{tsbFormatPrim(kiyas.sirket[key])}</td>
                   <td className={cn(tsb.td, "text-right text-slate-600")}>{pf.format(ps)}%</td>
-                  <td className={cn(tsb.td, "text-right text-slate-600")}>{nf.format(kiyas.sektor[key])}</td>
+                  <td className={cn(tsb.td, "text-right text-slate-600")}>{tsbFormatPrim(kiyas.sektor[key])}</td>
                   <td className={cn(tsb.td, "text-right text-slate-500")}>{pf.format(pk)}%</td>
                   <td className={cn(tsb.td, "text-right font-medium text-emerald-900")}>
                     {kp !== null ? `${pf.format(kp)}%` : "—"}
@@ -419,9 +420,9 @@ export default function TsbKanalDagilimDashboard() {
             })}
             <tr className={cn(tsb.tbodyRow, "border-t-2 border-slate-200 bg-slate-50/80 font-semibold")}>
               <td className={tsb.td}>Genel toplam</td>
-              <td className={cn(tsb.td, "text-right")}>{nf.format(kiyas.sirket.genelToplam)}</td>
+              <td className={cn(tsb.td, "text-right")}>{tsbFormatPrim(kiyas.sirket.genelToplam)}</td>
               <td className={cn(tsb.td, "text-right")}>100,00%</td>
-              <td className={cn(tsb.td, "text-right")}>{nf.format(kiyas.sektor.genelToplam)}</td>
+              <td className={cn(tsb.td, "text-right")}>{tsbFormatPrim(kiyas.sektor.genelToplam)}</td>
               <td className={cn(tsb.td, "text-right")}>100,00%</td>
               <td className={cn(tsb.td, "text-right text-emerald-900")}>
                 {genelKanalPayi !== null ? `${pf.format(genelKanalPayi)}%` : "—"}

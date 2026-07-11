@@ -26,6 +26,7 @@ import {
   tsbDeltaRenk,
   tsbFormatDegisimYuzde,
   tsbFormatPp,
+  tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 import type { BransDegisimKiyasHedef, BransDegisimSatir } from "@/lib/tsbBransDegisim";
 import { buildBransDegisimTablosu } from "@/lib/tsbBransDegisim";
@@ -73,13 +74,13 @@ function SatirHucresi({
       <td className={cn(tsb.tdSticky, "whitespace-nowrap text-xs", araToplam && "bg-slate-100/90")}>
         {satir.anaBransH}
       </td>
-      <td className={cn(tsb.td, "text-right")}>{nf.format(satir.sirketPrimOnceki)}</td>
-      <td className={cn(tsb.td, "text-right")}>{nf.format(satir.sirketPrimBu)}</td>
+      <td className={cn(tsb.td, "text-right")}>{tsbFormatPrim(satir.sirketPrimOnceki)}</td>
+      <td className={cn(tsb.td, "text-right")}>{tsbFormatPrim(satir.sirketPrimBu)}</td>
       <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.sirketDegisim))}>
         {tsbFormatDegisimYuzde(satir.sirketDegisim)}
       </td>
-      <td className={cn(tsb.td, "text-right text-slate-600")}>{nf.format(satir.sektorPrimOnceki)}</td>
-      <td className={cn(tsb.td, "text-right text-slate-600")}>{nf.format(satir.sektorPrimBu)}</td>
+      <td className={cn(tsb.td, "text-right text-slate-600")}>{tsbFormatPrim(satir.sektorPrimOnceki)}</td>
+      <td className={cn(tsb.td, "text-right text-slate-600")}>{tsbFormatPrim(satir.sektorPrimBu)}</td>
       <td className={cn(tsb.td, "text-right", tsbDeltaRenk(satir.sektorDegisim))}>
         {tsbFormatDegisimYuzde(satir.sektorDegisim)}
       </td>

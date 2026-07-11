@@ -31,8 +31,7 @@ export default function TsbRelatedDashboards({ currentHref }: Props) {
         ? "Diğer aylık prim panelleri ve çeyreklik finansal karşılaştırma."
         : "TSB gösterge panelleri arasında gezinmek için aşağıdaki bağlantıları kullanın.";
 
-  const pillCls =
-    "rounded-md border border-slate-200/80 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50/40 hover:text-emerald-900";
+  const pillCls = tsb.pillLink;
 
   return (
     <section className="mt-10 border-t border-slate-200/90 pt-8" aria-labelledby="tsb-related-dashboards-heading">

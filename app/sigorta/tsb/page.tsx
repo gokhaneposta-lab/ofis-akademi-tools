@@ -62,21 +62,17 @@ export default async function SigortaTsbHubPage() {
             <div className="mt-4">
               <Link
                 href="/sigorta/sirket-karne"
-                className={`group block ${tsb.dataPanel} border-emerald-200/80 bg-gradient-to-r from-emerald-50/80 to-teal-50/60 p-4 transition hover:border-emerald-300 hover:shadow-[0_2px_12px_rgba(15,23,42,0.08)]`}
+                className={tsb.hubFeaturedCard}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <span className="inline-block rounded-md bg-emerald-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                      Öne çıkan
-                    </span>
-                    <h2 className="mt-2 text-base font-bold text-slate-900 group-hover:text-emerald-900">
-                      Şirket karne
-                    </h2>
-                    <p className="mt-1 max-w-xl text-sm text-slate-600">
+                    <span className={tsb.hubPanelBadge}>Öne çıkan</span>
+                    <h2 className="mt-2 text-lg font-bold text-slate-900 sm:text-xl">Şirket karne</h2>
+                    <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-slate-600">
                       Tek şirket seçin — özet karne, sekmeler ve finansal/teknik/prim panellerine tek tıkla geçin.
                     </p>
                   </div>
-                  <span className="shrink-0 text-sm font-semibold text-emerald-800 group-hover:underline">
+                  <span className="shrink-0 text-sm font-bold text-emerald-800 group-hover:underline">
                     Karneye git →
                   </span>
                 </div>
@@ -98,34 +94,24 @@ export default async function SigortaTsbHubPage() {
             const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === group.id);
             return (
               <section key={group.id} aria-labelledby={`tsb-group-${group.id}`}>
-                <h2 id={`tsb-group-${group.id}`} className="text-base font-semibold text-slate-900">
+                <h2 id={`tsb-group-${group.id}`} className="text-lg font-bold text-slate-900 sm:text-xl">
                   {group.title}
                 </h2>
-                <p className="mt-0.5 max-w-2xl text-sm text-slate-600">{group.description}</p>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-600">{group.description}</p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {panels.map((p) => (
-                    <Link
-                      key={p.href}
-                      href={p.href}
-                      className={`group ${tsb.dataPanel} p-3 transition hover:border-emerald-300/80 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]`}
-                    >
-                      <div className="flex items-start gap-2.5">
-                        <span className="text-lg" aria-hidden>
+                    <Link key={p.href} href={p.href} className={tsb.hubPanelCard}>
+                      <div className="flex items-start gap-3">
+                        <span className="text-xl" aria-hidden>
                           {p.icon}
                         </span>
                         <div className="min-w-0 flex-1">
-                          <span className="inline-block rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
-                            {p.badge}
-                          </span>
-                          <h3 className="mt-1 text-sm font-semibold text-slate-900 group-hover:text-emerald-800">
-                            {p.title}
-                          </h3>
-                          <p className="mt-0.5 text-xs text-slate-600">{p.subtitle}</p>
+                          <span className={tsb.hubPanelBadge}>{p.badge}</span>
+                          <h3 className={tsb.hubPanelTitle}>{p.title}</h3>
+                          <p className={tsb.hubPanelSubtitle}>{p.subtitle}</p>
                         </div>
                       </div>
-                      <p className="mt-2 text-right text-[11px] font-semibold text-emerald-800 group-hover:underline">
-                        Panele git →
-                      </p>
+                      <p className={tsb.hubPanelCta}>Panele git →</p>
                     </Link>
                   ))}
                 </div>

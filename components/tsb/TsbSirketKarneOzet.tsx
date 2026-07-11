@@ -19,6 +19,7 @@ import {
   TsbTableShell,
   TsbToggleButton,
   tsbDeltaRenk,
+  tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 import type { BransPayDilim } from "@/lib/tsbBransDegisim";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
@@ -44,7 +45,6 @@ import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
 import TsbPrimTrendAylikBarChart from "@/components/tsb/TsbPrimTrendAylikBarChart";
 
-const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
 const SEGMENT_LABEL: Record<TsbSektorSegment, string> = {
@@ -74,7 +74,7 @@ export type TsbSirketKarneOzetProps = {
 };
 
 function fmtPrim(v: number): string {
-  return `${nf.format(v)} TL`;
+  return tsbFormatPrim(v);
 }
 
 function fmtPct(v: number | null): string {
@@ -98,8 +98,8 @@ function KarneSection({
 }) {
   return (
     <section className={tsb.dataPanel}>
-      <div className="border-b border-slate-100 px-4 py-3 sm:px-5">
-        <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+      <div className="border-b border-slate-100 px-4 py-3.5 sm:px-5 sm:py-4">
+        <h2 className="text-base font-bold text-slate-900 sm:text-lg">{title}</h2>
         {subtitle ? <p className="mt-1 text-sm text-slate-500">{subtitle}</p> : null}
       </div>
       <div className="p-4 sm:p-5">{children}</div>
@@ -539,17 +539,17 @@ export default function TsbSirketKarneOzet({
       {secilenAd && primPaket ? (
         <>
           {!hideHero ? (
-          <div className={cn(tsb.dataPanel, "overflow-hidden border-teal-200 bg-gradient-to-br from-teal-900 to-teal-800 p-4 text-white")}>
+          <div className={tsb.heroCard}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-teal-200/90">Şirket karne</p>
-                <h2 className="mt-1 text-lg font-bold">{secilenAd}</h2>
-                <p className="mt-1 text-xs text-teal-100/90">
+                <p className={tsb.heroEyebrow}>Şirket karne</p>
+                <h2 className={tsb.heroTitle}>{secilenAd}</h2>
+                <p className={tsb.heroMeta}>
                   {SEGMENT_LABEL[segment]} · Prim {donem} vs {primPaket.donemOnceki}
                   {finDonem ? ` · Fin ${finDonem}` : ""}
                 </p>
                 {primPaket.portfoySirasi.sira !== null ? (
-                  <p className="mt-2 inline-block rounded-md bg-white/15 px-2 py-1 text-xs font-semibold">
+                  <p className={tsb.heroBadge}>
                     Sektör prim sırası: {primPaket.portfoySirasi.sira} / {primPaket.portfoySirasi.katilimci}
                   </p>
                 ) : null}

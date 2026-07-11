@@ -31,6 +31,7 @@ import {
   TsbToggleButton,
   tsbDeltaRenk,
   tsbFormatDegisimYuzde,
+  tsbFormatPrim,
   tsbSiraIyilestirmeRenk,
 } from "@/components/tsb/tsbDashboardUi";
 
@@ -43,7 +44,6 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
   { value: "merkez", label: "Merkez" },
 ];
 
-const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
 export default function TsbKanalPrimDashboard() {
@@ -315,11 +315,11 @@ export default function TsbKanalPrimDashboard() {
                         {s.sirketAdi}
                       </div>
                     </td>
-                    <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{nf.format(s.primOnceki)}</td>
+                    <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{tsbFormatPrim(s.primOnceki)}</td>
                     <td className={cn(tsb.td, "text-right text-slate-600 whitespace-nowrap")}>
                       {pf.format(s.payOncekiYuzde)}
                     </td>
-                    <td className={cn(tsb.td, "text-right font-medium whitespace-nowrap")}>{nf.format(s.primBu)}</td>
+                    <td className={cn(tsb.td, "text-right font-medium whitespace-nowrap")}>{tsbFormatPrim(s.primBu)}</td>
                     <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{pf.format(s.payBuYuzde)}</td>
                     <td className={cn(tsb.td, "text-right font-medium whitespace-nowrap", tsbDeltaRenk(s.degisimYuzde))}>
                       {tsbFormatDegisimYuzde(s.degisimYuzde)}
@@ -333,9 +333,9 @@ export default function TsbKanalPrimDashboard() {
                   <td className={cn(tsb.td, "text-center text-slate-500")}>—</td>
                   <td className={cn(tsb.td, "text-center text-slate-500")}>—</td>
                   <td className={tsb.td}>TOPLAM</td>
-                  <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{nf.format(tablo.sektorToplamOnceki)}</td>
+                  <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{tsbFormatPrim(tablo.sektorToplamOnceki)}</td>
                   <td className={cn(tsb.td, "text-right text-emerald-900 whitespace-nowrap")}>{pf.format(100)}</td>
-                  <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{nf.format(tablo.sektorToplamBu)}</td>
+                  <td className={cn(tsb.td, "text-right whitespace-nowrap")}>{tsbFormatPrim(tablo.sektorToplamBu)}</td>
                   <td className={cn(tsb.td, "text-right text-emerald-900 whitespace-nowrap")}>{pf.format(100)}</td>
                   <td className={cn(tsb.td, "text-right whitespace-nowrap", tsbDeltaRenk(toplamDegisim))}>
                     {tsbFormatDegisimYuzde(toplamDegisim)}

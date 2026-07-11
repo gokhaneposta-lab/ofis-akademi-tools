@@ -6,41 +6,47 @@ import {
   tsbDashboardPanelByHref,
   type TsbDashboardGroupId,
 } from "@/lib/tsbDashboardPanels";
+import { tsbFormatPrim, tsbFormatPrimMn, tsbFormatPrimMnShort } from "@/lib/tsbFormatNumbers";
 
-/** TSB dashboard — profesyonel finansal analiz platformu görünümü (paylaşılan token'lar). */
+export { tsbFormatPrim, tsbFormatPrimMn, tsbFormatPrimMnShort };
+
+/** TSB dashboard — okunaklı, sade, mobil uyumlu analiz arayüzü. */
 export const tsb = {
-  pageBg: "min-h-screen bg-[#f4f6f9]",
-  pageHeader: "border-b border-slate-200/90 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04)]",
-  pageHeaderInner: "mx-auto max-w-[88rem] px-4 py-3.5 sm:px-6 lg:px-8",
+  pageBg:
+    "min-h-screen bg-[#e8edf3] bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(16,185,129,0.08),transparent)]",
+  pageHeader:
+    "border-b border-slate-200/80 bg-white/95 shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-sm",
+  pageHeaderInner: "mx-auto max-w-[88rem] px-4 py-4 sm:px-6 sm:py-5 lg:px-8",
   backLink:
-    "mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 transition hover:text-emerald-800",
-  pageTitle: "text-2xl font-semibold tracking-tight text-slate-900 sm:text-[1.65rem]",
+    "mb-2 inline-flex min-h-[2rem] items-center gap-1.5 text-xs font-semibold text-slate-600 transition hover:text-emerald-800 sm:text-sm",
+  pageTitle: "text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[1.85rem]",
   pageBadge:
-    "rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white",
-  pageLead: "mt-1.5 max-w-3xl text-sm leading-snug text-slate-600",
+    "rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300",
+  pageLead: "mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-[0.9375rem]",
   sourceNote:
-    "mt-2 max-w-3xl rounded-md border border-slate-200/70 bg-slate-50/90 px-2.5 py-1.5 text-[11px] leading-relaxed text-slate-600",
-  main: "mx-auto max-w-[88rem] space-y-6 px-4 py-6 sm:px-6 lg:px-8",
-  dashboardStack: "space-y-5",
+    "mt-2 max-w-3xl rounded-xl border border-slate-200/70 bg-slate-50/90 px-3 py-2 text-xs leading-relaxed text-slate-600 sm:text-[13px]",
+  main: "mx-auto max-w-[88rem] space-y-6 px-4 py-5 sm:space-y-7 sm:px-6 sm:py-7 lg:px-8",
+  dashboardStack: "space-y-5 sm:space-y-6",
 
   stickyNavWrap:
-    "sticky top-0 z-30 -mx-4 mb-1 border-b border-slate-200/90 bg-white/98 px-3 py-2 shadow-[0_1px_3px_rgba(15,23,42,0.06)] backdrop-blur-md sm:-mx-6 sm:px-5 lg:-mx-8 lg:px-7",
-  stickyNavInner: "flex flex-col gap-1.5",
+    "sticky top-0 z-30 -mx-4 mb-1 border-b border-slate-200/80 bg-white/95 px-3 py-2.5 shadow-[0_1px_4px_rgba(15,23,42,0.05)] backdrop-blur-md sm:-mx-6 sm:px-5 lg:-mx-8 lg:px-7",
+  stickyNavInner: "flex flex-col gap-2",
   stickyNavTopRow: "flex flex-wrap items-center justify-between gap-2",
-  stickyNavGroupLabel: "text-[10px] font-semibold uppercase tracking-wider text-slate-500",
-  stickyNavLinks: "flex flex-wrap gap-0.5",
+  stickyNavGroupLabel: "text-[10px] font-bold uppercase tracking-widest text-slate-400",
+  stickyNavLinks: "flex flex-wrap gap-1",
   stickyNavLink:
-    "rounded-lg border border-transparent px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900",
-  stickyNavLinkActive: "border-slate-400 bg-slate-100 font-semibold text-slate-900 shadow-sm",
+    "rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900 sm:px-2.5 sm:py-1.5",
+  stickyNavLinkActive:
+    "border-slate-300 bg-slate-900 font-bold text-white shadow-sm hover:bg-slate-900 hover:text-white",
   stickyNavHubBtn:
-    "inline-flex shrink-0 items-center gap-1 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-800 shadow-sm transition hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-900",
+    "inline-flex min-h-[2.25rem] shrink-0 items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-900",
   stickyNavAllLabel: "text-[10px] font-medium text-slate-500",
 
   filterBar:
-    "rounded-xl border border-slate-200/80 bg-white px-3 py-3 shadow-[0_1px_3px_rgba(15,23,42,0.05)]",
-  filterSectionLabel: "mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500",
-  filterHint: "mt-2 text-sm leading-snug text-slate-600",
-  filterGrid: "grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+    "rounded-2xl border border-slate-200/70 bg-white/95 px-4 py-4 shadow-sm ring-1 ring-slate-900/[0.03] backdrop-blur-sm sm:px-5",
+  filterSectionLabel: "mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400",
+  filterHint: "mt-2 text-sm leading-relaxed text-slate-600",
+  filterGrid: "grid gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
 
   panelHelp:
     "group rounded-lg border border-slate-200/90 bg-white text-sm shadow-[0_1px_2px_rgba(15,23,42,0.04)] open:border-emerald-200/80 open:shadow-[0_2px_8px_rgba(15,23,42,0.06)] [&_summary::-webkit-details-marker]:hidden",
@@ -129,61 +135,92 @@ export const tsb = {
   olcekSegmentMetodolojiPanel:
     "mt-2 rounded-lg border border-slate-200/80 bg-slate-50/60 px-3 py-2 text-[11px] leading-relaxed text-slate-600",
   filterField: "block min-w-0",
-  filterLabel: "mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500",
-  filterMicroHint: "mt-1 text-xs leading-snug text-slate-500",
+  filterLabel: "mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-slate-500",
+  filterMicroHint: "mt-1.5 text-xs leading-snug text-slate-500",
   select:
-    "h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100",
+    "h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-base text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 sm:h-10 sm:px-2.5 sm:text-sm",
   selectWide:
-    "h-9 w-full max-w-xl rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100",
-  btnGroup: "flex flex-wrap gap-1.5",
+    "h-11 w-full max-w-xl rounded-xl border border-slate-200 bg-white px-3 text-base text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 sm:h-10 sm:px-2.5 sm:text-sm",
+  btnGroup: "flex flex-wrap gap-2",
   btnToggle:
-    "rounded-lg border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-100",
-  btnToggleOn: "border-slate-800 bg-slate-800 text-white shadow-sm",
-  btnToggleOff: "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-  btnSegmentOn: "border-emerald-800 bg-emerald-800 text-white shadow-sm",
-  btnTabOn: "border-emerald-700 bg-emerald-700 text-white shadow-sm",
+    "min-h-[2.75rem] rounded-xl border px-3.5 py-2 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-emerald-100 sm:min-h-0 sm:px-3 sm:py-1.5",
+  btnToggleOn: "border-slate-900 bg-slate-900 text-white shadow-md",
+  btnToggleOff: "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+  btnSegmentOn: "border-emerald-700 bg-emerald-700 text-white shadow-md",
+  btnTabOn: "border-emerald-800 bg-emerald-800 text-white shadow-md",
 
   caption: "text-sm leading-relaxed text-slate-500",
   dataPanel:
-    "overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.05)]",
-  dataPanelHeader: "border-b border-slate-100 px-4 py-3 sm:px-5",
-  dataPanelTitle: "text-base font-semibold text-slate-900",
+    "overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm ring-1 ring-slate-900/[0.03]",
+  dataPanelHeader: "border-b border-slate-100 px-4 py-3.5 sm:px-5 sm:py-4",
+  dataPanelTitle: "text-base font-bold text-slate-900 sm:text-lg",
   dataPanelBody: "p-4 sm:p-5",
   chartPanel:
-    "overflow-x-auto rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_4px_rgba(15,23,42,0.05)] sm:p-5",
+    "overflow-x-auto rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5",
 
-  kpiGrid: "grid gap-3 sm:grid-cols-2 lg:grid-cols-4",
-  kpiCard: "rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_4px_rgba(15,23,42,0.05)]",
-  kpiLabel: "text-xs font-semibold uppercase tracking-wide text-slate-500",
-  kpiValue: "mt-1.5 text-xl font-bold tabular-nums tracking-tight text-slate-900 sm:text-2xl",
-  kpiHint: "mt-1 text-xs text-slate-500",
+  heroCard:
+    "overflow-hidden rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-white via-emerald-50/40 to-slate-50 p-4 shadow-sm ring-1 ring-emerald-900/[0.04] sm:p-5",
+  heroEyebrow: "text-[11px] font-bold uppercase tracking-widest text-emerald-700",
+  heroTitle: "mt-1 text-xl font-bold leading-tight text-slate-900 sm:text-2xl",
+  heroMeta: "mt-1.5 text-sm text-slate-600",
+  heroBadge:
+    "mt-3 inline-flex rounded-lg bg-emerald-700 px-2.5 py-1 text-xs font-bold tabular-nums text-white",
+
+  hubFeaturedCard:
+    "group block rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/50 p-4 shadow-sm ring-1 ring-emerald-900/[0.05] transition hover:border-emerald-300 hover:shadow-md sm:p-5",
+  hubPanelCard:
+    "group rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-emerald-300/80 hover:shadow-md sm:p-4",
+  hubPanelBadge:
+    "inline-block rounded-md bg-emerald-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white",
+  hubPanelTitle: "mt-2 text-sm font-bold text-slate-900 group-hover:text-emerald-900 sm:text-base",
+  hubPanelSubtitle: "mt-1 text-xs leading-relaxed text-slate-600 sm:text-sm",
+  hubPanelCta: "mt-3 text-right text-xs font-bold text-emerald-800 group-hover:underline sm:text-sm",
+
+  chipWrap: "rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5",
+  chipTitle: "text-sm font-bold text-slate-900 sm:text-base",
+  chipSubtitle: "mt-1 text-xs text-slate-600 sm:text-sm",
+  chipLink:
+    "inline-flex min-h-[2.5rem] items-center rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-900 sm:min-h-0 sm:py-1.5 sm:text-sm",
+  pillLink:
+    "inline-flex min-h-[2.25rem] items-center rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-900",
+
+  kpiGrid: "grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4 sm:gap-4",
+  kpiCard:
+    "relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r before:bg-emerald-500 before:content-[''] sm:p-5",
+  kpiCardAccent:
+    "border-emerald-200/80 bg-gradient-to-br from-emerald-50/50 to-white ring-emerald-900/[0.06] before:bg-emerald-600",
+  kpiLabel: "pl-2 text-[11px] font-bold uppercase tracking-widest text-slate-400",
+  kpiValue:
+    "mt-2 pl-2 text-2xl font-bold tabular-nums tracking-tight text-slate-900 sm:text-[1.65rem] lg:text-3xl",
+  kpiValueAccent: "text-emerald-800",
+  kpiHint: "mt-1.5 pl-2 text-xs leading-snug text-slate-500",
 
   tableShell:
-    "overflow-x-auto rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.05)]",
-  table: "w-full min-w-[640px] border-collapse text-left text-sm text-slate-800",
+    "overflow-x-auto rounded-2xl border border-slate-200/70 bg-white shadow-sm ring-1 ring-slate-900/[0.03]",
+  table: "w-full min-w-[640px] border-collapse text-left text-[0.8125rem] text-slate-800 sm:text-sm",
   tableDense:
-    "w-full min-w-[800px] table-fixed border-collapse text-left text-sm text-slate-800",
+    "w-full min-w-[800px] table-fixed border-collapse text-left text-[0.8125rem] text-slate-800 sm:text-sm",
   thead: "border-b border-slate-200 bg-slate-50/95",
-  th: "px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-600",
+  th: "px-3 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:px-4",
   thCenter:
-    "px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-slate-600",
+    "px-3 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:px-4",
   thRight:
-    "px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-slate-600",
+    "px-3 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:px-4",
   thSticky:
-    "sticky left-0 z-10 border-r border-slate-100 bg-slate-50/95 px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-600",
+    "sticky left-0 z-10 border-r border-slate-100 bg-slate-50/95 px-3 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:px-4",
   tbodyRow:
-    "group border-b border-slate-100/90 transition-colors even:bg-slate-50/40 hover:bg-emerald-50/35",
+    "group border-b border-slate-100/90 transition-colors even:bg-slate-50/50 hover:bg-emerald-50/40",
   tbodyRowDense:
-    "group h-11 border-b border-slate-100/90 transition-colors even:bg-slate-50/35 hover:bg-emerald-50/40",
-  td: "px-3 py-2 tabular-nums text-slate-800",
+    "group h-12 border-b border-slate-100/90 transition-colors even:bg-slate-50/40 hover:bg-emerald-50/45 sm:h-11",
+  td: "px-3 py-2.5 tabular-nums text-slate-800 sm:px-4 sm:py-3",
   tdSticky:
-    "sticky left-0 z-10 border-r border-slate-100/80 bg-white px-3 py-2 even:bg-slate-50/40 group-hover:bg-emerald-50/35",
-  tfoot: "border-t-2 border-emerald-700/80 bg-emerald-50/50 font-semibold text-slate-900",
+    "sticky left-0 z-10 border-r border-slate-100/80 bg-white px-3 py-2.5 even:bg-slate-50/50 group-hover:bg-emerald-50/40 sm:px-4 sm:py-3",
+  tfoot: "border-t-2 border-emerald-700/80 bg-emerald-50/60 font-bold text-slate-900",
 
-  alertError: "rounded-lg border border-red-200/90 bg-red-50 px-4 py-3 text-sm text-red-900",
-  alertWarn: "rounded-lg border border-amber-200/90 bg-amber-50 px-4 py-3 text-sm text-amber-950",
+  alertError: "rounded-xl border border-red-200/90 bg-red-50 px-4 py-3 text-sm text-red-900",
+  alertWarn: "rounded-xl border border-amber-200/90 bg-amber-50 px-4 py-3 text-sm text-amber-950",
   alertLoading:
-    "rounded-lg border border-slate-200/80 bg-white px-4 py-10 text-center text-sm text-slate-600 shadow-sm",
+    "rounded-2xl border border-slate-200/80 bg-white px-4 py-12 text-center text-sm text-slate-600 shadow-sm",
 } as const;
 
 /** Grafik seri renkleri (delta anlamı taşımaz). */
@@ -420,6 +457,30 @@ export function TsbToggleButton({
       {children}
     </button>
   );
+}
+
+export function TsbKpiCard({
+  label,
+  value,
+  hint,
+  accent,
+}: {
+  label: string;
+  value: ReactNode;
+  hint?: ReactNode;
+  accent?: boolean;
+}) {
+  return (
+    <div className={cn(tsb.kpiCard, accent && tsb.kpiCardAccent)}>
+      <p className={tsb.kpiLabel}>{label}</p>
+      <p className={cn(tsb.kpiValue, accent && tsb.kpiValueAccent)}>{value}</p>
+      {hint ? <p className={tsb.kpiHint}>{hint}</p> : null}
+    </div>
+  );
+}
+
+export function TsbKpiGrid({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn(tsb.kpiGrid, className)}>{children}</div>;
 }
 
 export function TsbDataPanel({

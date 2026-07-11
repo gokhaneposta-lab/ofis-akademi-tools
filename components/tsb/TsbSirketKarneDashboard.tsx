@@ -18,9 +18,12 @@ import {
   TsbFilterBar,
   TsbFilterField,
   TsbFilterGrid,
+  TsbKpiCard,
+  TsbKpiGrid,
   TsbLoading,
   TsbSelect,
   TsbToggleButton,
+  tsbFormatPrim,
 } from "@/components/tsb/tsbDashboardUi";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
 import {
@@ -56,22 +59,17 @@ const POOL_FOR_SEGMENT: Record<TsbSektorSegment, SegmentSkorPool> = {
 };
 
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
-const nf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 
-type KpiCard = { label: string; value: string; hint?: string };
+type KpiCard = { label: string; value: string; hint?: string; accent?: boolean };
 
 function MerkeziKpiGrid({ items }: { items: KpiCard[] }) {
   if (items.length === 0) return null;
   return (
-    <div className={tsb.kpiGrid}>
+    <TsbKpiGrid>
       {items.map((k) => (
-        <div key={k.label} className={tsb.kpiCard}>
-          <p className={tsb.kpiLabel}>{k.label}</p>
-          <p className={tsb.kpiValue}>{k.value}</p>
-          {k.hint ? <p className={tsb.kpiHint}>{k.hint}</p> : null}
-        </div>
+        <TsbKpiCard key={k.label} label={k.label} value={k.value} hint={k.hint} accent={k.accent} />
       ))}
-    </div>
+    </TsbKpiGrid>
   );
 }
 
@@ -88,18 +86,14 @@ function PanelLinkGrid({
           key={p.href}
           href={p.href}
           className={cn(
-            tsb.dataPanel,
-            "group p-3 transition hover:border-emerald-300/80 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)]",
+            tsb.hubPanelCard,
+            "group p-4 transition hover:border-emerald-300/90",
           )}
         >
-          <span className="inline-block rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
-            {p.badge}
-          </span>
-          <h3 className="mt-1 text-sm font-semibold text-slate-900 group-hover:text-emerald-800">{p.title}</h3>
-          <p className="mt-0.5 text-xs text-slate-600">{p.subtitle}</p>
-          <p className="mt-2 text-right text-[11px] font-semibold text-emerald-800 group-hover:underline">
-            Panele git →
-          </p>
+          <span className={tsb.hubPanelBadge}>{p.badge}</span>
+          <h3 className={tsb.hubPanelTitle}>{p.title}</h3>
+          <p className={tsb.hubPanelSubtitle}>{p.subtitle}</p>
+          <p className={tsb.hubPanelCta}>Panele git →</p>
         </Link>
       ))}
     </div>
@@ -313,8 +307,9 @@ export default function TsbSirketKarneDashboard() {
     return [
       {
         label: "Aylık toplam prim",
-        value: toplam ? `${nf.format(toplam.sirketPrimBu)} TL` : "—",
+        value: toplam ? tsbFormatPrim(toplam.sirketPrimBu) : "—",
         hint: donem,
+        accent: true,
       },
       {
         label: "Sektör prim sırası",
@@ -425,23 +420,23 @@ export default function TsbSirketKarneDashboard() {
 
       {secilenAd && sirketKodu !== "" ? (
         <>
-          <div className={cn(tsb.dataPanel, "border-emerald-100 p-4 sm:p-5")}>
+          <div className={tsb.heroCard}>
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Şirket karne</p>
-                <h2 className="mt-1 text-xl font-bold leading-tight text-slate-900 sm:text-2xl">{secilenAd}</h2>
-                <p className="mt-1.5 text-sm text-slate-600">
+                <p className={tsb.heroEyebrow}>Şirket karne</p>
+                <h2 className={tsb.heroTitle}>{secilenAd}</h2>
+                <p className={tsb.heroMeta}>
                   {SEGMENT_LABEL[segment]} · Kod {sirketKodu}
                   {donem ? ` · Prim ${donem}` : ""}
                   {finDonem ? ` · Fin ${finDonem}` : ""}
                 </p>
                 {primPaket?.portfoySirasi.sira !== null && primPaket ? (
-                  <p className="mt-3 inline-block rounded-lg bg-emerald-50 px-2.5 py-1 text-sm font-semibold text-emerald-900">
+                  <p className={tsb.heroBadge}>
                     Sektör prim sırası: {primPaket.portfoySirasi.sira} / {primPaket.portfoySirasi.katilimci}
                   </p>
                 ) : null}
               </div>
-              <div className="flex shrink-0 text-right text-xs text-slate-500">
+              <div className="flex shrink-0 text-right text-xs font-medium text-slate-500">
                 <span>TSB kamu verisi</span>
               </div>
             </div>

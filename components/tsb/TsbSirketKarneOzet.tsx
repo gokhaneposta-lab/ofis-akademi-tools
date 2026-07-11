@@ -747,18 +747,6 @@ export default function TsbSirketKarneOzet({
           ) : null}
 
           <KarneSection
-            title="Prim tablosu — aylık üretim ve pazar payı"
-            subtitle={`${donem} vs ${primPaket.donemOnceki}`}
-          >
-            <PrimTablo
-              satirlar={primPaket.aylikSatirlar}
-              donemBu={donem}
-              donemOnceki={primPaket.donemOnceki}
-              showSirasi
-            />
-          </KarneSection>
-
-          <KarneSectionFold
             title="Kümülatif prim üretim ve pay"
             subtitle={`YTD Ocak–${donem.slice(5)} · ${yilBu} vs ${yilOnceki}`}
           >
@@ -767,6 +755,18 @@ export default function TsbSirketKarneOzet({
               donemBu={`${yilBu} YTD`}
               donemOnceki={`${yilOnceki} YTD`}
               showSirasi={false}
+            />
+          </KarneSection>
+
+          <KarneSectionFold
+            title="Prim tablosu — aylık üretim ve pazar payı"
+            subtitle={`${donem} vs ${primPaket.donemOnceki}`}
+          >
+            <PrimTablo
+              satirlar={primPaket.aylikSatirlar}
+              donemBu={donem}
+              donemOnceki={primPaket.donemOnceki}
+              showSirasi
             />
           </KarneSectionFold>
 

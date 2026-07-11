@@ -300,15 +300,19 @@ export default function TsbSirketKarneDashboard() {
 
   const primKpis: KpiCard[] = useMemo(() => {
     if (!primPaket) return [];
-    const toplam = primPaket.aylikSatirlar.find(
+    const toplamYtd = primPaket.ytdSatirlar.find(
+      (s) => s.anaBransH.includes("TOPLAM") || s.anaBransH.includes("PORTFÖY"),
+    );
+    const toplamAylik = primPaket.aylikSatirlar.find(
       (s) => s.anaBransH.includes("TOPLAM") || s.anaBransH.includes("PORTFÖY"),
     );
     const topKanal = [...primPaket.kanalSatirlari].sort((a, b) => b.uretimBu - a.uretimBu)[0];
+    const yilBu = donem.slice(0, 4);
     return [
       {
-        label: "Aylık toplam prim",
-        value: toplam ? tsbFormatPrim(toplam.sirketPrimBu) : "—",
-        hint: donem,
+        label: "Kümül prim",
+        value: toplamYtd ? tsbFormatPrim(toplamYtd.sirketPrimBu) : "—",
+        hint: `YTD Ocak–${donem.slice(5)} · ${yilBu}`,
         accent: true,
       },
       {
@@ -324,7 +328,7 @@ export default function TsbSirketKarneDashboard() {
       },
       {
         label: "Sektör payı (aylık)",
-        value: toplam ? `${pf.format(toplam.payBuYuzde)}%` : "—",
+        value: toplamAylik ? `${pf.format(toplamAylik.payBuYuzde)}%` : "—",
       },
     ];
   }, [primPaket, donem]);

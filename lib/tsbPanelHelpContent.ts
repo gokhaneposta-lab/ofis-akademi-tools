@@ -71,7 +71,7 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     href: "/sigorta/prim-trend-12",
     items: [
       "Seçilen bitiş ayından geriye en fazla 12 ay gösterilir.",
-      "Yeşil çizgi odak şirket, kırmızı çizgi sektör toplamıdır.",
+      "Grafiklerde yeşil odak şirket, gri sektör toplamıdır (üst çizgi = kümülatif, alt sütun = aylık üretim).",
     ],
   },
   {

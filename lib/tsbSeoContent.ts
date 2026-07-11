@@ -200,7 +200,7 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
   primTrend12: {
     heading: "TSB son 12 ay prim trendi",
     paragraphs: [
-      "Seçilen bitiş ayından geriye en fazla 12 ay gösterilir. Yeşil çizgi odak şirket, kırmızı çizgi sektör toplamıdır; alttaki sütunlar aylık üretim farkını gösterir.",
+      "Seçilen bitiş ayından geriye en fazla 12 ay gösterilir. Yeşil odak şirket, gri sektör toplamıdır; alttaki sütunlar aylık üretim farkını gösterir.",
       "Mevsimsel dalgalanma, kampanya etkisi veya portföy değişimini trend olarak izlemek için kullanılır. Branş, tarife ve kanal filtresi diğer prim panelleriyle tutarlıdır.",
       "Yıl içi kümülatif değil, aylık üretim odaklıdır — Ocak spike'ı veya yaz düşüşü net görülür.",
     ],

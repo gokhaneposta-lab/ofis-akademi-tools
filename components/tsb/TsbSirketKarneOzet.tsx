@@ -47,6 +47,7 @@ import { listSirketlerSegmentDonem, uniqueSortedPeriods } from "@/lib/tsbPrimDas
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
 import TsbPrimTrendAylikBarChart from "@/components/tsb/TsbPrimTrendAylikBarChart";
+import { TsbPrimSirketSektorLegend } from "@/components/tsb/TsbRenkAciklama";
 
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
@@ -816,7 +817,10 @@ export default function TsbSirketKarneOzet({
               subtitle="Son 12 ay aylık prim ve sektör payı"
             >
               <div className={tsb.chartPanel}>
-                <TsbPrimTrendAylikBarChart seri={primPaket.trendAylik} sirketAdi={secilenAd} />
+                <TsbPrimSirketSektorLegend sirketAdi={secilenAd} />
+                <div className="mt-2">
+                  <TsbPrimTrendAylikBarChart seri={primPaket.trendAylik} sirketAdi={secilenAd} />
+                </div>
               </div>
               <div className="mt-3">
                 <TrendPayTablo seri={primPaket.trendAylik} />

@@ -25,6 +25,7 @@ import {
 } from "@/lib/tsbPrimDashboard";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
+import { TsbPrimSirketSektorLegend } from "@/components/tsb/TsbRenkAciklama";
 import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import {
   cn,
@@ -521,7 +522,7 @@ export default function TsbPrimTrend12Dashboard() {
               </TsbSelect>
             )}
           </TsbFilterField>
-          <TsbFilterField label="Şirket (yeşil çizgi)" className="sm:col-span-2 lg:col-span-4">
+          <TsbFilterField label="Odak şirket" className="sm:col-span-2 lg:col-span-4">
             <TsbSelect
               className={tsb.selectWide}
               value={effectiveSirket !== null ? String(effectiveSirket) : ""}
@@ -543,6 +544,7 @@ export default function TsbPrimTrend12Dashboard() {
 
       {seri && seri.length > 0 && seriAylik && sirketAdi && (
         <>
+          <TsbPrimSirketSektorLegend sirketAdi={sirketAdi} />
           <div className={tsb.chartPanel}>
             <TrendSvg seri={seri} sirketAdi={sirketAdi} logOlcek={logOlcek} />
           </div>

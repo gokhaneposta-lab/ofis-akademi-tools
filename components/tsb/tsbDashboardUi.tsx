@@ -296,14 +296,21 @@ export function tsbFormatPp(v: number | null | undefined): string {
   return `${sign}${degisimPf.format(v)} pp`;
 }
 
-/** Yardım metninde yeşil / kırmızı / sarı kelimelerini renklendirir. */
+/** Yardım metninde yeşil / gri / kırmızı / sarı kelimelerini renklendirir. */
 export function tsbPanelHelpRenderText(text: string): ReactNode {
-  const parts = text.split(/(yeşil|kırmızı|sarı)/gi);
+  const parts = text.split(/(yeşil|gri|kırmızı|sarı)/gi);
   return parts.map((part, i) => {
     const lower = part.toLowerCase();
     if (lower === "yeşil") {
       return (
         <span key={i} className="font-semibold text-emerald-700">
+          {part}
+        </span>
+      );
+    }
+    if (lower === "gri") {
+      return (
+        <span key={i} className="font-semibold text-slate-600">
           {part}
         </span>
       );

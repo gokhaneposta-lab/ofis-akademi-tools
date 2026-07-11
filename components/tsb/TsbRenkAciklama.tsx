@@ -1,4 +1,4 @@
-import { cn, tsb, tsbDelta } from "@/components/tsb/tsbDashboardUi";
+import { cn, tsb, tsbChart, tsbDelta } from "@/components/tsb/tsbDashboardUi";
 
 export type TsbRenkAciklamaItem = {
   label: string;
@@ -55,6 +55,33 @@ export function TsbSirketSektorGrafikLegend({ sirketAdi }: { sirketAdi?: string 
         <span className="inline-block h-3 w-3 rounded-sm bg-sky-300" aria-hidden />
         <strong>Sektör</strong>
         <span className="text-slate-500"> — açık çubuk, sağ</span>
+      </span>
+    </div>
+  );
+}
+
+/** Prim grafikleri: yeşil şirket, gri sektör (çizgi veya sütun). */
+export function TsbPrimSirketSektorLegend({ sirketAdi }: { sirketAdi?: string }) {
+  return (
+    <div className={tsb.grafikLegendWrap} aria-label="Grafik açıklaması">
+      <span className={tsb.grafikLegendItem}>
+        <span
+          className="inline-block h-3 w-3 rounded-sm"
+          style={{ backgroundColor: tsbChart.sirketBrut }}
+          aria-hidden
+        />
+        <strong>Şirket</strong>
+        {sirketAdi ? ` · ${sirketAdi}` : ""}
+        <span className="text-slate-500"> — yeşil</span>
+      </span>
+      <span className={tsb.grafikLegendItem}>
+        <span
+          className="inline-block h-3 w-3 rounded-sm"
+          style={{ backgroundColor: tsbChart.sektor }}
+          aria-hidden
+        />
+        <strong>Sektör</strong>
+        <span className="text-slate-500"> — gri</span>
       </span>
     </div>
   );

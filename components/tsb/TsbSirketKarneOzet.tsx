@@ -569,7 +569,7 @@ export default function TsbSirketKarneOzet({
 
           <KarneSection
             title="Prim tablosu — aylık üretim ve pazar payı"
-            subtitle={`Ana branş (TSB) · ${donem} vs ${primPaket.donemOnceki} — TSB kümülatiften önceki ay düşülerek`}
+            subtitle={`${donem} vs ${primPaket.donemOnceki}`}
           >
             <PrimTablo
               satirlar={primPaket.aylikSatirlar}
@@ -593,7 +593,7 @@ export default function TsbSirketKarneOzet({
 
           <KarneSection
             title="Aylık prim — branş pay dağılımı"
-            subtitle={`${donem} vs ${primPaket.donemOnceki} · o ayın üretiminde portföy payı (%)`}
+            subtitle={`${donem} vs ${primPaket.donemOnceki} · branş payları (%)`}
           >
             <BransPayBarGrafik
               bu={primPaket.payDilimleriBu}
@@ -606,7 +606,7 @@ export default function TsbSirketKarneOzet({
           {finPaketBu && finDonem ? (
             <KarneSection
               title="Finansal tablo"
-              subtitle={`Çeyrek ${finDonem}${finPaketOnceki ? ` vs ${finDonemOnceki}` : ""} · yalnızca odak şirket`}
+              subtitle={`Çeyrek ${finDonem}${finPaketOnceki ? ` vs ${finDonemOnceki}` : ""}`}
             >
               <TsbTableShell>
                 <table className={cn(tsb.table, "min-w-[640px]")}>
@@ -690,7 +690,7 @@ export default function TsbSirketKarneOzet({
           {primPaket.trendAylik && primPaket.trendAylik.length > 0 ? (
             <KarneSection
               title="Son 12 ay aylık prim trendi"
-              subtitle="Kümülatif fark = o ayın primi · sektör payı = şirket ÷ sektör aylık prim"
+              subtitle="Son 12 ay aylık prim ve sektör payı"
             >
               <div className={tsb.chartPanel}>
                 <TsbPrimTrendAylikBarChart seri={primPaket.trendAylik} sirketAdi={secilenAd} />

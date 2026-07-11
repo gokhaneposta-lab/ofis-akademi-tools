@@ -429,14 +429,8 @@ export default function TsbSirketKarneDashboard() {
                   </p>
                 ) : null}
               </div>
-              <div className="flex shrink-0 flex-col items-end gap-1 text-right text-xs text-slate-500">
+              <div className="flex shrink-0 text-right text-xs text-slate-500">
                 <span>TSB kamu verisi</span>
-                <Link
-                  href={sirketKarnePrefs({ sirket: sirketKodu, donem, segment, sekme })}
-                  className="font-medium text-emerald-800 hover:underline"
-                >
-                  Paylaşılabilir bağlantı
-                </Link>
               </div>
             </div>
           </div>

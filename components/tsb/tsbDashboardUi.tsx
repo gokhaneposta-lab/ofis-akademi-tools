@@ -20,8 +20,8 @@ export const tsb = {
   pageLead: "mt-1.5 max-w-3xl text-sm leading-snug text-slate-600",
   sourceNote:
     "mt-2 max-w-3xl rounded-md border border-slate-200/70 bg-slate-50/90 px-2.5 py-1.5 text-[11px] leading-relaxed text-slate-600",
-  main: "mx-auto max-w-[88rem] space-y-5 px-4 py-5 sm:px-6 lg:px-8",
-  dashboardStack: "space-y-4",
+  main: "mx-auto max-w-[88rem] space-y-6 px-4 py-6 sm:px-6 lg:px-8",
+  dashboardStack: "space-y-5",
 
   stickyNavWrap:
     "sticky top-0 z-30 -mx-4 mb-1 border-b border-slate-200/90 bg-white/98 px-3 py-2 shadow-[0_1px_3px_rgba(15,23,42,0.06)] backdrop-blur-md sm:-mx-6 sm:px-5 lg:-mx-8 lg:px-7",
@@ -30,16 +30,16 @@ export const tsb = {
   stickyNavGroupLabel: "text-[10px] font-semibold uppercase tracking-wider text-slate-500",
   stickyNavLinks: "flex flex-wrap gap-0.5",
   stickyNavLink:
-    "rounded-md border border-transparent px-2 py-0.5 text-[11px] font-medium text-slate-600 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900",
+    "rounded-lg border border-transparent px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900",
   stickyNavLinkActive: "border-slate-400 bg-slate-100 font-semibold text-slate-900 shadow-sm",
   stickyNavHubBtn:
     "inline-flex shrink-0 items-center gap-1 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-800 shadow-sm transition hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-900",
   stickyNavAllLabel: "text-[10px] font-medium text-slate-500",
 
   filterBar:
-    "rounded-lg border border-slate-200/80 bg-slate-50/60 px-2.5 py-2 shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
-  filterSectionLabel: "mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500",
-  filterHint: "mt-1.5 text-[11px] leading-snug text-slate-600",
+    "rounded-xl border border-slate-200/80 bg-white px-3 py-3 shadow-[0_1px_3px_rgba(15,23,42,0.05)]",
+  filterSectionLabel: "mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500",
+  filterHint: "mt-2 text-sm leading-snug text-slate-600",
   filterGrid: "grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
 
   panelHelp:
@@ -48,7 +48,7 @@ export const tsb = {
     "flex cursor-pointer list-none items-center gap-2 px-3 py-2.5 transition hover:bg-slate-50/90 group-open:bg-emerald-50/40",
   panelHelpChevron:
     "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-[10px] font-bold text-emerald-800 transition group-open:rotate-90 group-open:border-emerald-200 group-open:bg-emerald-50",
-  panelHelpBody: "border-t border-slate-100 px-3 py-3 text-xs leading-relaxed text-slate-600",
+  panelHelpBody: "border-t border-slate-100 px-4 py-3 text-sm leading-relaxed text-slate-600",
   panelHelpList: "list-none space-y-2 pl-0",
   panelHelpListItem: "flex gap-2 before:mt-1.5 before:h-1.5 before:w-1.5 before:shrink-0 before:rounded-full before:bg-emerald-500 before:content-['']",
 
@@ -129,49 +129,55 @@ export const tsb = {
   olcekSegmentMetodolojiPanel:
     "mt-2 rounded-lg border border-slate-200/80 bg-slate-50/60 px-3 py-2 text-[11px] leading-relaxed text-slate-600",
   filterField: "block min-w-0",
-  filterLabel: "mb-0.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-500",
-  filterMicroHint: "mt-0.5 text-[10px] leading-snug text-slate-500",
+  filterLabel: "mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500",
+  filterMicroHint: "mt-1 text-xs leading-snug text-slate-500",
   select:
-    "h-8 w-full rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300",
+    "h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100",
   selectWide:
-    "h-8 w-full max-w-xl rounded-md border border-slate-200 bg-white px-2 text-xs text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-300",
-  btnGroup: "flex flex-wrap gap-1",
+    "h-9 w-full max-w-xl rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-100",
+  btnGroup: "flex flex-wrap gap-1.5",
   btnToggle:
-    "rounded-md border px-2.5 py-1 text-xs font-semibold transition focus:outline-none focus:ring-1 focus:ring-slate-300",
+    "rounded-lg border px-3 py-1.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-100",
   btnToggleOn: "border-slate-800 bg-slate-800 text-white shadow-sm",
   btnToggleOff: "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
   btnSegmentOn: "border-emerald-800 bg-emerald-800 text-white shadow-sm",
   btnTabOn: "border-emerald-700 bg-emerald-700 text-white shadow-sm",
 
-  caption: "text-[11px] leading-relaxed text-slate-500",
+  caption: "text-sm leading-relaxed text-slate-500",
   dataPanel:
-    "overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.06)]",
-  dataPanelHeader: "border-b border-slate-100 px-3 py-2 sm:px-4",
-  dataPanelTitle: "text-sm font-semibold text-slate-900",
-  dataPanelBody: "p-3 sm:p-4",
+    "overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.05)]",
+  dataPanelHeader: "border-b border-slate-100 px-4 py-3 sm:px-5",
+  dataPanelTitle: "text-base font-semibold text-slate-900",
+  dataPanelBody: "p-4 sm:p-5",
   chartPanel:
-    "overflow-x-auto rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_1px_4px_rgba(15,23,42,0.06)] sm:p-4",
+    "overflow-x-auto rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_4px_rgba(15,23,42,0.05)] sm:p-5",
+
+  kpiGrid: "grid gap-3 sm:grid-cols-2 lg:grid-cols-4",
+  kpiCard: "rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_4px_rgba(15,23,42,0.05)]",
+  kpiLabel: "text-xs font-semibold uppercase tracking-wide text-slate-500",
+  kpiValue: "mt-1.5 text-xl font-bold tabular-nums tracking-tight text-slate-900 sm:text-2xl",
+  kpiHint: "mt-1 text-xs text-slate-500",
 
   tableShell:
-    "overflow-x-auto rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.06)]",
-  table: "w-full min-w-[640px] border-collapse text-left text-xs text-slate-800",
+    "overflow-x-auto rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.05)]",
+  table: "w-full min-w-[640px] border-collapse text-left text-sm text-slate-800",
   tableDense:
-    "w-full min-w-[800px] table-fixed border-collapse text-left text-xs text-slate-800",
+    "w-full min-w-[800px] table-fixed border-collapse text-left text-sm text-slate-800",
   thead: "border-b border-slate-200 bg-slate-50/95",
-  th: "px-2.5 py-2 text-[10px] font-semibold uppercase tracking-wide text-slate-600",
+  th: "px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-600",
   thCenter:
-    "px-2.5 py-2 text-center text-[10px] font-semibold uppercase tracking-wide text-slate-600",
+    "px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-slate-600",
   thRight:
-    "px-2.5 py-2 text-right text-[10px] font-semibold uppercase tracking-wide text-slate-600",
+    "px-3 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-slate-600",
   thSticky:
-    "sticky left-0 z-10 border-r border-slate-100 bg-slate-50/95 px-2.5 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-slate-600",
+    "sticky left-0 z-10 border-r border-slate-100 bg-slate-50/95 px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-600",
   tbodyRow:
     "group border-b border-slate-100/90 transition-colors even:bg-slate-50/40 hover:bg-emerald-50/35",
   tbodyRowDense:
-    "group h-10 border-b border-slate-100/90 transition-colors even:bg-slate-50/35 hover:bg-emerald-50/40",
-  td: "px-2.5 py-1.5 tabular-nums text-slate-800",
+    "group h-11 border-b border-slate-100/90 transition-colors even:bg-slate-50/35 hover:bg-emerald-50/40",
+  td: "px-3 py-2 tabular-nums text-slate-800",
   tdSticky:
-    "sticky left-0 z-10 border-r border-slate-100/80 bg-white px-2.5 py-1.5 even:bg-slate-50/40 group-hover:bg-emerald-50/35",
+    "sticky left-0 z-10 border-r border-slate-100/80 bg-white px-3 py-2 even:bg-slate-50/40 group-hover:bg-emerald-50/35",
   tfoot: "border-t-2 border-emerald-700/80 bg-emerald-50/50 font-semibold text-slate-900",
 
   alertError: "rounded-lg border border-red-200/90 bg-red-50 px-4 py-3 text-sm text-red-900",
@@ -288,8 +294,8 @@ export function TsbPanelHelp({ items }: { items: readonly string[] }) {
           ›
         </span>
         <span>
-          <span className="block text-xs font-semibold text-slate-800">Bu panel nasıl okunur?</span>
-          <span className="block text-[11px] font-normal text-slate-500">Tıklayın — kısa kullanım rehberi</span>
+          <span className="block text-sm font-semibold text-slate-800">Bu panel nasıl okunur?</span>
+          <span className="block text-xs font-normal text-slate-500">İsteğe bağlı — kısa kullanım rehberi</span>
         </span>
       </summary>
       <div className={tsb.panelHelpBody}>
@@ -328,7 +334,6 @@ export function TsbDashboardStickyNav({ currentHref }: { currentHref: string }) 
   const groupId: TsbDashboardGroupId = tsbDashboardPanelByHref(currentHref)?.group ?? "prim";
   const group = TSB_DASHBOARD_GROUPS.find((g) => g.id === groupId);
   const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === groupId);
-  const digerGruplar = TSB_DASHBOARD_GROUPS.filter((g) => g.id !== groupId);
 
   return (
     <nav className={tsb.stickyNavWrap} aria-label="TSB panel geçişi">
@@ -354,18 +359,6 @@ export function TsbDashboardStickyNav({ currentHref }: { currentHref: string }) 
             );
           })}
         </div>
-        {digerGruplar.length > 0 ? (
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 border-t border-slate-100 pt-1.5">
-            <span className={tsb.stickyNavAllLabel}>Diğer:</span>
-            {digerGruplar.flatMap((g) =>
-              TSB_DASHBOARD_PANELS.filter((p) => p.group === g.id).map((p) => (
-                <Link key={p.href} href={p.href} className={tsb.stickyNavLink}>
-                  {p.title}
-                </Link>
-              )),
-            )}
-          </div>
-        ) : null}
       </div>
     </nav>
   );

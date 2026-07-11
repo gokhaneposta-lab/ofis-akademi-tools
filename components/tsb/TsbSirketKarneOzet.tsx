@@ -97,13 +97,39 @@ function KarneSection({
   children: ReactNode;
 }) {
   return (
-    <section className={cn(tsb.dataPanel, "overflow-hidden p-0")}>
-      <div className="border-b border-teal-900/10 bg-gradient-to-r from-teal-800 to-teal-700 px-4 py-3 text-white">
-        <h2 className="text-sm font-bold uppercase tracking-wide">{title}</h2>
-        {subtitle ? <p className="mt-0.5 text-[11px] text-teal-100/90">{subtitle}</p> : null}
+    <section className={tsb.dataPanel}>
+      <div className="border-b border-slate-100 px-4 py-3 sm:px-5">
+        <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+        {subtitle ? <p className="mt-1 text-sm text-slate-500">{subtitle}</p> : null}
       </div>
-      <div className="p-3">{children}</div>
+      <div className="p-4 sm:p-5">{children}</div>
     </section>
+  );
+}
+
+/** İkincil bloklar — varsayılan kapalı, sayfayı boğmaz. */
+function KarneSectionFold({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className={cn(tsb.dataPanel, "[&_summary::-webkit-details-marker]:hidden")}>
+      <summary className="cursor-pointer list-none border-b border-slate-100 px-4 py-3 transition hover:bg-slate-50/80 sm:px-5">
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+            {subtitle ? <p className="mt-1 text-sm text-slate-500">{subtitle}</p> : null}
+          </div>
+          <span className="mt-1 shrink-0 text-xs font-semibold text-emerald-700">Göster</span>
+        </div>
+      </summary>
+      <div className="p-4 sm:p-5">{children}</div>
+    </details>
   );
 }
 
@@ -120,7 +146,7 @@ function PrimTablo({
 }) {
   return (
     <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[720px] text-xs")}>
+      <table className={cn(tsb.table, "min-w-[720px]")}>
         <thead className={tsb.thead}>
           <tr>
             <th className={cn(tsb.thSticky, "text-left")}>Ana branş</th>
@@ -231,7 +257,7 @@ function BransPayBarGrafik({
 function KanalTablo({ satirlar, donemBu, donemOnceki }: { satirlar: KarneKanalSatir[]; donemBu: string; donemOnceki: string }) {
   return (
     <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[680px] text-xs")}>
+      <table className={cn(tsb.table, "min-w-[680px]")}>
         <thead className={tsb.thead}>
           <tr>
             <th className={cn(tsb.thSticky, "text-left")}>Kanal</th>
@@ -268,7 +294,7 @@ function KanalTablo({ satirlar, donemBu, donemOnceki }: { satirlar: KarneKanalSa
 function TrendPayTablo({ seri }: { seri: import("@/lib/tsbPrimTrend12").PrimTrendAylikNokta[] }) {
   return (
     <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[480px] text-xs")}>
+      <table className={cn(tsb.table, "min-w-[480px]")}>
         <thead className={tsb.thead}>
           <tr>
             <th className={cn(tsb.th, "text-left")}>Ay</th>
@@ -553,9 +579,9 @@ export default function TsbSirketKarneOzet({
             />
           </KarneSection>
 
-          <KarneSection
+          <KarneSectionFold
             title="Kümülatif prim üretim ve pay"
-            subtitle={`YTD Ocak–${donem.slice(5)} · ${yilBu} vs ${yilOnceki} — seçili ayın TSB kümülatif değeri`}
+            subtitle={`YTD Ocak–${donem.slice(5)} · ${yilBu} vs ${yilOnceki}`}
           >
             <PrimTablo
               satirlar={primPaket.ytdSatirlar}
@@ -563,7 +589,7 @@ export default function TsbSirketKarneOzet({
               donemOnceki={`${yilOnceki} YTD`}
               showSirasi={false}
             />
-          </KarneSection>
+          </KarneSectionFold>
 
           <KarneSection
             title="Aylık prim — branş pay dağılımı"
@@ -583,7 +609,7 @@ export default function TsbSirketKarneOzet({
               subtitle={`Çeyrek ${finDonem}${finPaketOnceki ? ` vs ${finDonemOnceki}` : ""} · yalnızca odak şirket`}
             >
               <TsbTableShell>
-                <table className={cn(tsb.table, "min-w-[640px] text-xs")}>
+                <table className={cn(tsb.table, "min-w-[640px]")}>
                   <thead className={tsb.thead}>
                     <tr>
                       <th className={cn(tsb.thSticky, "text-left")}>KPI</th>
@@ -653,13 +679,13 @@ export default function TsbSirketKarneOzet({
             <TsbLoading message="Finansal veri yükleniyor…" />
           ) : null}
 
-          <KarneSection title="Kanala göre üretim dağılımı" subtitle={`${donem} aylık üretim · kanalda sektör payı`}>
+          <KarneSectionFold title="Kanala göre üretim dağılımı" subtitle={`${donem} aylık üretim · kanalda sektör payı`}>
             <KanalTablo
               satirlar={primPaket.kanalSatirlari}
               donemBu={donem}
               donemOnceki={primPaket.donemOnceki}
             />
-          </KarneSection>
+          </KarneSectionFold>
 
           {primPaket.trendAylik && primPaket.trendAylik.length > 0 ? (
             <KarneSection

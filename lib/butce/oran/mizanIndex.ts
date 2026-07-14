@@ -1,5 +1,6 @@
 import { normalizeBransKodu } from "../textUtils";
 import type { MizanRow } from "../types";
+import { toplaHesapTutarlari } from "./hesapAgregasyon";
 
 /** yil|brans → satırlar; yil → şirket geneli */
 export class MizanIndex {
@@ -40,18 +41,6 @@ export class MizanIndex {
       ? (this.byYil.get(yil) ?? [])
       : (this.byYilBrans.get(`${yil}|${normalizeBransKodu(brans)}`) ?? []);
 
-    if (rows.length === 0) return 0;
-
-    let toplam = 0;
-    for (const r of rows) {
-      const h = String(r.hesap);
-      for (const hesap of hesaplar) {
-        if (prefix ? h.startsWith(hesap) : h === hesap) {
-          toplam += r.tutar;
-          break;
-        }
-      }
-    }
-    return toplam;
+    return toplaHesapTutarlari(rows, hesaplar, { prefix });
   }
 }

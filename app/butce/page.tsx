@@ -48,6 +48,18 @@ export default async function ButceHomePage() {
         hedefi, aylık dağılım, teknik oranlar, gelir tablosu ve bilanço kontrollerini yapın.
       </section>
 
+      <Link
+        href="/butce/v2"
+        className="block rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm transition hover:border-emerald-300"
+      >
+        <h2 className="text-sm font-semibold text-emerald-950">Bütçe V2 — hızlı GT taslak</h2>
+        <p className="mt-1 text-sm text-emerald-900/90">
+          Tarife hedef prim + genel gider artışı + aylık mali getiri ile paralel projeksiyon. V1
+          adımlarını bozmaz. Mali gelir nakit proxy&apos;si tahakkuk esaslı basitleştirmedir.
+        </p>
+        <p className="mt-2 text-sm font-medium text-emerald-800">V2 ekranına git →</p>
+      </Link>
+
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">Veri durumu</h2>
         <dl className="mt-2 grid gap-3 text-sm sm:grid-cols-2">

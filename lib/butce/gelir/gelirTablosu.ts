@@ -76,6 +76,12 @@ export function buildGelirTablosu(opts: {
   kpkVade?: KpkVadeRow[];
   kapanisTahmin?: KpkKapanisTahminStore | null;
   faaliyetGider?: FaaliyetGiderRow[];
+  /** Branş → GT satır override (örn. V2 F38 mali gelir). */
+  disHucrelerByBrans?: Record<string, Record<number, number>>;
+  /** Varsayılan gösterim satırlarını değiştir (V2 geniş liste). */
+  gosterimSatirlari?: GtGosterimSatir[];
+  /** Şirket toplamı aylık override; branşlara prim payı ile dağıtılır. */
+  aylikSatirOverride?: Record<number, number[]>;
 }): GelirTablosuSonuc {
   const {
     mizan,
@@ -89,7 +95,13 @@ export function buildGelirTablosu(opts: {
     kpkVade = [],
     kapanisTahmin,
     faaliyetGider = [],
+    disHucrelerByBrans = {},
+    gosterimSatirlari,
+    aylikSatirOverride,
   } = opts;
+
+  const satirlar = gosterimSatirlari ?? GT_GOSTERIM_SATIRLARI;
+  const gosterimNolari = satirlar.map((s) => s.satir);
 
   const kpkSonuc =
     kpkVade.length > 0
@@ -127,12 +139,13 @@ export function buildGelirTablosu(opts: {
   const toplam: Record<number, number> = {};
   const aylikToplam: Record<number, number[]> = {};
   const aylikBrans: Record<string, Record<number, number[]>> = {};
-  for (const s of GOSTERIM_SATIR_NOLARI) {
+  for (const s of gosterimNolari) {
     toplam[s] = 0;
     aylikToplam[s] = Array.from({ length: 12 }, () => 0);
   }
 
   const aylikPaylar = aylikPrimPaylariMap(aylikPrim);
+  const brutPrimToplam = HAZINE_BRANS_SIRASI.reduce((a, k) => a + (primHedefleri[k] ?? 0), 0);
 
   for (const kod of HAZINE_BRANS_SIRASI) {
     const brut = primHedefleri[kod] ?? 0;
@@ -143,23 +156,24 @@ export function buildGelirTablosu(opts: {
     const disHucreler = {
       ...(kpkBrans ? kpkHucreOverride(kpkBrans) : {}),
       ...(fgBrans ? faaliyetGiderHucreOverride(fgBrans) : {}),
+      ...(disHucrelerByBrans[kod] ?? {}),
     };
     const tumDegerler = motor.hesaplaBrans(kod, brut, endirekt, disHucreler);
 
     const degerler: Record<number, number> = {};
-    for (const s of GOSTERIM_SATIR_NOLARI) degerler[s] = tumDegerler.get(s) ?? 0;
+    for (const s of gosterimNolari) degerler[s] = tumDegerler.get(s) ?? 0;
 
     const info = HAZINE_BRANS_KODLARI[kod] ?? ["", kod, ""];
     branslar.push({ bransKodu: kod, bransAdi: info[1], brutPrim: brut, degerler });
 
-    for (const s of GOSTERIM_SATIR_NOLARI) toplam[s] += degerler[s];
+    for (const s of gosterimNolari) toplam[s] += degerler[s];
 
     // Aylık: tüm satırları branşın prim mevsimselliğine göre dağıt.
     const paylar = aylikPaylar[kod] ?? null;
     const bransAylik: Record<number, number[]> = {};
     const kpkAylikSatirlar = new Set<number>(KPK_GT_SATIRLARI as unknown as number[]);
     const faaliyetAylikSatirlar = new Set<number>(FAALIYET_GT_SATIRLARI);
-    for (const s of GOSTERIM_SATIR_NOLARI) {
+    for (const s of gosterimNolari) {
       const yillik = degerler[s];
       if (kpkBrans && kpkAylikSatirlar.has(s) && kpkBrans.gtAylik[s]) {
         bransAylik[s] = [...kpkBrans.gtAylik[s]!];
@@ -176,9 +190,25 @@ export function buildGelirTablosu(opts: {
     aylikBrans[kod] = bransAylik;
   }
 
+  if (aylikSatirOverride) {
+    for (const [satirStr, serie] of Object.entries(aylikSatirOverride)) {
+      const satir = Number(satirStr);
+      if (!serie || serie.length !== 12) continue;
+      aylikToplam[satir] = [...serie];
+      toplam[satir] = serie.reduce((a, b) => a + b, 0);
+      for (const b of branslar) {
+        const pay = brutPrimToplam > 0 ? b.brutPrim / brutPrimToplam : 0;
+        const ser = serie.map((v) => v * pay);
+        if (!aylikBrans[b.bransKodu]) aylikBrans[b.bransKodu] = {};
+        aylikBrans[b.bransKodu]![satir] = ser;
+        b.degerler[satir] = ser.reduce((a, x) => a + x, 0);
+      }
+    }
+  }
+
   return {
     butceYili,
-    satirlar: GT_GOSTERIM_SATIRLARI,
+    satirlar,
     branslar,
     toplam,
     aylikToplam,

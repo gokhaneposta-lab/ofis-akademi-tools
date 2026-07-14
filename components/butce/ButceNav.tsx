@@ -12,6 +12,7 @@ const LINKS = [
   { href: "/butce/oranlar", label: "Teknik oranlar" },
   { href: "/butce/backtest", label: "Backtest" },
   { href: "/butce/gelir-tablosu", label: "Gelir tablosu" },
+  { href: "/butce/v2", label: "Bütçe V2" },
   { href: "/butce/bilanco", label: "Bilanço" },
   { href: "/butce/export", label: "Excel export" },
 ];

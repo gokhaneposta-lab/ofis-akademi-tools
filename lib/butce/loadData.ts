@@ -15,10 +15,13 @@ import {
   BUTCE_TARIFE_MAP_JSON,
   BUTCE_URETIM_JSON,
   BUTCE_FAALIYET_GIDER_JSON,
+  BUTCE_BILANCO_AYLIK_JSON,
+  BUTCE_V2_VARSAYIMLAR_JSON,
 } from "./paths";
 import { readPrivateFile } from "./storage";
 import type {
   AylikPrimStore,
+  BilancoAylikRow,
   ButceMeta,
   KpkKapanisTahminStore,
   KpkVadeRow,
@@ -32,6 +35,7 @@ import type {
   TarifeMapRow,
   UretimRow,
 } from "./types";
+import type { V2VarsayimlarStore } from "./v2/types";
 
 export async function loadMizanRows(): Promise<MizanRow[]> {
   const raw = await readPrivateFile(BUTCE_MIZAN_JSON);
@@ -153,6 +157,18 @@ export async function loadFaaliyetGiderRows(): Promise<FaaliyetGiderRow[]> {
   const raw = await readPrivateFile(BUTCE_FAALIYET_GIDER_JSON);
   if (!raw) return [];
   return JSON.parse(raw) as FaaliyetGiderRow[];
+}
+
+export async function loadBilancoAylikRows(): Promise<BilancoAylikRow[]> {
+  const raw = await readPrivateFile(BUTCE_BILANCO_AYLIK_JSON);
+  if (!raw) return [];
+  return JSON.parse(raw) as BilancoAylikRow[];
+}
+
+export async function loadV2Varsayimlar(): Promise<V2VarsayimlarStore | null> {
+  const raw = await readPrivateFile(BUTCE_V2_VARSAYIMLAR_JSON);
+  if (!raw) return null;
+  return JSON.parse(raw) as V2VarsayimlarStore;
 }
 
 export async function loadButceMeta(): Promise<ButceMeta | null> {

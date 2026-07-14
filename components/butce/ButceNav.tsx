@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/butce/aylik-dagilim", label: "Aylık dağılım" },
   { href: "/butce/kpk-kapanis", label: "KPK kapanış" },
   { href: "/butce/oranlar", label: "Teknik oranlar" },
+  { href: "/butce/backtest", label: "Backtest" },
   { href: "/butce/gelir-tablosu", label: "Gelir tablosu" },
   { href: "/butce/bilanco", label: "Bilanço" },
   { href: "/butce/export", label: "Excel export" },

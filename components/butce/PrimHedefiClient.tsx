@@ -1,9 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import BransDagitimIzTable from "@/components/butce/BransDagitimIzTable";
-import { REFERANS_YIL_SECENEKLERI } from "@/lib/butce/config/constants";
+import {
+  REFERANS_YIL_SECENEKLERI,
+  normalizeYilAgirliklari,
+  referansYilAgirliklari,
+  varsayilanYilAgirliklari,
+} from "@/lib/butce/config/constants";
 import type { BransTarifeIzleme } from "@/lib/butce/prim/bransDagitimTrace";
 import type {
   PrimBransOzet,
@@ -40,15 +45,39 @@ type Durum = {
 type Props = {
   durum: Durum;
   initialTarifeOzet: TarifeOzet[];
+  excelTarifeOzet: TarifeOzet[];
+  initialReferans?: string;
+  initialYilAgirliklari?: number[];
 };
 
 function fmt(n: number) {
   return n.toLocaleString("tr-TR", { maximumFractionDigits: 0 });
 }
 
-export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
+function pctLabel(w: number) {
+  return new Intl.NumberFormat("tr-TR", {
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 0,
+  }).format(w * 100);
+}
+
+export default function PrimHedefiClient({
+  durum,
+  initialTarifeOzet,
+  excelTarifeOzet,
+  initialReferans,
+  initialYilAgirliklari,
+}: Props) {
+  const defaultReferans =
+    initialReferans && REFERANS_YIL_SECENEKLERI[initialReferans]
+      ? initialReferans
+      : "Son 2 Yıl Ortalaması (2024-2025)";
+
   const [tarifeRows, setTarifeRows] = useState<TarifeOzet[]>(initialTarifeOzet);
-  const [referans, setReferans] = useState("Son 2 Yıl Ortalaması (2024-2025)");
+  const [referans, setReferans] = useState(defaultReferans);
+  const [yilAgirliklari, setYilAgirliklari] = useState<number[]>(() =>
+    referansYilAgirliklari(defaultReferans, initialYilAgirliklari),
+  );
   const [mizanYedek, setMizanYedek] = useState(true);
   const [dagitBusy, setDagitBusy] = useState(false);
   const [dagitErr, setDagitErr] = useState<string | null>(null);
@@ -62,6 +91,25 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
 
   const butceYili = durum.butceYili;
   const hazir = durum.hasSatisButce && durum.hasTarifeBransPay;
+  const refYears = REFERANS_YIL_SECENEKLERI[referans] ?? [2024];
+  const agirlikToplam = useMemo(
+    () => yilAgirliklari.reduce((a, x) => a + (Number.isFinite(x) ? x : 0), 0),
+    [yilAgirliklari],
+  );
+  const agirlikUyarisi = Math.abs(agirlikToplam - 1) > 0.01;
+
+  function changeReferans(etiket: string) {
+    setReferans(etiket);
+    setYilAgirliklari(varsayilanYilAgirliklari((REFERANS_YIL_SECENEKLERI[etiket] ?? [2024]).length));
+  }
+
+  function updateAgirlik(idx: number, pctValue: number) {
+    setYilAgirliklari((prev) => {
+      const next = [...prev];
+      next[idx] = pctValue / 100;
+      return next;
+    });
+  }
 
   function updateTarife(idx: number, field: "yeniHedef" | "artisOrani", value: number) {
     setTarifeRows((prev) => {
@@ -71,12 +119,17 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
         row.yeniHedef = value;
         if (row.mevcutHedef > 0) row.artisOrani = value / row.mevcutHedef - 1;
       } else {
-        row.artisOrani = value;
-        row.yeniHedef = row.mevcutHedef * (1 + value);
+        // UI yüzde noktası (25 = +%25) → içerde decimal
+        row.artisOrani = value / 100;
+        row.yeniHedef = row.mevcutHedef * (1 + row.artisOrani);
       }
       next[idx] = row;
       return next;
     });
+  }
+
+  function exceldenSifirla() {
+    setTarifeRows(excelTarifeOzet.map((r) => ({ ...r })));
   }
 
   async function dagit() {
@@ -84,6 +137,8 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
     setDagitErr(null);
     const tarifeHedefleri: Record<string, number> = {};
     for (const r of tarifeRows) tarifeHedefleri[r.tarifeGrubu] = r.yeniHedef;
+    const agirliklar = normalizeYilAgirliklari(yilAgirliklari);
+    setYilAgirliklari(agirliklar);
     try {
       const res = await fetch("/api/butce/prim-dagit", {
         method: "POST",
@@ -92,6 +147,7 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
           referansEtiket: referans,
           mizanYedek,
           tarifeHedefleri,
+          yilAgirliklari: agirliklar,
           izlemeBrans,
           izlemeTarife,
         }),
@@ -116,8 +172,10 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
   return (
     <div className="space-y-6">
       <section className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-950">
-        <strong>Prim hedefi akışı:</strong> Tarife grubu hedeflerini kontrol et → referans yılı seç →
-        geçmiş tarife-branş paylarına göre 7xx branşlara dağıt.
+        <strong>Prim hedefi akışı:</strong> Tarife grubu hedef tutarlarını siz girersiniz (SATIS
+        HEDEF kolonundan başlar; otomatik %25 artış yoktur) → referans yılları ve ağırlıkları seçin →
+        geçmiş tarife-branş paylarına göre 7xx branşlara dağıtın. Kaydedilen hedefler sayfa
+        yenilenince korunur.
       </section>
 
       {!hazir && (
@@ -133,10 +191,22 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
 
       {tarifeRows.length > 0 && (
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">Adım 2 — Tarife grubu hedefleri</h2>
-          <p className="mt-1 text-sm text-slate-600">
-            {butceYili} hedef kolonunu düzenleyin veya artış oranını değiştirin.
-          </p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900">Adım 2 — Tarife grubu hedefleri</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                {butceYili} hedef tutarını girin veya artış % değiştirin. Artış kutusu yüzde noktası
+                cinsindendir (ör. 15 = +%15).
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={exceldenSifirla}
+              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              Excel&apos;den sıfırla
+            </button>
+          </div>
           <div className="mt-3 overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
@@ -177,8 +247,8 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
                     <td className="py-2">
                       <input
                         type="number"
-                        step="0.01"
-                        value={row.artisOrani}
+                        step="0.1"
+                        value={Number((row.artisOrani * 100).toFixed(2))}
                         onChange={(e) => updateTarife(idx, "artisOrani", Number(e.target.value))}
                         className="w-20 rounded border border-slate-300 px-2 py-1 text-sm"
                       />
@@ -193,21 +263,31 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
 
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">Adım 3 — Branşlara dağıtım (A motoru)</h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Çoklu yılda branş payı <strong>ağırlıklı ortalama</strong> ile birleştirilir. Ağırlıklar
+          dağıtımdan önce 100&apos;e normalize edilir.
+        </p>
         <div className="mt-3 flex flex-wrap items-end gap-4">
           <label className="text-sm">
             <span className="text-slate-600">Referans yıl</span>
             <select
               value={referans}
-              onChange={(e) => setReferans(e.target.value)}
-              className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              onChange={(e) => changeReferans(e.target.value)}
+              className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
             >
               {Object.keys(REFERANS_YIL_SECENEKLERI).map((k) => (
-                <option key={k} value={k}>{k}</option>
+                <option key={k} value={k}>
+                  {k}
+                </option>
               ))}
             </select>
           </label>
           <label className="flex items-center gap-2 text-sm text-slate-700">
-            <input type="checkbox" checked={mizanYedek} onChange={(e) => setMizanYedek(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={mizanYedek}
+              onChange={(e) => setMizanYedek(e.target.checked)}
+            />
             MIZAN yedek
           </label>
           <button
@@ -219,6 +299,36 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
             {dagitBusy ? "Dağıtılıyor…" : "A motoru ile dağıt"}
           </button>
         </div>
+
+        {refYears.length > 1 && (
+          <div className="mt-4 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              Yıl ağırlıkları (%)
+            </p>
+            <div className="mt-2 flex flex-wrap gap-3">
+              {refYears.map((yil, idx) => (
+                <label key={yil} className="text-sm text-slate-700">
+                  <span className="mr-2 font-medium">{yil}</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={Number(pctLabel(yilAgirliklari[idx] ?? 0))}
+                    onChange={(e) => updateAgirlik(idx, Number(e.target.value))}
+                    className="w-20 rounded border border-slate-300 px-2 py-1 text-sm"
+                  />
+                </label>
+              ))}
+            </div>
+            <p className={`mt-2 text-xs ${agirlikUyarisi ? "text-amber-800" : "text-slate-500"}`}>
+              Toplam: {pctLabel(agirlikToplam)}%
+              {agirlikUyarisi
+                ? " — dağıtımda 100% olacak şekilde otomatik normalize edilir."
+                : ""}
+            </p>
+          </div>
+        )}
+
         {!hazir && (
           <p className="mt-2 text-sm text-amber-800">
             Dağıtım için SATIS_BUTCE ve tarife-branş pay tablosu gerekli.
@@ -238,7 +348,7 @@ export default function PrimHedefiClient({ durum, initialTarifeOzet }: Props) {
       {bransOzet && (
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-900">Branş bazlı hedef özeti</h2>
-          <div className="mt-3 overflow-x-auto max-h-[480px]">
+          <div className="mt-3 max-h-[480px] overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="sticky top-0 bg-white">
                 <tr className="border-b border-slate-200 text-left text-xs text-slate-500">

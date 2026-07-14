@@ -66,6 +66,8 @@ export async function loadPrimBransHedef(): Promise<PrimBransHedefStore | null> 
 export type PrimBransHedefFile = {
   guncellemeIso?: string;
   referansEtiket?: string;
+  /** Referans yılları sırasıyla üretim payı ağırlıkları (toplam ≈ 1). */
+  yilAgirliklari?: number[];
   tarifeHedefleri?: Record<string, number>;
   hedefler?: PrimBransHedefStore;
   direkt?: Record<string, number>;

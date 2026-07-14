@@ -1,7 +1,10 @@
 import {
   MIZAN_HESAP_DIREKT,
   MIZAN_HESAP_ENDIREKT,
+  PRIM_HEDEF_ARTIS_VARSAYILAN,
   REFERANS_YIL_SECENEKLERI,
+  normalizeYilAgirliklari,
+  referansYilAgirliklari,
 } from "../config/constants";
 import { HAZINE_BRANS_SIRASI, bransAdi, anaBrans } from "../config/brans";
 import { uretimWithNorm } from "../import/uretimImport";
@@ -34,6 +37,8 @@ export type DagitimInput = {
   referansEtiket?: string;
   mizanYedek?: boolean;
   tarifeHedefleri?: Record<string, number>;
+  /** Referans yılları sırasıyla ağırlıklar (normalize edilir). */
+  yilAgirliklari?: number[];
 };
 
 export type DagitimSonuc = {
@@ -60,23 +65,63 @@ function payDict(entries: Map<string, number>): Record<string, number> {
   return out;
 }
 
-function ortalamaPaylar(yearShares: Record<string, number>[]): Record<string, number> {
+/**
+ * Yıllık branş paylarını birleştirir.
+ * `weights` verilmezse eşit ortalama; verilirse ağırlıklı ortalama (normalize).
+ * yearShares ile weights hizalı olmalı (eksik yıl zaten çağıran tarafta düşülmüş olmalı).
+ */
+export function ortalamaPaylar(
+  yearShares: Record<string, number>[],
+  weights?: readonly number[],
+): Record<string, number> {
   if (yearShares.length === 0) return {};
   if (yearShares.length === 1) return yearShares[0];
+
+  const w =
+    weights && weights.length === yearShares.length
+      ? normalizeYilAgirliklari(weights)
+      : yearShares.map(() => 1 / yearShares.length);
+
   const allBrans = new Set<string>();
   for (const ys of yearShares) {
     for (const k of Object.keys(ys)) allBrans.add(k);
   }
   const avg: Record<string, number> = {};
   for (const b of allBrans) {
-    const vals = yearShares.map((ys) => ys[b] ?? 0);
-    avg[b] = vals.reduce((a, x) => a + x, 0) / vals.length;
+    let s = 0;
+    for (let i = 0; i < yearShares.length; i++) {
+      s += (yearShares[i][b] ?? 0) * w[i];
+    }
+    avg[b] = s;
   }
   const total = Object.values(avg).reduce((a, x) => a + x, 0);
   if (total <= 0) return {};
   const norm: Record<string, number> = {};
   for (const [b, v] of Object.entries(avg)) norm[b] = v / total;
   return norm;
+}
+
+/** Referans yıllarından veri olanları ve onlara denk (normalize) ağırlıkları üretir. */
+export function alignYearWeights(
+  refYears: readonly number[],
+  availableYears: ReadonlySet<number> | readonly number[],
+  weights?: readonly number[],
+): { years: number[]; weights: number[] } {
+  const avail = availableYears instanceof Set ? availableYears : new Set(availableYears);
+  const baseW =
+    weights && weights.length === refYears.length
+      ? normalizeYilAgirliklari(weights)
+      : refYears.map(() => 1 / Math.max(refYears.length, 1));
+
+  const years: number[] = [];
+  const kept: number[] = [];
+  for (let i = 0; i < refYears.length; i++) {
+    if (avail.has(refYears[i]!)) {
+      years.push(refYears[i]!);
+      kept.push(baseW[i] ?? 0);
+    }
+  }
+  return { years, weights: normalizeYilAgirliklari(kept.length ? kept : [1]) };
 }
 
 function tarifeToBransSet(tarifeMap: TarifeMapRow[]): Record<string, Set<string>> {
@@ -160,11 +205,20 @@ export class DagitimMotoru {
       referansEtiket = "2024",
       mizanYedek = true,
       tarifeHedefleri,
+      yilAgirliklari,
     } = input;
 
     const refYears = REFERANS_YIL_SECENEKLERI[referansEtiket] ?? [2024];
+    const weights = referansYilAgirliklari(referansEtiket, yilAgirliklari);
     if (this.tarifeBransPay.length > 0) {
-      return this.dagitTarifeBransPay(satisRows, hedefKolon, tarifeHedefleri, refYears, referansEtiket);
+      return this.dagitTarifeBransPay(
+        satisRows,
+        hedefKolon,
+        tarifeHedefleri,
+        refYears,
+        referansEtiket,
+        weights,
+      );
     }
 
     let dagitimRows = satisRows;
@@ -187,6 +241,7 @@ export class DagitimMotoru {
         refYears,
         endirekt,
         mizanYedek,
+        weights,
       );
 
       if (!shares || Object.keys(shares).length === 0) {
@@ -271,6 +326,7 @@ export class DagitimMotoru {
     tarifeHedefleri: Record<string, number> | undefined,
     refYears: readonly number[],
     referansEtiket: string,
+    yilAgirliklari: readonly number[],
   ): DagitimSonuc {
     const hedefler = this.tarifeHedefMap(satisRows, hedefKolon, tarifeHedefleri);
     const detay: PrimDagitimDetay[] = [];
@@ -278,7 +334,7 @@ export class DagitimMotoru {
 
     for (const [tarifeGrubu, hedef] of Object.entries(hedefler)) {
       if (hedef <= 0) continue;
-      const shares = this.tarifeBransPaylari(tarifeGrubu, refYears);
+      const shares = this.tarifeBransPaylari(tarifeGrubu, refYears, yilAgirliklari);
       if (Object.keys(shares).length === 0) {
         log.push({
           kanal1: "TARIFE_GRUBU",
@@ -317,8 +373,13 @@ export class DagitimMotoru {
     return { detay, bransOzet, bransDirektEndirekt, log, ozet };
   }
 
-  private tarifeBransPaylari(tgn: string, refYears: readonly number[]): Record<string, number> {
-    const yearShares: Record<string, number>[] = [];
+  private tarifeBransPaylari(
+    tgn: string,
+    refYears: readonly number[],
+    yilAgirliklari: readonly number[],
+  ): Record<string, number> {
+    const available = new Set<number>();
+    const byYear = new Map<number, Record<string, number>>();
     for (const yil of refYears) {
       const sub = this.tarifeBransPay.filter((r) => r.yil === yil && r.tarifeGrubu === tgn);
       const total = sub.reduce((a, r) => a + Math.max(0, r.netPrim), 0);
@@ -328,9 +389,14 @@ export class DagitimMotoru {
         map.set(r.bransKodu, (map.get(r.bransKodu) ?? 0) + Math.max(0, r.netPrim));
       }
       const shares = payDict(map);
-      if (Object.keys(shares).length > 0) yearShares.push(shares);
+      if (Object.keys(shares).length > 0) {
+        available.add(yil);
+        byYear.set(yil, shares);
+      }
     }
-    return ortalamaPaylar(yearShares);
+    const aligned = alignYearWeights(refYears, available, yilAgirliklari);
+    const yearShares = aligned.years.map((y) => byYear.get(y)!);
+    return ortalamaPaylar(yearShares, aligned.weights);
   }
 
   private hesaplaPaylar(
@@ -340,35 +406,50 @@ export class DagitimMotoru {
     refYears: readonly number[],
     endirekt: boolean,
     mizanYedek: boolean,
+    yilAgirliklari: readonly number[],
   ): { shares: Record<string, number>; kaynak: Kaynak; eslesme: string } {
     const k1n = normalizeText(kanal1);
     const k3n = normalizeText(kanal2);
     const tgn = normalizeText(tarife);
 
-    const yearShares: Record<string, number>[] = [];
+    const available = new Set<number>();
+    const byYear = new Map<number, Record<string, number>>();
     let eslesme = "tam";
 
     for (const yil of refYears) {
       const { shares, matchType } = this.uretimPaylari(k1n, k3n, tgn, yil);
       if (Object.keys(shares).length > 0) {
-        yearShares.push(shares);
+        available.add(yil);
+        byYear.set(yil, shares);
         if (matchType !== "tam") eslesme = matchType;
       }
     }
 
-    if (yearShares.length > 0) {
-      return { shares: ortalamaPaylar(yearShares), kaynak: "uretim", eslesme };
+    if (byYear.size > 0) {
+      const aligned = alignYearWeights(refYears, available, yilAgirliklari);
+      const yearShares = aligned.years.map((y) => byYear.get(y)!);
+      return { shares: ortalamaPaylar(yearShares, aligned.weights), kaynak: "uretim", eslesme };
     }
 
     if (mizanYedek) {
       const hesap = endirekt ? MIZAN_HESAP_ENDIREKT : MIZAN_HESAP_DIREKT;
-      const mizShares: Record<string, number>[] = [];
+      const mizAvail = new Set<number>();
+      const mizByYear = new Map<number, Record<string, number>>();
       for (const yil of refYears) {
         const ms = this.mizanPaylari(tgn, yil, hesap);
-        if (Object.keys(ms).length > 0) mizShares.push(ms);
+        if (Object.keys(ms).length > 0) {
+          mizAvail.add(yil);
+          mizByYear.set(yil, ms);
+        }
       }
-      if (mizShares.length > 0) {
-        return { shares: ortalamaPaylar(mizShares), kaynak: "mizan", eslesme: "mizan_yedek" };
+      if (mizByYear.size > 0) {
+        const aligned = alignYearWeights(refYears, mizAvail, yilAgirliklari);
+        const yearShares = aligned.years.map((y) => mizByYear.get(y)!);
+        return {
+          shares: ortalamaPaylar(yearShares, aligned.weights),
+          kaynak: "mizan",
+          eslesme: "mizan_yedek",
+        };
       }
     }
 
@@ -530,9 +611,9 @@ export function tarifeOzetFromSatis(rows: SatisButceRow[]) {
   }
   return [...map.entries()].map(([tarifeGrubu, v]) => {
     const gecmisVar = v.oncekiYil1 > 0 || v.oncekiYil2 > 0 || v.tahminYilsonu > 0;
-    const yeniHedef = gecmisVar ? v.mevcutHedef * 1.25 : v.mevcutHedef;
+    const yeniHedef = v.mevcutHedef * (1 + PRIM_HEDEF_ARTIS_VARSAYILAN);
     const artisOrani =
-      gecmisVar && v.mevcutHedef > 0 ? yeniHedef / v.mevcutHedef - 1 : gecmisVar ? 0.25 : 0;
+      v.mevcutHedef > 0 ? yeniHedef / v.mevcutHedef - 1 : PRIM_HEDEF_ARTIS_VARSAYILAN;
     return {
       tarifeGrubu,
       oncekiYil1: v.oncekiYil1,
@@ -543,5 +624,20 @@ export function tarifeOzetFromSatis(rows: SatisButceRow[]) {
       artisOrani,
       sadeExport: !gecmisVar,
     };
+  });
+}
+
+/** Kayıtlı tarife hedeflerini SATIS özet satırlarına uygular. */
+export function hydrateTarifeOzet(
+  ozet: ReturnType<typeof tarifeOzetFromSatis>,
+  tarifeHedefleri?: Record<string, number> | null,
+): ReturnType<typeof tarifeOzetFromSatis> {
+  if (!tarifeHedefleri || Object.keys(tarifeHedefleri).length === 0) return ozet;
+  return ozet.map((row) => {
+    const saved = tarifeHedefleri[row.tarifeGrubu];
+    if (saved == null || !Number.isFinite(saved)) return row;
+    const yeniHedef = saved;
+    const artisOrani = row.mevcutHedef > 0 ? yeniHedef / row.mevcutHedef - 1 : 0;
+    return { ...row, yeniHedef, artisOrani };
   });
 }

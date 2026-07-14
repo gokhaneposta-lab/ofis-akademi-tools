@@ -44,6 +44,12 @@ export const KANAL_1 = [
 
 export const SIRKET_TIPLERI = ["BS", "BE", "HAVUZ"] as const;
 
+/**
+ * İlk yüklemede Excel HEDEF kolonuna uygulanacak varsayılan artış (0 = artış yok).
+ * Kullanıcı PrimHedefi ekranından tutarı/artışı elle girer.
+ */
+export const PRIM_HEDEF_ARTIS_VARSAYILAN = 0;
+
 /** A dağıtım motoru — üretim payları için referans yıl seçenekleri */
 export const REFERANS_YIL_SECENEKLERI: Readonly<Record<string, readonly number[]>> = {
   "2024": [2024],
@@ -56,6 +62,34 @@ export const REFERANS_YIL_SECENEKLERI: Readonly<Record<string, readonly number[]
   "Son 2 Yıl Ortalaması (2025-2026)": [2025, 2026],
   "Son 3 Yıl Ortalaması (2023-2025)": [2023, 2024, 2025],
 };
+
+/** Referans etiketindeki yıl sayısına göre varsayılan ağırlıklar (toplam 1). */
+export function varsayilanYilAgirliklari(yilSayisi: number): number[] {
+  if (yilSayisi <= 1) return [1];
+  if (yilSayisi === 2) return [0.5, 0.5];
+  if (yilSayisi === 3) return [0.5, 0.3, 0.2];
+  const w = 1 / yilSayisi;
+  return Array.from({ length: yilSayisi }, () => w);
+}
+
+/** Ağırlıkları pozitif tutup toplamı 1 olacak şekilde normalize eder. */
+export function normalizeYilAgirliklari(weights: readonly number[]): number[] {
+  const cleaned = weights.map((w) => (Number.isFinite(w) && w > 0 ? w : 0));
+  const sum = cleaned.reduce((a, x) => a + x, 0);
+  if (sum <= 0) return varsayilanYilAgirliklari(weights.length);
+  return cleaned.map((w) => w / sum);
+}
+
+export function referansYilAgirliklari(
+  referansEtiket: string,
+  override?: readonly number[] | null,
+): number[] {
+  const years = REFERANS_YIL_SECENEKLERI[referansEtiket] ?? [2024];
+  if (override && override.length === years.length) {
+    return normalizeYilAgirliklari(override);
+  }
+  return varsayilanYilAgirliklari(years.length);
+}
 
 export const MIZAN_HESAP_DIREKT = "60001";
 export const MIZAN_HESAP_ENDIREKT = "600012";

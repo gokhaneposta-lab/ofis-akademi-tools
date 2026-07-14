@@ -188,6 +188,23 @@ export class MizanOranServisi {
   kalemDetay(kalemKodu: string, brans: string) {
     return this.etkinOranHesapla(kalemKodu, brans);
   }
+
+  /** Tek yıl için pay/baz/oran (backtest veya diagnostik). */
+  yilOlcum(
+    kalemKodu: string,
+    brans: string,
+    yil: number,
+  ): { pay: number; baz: number; oran: number | null } | null {
+    if (!this.yillar.includes(yil)) return null;
+    const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+    if (!b0) return null;
+    const prefix = b0.hesap_eslesme === "prefix";
+    const tumSirketBaz = b0.baz_toplam_sirket ?? false;
+    const pay = this.hesapTutar(yil, brans, b0.pay, { prefix });
+    const baz = this.hesapTutar(yil, brans, b0.baz, { prefix, tumSirket: tumSirketBaz });
+    if (Math.abs(baz) < MIN_BAZ_TUTAR) return { pay, baz, oran: null };
+    return { pay, baz, oran: pay / baz };
+  }
 }
 
 export function oranKalemListesi(): { kod: string; ad: string }[] {

@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     referansEtiket?: string;
     mizanYedek?: boolean;
     tarifeHedefleri?: Record<string, number>;
+    yilAgirliklari?: number[];
     izlemeBrans?: string;
     izlemeTarife?: string;
   };
@@ -47,12 +48,14 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
+  const referansEtiket = body.referansEtiket ?? "2024";
   const motor = new DagitimMotoru(uretim, tarifeMap, mizan, tarifeBransPay);
   const sonuc = motor.dagit({
     satisRows,
-    referansEtiket: body.referansEtiket ?? "2024",
+    referansEtiket,
     mizanYedek: body.mizanYedek ?? true,
     tarifeHedefleri: body.tarifeHedefleri,
+    yilAgirliklari: body.yilAgirliklari,
   });
 
   const tarifeHedefleri = body.tarifeHedefleri ?? {};
@@ -68,7 +71,8 @@ export async function POST(request: Request) {
     BUTCE_PRIM_BRANS_JSON,
     JSON.stringify({
       guncellemeIso: new Date().toISOString(),
-      referansEtiket: body.referansEtiket ?? "2024",
+      referansEtiket,
+      yilAgirliklari: body.yilAgirliklari,
       tarifeHedefleri,
       hedefler,
       direkt,

@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import PrimHedefiClient from "@/components/butce/PrimHedefiClient";
-import { butceDataDurumu, loadSatisButceRows } from "@/lib/butce/loadData";
-import { tarifeOzetFromSatis } from "@/lib/butce/prim/dagitimMotoru";
+import {
+  butceDataDurumu,
+  loadPrimBransHedefStore,
+  loadSatisButceRows,
+} from "@/lib/butce/loadData";
+import { hydrateTarifeOzet, tarifeOzetFromSatis } from "@/lib/butce/prim/dagitimMotoru";
 
 export const metadata: Metadata = {
   title: "Prim hedefi",
@@ -13,11 +17,13 @@ export const dynamic = "force-dynamic";
 export default async function PrimHedefiPage() {
   const durum = await butceDataDurumu();
   const satisRows = await loadSatisButceRows();
-  const initialTarifeOzet = satisRows.length > 0 ? tarifeOzetFromSatis(satisRows) : [];
+  const store = await loadPrimBransHedefStore();
+  const baseOzet = satisRows.length > 0 ? tarifeOzetFromSatis(satisRows) : [];
+  const initialTarifeOzet = hydrateTarifeOzet(baseOzet, store?.tarifeHedefleri);
 
   return (
     <PrimHedefiClient
-      key={`${durum.satisButceSatir}-${durum.mizanSatir}`}
+      key={`${durum.satisButceSatir}-${durum.mizanSatir}-${store?.guncellemeIso ?? "none"}`}
       durum={{
         hasMizan: durum.hasMizan,
         hasTarifeMap: durum.hasTarifeMap,
@@ -32,6 +38,9 @@ export default async function PrimHedefiPage() {
         butceYili: durum.butceYili,
       }}
       initialTarifeOzet={initialTarifeOzet}
+      initialReferans={store?.referansEtiket}
+      initialYilAgirliklari={store?.yilAgirliklari}
+      excelTarifeOzet={baseOzet}
     />
   );
 }

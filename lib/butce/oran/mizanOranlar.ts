@@ -35,11 +35,18 @@ export class MizanOranServisi {
     return this.index.hesapTutar(yil, brans, hesaplar, opts);
   }
 
+  private hesapEslesmeOpts(bilesen: BilesenSpec) {
+    return {
+      prefix: bilesen.hesap_eslesme === "prefix",
+      bransGt: bilesen.hesap_eslesme === "brans_gt",
+    };
+  }
+
   private bilesenYilOrani(brans: string, yil: number, bilesen: BilesenSpec): number | null {
-    const prefix = bilesen.hesap_eslesme === "prefix";
+    const eslesme = this.hesapEslesmeOpts(bilesen);
     const tumSirketBaz = bilesen.baz_toplam_sirket ?? false;
-    const pay = this.hesapTutar(yil, brans, bilesen.pay, { prefix });
-    const baz = this.hesapTutar(yil, brans, bilesen.baz, { prefix, tumSirket: tumSirketBaz });
+    const pay = this.hesapTutar(yil, brans, bilesen.pay, eslesme);
+    const baz = this.hesapTutar(yil, brans, bilesen.baz, { ...eslesme, tumSirket: tumSirketBaz });
     if (Math.abs(baz) < MIN_BAZ_TUTAR) return null;
     return pay / baz;
   }
@@ -198,10 +205,13 @@ export class MizanOranServisi {
     if (!this.yillar.includes(yil)) return null;
     const b0 = exportNormSpec(kalemKodu).bilesenler[0];
     if (!b0) return null;
-    const prefix = b0.hesap_eslesme === "prefix";
+    const eslesme = {
+      prefix: b0.hesap_eslesme === "prefix",
+      bransGt: b0.hesap_eslesme === "brans_gt",
+    };
     const tumSirketBaz = b0.baz_toplam_sirket ?? false;
-    const pay = this.hesapTutar(yil, brans, b0.pay, { prefix });
-    const baz = this.hesapTutar(yil, brans, b0.baz, { prefix, tumSirket: tumSirketBaz });
+    const pay = this.hesapTutar(yil, brans, b0.pay, eslesme);
+    const baz = this.hesapTutar(yil, brans, b0.baz, { ...eslesme, tumSirket: tumSirketBaz });
     if (Math.abs(baz) < MIN_BAZ_TUTAR) return { pay, baz, oran: null };
     return { pay, baz, oran: pay / baz };
   }

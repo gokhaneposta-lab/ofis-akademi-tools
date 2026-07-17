@@ -10,6 +10,31 @@ export function normHesapKodu(hesap: string): string {
   return String(hesap).replace(/\D/g, "");
 }
 
+/** GT branş kodu + GT satır kodu → mizan hesap no (ör. 701 + 02571 → 70102571). */
+export function bransGtHesapNo(bransKodu: string, gtSuffix: string): string {
+  const br = String(bransKodu).replace(/\D/g, "");
+  const suf = normHesapKodu(gtSuffix);
+  return `${br}${suf}`;
+}
+
+/**
+ * GT branşlı mizan hesabı için aday kodlar (önce 7xx02571, yoksa UNPIVOT karşılığı).
+ * @see oran_kalem F300 — Alınan reasürans komisyon oranı
+ */
+export const BRANS_GT_LEGACY_HESAP: Readonly<Record<string, readonly string[]>> = {
+  "0112": ["60002"],
+  "02571": ["61407101", "614071"],
+};
+
+export function bransGtHesapAdaylari(bransKodu: string, gtSuffix: string): string[] {
+  const suf = normHesapKodu(gtSuffix);
+  const adaylar = [bransGtHesapNo(bransKodu, suf)];
+  for (const leg of BRANS_GT_LEGACY_HESAP[suf] ?? []) {
+    if (!adaylar.includes(leg)) adaylar.push(leg);
+  }
+  return adaylar;
+}
+
 /** Verilen hesap setinde başka bir kodun ebeveyni olanları eler. */
 export function enDerinYaprakKodlar(kodlar: Iterable<string>): string[] {
   const codes = [...new Set([...kodlar].map(normHesapKodu).filter(Boolean))];

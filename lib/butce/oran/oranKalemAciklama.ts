@@ -40,11 +40,19 @@ function fmtHesaplar(hesaplar: string[], prefix?: boolean): string {
 }
 
 function fmtPayTaraf(bilesen: Pick<BilesenSpec, "pay" | "hesap_eslesme">): string {
+  if (bilesen.hesap_eslesme === "brans_gt") {
+    const p = bilesen.pay.map((s) => `7xx${s}`).join(" + ");
+    return `${p} (branş GT hesapları)`;
+  }
   const p = fmtHesaplar(bilesen.pay, bilesen.hesap_eslesme === "prefix");
   return bilesen.hesap_eslesme === "prefix" ? `${p} (alt hesaplar dahil)` : p;
 }
 
 function fmtBazTaraf(bilesen: Pick<BilesenSpec, "baz" | "hesap_eslesme" | "baz_toplam_sirket">): string {
+  if (bilesen.hesap_eslesme === "brans_gt") {
+    const b = bilesen.baz.map((s) => `7xx${s}`).join(" + ");
+    return `${b} (reasüransa devredilen prim) — branş`;
+  }
   const b = fmtHesaplar(bilesen.baz, bilesen.hesap_eslesme === "prefix");
   if (bilesen.baz_toplam_sirket) {
     return `${b} — tüm şirket toplamı (branş değil)`;

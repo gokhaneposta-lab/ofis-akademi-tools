@@ -78,11 +78,12 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
   F358: { pay: ["6140110102"], baz: ["614011"], carpim: CARPIM_DIREKT_PRIM },
   F348: { pay: ["61301101"], baz: ["600"] },
   F441: { pay: ["611"], baz: ["60001"] },
-  /** GT F197 = F19×F300 — Excel A.Komisyon oranı (61407101 / 60002). */
+  /** GT F197 = F19×F300 — branş GT: 70102571 / 7010112 (devredilen prim). */
   F300: {
-    pay: ["61407101"],
-    baz: ["60002"],
+    pay: ["02571"],
+    baz: ["0112"],
     gt_hucre: "F300",
+    hesap_eslesme: "brans_gt",
   },
   F368: {
     pay: ["61402"],
@@ -201,10 +202,11 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
   if (!out.F300) {
     out.F300 = {
       ad: "Alınan reasürans komisyon oranı (A.Komisyon)",
-      pay: ["61407101"],
-      baz: ["60002"],
+      pay: ["02571"],
+      baz: ["0112"],
       yil_birlestirme: [[1, 0.5], [2, 0.25], [3, 0.15], [4, 0.1]],
       gt_hucre: "F300",
+      hesap_eslesme: "brans_gt",
     };
   }
 

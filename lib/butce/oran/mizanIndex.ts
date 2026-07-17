@@ -1,6 +1,6 @@
 import { normalizeBransKodu } from "../textUtils";
 import type { MizanRow } from "../types";
-import { toplaHesapTutarlari } from "./hesapAgregasyon";
+import { bransGtHesapAdaylari, toplaHesapTutarlari } from "./hesapAgregasyon";
 
 /** yil|brans → satırlar; yil → şirket geneli */
 export class MizanIndex {
@@ -34,12 +34,26 @@ export class MizanIndex {
     yil: number,
     brans: string,
     hesaplar: string[],
-    opts: { prefix?: boolean; tumSirket?: boolean } = {},
+    opts: { prefix?: boolean; bransGt?: boolean; tumSirket?: boolean } = {},
   ): number {
-    const { prefix = false, tumSirket = false } = opts;
+    const { prefix = false, bransGt = false, tumSirket = false } = opts;
     const rows = tumSirket
       ? (this.byYil.get(yil) ?? [])
       : (this.byYilBrans.get(`${yil}|${normalizeBransKodu(brans)}`) ?? []);
+
+    if (bransGt) {
+      let toplam = 0;
+      for (const suffix of hesaplar) {
+        for (const aday of bransGtHesapAdaylari(brans, suffix)) {
+          const t = toplaHesapTutarlari(rows, [aday], { prefix: true });
+          if (Math.abs(t) > 0) {
+            toplam += t;
+            break;
+          }
+        }
+      }
+      return toplam;
+    }
 
     return toplaHesapTutarlari(rows, hesaplar, { prefix });
   }

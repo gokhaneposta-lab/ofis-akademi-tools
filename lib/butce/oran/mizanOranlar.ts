@@ -4,11 +4,12 @@ import {
   ORAN_REFERANS_SECENEKLERI,
   ORAN_REFERANS_VARSAYILAN,
 } from "../config/constants";
-import type { BransOranAyar, BransOranSatir, MizanRow, OranAyarStore } from "../types";
+import type { BransOranAyar, BransOranSatir, MizanAylikRow, MizanRow, OranAyarStore } from "../types";
 import type { BilesenSpec } from "./oranKalemLoader";
 import { ORAN_BAZLI_KALEMLER, ORAN_KALEM_MIZAN } from "./oranKalemLoader";
 import { exportNormSpec, hesaplaEtkinOran } from "./oranMotoru";
 import { MizanIndex } from "./mizanIndex";
+import { mergeMizanYillikVeAylik } from "./mizanAylikYilsonu";
 
 const MIN_BAZ_TUTAR = 1;
 
@@ -17,9 +18,10 @@ export class MizanOranServisi {
   readonly yillar: number[];
   private readonly index: MizanIndex;
 
-  constructor(mizan: MizanRow[], butceYili = 2027) {
+  constructor(mizan: MizanRow[], butceYili = 2027, mizanAylikFull: MizanAylikRow[] = []) {
     this.butceYili = butceYili;
-    const filtered = mizan.filter((r) => r.bransKodu !== "TOPLAM");
+    const merged = mergeMizanYillikVeAylik(mizan, mizanAylikFull);
+    const filtered = merged.filter((r) => r.bransKodu !== "TOPLAM");
     this.index = new MizanIndex(filtered);
     this.yillar = [...new Set(filtered.map((r) => r.yil))]
       .filter((y) => y < butceYili)

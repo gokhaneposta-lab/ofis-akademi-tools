@@ -62,6 +62,20 @@ export async function loadMizanAylikRows(): Promise<MizanAylikRow[]> {
   }));
 }
 
+/** Tüm GT kodları (02571, 0112 …) — teknik oranlar için yılsonu snapshot kaynağı. */
+export async function loadMizanAylikFullRows(): Promise<MizanAylikRow[]> {
+  const raw = await readPrivateFile(BUTCE_MIZAN_AYLIK_FULL_JSON);
+  if (!raw) return loadMizanAylikRows();
+  const parsed = JSON.parse(raw) as MizanAylikRow[];
+  return parsed.map((r) => ({
+    yil: Number(r.yil),
+    ay: Number(r.ay),
+    hesap: String(r.hesap).replace(/\.0$/, ""),
+    bransKodu: String(r.bransKodu),
+    tutar: Number(r.tutar),
+  }));
+}
+
 export async function loadPrimBransHedef(): Promise<PrimBransHedefStore | null> {
   const store = await loadPrimBransHedefStore();
   return store?.hedefler ?? null;

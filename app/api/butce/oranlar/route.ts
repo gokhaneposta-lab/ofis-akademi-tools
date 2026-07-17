@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { loadMizanRows, loadOranAyarlar, butceDataDurumu } from "@/lib/butce/loadData";
+import { loadMizanRows, loadMizanAylikFullRows, loadOranAyarlar, butceDataDurumu } from "@/lib/butce/loadData";
 import { MizanOranServisi, oranKalemListesi } from "@/lib/butce/oran/mizanOranlar";
 import { oranKalemAciklama } from "@/lib/butce/oran/oranKalemAciklama";
 
@@ -17,8 +17,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "MIZAN verisi yok" }, { status: 400 });
   }
 
+  const mizanAylikFull = await loadMizanAylikFullRows();
   const { butceYili } = await butceDataDurumu();
-  const servis = new MizanOranServisi(mizan, butceYili);
+  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
   let ayarlar = await loadOranAyarlar();
   ayarlar = servis.migrateLegacyBransAyarlar(ayarlar);
 

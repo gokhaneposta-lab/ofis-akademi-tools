@@ -5,6 +5,7 @@ import {
   loadFaaliyetGiderRows,
   loadKpkKapanisTahmin,
   loadKpkVadeRows,
+  loadMizanAylikFullRows,
   loadMizanAylikRows,
   loadMizanRows,
   loadOranAyarlar,
@@ -35,13 +36,14 @@ export async function GET() {
     );
   }
 
-  const [mizan, endirekt, aylikPrim, oranAyar, mizanAylik, tarifeBransPay, kpkVade, kapanisTahmin, faaliyetGider] =
+  const [mizan, endirekt, aylikPrim, oranAyar, mizanAylik, mizanAylikFull, tarifeBransPay, kpkVade, kapanisTahmin, faaliyetGider] =
     await Promise.all([
       loadMizanRows(),
       loadPrimBransEndirekt(),
       loadAylikPrim(),
       loadOranAyarlar(),
       loadMizanAylikRows(),
+      loadMizanAylikFullRows(),
       loadTarifeBransPayRows(),
       loadKpkVadeRows(),
       loadKpkKapanisTahmin(),
@@ -56,6 +58,7 @@ export async function GET() {
     aylikPrim,
     oranAyar,
     mizanAylik,
+    mizanAylikFull,
     tarifeBransPay,
     kpkVade,
     kapanisTahmin,

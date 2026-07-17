@@ -83,6 +83,8 @@ export function buildGelirTablosu(opts: {
   gosterimSatirlari?: GtGosterimSatir[];
   /** Şirket toplamı aylık override; branşlara prim payı ile dağıtılır. */
   aylikSatirOverride?: Record<number, number[]>;
+  /** MIZAN_AY full — GT kodları (02571 vb.) yılsonu snapshot ile oranlara eklenir. */
+  mizanAylikFull?: MizanAylikRow[];
 }): GelirTablosuSonuc {
   const {
     mizan,
@@ -99,6 +101,7 @@ export function buildGelirTablosu(opts: {
     disHucrelerByBrans = {},
     gosterimSatirlari,
     aylikSatirOverride,
+    mizanAylikFull = [],
   } = opts;
 
   const satirlar = gosterimSatirlari ?? GT_GOSTERIM_SATIRLARI;
@@ -115,6 +118,7 @@ export function buildGelirTablosu(opts: {
           aylikPrim,
           oranAyar,
           kapanisTahmin,
+          mizanAylikFull,
         })
       : null;
 
@@ -130,11 +134,12 @@ export function buildGelirTablosu(opts: {
           mizan,
           oranAyar,
           aktifBransKodlari: aktifBranslar,
+          mizanAylikFull,
         })
       : null;
   const faaliyetByBrans = new Map(faaliyetSonuc?.map((b) => [b.bransKodu, b]) ?? []);
 
-  const motor = new GelirTablosuMotoru(mizan, butceYili, oranAyar);
+  const motor = new GelirTablosuMotoru(mizan, butceYili, oranAyar, mizanAylikFull);
 
   const branslar: GelirBransKolon[] = [];
   const toplam: Record<number, number> = {};

@@ -1,6 +1,6 @@
 import gtHaritaRaw from "../data/gt_excel_harita.json";
 import { HAZINE_BRANS_SIRASI } from "../config/brans";
-import type { MizanRow, OranAyarStore } from "../types";
+import type { MizanAylikRow, MizanRow, OranAyarStore } from "../types";
 import { ORAN_KALEM_MIZAN } from "../oran/oranKalemLoader";
 import { MizanOranServisi } from "../oran/mizanOranlar";
 
@@ -67,8 +67,13 @@ export class GelirTablosuMotoru {
   /** Hesaplama sırasında dış-girdi (0 alınan) hücreler — şeffaflık için. */
   readonly eksikGirdiler = new Map<number, GtEksikGirdi>();
 
-  constructor(mizan: MizanRow[], butceYili: number, oranAyar: OranAyarStore = {}) {
-    this.oranServisi = new MizanOranServisi(mizan, butceYili);
+  constructor(
+    mizan: MizanRow[],
+    butceYili: number,
+    oranAyar: OranAyarStore = {},
+    mizanAylikFull: MizanAylikRow[] = [],
+  ) {
+    this.oranServisi = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
     for (const [hucre, kalem] of ORAN_HUCRE_TO_KALEM) {
       const tablo = this.oranServisi.tumBranslarTablosu(kalem, oranAyar[kalem] ?? {});
       const map = new Map<string, number>();

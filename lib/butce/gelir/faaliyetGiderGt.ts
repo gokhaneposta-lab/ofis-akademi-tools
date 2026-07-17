@@ -1,7 +1,7 @@
 import { faaliyetImportHesapGtSatir, FAALIYET_IMPORT_GT_SATIRLARI } from "../config/faaliyetGiderMap";
 import { MizanOranServisi } from "../oran/mizanOranlar";
 import { normalizeBransKodu } from "../textUtils";
-import type { FaaliyetGiderRow, MizanRow, OranAyarStore } from "../types";
+import type { FaaliyetGiderRow, MizanAylikRow, MizanRow, OranAyarStore } from "../types";
 
 export { FAALIYET_IMPORT_GT_SATIRLARI as FAALIYET_GT_SATIRLARI };
 
@@ -20,9 +20,10 @@ function branchShares(
   butceYili: number,
   oranAyar: OranAyarStore,
   aktifBransKodlari: readonly string[],
+  mizanAylikFull: MizanAylikRow[] = [],
 ): Record<string, number> {
   const aktifSet = new Set(aktifBransKodlari.map(normalizeBransKodu));
-  const servis = new MizanOranServisi(mizan, butceYili);
+  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
   const tablo = servis.tumBranslarTablosu("F368", oranAyar["F368"] ?? {});
   const out: Record<string, number> = {};
   let toplam = 0;
@@ -52,8 +53,8 @@ export function buildFaaliyetGiderSonuc(opts: {
   rows: FaaliyetGiderRow[];
   mizan: MizanRow[];
   oranAyar?: OranAyarStore;
-  /** Gelir tablosunda prim hedefi olan branşlar — F368 payı bunlar arasında normalize edilir. */
   aktifBransKodlari: readonly string[];
+  mizanAylikFull?: MizanAylikRow[];
 }): FaaliyetGiderBransSonuc[] | null {
   const filtered = opts.rows.filter((r) => r.butceYili === opts.butceYili);
   if (filtered.length === 0) return null;
@@ -61,7 +62,13 @@ export function buildFaaliyetGiderSonuc(opts: {
   const aktifBrans = opts.aktifBransKodlari.map(normalizeBransKodu);
   if (aktifBrans.length === 0) return null;
 
-  const shares = branchShares(opts.mizan, opts.butceYili, opts.oranAyar ?? {}, aktifBrans);
+  const shares = branchShares(
+    opts.mizan,
+    opts.butceYili,
+    opts.oranAyar ?? {},
+    aktifBrans,
+    opts.mizanAylikFull ?? [],
+  );
 
   const byBrans = new Map<string, FaaliyetGiderBransSonuc>();
   for (const kod of aktifBrans) {

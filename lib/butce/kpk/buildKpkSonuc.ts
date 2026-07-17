@@ -18,8 +18,9 @@ function reasurOranlari(
   mizan: MizanRow[],
   butceYili: number,
   oranAyar: OranAyarStore,
+  mizanAylikFull: MizanAylikRow[] = [],
 ): Record<string, number> {
-  const servis = new MizanOranServisi(mizan, butceYili);
+  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
   const tablo = servis.tumBranslarTablosu("0112", oranAyar["0112"] ?? {});
   const out: Record<string, number> = {};
   for (const r of tablo) {
@@ -32,8 +33,9 @@ function sgkPrimOranlari(
   mizan: MizanRow[],
   butceYili: number,
   oranAyar: OranAyarStore,
+  mizanAylikFull: MizanAylikRow[] = [],
 ): Record<string, number> {
-  const servis = new MizanOranServisi(mizan, butceYili);
+  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
   const tablo = servis.tumBranslarTablosu("0113", oranAyar["0113"] ?? {});
   const out: Record<string, number> = {};
   for (const r of tablo) {
@@ -51,6 +53,7 @@ export function buildKpkSonuc(opts: {
   aylikPrim?: AylikPrimStore | null;
   oranAyar?: OranAyarStore;
   kapanisTahmin?: KpkKapanisTahminStore | null;
+  mizanAylikFull?: MizanAylikRow[];
 }): KpkSonuc {
   const onceki = buildOncekiYilPrimSerisi({
     butceYili: opts.butceYili,
@@ -66,8 +69,8 @@ export function buildKpkSonuc(opts: {
     }
   }
 
-  const reas = reasurOranlari(opts.mizan, opts.butceYili, opts.oranAyar ?? {});
-  const sgk = sgkPrimOranlari(opts.mizan, opts.butceYili, opts.oranAyar ?? {});
+  const reas = reasurOranlari(opts.mizan, opts.butceYili, opts.oranAyar ?? {}, opts.mizanAylikFull ?? []);
+  const sgk = sgkPrimOranlari(opts.mizan, opts.butceYili, opts.oranAyar ?? {}, opts.mizanAylikFull ?? []);
 
   const branslar = hesaplaKpkPortfoy({
     butceYili: opts.butceYili,

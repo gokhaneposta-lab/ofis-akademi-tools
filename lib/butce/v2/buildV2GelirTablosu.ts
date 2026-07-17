@@ -67,6 +67,7 @@ export function buildV2GelirTablosu(opts: {
   tarifeBransPay: TarifeBransPayRow[];
   mizan: MizanRow[];
   mizanAylik: MizanAylikRow[];
+  mizanAylikFull?: MizanAylikRow[];
   bilancoAylik: BilancoAylikRow[];
   oranAyar: OranAyarStore;
   kpkVade: KpkVadeRow[];
@@ -139,6 +140,7 @@ export function buildV2GelirTablosu(opts: {
     kapanisTahmin: opts.kapanisTahmin,
     faaliyetGider: fg.rows,
     gosterimSatirlari: V2_GT_GOSTERIM,
+    mizanAylikFull: opts.mizanAylikFull,
   });
 
   const acilis = resolveAcilisBanka({
@@ -178,6 +180,7 @@ export function buildV2GelirTablosu(opts: {
     gosterimSatirlari: V2_GT_GOSTERIM,
     disHucrelerByBrans,
     aylikSatirOverride: { 38: proxy.maliGelirAylik },
+    mizanAylikFull: opts.mizanAylikFull,
   });
 
   return {

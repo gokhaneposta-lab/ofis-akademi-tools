@@ -7,6 +7,7 @@ import {
   loadFaaliyetGiderRows,
   loadKpkKapanisTahmin,
   loadKpkVadeRows,
+  loadMizanAylikFullRows,
   loadMizanAylikRows,
   loadMizanRows,
   loadOranAyarlar,
@@ -70,13 +71,14 @@ export default async function GelirTablosuPage() {
     );
   }
 
-  const [mizan, endirekt, aylikPrim, oranAyar, mizanAylik, tarifeBransPay, kpkVade, kapanisTahmin, faaliyetGider] =
+  const [mizan, endirekt, aylikPrim, oranAyar, mizanAylik, mizanAylikFull, tarifeBransPay, kpkVade, kapanisTahmin, faaliyetGider] =
     await Promise.all([
       loadMizanRows(),
       loadPrimBransEndirekt(),
       loadAylikPrim(),
       loadOranAyarlar(),
       loadMizanAylikRows(),
+      loadMizanAylikFullRows(),
       loadTarifeBransPayRows(),
       loadKpkVadeRows(),
       loadKpkKapanisTahmin(),
@@ -91,6 +93,7 @@ export default async function GelirTablosuPage() {
     aylikPrim,
     oranAyar,
     mizanAylik,
+    mizanAylikFull,
     tarifeBransPay,
     kpkVade,
     kapanisTahmin,

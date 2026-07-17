@@ -17,6 +17,7 @@ import {
 } from "@/lib/tsbPrimDashboard";
 import { TsbRenkAciklama } from "@/components/tsb/TsbRenkAciklama";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
+import { useTsbDashboardUrlPrefs } from "@/components/tsb/useTsbDashboardUrlPrefs";
 import { TSB_TUM_BRANS_LABEL } from "@/lib/tsbKirilimSozluk";
 import {
   cn,
@@ -47,6 +48,7 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
 export default function TsbKanalPrimDashboard() {
+  const urlPrefs = useTsbDashboardUrlPrefs();
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -83,6 +85,19 @@ export default function TsbKanalPrimDashboard() {
   const donemler = useMemo(() => (rows ? uniqueSortedPeriods(rows) : []), [rows]);
   const sonDonem = donemler.length ? donemler[donemler.length - 1] : "";
   const secilenDonem = donem || sonDonem;
+
+  useEffect(() => {
+    if (urlPrefs.segment === "hayatdisi" || urlPrefs.segment === "hayat") {
+      setSegment(urlPrefs.segment);
+    }
+  }, [urlPrefs.segment]);
+
+  useEffect(() => {
+    if (donemler.length === 0 || donem) return;
+    if (urlPrefs.donem && donemler.includes(urlPrefs.donem)) {
+      setDonem(urlPrefs.donem);
+    }
+  }, [donemler, donem, urlPrefs.donem]);
 
   const anaBransSecenekleri = useMemo(() => {
     if (!rows || !secilenDonem) return [];

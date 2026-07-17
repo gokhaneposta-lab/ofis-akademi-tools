@@ -13,8 +13,10 @@ import {
 import { hasarPrimOranlariFromLookup } from "./tsbHasarPrimOrani";
 import { hpPpFark } from "./tsbHasarPrimHpDashboard";
 import {
+  ANA_BRANS_FILTER_TRAFIK_HARIC,
   isHayatdisiSirket,
   prevYearPeriod,
+  rowMatchesAnaBransFilter,
   type TsbPrimRow,
 } from "./tsbPrimDashboard";
 import { buildGelirTidyDonemLookup, hamMetrikFromLookup } from "./tsbSirketSegmentSkor";
@@ -218,6 +220,38 @@ function hdPrimByCompany(rows: TsbPrimRow[], donem: string): Map<number, { ad: s
   return m;
 }
 
+function hdPrimTrafikHaricByCompany(
+  rows: TsbPrimRow[],
+  donem: string,
+): Map<number, { ad: string; prim: number }> {
+  const m = new Map<number, { ad: string; prim: number }>();
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (!isHayatdisiSirket(r)) continue;
+    if (!rowMatchesAnaBransFilter(r, ANA_BRANS_FILTER_TRAFIK_HARIC)) continue;
+    const ad = (r.sirketAdi ?? "").trim() || `Şirket ${r.sirketKodu}`;
+    const cur = m.get(r.sirketKodu) ?? { ad, prim: 0 };
+    cur.prim += r.genelToplam;
+    if (!cur.ad && ad) cur.ad = ad;
+    m.set(r.sirketKodu, cur);
+  }
+  return m;
+}
+
+function computePrimPeerMedians(primRows: TsbPrimRow[], primDonem: string): SektorOzetiPeerMedians {
+  const buMap = hdPrimByCompany(primRows, primDonem);
+  const trafikMap = hdPrimTrafikHaricByCompany(primRows, primDonem);
+  return sektorOzetiPeerMediansFromValues({
+    ozsermaye: [],
+    netKar: [],
+    teknikKar: [],
+    brutPrim: [...buMap.values()].map((v) => v.prim),
+    primTrafikHaric: [...trafikMap.values()].map((v) => v.prim),
+    teknikKarsilik: [],
+    yatirimGeliri: [],
+  });
+}
+
 function buildKarlilik(
   peers: { kod: number; ad: string }[],
   lookupBu: ReturnType<typeof buildGelirTidyDonemLookup>,
@@ -359,19 +393,11 @@ function buildBuyume(
   peers: { kod: number; ad: string }[],
   lookupBu: ReturnType<typeof buildGelirTidyDonemLookup>,
   lookupOnce: ReturnType<typeof buildGelirTidyDonemLookup> | null,
-  medians: SektorOzetiPeerMedians,
+  finMedians: SektorOzetiPeerMedians,
+  primRows: TsbPrimRow[],
+  primDonem: string,
+  primOnce: string | null,
 ): SektorOzetiListeDraft[] {
-  const empty = (id: string, baslik: string): SektorOzetiListeDraft => ({ id, baslik, satirlar: [] });
-
-  if (!lookupOnce) {
-    return [
-      empty("brut_prim_yoy", "Brüt prim büyümesi"),
-      empty("trafik_haric_yoy", "Trafik hariç prim büyümesi"),
-      empty("teknik_karsilik_yoy", "Teknik karşılık büyümesi"),
-      empty("yatirim_yoy", "Yatırım geliri büyümesi"),
-    ];
-  }
-
   const brutPrim: HamSatir[] = [];
   const trafikHaric: HamSatir[] = [];
   const teknikKarsilik: HamSatir[] = [];
@@ -379,52 +405,77 @@ function buildBuyume(
 
   const esik = SEKTOR_OZETI_UYGUNLUK_ESIKLERI;
 
-  for (const { kod, ad } of peers) {
-    const hamBu = hamOlcumFromLookup(lookupBu, kod);
-    const hamOnce = hamOlcumFromLookup(lookupOnce, kod);
-    if (!hamBu || !hamOnce) continue;
+  if (primOnce && primDonem) {
+    const primMedians = computePrimPeerMedians(primRows, primDonem);
+    const buMap = hdPrimByCompany(primRows, primDonem);
+    const onceMap = hdPrimByCompany(primRows, primOnce);
+    const trafikBuMap = hdPrimTrafikHaricByCompany(primRows, primDonem);
+    const trafikOnceMap = hdPrimTrafikHaricByCompany(primRows, primOnce);
 
-    if (
-      sektorOzetiUygunMetrik(hamBu.brutPrim, medians, esik.brutPrimYoy.metrik, esik.brutPrimYoy.medyanOrani)
-    ) {
-      const b = yoyYuzde(hamOnce.brutPrim, hamBu.brutPrim);
-      if (b !== null) brutPrim.push({ kod, ad, v: b });
+    for (const [kod, bu] of buMap) {
+      const once = onceMap.get(kod);
+      if (!once) continue;
+
+      if (
+        sektorOzetiUygunMetrik(
+          bu.prim,
+          primMedians,
+          esik.brutPrimYoy.metrik,
+          esik.brutPrimYoy.medyanOrani,
+        )
+      ) {
+        const b = yoyYuzde(once.prim, bu.prim);
+        if (b !== null) brutPrim.push({ kod, ad: bu.ad, v: b });
+      }
     }
 
-    if (
-      sektorOzetiUygunMetrik(
-        hamBu.primTrafikHaric,
-        medians,
-        esik.trafikHaricYoy.metrik,
-        esik.trafikHaricYoy.medyanOrani,
-      )
-    ) {
-      const t = yoyYuzde(hamOnce.primTrafikHaric, hamBu.primTrafikHaric);
-      if (t !== null) trafikHaric.push({ kod, ad, v: t });
-    }
+    for (const [kod, bu] of trafikBuMap) {
+      const once = trafikOnceMap.get(kod);
+      if (!once) continue;
 
-    if (
-      sektorOzetiUygunMetrik(
-        hamBu.teknikKarsilik3545,
-        medians,
-        esik.teknikKarsilikYoy.metrik,
-        esik.teknikKarsilikYoy.medyanOrani,
-      )
-    ) {
-      const tk = yoyYuzde(hamOnce.teknikKarsilik3545, hamBu.teknikKarsilik3545);
-      if (tk !== null) teknikKarsilik.push({ kod, ad, v: tk });
+      if (
+        sektorOzetiUygunMetrik(
+          bu.prim,
+          primMedians,
+          esik.trafikHaricYoy.metrik,
+          esik.trafikHaricYoy.medyanOrani,
+        )
+      ) {
+        const t = yoyYuzde(once.prim, bu.prim);
+        if (t !== null) trafikHaric.push({ kod, ad: bu.ad, v: t });
+      }
     }
+  }
 
-    if (
-      sektorOzetiUygunMetrik(
-        hamBu.yatirimSegment,
-        medians,
-        esik.yatirimYoy.metrik,
-        esik.yatirimYoy.medyanOrani,
-      )
-    ) {
-      const y = yoyYuzde(hamOnce.yatirimSegment, hamBu.yatirimSegment);
-      if (y !== null) yatirim.push({ kod, ad, v: y });
+  if (lookupOnce) {
+    for (const { kod, ad } of peers) {
+      const hamBu = hamOlcumFromLookup(lookupBu, kod);
+      const hamOnce = hamOlcumFromLookup(lookupOnce, kod);
+      if (!hamBu || !hamOnce) continue;
+
+      if (
+        sektorOzetiUygunMetrik(
+          hamBu.teknikKarsilik3545,
+          finMedians,
+          esik.teknikKarsilikYoy.metrik,
+          esik.teknikKarsilikYoy.medyanOrani,
+        )
+      ) {
+        const tk = yoyYuzde(hamOnce.teknikKarsilik3545, hamBu.teknikKarsilik3545);
+        if (tk !== null) teknikKarsilik.push({ kod, ad, v: tk });
+      }
+
+      if (
+        sektorOzetiUygunMetrik(
+          hamBu.yatirimSegment,
+          finMedians,
+          esik.yatirimYoy.metrik,
+          esik.yatirimYoy.medyanOrani,
+        )
+      ) {
+        const y = yoyYuzde(hamOnce.yatirimSegment, hamBu.yatirimSegment);
+        if (y !== null) yatirim.push({ kod, ad, v: y });
+      }
     }
   }
 
@@ -561,7 +612,15 @@ export function computeSektorOzeti(): SektorOzetiData {
     {
       id: "buyume" as const,
       label: "Büyüme",
-      listeler: buildBuyume(peers, lookupBu, lookupOnce, medians ?? emptyMedians()),
+      listeler: buildBuyume(
+        peers,
+        lookupBu,
+        lookupOnce,
+        medians ?? emptyMedians(),
+        primRows,
+        primDonem,
+        primOnce,
+      ),
     },
     {
       id: "pazar" as const,

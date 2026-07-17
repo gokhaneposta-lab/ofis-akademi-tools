@@ -88,14 +88,14 @@ export default function TsbSektorOzeti({ data }: { data: SektorOzetiData }) {
         sub: data.finDonemOnceki ? `geçen yıl: ${data.finDonemOnceki}` : undefined,
       },
       {
-        label: "Prim sıralama",
+        label: aktif === "buyume" ? "Prim büyümesi" : "Prim sıralama",
         value: data.primDonem || "—",
         sub: data.primDonemOnceki ? `geçen yıl: ${data.primDonemOnceki}` : undefined,
       },
       { label: "Havuz", value: "Hayat dışı (HD)" },
     ];
     return chips;
-  }, [data]);
+  }, [data, aktif]);
 
   return (
     <section className={tsb.sektorOzetiWrap} aria-labelledby="tsb-sektor-ozeti-baslik">

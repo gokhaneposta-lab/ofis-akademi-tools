@@ -42,6 +42,7 @@ export const V2_GT_GOSTERIM: GtGosterimSatir[] = [
   { satir: 192, ad: "AR-GE giderleri (-)", seviye: 2 },
   { satir: 193, ad: "Pazarlama giderleri (-)", seviye: 2 },
   { satir: 194, ad: "Dış hizmet giderleri (-)", seviye: 2 },
+  { satir: 196, ad: "Alınan reasürans komisyonları (+)", seviye: 2 },
   { satir: 176, ad: "Faaliyet giderleri", seviye: 1 },
   { satir: 202, ad: "Matematik karş. değişim", seviye: 1, disGirdi: true },
   { satir: 94, ad: "HAYAT DIŞI TEKNİK GİDER", seviye: 0, kalin: true },

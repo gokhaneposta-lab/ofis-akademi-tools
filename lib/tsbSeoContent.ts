@@ -103,7 +103,7 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
     heading: "TSB şirket karne — prim, finansal ve kanal özeti",
     paragraphs: [
       "Tek bir sigorta şirketi için TSB verilerinden derlenmiş panel: Özet sekmesinde aylık ve kümülatif prim, pazar payı, finansal KPI, kanal dağılımı ve 12 ay trend; diğer sekmelerde KPI önizleme ve ilgili panellere filtreli geçiş.",
-      "Prim dönemi ay bazlıdır (ör. 2026-05); finansal blok prim ayına eşlenen son finansal çeyreği kullanır. Tüm kırılımlar ana branş (TSB) dilimindedir.",
+      "Prim dönemi ay bazlıdır (ör. 2026-06); finansal blok prim ayına eşlenen son finansal çeyreği kullanır. Tüm kırılımlar ana branş (TSB) dilimindedir.",
       "URL paylaşılabilir (?sirket=, ?donem=, ?segment=, ?sekme=). Kısa yol /sigorta/sirket/[kod] aynı karneye yönlendirir.",
     ],
     faqs: [

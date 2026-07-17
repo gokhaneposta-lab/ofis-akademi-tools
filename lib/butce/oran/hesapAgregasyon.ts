@@ -29,10 +29,44 @@ export const BRANS_GT_LEGACY_HESAP: Readonly<Record<string, readonly string[]>> 
 export function bransGtHesapAdaylari(bransKodu: string, gtSuffix: string): string[] {
   const suf = normHesapKodu(gtSuffix);
   const adaylar = [bransGtHesapNo(bransKodu, suf)];
+  // Bazı mizan exportlarında sondaki sıfır düşer (7012571).
+  const sufKisa = suf.replace(/^0+/, "") || suf;
+  if (sufKisa !== suf) adaylar.push(bransGtHesapNo(bransKodu, sufKisa));
   for (const leg of BRANS_GT_LEGACY_HESAP[suf] ?? []) {
     if (!adaylar.includes(leg)) adaylar.push(leg);
   }
   return adaylar;
+}
+
+/**
+ * Branş GT / UNPIVOT mizandan tutar — 70102571, 701…02571 kuyruk, 61407101 yedek.
+ */
+export function bransGtTutar(
+  rows: { hesap: string; tutar: number }[],
+  bransKodu: string,
+  gtSuffix: string,
+): number {
+  if (rows.length === 0) return 0;
+
+  for (const aday of bransGtHesapAdaylari(bransKodu, gtSuffix)) {
+    const t = toplaHesapTutarlari(rows, [aday], { prefix: true });
+    if (Math.abs(t) > 0) return t;
+  }
+
+  const br = String(bransKodu).replace(/\D/g, "");
+  const suf = normHesapKodu(gtSuffix);
+  const sufKisa = suf.replace(/^0+/, "") || suf;
+
+  let tailSum = 0;
+  for (const r of rows) {
+    const h = normHesapKodu(r.hesap);
+    if (!h) continue;
+    const bransli =
+      h.startsWith(br) && (h.endsWith(suf) || h.endsWith(sufKisa) || h === `${br}${sufKisa}`);
+    const sadeceSuffix = h === suf || h === sufKisa;
+    if (bransli || sadeceSuffix) tailSum += Number(r.tutar) || 0;
+  }
+  return tailSum;
 }
 
 /** Verilen hesap setinde başka bir kodun ebeveyni olanları eler. */

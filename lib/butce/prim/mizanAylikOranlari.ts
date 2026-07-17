@@ -13,6 +13,16 @@ function ortalamaOranlar(lists: number[][]): number[] {
   return normalizeAylikOranlar(avg);
 }
 
+/** Kümülatif dizi tam yıl mı (Aralık dolu)? Eksik yıllar mevsimsellikte kullanılmaz. */
+export function isTamYilKumul(kumul: readonly number[]): boolean {
+  if ((kumul[11] ?? 0) <= 0) return false;
+  let sonDolu = -1;
+  for (let i = 0; i < 12; i++) {
+    if ((kumul[i] ?? 0) > 0) sonDolu = i;
+  }
+  return sonDolu === 11;
+}
+
 /** Branş için 1..12 kümülatif tutar dizisi (eksik aylar 0). */
 function kumulDizisi(
   rows: MizanAylikRow[],
@@ -39,6 +49,7 @@ function bransAylikOranlari(
   const oranlar: number[][] = [];
   for (const yil of yillar) {
     const kumul = kumulDizisi(rows, yil, brans, hesap);
+    if (!isTamYilKumul(kumul)) continue;
     if (kumul.every((v) => v === 0)) continue;
     const aylik = kumuldenAylikArtis(kumul);
     const sum = aylik.reduce((a, b) => a + Math.max(0, b), 0);
@@ -90,6 +101,7 @@ export function aylikOranlariFromMizan(
     if (oran) bransOranlari[brans] = oran;
     for (const yil of referansYillar) {
       const kumul = kumulDizisi(rows, yil, brans, hesap);
+      if (!isTamYilKumul(kumul)) continue;
       const aylik = kumuldenAylikArtis(kumul);
       for (let i = 0; i < 12; i++) genelKumul[i] += Math.max(0, aylik[i]);
     }

@@ -1,6 +1,6 @@
 import { normalizeBransKodu } from "../textUtils";
 import type { MizanRow } from "../types";
-import { bransGtHesapAdaylari, toplaHesapTutarlari } from "./hesapAgregasyon";
+import { bransGtTutar, toplaHesapTutarlari } from "./hesapAgregasyon";
 
 /** yil|brans → satırlar; yil → şirket geneli */
 export class MizanIndex {
@@ -44,13 +44,7 @@ export class MizanIndex {
     if (bransGt) {
       let toplam = 0;
       for (const suffix of hesaplar) {
-        for (const aday of bransGtHesapAdaylari(brans, suffix)) {
-          const t = toplaHesapTutarlari(rows, [aday], { prefix: true });
-          if (Math.abs(t) > 0) {
-            toplam += t;
-            break;
-          }
-        }
+        toplam += bransGtTutar(rows, brans, suffix);
       }
       return toplam;
     }

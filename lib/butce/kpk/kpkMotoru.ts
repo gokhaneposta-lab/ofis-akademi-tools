@@ -115,14 +115,14 @@ function gtHareketFromStok(
     22: f23y + f24y,
     25: f26y + f27y,
     28: f29y + f30y,
-    21: f23y + f24y + f29y + f30y,
+    21: f23y + f24y + f26y + f27y + f29y + f30y,
   };
 
   const aylik: Record<number, number[]> = { ...gtAylik };
   aylik[22] = gtAylik[23]!.map((v, i) => v + gtAylik[24]![i]!);
   aylik[25] = gtAylik[26]!.map((v, i) => v + gtAylik[27]![i]!);
   aylik[28] = gtAylik[29]!.map((v, i) => v + gtAylik[30]![i]!);
-  aylik[21] = aylik[22]!.map((v, i) => v + aylik[28]![i]!);
+  aylik[21] = aylik[22]!.map((v, i) => v + aylik[25]![i]! + aylik[28]![i]!);
 
   return { yillik, aylik };
 }

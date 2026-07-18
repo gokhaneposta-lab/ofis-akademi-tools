@@ -221,7 +221,40 @@ async function checkKpkReasurHareketIsareti() {
   if (f24 <= 0 || f27 >= 0 || Math.abs(f27 + f24 * 0.5) > 1e-9) {
     throw new Error(`F27 devreden reasürör payı mutabık değil: F24=${f24}, F27=${f27}`);
   }
-  console.log("OK — F26/F27, cari ve devreden brüt KPK hareketlerini ters işaretle izliyor");
+
+  const sgkCari = hesaplaKpkBrans({
+    bransKodu: "715",
+    butceYili: 2026,
+    cariPrimAylar: [1200, ...Array(11).fill(0)],
+    oncekiYilPrimAylar: Array(12).fill(0),
+    vadeRows: vadeRows.map((r) => ({ ...r, bransKodu: "715" })),
+    reasurOrani: 0,
+    sgkPrimOrani: 0.02,
+  });
+  const sgkDevreden = hesaplaKpkBrans({
+    bransKodu: "715",
+    butceYili: 2026,
+    cariPrimAylar: Array(12).fill(0),
+    oncekiYilPrimAylar: [...Array(11).fill(0), 1200],
+    vadeRows: vadeRows.map((r) => ({ ...r, bransKodu: "715" })),
+    reasurOrani: 0,
+    sgkPrimOrani: 0.02,
+  });
+  const f23Sgk = sgkCari.gtYillik[23] ?? 0;
+  const f29 = sgkCari.gtYillik[29] ?? 0;
+  const f24Sgk = sgkDevreden.gtYillik[24] ?? 0;
+  const f30 = sgkDevreden.gtYillik[30] ?? 0;
+  if (
+    f23Sgk >= 0 ||
+    f29 <= 0 ||
+    Math.abs(f29 + f23Sgk * 0.02) > 1e-9 ||
+    f24Sgk <= 0 ||
+    f30 >= 0 ||
+    Math.abs(f30 + f24Sgk * 0.02) > 1e-9
+  ) {
+    throw new Error(`SGK KPK hareketleri mutabık değil: F23=${f23Sgk}, F29=${f29}, F24=${f24Sgk}, F30=${f30}`);
+  }
+  console.log("OK — F26/F27 ve F29/F30 brüt KPK hareketlerini ters işaretle izliyor");
 }
 
 async function checkKpkKapanisYilUyumu() {

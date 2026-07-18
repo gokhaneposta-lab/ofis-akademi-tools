@@ -61,10 +61,10 @@ function stokSerisi(
   return out;
 }
 
-/** SGK KPK payı — yalnızca 715; brüt KPK × SGK prim oranı. */
-function sgkKpk(brans: string, brutKpk: number, sgkPrimOrani: number): number {
-  if (brans !== "715" || brutKpk === 0 || sgkPrimOrani === 0) return 0;
-  return brutKpk * Math.abs(sgkPrimOrani);
+/** SGK KPK payı — yalnızca 715; brüt KPK hareketi × SGK prim oranı. */
+function sgkKpk(brans: string, brutHareket: number, sgkPrimOrani: number): number {
+  if (brans !== "715" || brutHareket === 0 || sgkPrimOrani === 0) return 0;
+  return brutHareket * Math.abs(sgkPrimOrani);
 }
 
 function gtHareketFromStok(
@@ -88,8 +88,8 @@ function gtHareketFromStok(
     // Math.abs kullanmak, stok azalan aylarda da pozitif pay üretip F25/F21'i şişirir.
     const f26 = -f23 * reasOran;
     const f27 = -f24 * reasOran;
-    const f29 = -sgkKpk(brans, Math.abs(f23), sgkPrimOrani);
-    const f30 = -sgkKpk(brans, Math.abs(f24), sgkPrimOrani);
+    const f29 = -sgkKpk(brans, f23, sgkPrimOrani);
+    const f30 = -sgkKpk(brans, f24, sgkPrimOrani);
 
     gtAylik[23]!.push(f23);
     gtAylik[24]!.push(f24);

@@ -11,6 +11,7 @@ import { loadMizanRows, loadBilancoAylikRows, loadMizanAylikRows } from "../lib/
 import { buildMaliGelirProxy, resolveAcilisBanka } from "../lib/butce/v2/maliGelirProxy";
 import { buildFaaliyetGiderFromMizanArtis } from "../lib/butce/v2/faaliyetGiderFromMizanArtis";
 import { V2_GT_GOSTERIM } from "../lib/butce/v2/buildV2GelirTablosu";
+import { hesaplaKpkBrans } from "../lib/butce/kpk/kpkMotoru";
 import type { FaaliyetGiderRow, MizanRow } from "../lib/butce/types";
 
 function pct(n: number): string {
@@ -170,6 +171,34 @@ async function checkButceYiliVeManuelGider() {
   console.log("OK — 2026→2025/12 açılış, rollup ve manuel yıllık gider 1/12 dağılımı");
 }
 
+async function checkKpkReasurHareketIsareti() {
+  section("5) KPK reasürör payı hareket işareti");
+  const sonuc = hesaplaKpkBrans({
+    bransKodu: "701",
+    butceYili: 2026,
+    cariPrimAylar: [1200, ...Array(11).fill(0)],
+    oncekiYilPrimAylar: Array(12).fill(0),
+    vadeRows: Array.from({ length: 12 }, (_, i) => ({
+      bransKodu: "701",
+      bransAd: "Test",
+      ay: i + 1,
+      vadeGun: 30,
+    })),
+    reasurOrani: 0.5,
+  });
+  for (let i = 0; i < 12; i++) {
+    const brut = sonuc.gtAylik[23]?.[i] ?? 0;
+    const reasur = sonuc.gtAylik[26]?.[i] ?? 0;
+    if (Math.abs(reasur + brut * 0.5) > 1e-9) {
+      throw new Error(`${i + 1}. ay F26, F23 hareketinin ters işaretlisi değil`);
+    }
+  }
+  if (Math.abs(sonuc.gtYillik[26] ?? 0) > 1e-9 || Math.abs(sonuc.gtYillik[21] ?? 0) > 1e-9) {
+    throw new Error("Yıl sonunda sıfırlanan KPK, yapay pozitif reasürör payı/F21 üretti");
+  }
+  console.log("OK — stok azalışında F26 ters işaretli; yıllık hareket yapay biçimde şişmiyor");
+}
+
 async function check60301() {
   section("2) 2025 proxy vs gerçekleşen 60301");
   const mizan = await loadMizanRows();
@@ -270,6 +299,7 @@ async function main() {
   const r = await check60301();
   await checkF368();
   await checkButceYiliVeManuelGider();
+  await checkKpkReasurHareketIsareti();
   section("Özet");
   console.log("1 Negatif bakiye UI/flag: motor OK (UI banner+satır bayrağı eklendi)");
   console.log(
@@ -279,6 +309,7 @@ async function main() {
   );
   console.log("3 F368: 61402 pay/baz + dağıtım OK");
   console.log("4 Bütçe yılı + manuel gider: Y-1 kapanış ve 1/12 dağılım OK");
+  console.log("5 KPK reasürör payı: aylık hareket işareti ve yıllık mutabakat OK");
 }
 
 main().catch((e) => {

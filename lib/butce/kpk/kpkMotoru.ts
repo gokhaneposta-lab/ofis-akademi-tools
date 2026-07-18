@@ -84,8 +84,10 @@ function gtHareketFromStok(
 
     const f23 = -dCari;
     const f24 = -dDev;
-    const f26 = Math.abs(f23) * reasOran;
-    const f27 = -Math.abs(f24) * reasOran;
+    // Reasürör payı brüt KPK hareketini ters işaretle izler.
+    // Math.abs kullanmak, stok azalan aylarda da pozitif pay üretip F25/F21'i şişirir.
+    const f26 = -f23 * reasOran;
+    const f27 = -f24 * reasOran;
     const f29 = -sgkKpk(brans, Math.abs(f23), sgkPrimOrani);
     const f30 = -sgkKpk(brans, Math.abs(f24), sgkPrimOrani);
 

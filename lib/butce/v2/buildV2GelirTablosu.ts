@@ -23,30 +23,99 @@ import { buildFaaliyetGiderFromMizanArtis } from "./faaliyetGiderFromMizanArtis"
 import { buildMaliGelirProxy, resolveAcilisBanka } from "./maliGelirProxy";
 import type { V2MaliGelirProxySonuc, V2VarsayimlarStore } from "./types";
 
-/** V1 listesine proxy/mali gelir için gerekli satırlar eklenir. */
+const V2_SENTETIK = {
+  teknikGelirSafi: 9001,
+  teknikGiderSafi: 9002,
+  safiTkz: 9003,
+  genelGiderler: 9004,
+  tkz: 9005,
+  teknikFaaliyetGideri: 9006,
+} as const;
+
+const GENEL_GIDER_SATIRLARI = [190, 191, 192, 193, 194] as const;
+
+type V2Formul = Array<{ satir: number; carpan: number }>;
+
+const V2_SENTETIK_FORMULLER: Array<[number, V2Formul]> = [
+  [V2_SENTETIK.teknikGelirSafi, [{ satir: 9, carpan: 1 }, { satir: 38, carpan: -1 }]],
+  [
+    V2_SENTETIK.teknikFaaliyetGideri,
+    [{ satir: 176, carpan: 1 }, ...GENEL_GIDER_SATIRLARI.map((satir) => ({ satir, carpan: -1 }))],
+  ],
+  [
+    V2_SENTETIK.teknikGiderSafi,
+    [{ satir: 94, carpan: 1 }, ...GENEL_GIDER_SATIRLARI.map((satir) => ({ satir, carpan: -1 }))],
+  ],
+  [
+    V2_SENTETIK.safiTkz,
+    [
+      { satir: V2_SENTETIK.teknikGelirSafi, carpan: 1 },
+      { satir: V2_SENTETIK.teknikGiderSafi, carpan: 1 },
+    ],
+  ],
+  [
+    V2_SENTETIK.genelGiderler,
+    GENEL_GIDER_SATIRLARI.map((satir) => ({ satir, carpan: 1 })),
+  ],
+  [
+    V2_SENTETIK.tkz,
+    [
+      { satir: V2_SENTETIK.safiTkz, carpan: 1 },
+      { satir: 38, carpan: 1 },
+      { satir: V2_SENTETIK.genelGiderler, carpan: 1 },
+    ],
+  ],
+];
+
+function hesaplaV2SentetikSatirlar(gt: GelirTablosuSonuc): GelirTablosuSonuc {
+  const hesapla = (degerler: Record<number, number>, formul: V2Formul) =>
+    formul.reduce((toplam, b) => toplam + (degerler[b.satir] ?? 0) * b.carpan, 0);
+  const hesaplaAylik = (degerler: Record<number, number[]>, formul: V2Formul) =>
+    Array.from({ length: 12 }, (_, ay) =>
+      formul.reduce((toplam, b) => toplam + (degerler[b.satir]?.[ay] ?? 0) * b.carpan, 0),
+    );
+
+  for (const [hedef, formul] of V2_SENTETIK_FORMULLER) {
+    gt.toplam[hedef] = hesapla(gt.toplam, formul);
+    gt.aylikToplam[hedef] = hesaplaAylik(gt.aylikToplam, formul);
+    for (const brans of gt.branslar) {
+      brans.degerler[hedef] = hesapla(brans.degerler, formul);
+      const aylik = gt.aylikBrans[brans.bransKodu];
+      if (aylik) aylik[hedef] = hesaplaAylik(aylik, formul);
+    }
+  }
+  return gt;
+}
+
+/** V2 özeti: 61402–06 ve teknik olmayan yatırım geliri Safi TKZ'nin altında gösterilir. */
 export const V2_GT_GOSTERIM: GtGosterimSatir[] = [
-  { satir: 11, ad: "Brüt yazılan prim", seviye: 0, kalin: true },
+  { satir: 9, ad: "HAYAT DIŞI TEKNİK GELİR", seviye: 0, gizli: true },
+  { satir: 94, ad: "HAYAT DIŞI TEKNİK GİDER", seviye: 0, gizli: true },
+  { satir: 176, ad: "FAALİYET GİDERLERİ", seviye: 0, gizli: true },
+  { satir: V2_SENTETIK.teknikGelirSafi, kod: "", ad: "TEKNİK GELİR", seviye: 0, kalin: true },
+  { satir: 11, ad: "Brüt yazılan prim", seviye: 1, kalin: true },
   { satir: 19, ad: "Reasüransa devredilen prim (-)", seviye: 1 },
   { satir: 21, ad: "Kazanılmamış prim karş. değişim", seviye: 1 },
   { satir: 31, ad: "Devam eden riskler karş.", seviye: 1, disGirdi: true },
-  { satir: 38, ad: "Teknik olmayan yatırım gelirleri (V2 proxy)", seviye: 1, kalin: true },
   { satir: 86, ad: "Rücu ve sovtaj gelirleri (+)", seviye: 1 },
-  { satir: 9, ad: "HAYAT DIŞI TEKNİK GELİR", seviye: 0, kalin: true },
+  { satir: V2_SENTETIK.teknikGiderSafi, kod: "", ad: "TEKNİK GİDER", seviye: 0, kalin: true },
   { satir: 96, ad: "Brüt ödenen hasar (-)", seviye: 1 },
   { satir: 105, ad: "Ödenen hasarda reasürör payı (+)", seviye: 1 },
   { satir: 95, ad: "Ödenen hasarlar (net)", seviye: 1, kalin: true },
   { satir: 114, ad: "Muallak hasar karş. değişim", seviye: 1 },
   { satir: 177, ad: "Üretim komisyon gideri (-)", seviye: 2 },
-  { satir: 190, ad: "Personel giderleri (-)", seviye: 2 },
-  { satir: 191, ad: "Yönetim giderleri (-)", seviye: 2 },
-  { satir: 192, ad: "AR-GE giderleri (-)", seviye: 2 },
-  { satir: 193, ad: "Pazarlama giderleri (-)", seviye: 2 },
-  { satir: 194, ad: "Dış hizmet giderleri (-)", seviye: 2 },
   { satir: 196, ad: "Alınan reasürans komisyonları (+)", seviye: 2 },
-  { satir: 176, ad: "Faaliyet giderleri", seviye: 1 },
+  { satir: V2_SENTETIK.teknikFaaliyetGideri, kod: "", ad: "Teknik faaliyet giderleri", seviye: 1 },
   { satir: 202, ad: "Matematik karş. değişim", seviye: 1, disGirdi: true },
-  { satir: 94, ad: "HAYAT DIŞI TEKNİK GİDER", seviye: 0, kalin: true },
-  { satir: 8, ad: "TEKNİK KÂR / ZARAR", seviye: 0, kalin: true, vurgu: true },
+  { satir: V2_SENTETIK.safiTkz, kod: "", ad: "SAFİ TKZ", seviye: 0, kalin: true, vurgu: true },
+  { satir: 38, ad: "Teknik olmayan yatırım gelirleri (V2 proxy)", seviye: 0, kalin: true },
+  { satir: V2_SENTETIK.genelGiderler, kod: "", ad: "Genel giderler (61402–06)", seviye: 0, kalin: true },
+  { satir: 190, ad: "Personel giderleri (-)", seviye: 1 },
+  { satir: 191, ad: "Yönetim giderleri (-)", seviye: 1 },
+  { satir: 192, ad: "AR-GE giderleri (-)", seviye: 1 },
+  { satir: 193, ad: "Pazarlama giderleri (-)", seviye: 1 },
+  { satir: 194, ad: "Dış hizmet giderleri (-)", seviye: 1 },
+  { satir: V2_SENTETIK.tkz, kod: "", ad: "TKZ", seviye: 0, kalin: true, vurgu: true },
 ];
 
 export type V2GelirTablosuSonuc = {
@@ -165,7 +234,7 @@ export function buildV2GelirTablosu(opts: {
     };
   }
 
-  const gt = buildGelirTablosu({
+  const gt = hesaplaV2SentetikSatirlar(buildGelirTablosu({
     mizan: opts.mizan,
     butceYili,
     primHedefleri,
@@ -181,7 +250,7 @@ export function buildV2GelirTablosu(opts: {
     disHucrelerByBrans,
     aylikSatirOverride: { 38: proxy.maliGelirAylik },
     mizanAylikFull: opts.mizanAylikFull,
-  });
+  }));
 
   return {
     gt,

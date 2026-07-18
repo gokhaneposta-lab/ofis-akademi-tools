@@ -14,11 +14,15 @@ import { GelirTablosuMotoru, type GtEksikGirdi } from "./gtMotoru";
 /** Gelir tablosunda gösterilecek GT satırları (Excel satır no + sunum). */
 export type GtGosterimSatir = {
   satir: number;
+  /** Sunum kodu; boş değer sentetik V2 toplamlarında F satır numarasını gizler. */
+  kod?: string;
   ad: string;
   seviye: 0 | 1 | 2;
   kalin?: boolean;
   vurgu?: boolean;
   disGirdi?: boolean;
+  /** Hesaplamaya dahil edilir ancak tabloda gösterilmez. */
+  gizli?: boolean;
 };
 
 export const GT_GOSTERIM_SATIRLARI: GtGosterimSatir[] = [

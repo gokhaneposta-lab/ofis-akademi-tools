@@ -417,7 +417,8 @@ export default function V2DashboardClient() {
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-900">V2 Gelir tablosu özeti (şirket toplam)</h2>
           <p className="mt-1 text-xs text-slate-500">
-            Brüt prim: {tl(gt.brutPrimToplam)} · Teknik kâr (F8): {tl(gt.toplam[8] ?? 0)}
+            Brüt prim: {tl(gt.brutPrimToplam)} · Safi TKZ:{" "}
+            {tl(gt.toplam[9003] ?? 0)} · TKZ: {tl(gt.toplam[9005] ?? 0)}
           </p>
           <div className="mt-3 max-h-[480px] overflow-auto">
             <table className="min-w-full text-sm">
@@ -429,14 +430,16 @@ export default function V2DashboardClient() {
                 </tr>
               </thead>
               <tbody>
-                {gt.satirlar.map((s) => (
+                {gt.satirlar.filter((s) => !s.gizli).map((s) => (
                   <tr
                     key={s.satir}
                     className={`border-b border-slate-100 ${s.kalin ? "font-semibold" : ""} ${
                       s.vurgu ? "bg-emerald-50/50" : ""
                     }`}
                   >
-                    <td className="px-2 py-1 font-mono text-xs text-slate-500">F{s.satir}</td>
+                    <td className="px-2 py-1 font-mono text-xs text-slate-500">
+                      {s.kod ?? `F${s.satir}`}
+                    </td>
                     <td className="px-2 py-1" style={{ paddingLeft: `${s.seviye * 12 + 8}px` }}>
                       {s.ad}
                     </td>

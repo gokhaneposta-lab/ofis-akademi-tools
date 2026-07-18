@@ -168,6 +168,11 @@ async function checkButceYiliVeManuelGider() {
   if (![200, 201].every((satir) => V2_GT_GOSTERIM.some((r) => r.satir === satir && !r.gizli))) {
     throw new Error("F200/F201 V2 özetinde görünür değil");
   }
+  if (![22, 23, 24, 25, 26, 27, 28, 29, 30].every(
+    (satir) => V2_GT_GOSTERIM.some((r) => r.satir === satir && !r.gizli),
+  )) {
+    throw new Error("KPK F22–F30 mutabakat satırları V2 özetinde görünür değil");
+  }
   console.log("OK — 2026→2025/12 açılış, rollup ve manuel yıllık gider 1/12 dağılımı");
 }
 

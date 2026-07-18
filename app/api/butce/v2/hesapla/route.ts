@@ -53,6 +53,8 @@ export async function POST(request: Request) {
     yilAgirliklari: body.yilAgirliklari ?? saved?.yilAgirliklari,
     giderArtisOrani:
       body.giderArtisOrani ?? saved?.giderArtisOrani ?? 0,
+    faaliyetGiderButce:
+      body.faaliyetGiderButce ?? saved?.faaliyetGiderButce,
     aylikGetiriOrani:
       body.aylikGetiriOrani ??
       saved?.aylikGetiriOrani ??

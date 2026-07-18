@@ -8,7 +8,9 @@ import { buildFaaliyetGiderSonuc } from "../lib/butce/gelir/faaliyetGiderGt";
 import { ORAN_KALEM_MIZAN } from "../lib/butce/oran/oranKalemLoader";
 import { MizanOranServisi } from "../lib/butce/oran/mizanOranlar";
 import { loadMizanRows, loadBilancoAylikRows, loadMizanAylikRows } from "../lib/butce/loadData";
-import { buildMaliGelirProxy } from "../lib/butce/v2/maliGelirProxy";
+import { buildMaliGelirProxy, resolveAcilisBanka } from "../lib/butce/v2/maliGelirProxy";
+import { buildFaaliyetGiderFromMizanArtis } from "../lib/butce/v2/faaliyetGiderFromMizanArtis";
+import { V2_GT_GOSTERIM } from "../lib/butce/v2/buildV2GelirTablosu";
 import type { FaaliyetGiderRow, MizanRow } from "../lib/butce/types";
 
 function pct(n: number): string {
@@ -115,6 +117,59 @@ async function checkF368() {
   console.log("OK — F368 61402 payları ile şirket geneli gider branşlara dağıtılıyor");
 }
 
+async function checkButceYiliVeManuelGider() {
+  section("4) Bütçe yılı kapanışı + manuel 61402–06");
+  const mizan: MizanRow[] = [
+    { yil: 2025, bransKodu: "TOPLAM", hesap: "61402", tutar: 1000 },
+    { yil: 2025, bransKodu: "701", hesap: "614021", tutar: 600 },
+    { yil: 2025, bransKodu: "701", hesap: "614022", tutar: 400 },
+    { yil: 2025, bransKodu: "701", hesap: "614031", tutar: 700 },
+    { yil: 2025, bransKodu: "701", hesap: "614032", tutar: 300 },
+  ];
+  const acilis = resolveAcilisBanka({
+    butceYili: 2026,
+    bilancoAylik: [
+      { yil: 2025, ay: 4, hesap: "102", tutar: 400 },
+      { yil: 2025, ay: 12, hesap: "102", tutar: 1200 },
+    ],
+    mizan,
+  });
+  if (acilis.kaynakYil !== 2025 || acilis.kaynakAy !== 12 || acilis.tutar !== 1200) {
+    throw new Error(`2026 bütçesi 2025/12 açılışını seçmedi: ${JSON.stringify(acilis)}`);
+  }
+
+  const fg = buildFaaliyetGiderFromMizanArtis({
+    mizan,
+    mizanAylikFull: [
+      { yil: 2025, ay: 12, bransKodu: "701", hesap: "0254", tutar: 800 },
+    ],
+    butceYili: 2026,
+    giderArtisOrani: 0,
+    faaliyetGiderButce: { "61402": 1200, "61403": 2400 },
+  });
+  const baz61402 = fg.bazSatirlar.find((r) => r.hesap === "61402")?.oncekiYilTutari;
+  const baz61403 = fg.bazSatirlar.find((r) => r.hesap === "61403")?.oncekiYilTutari;
+  const baz61404 = fg.bazSatirlar.find((r) => r.hesap === "61404")?.oncekiYilTutari;
+  if (baz61402 !== 1000 || baz61403 !== 1000 || baz61404 !== 800) {
+    throw new Error(
+      `Baz rollup hatalı: 61402=${baz61402}, 61403=${baz61403}, 61404=${baz61404}`,
+    );
+  }
+  const toplam = (hesap: string) =>
+    fg.rows.filter((r) => r.hesap === hesap).reduce((sum, r) => sum + r.tutar, 0);
+  if (
+    fg.rows.filter((r) => r.hesap === "61402").length !== 12 ||
+    Math.abs(toplam("61402") - 1200) > 1e-9 ||
+    Math.abs(toplam("61403") - 2400) > 1e-9
+  ) {
+    throw new Error("Manuel yıllık giderler 12 aya eşit dağılmadı");
+  }
+  if (![200, 201].every((satir) => V2_GT_GOSTERIM.some((r) => r.satir === satir && !r.gizli))) {
+    throw new Error("F200/F201 V2 özetinde görünür değil");
+  }
+  console.log("OK — 2026→2025/12 açılış, rollup ve manuel yıllık gider 1/12 dağılımı");
+}
+
 async function check60301() {
   section("2) 2025 proxy vs gerçekleşen 60301");
   const mizan = await loadMizanRows();
@@ -214,6 +269,7 @@ async function main() {
   await checkNegatifBakiye();
   const r = await check60301();
   await checkF368();
+  await checkButceYiliVeManuelGider();
   section("Özet");
   console.log("1 Negatif bakiye UI/flag: motor OK (UI banner+satır bayrağı eklendi)");
   console.log(
@@ -222,6 +278,7 @@ async function main() {
       : `2 60301 sapma: ölçüm yukarıda (gerçek=${r.gercek60301})`,
   );
   console.log("3 F368: 61402 pay/baz + dağıtım OK");
+  console.log("4 Bütçe yılı + manuel gider: Y-1 kapanış ve 1/12 dağılım OK");
 }
 
 main().catch((e) => {

@@ -23,6 +23,14 @@ type TarifeOzet = {
   artisOrani: number;
 };
 
+type FaaliyetGiderOzet = {
+  hesap: string;
+  ad: string;
+  oncekiYilTutari: number;
+  butceTutari: number;
+  kaynakAy?: number | null;
+};
+
 const tl = (n: number) =>
   new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 }).format(n);
 const pct = (n: number) =>
@@ -34,8 +42,9 @@ const pct = (n: number) =>
 
 export default function V2DashboardClient() {
   const [butceYili, setButceYili] = useState(2027);
+  const [butceYillari, setButceYillari] = useState<number[]>([2027]);
   const [tarifeRows, setTarifeRows] = useState<TarifeOzet[]>([]);
-  const [giderArtisPct, setGiderArtisPct] = useState(20);
+  const [faaliyetGiderRows, setFaaliyetGiderRows] = useState<FaaliyetGiderOzet[]>([]);
   const [getiriPct, setGetiriPct] = useState<number[]>(
     Array.from({ length: 12 }, () => V2_AYLIK_GETIRI_VARSAYILAN * 100),
   );
@@ -50,26 +59,35 @@ export default function V2DashboardClient() {
   const [proxy, setProxy] = useState<V2MaliGelirProxySonuc | null>(null);
   const [uyarilar, setUyarilar] = useState<string[]>([]);
 
-  const load = useCallback(async () => {
-    const res = await fetch("/api/butce/v2/varsayimlar");
+  const load = useCallback(async (hedefYil?: number) => {
+    const query = hedefYil ? `?butceYili=${hedefYil}` : "";
+    const res = await fetch(`/api/butce/v2/varsayimlar${query}`);
     if (!res.ok) return;
     const data = await res.json();
-    setButceYili(data.butceYili ?? 2027);
+    const seciliYil = data.butceYili ?? hedefYil ?? 2027;
+    setButceYili(seciliYil);
+    setButceYillari(data.butceYillari?.length ? data.butceYillari : [seciliYil]);
+    setFaaliyetGiderRows(data.faaliyetGiderSatirlari ?? []);
     const ozet = (data.tarifeOzet ?? []) as Array<{
       tarifeGrubu: string;
       mevcutHedef: number;
     }>;
     const saved = data.saved as {
+      butceYili?: number;
       tarifeHedefleri?: Record<string, number>;
       giderArtisOrani?: number;
+      faaliyetGiderButce?: Record<string, number>;
       aylikGetiriOrani?: number[];
       referansEtiket?: string;
       yilAgirliklari?: number[];
     } | null;
+    const savedUygula = saved?.butceYili === seciliYil;
 
     setTarifeRows(
       ozet.map((r) => {
-        const yeni = saved?.tarifeHedefleri?.[r.tarifeGrubu] ?? r.mevcutHedef;
+        const yeni = savedUygula
+          ? saved?.tarifeHedefleri?.[r.tarifeGrubu] ?? r.mevcutHedef
+          : r.mevcutHedef;
         return {
           tarifeGrubu: r.tarifeGrubu,
           mevcutHedef: r.mevcutHedef,
@@ -78,15 +96,20 @@ export default function V2DashboardClient() {
         };
       }),
     );
-    if (saved?.giderArtisOrani != null) setGiderArtisPct(saved.giderArtisOrani * 100);
-    if (saved?.aylikGetiriOrani?.length === 12) {
+    if (savedUygula && saved?.aylikGetiriOrani?.length === 12) {
       setGetiriPct(saved.aylikGetiriOrani.map((x) => x * 100));
+    } else {
+      setGetiriPct(Array.from({ length: 12 }, () => V2_AYLIK_GETIRI_VARSAYILAN * 100));
     }
-    if (saved?.referansEtiket && REFERANS_YIL_SECENEKLERI[saved.referansEtiket]) {
+    if (savedUygula && saved?.referansEtiket && REFERANS_YIL_SECENEKLERI[saved.referansEtiket]) {
       setReferans(saved.referansEtiket);
       setYilAgirliklari(
         referansYilAgirliklari(saved.referansEtiket, saved.yilAgirliklari),
       );
+    } else {
+      const varsayilanRef = "Son 2 Yıl Ortalaması (2024-2025)";
+      setReferans(varsayilanRef);
+      setYilAgirliklari(referansYilAgirliklari(varsayilanRef));
     }
   }, []);
 
@@ -97,12 +120,15 @@ export default function V2DashboardClient() {
   function bodyPayload() {
     const tarifeHedefleri: Record<string, number> = {};
     for (const r of tarifeRows) tarifeHedefleri[r.tarifeGrubu] = r.yeniHedef;
+    const faaliyetGiderButce: Record<string, number> = {};
+    for (const r of faaliyetGiderRows) faaliyetGiderButce[r.hesap] = r.butceTutari;
     return {
       butceYili,
       tarifeHedefleri,
       referansEtiket: referans,
       yilAgirliklari: normalizeYilAgirliklari(yilAgirliklari),
-      giderArtisOrani: giderArtisPct / 100,
+      giderArtisOrani: 0,
+      faaliyetGiderButce,
       aylikGetiriOrani: getiriPct.map((x) => x / 100),
     };
   }
@@ -166,6 +192,40 @@ export default function V2DashboardClient() {
             Teknik oranlar
           </Link>{" "}
           panelini kullanın (aynı oran-ayarlar.json).
+        </p>
+      </section>
+
+      <section className="rounded-xl border border-indigo-200 bg-indigo-50 p-4 shadow-sm">
+        <label className="block max-w-xs text-sm">
+          <span className="font-semibold text-indigo-950">Bütçe dönemi</span>
+          <select
+            className="mt-1 block w-full rounded-lg border border-indigo-300 bg-white px-3 py-2 text-sm"
+            value={butceYili}
+            disabled={busy}
+            onChange={async (e) => {
+              const yil = Number(e.target.value);
+              setBusy(true);
+              setErr(null);
+              setMsg(null);
+              setGt(null);
+              setProxy(null);
+              try {
+                await load(yil);
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            {butceYillari.map((yil) => (
+              <option key={yil} value={yil}>
+                {yil} Bütçesi
+              </option>
+            ))}
+          </select>
+        </label>
+        <p className="mt-2 text-xs text-indigo-900">
+          Açılış bilançosu, gider bazları ve gerçekleşen referansları otomatik olarak {butceYili - 1}{" "}
+          kapanışına göre seçilir.
         </p>
       </section>
 
@@ -272,18 +332,69 @@ export default function V2DashboardClient() {
 
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">
-          2) Genel gider artışı (61402–06) ve aylık mali getiri
+          2) Genel gider bütçesi (61402–06) ve aylık mali getiri
         </h2>
-        <label className="mt-3 block text-sm">
-          <span className="text-slate-600">Geçen yıla göre artış %</span>
-          <input
-            type="number"
-            step="0.1"
-            className="mt-1 block w-28 rounded border border-slate-300 px-2 py-1"
-            value={giderArtisPct}
-            onChange={(e) => setGiderArtisPct(Number(e.target.value))}
-          />
-        </label>
+        <p className="mt-1 text-xs text-slate-500">
+          {butceYili - 1} kapanış tutarı referanstır. {butceYili} yıllık bütçesini hesap bazında
+          girin; tutar aylara eşit dağıtılır.
+        </p>
+        <div className="mt-3 overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-xs text-slate-500">
+                <th className="py-2 pr-3">Hesap</th>
+                <th className="py-2 pr-3">Gider kalemi</th>
+                <th className="py-2 pr-3 text-right">{butceYili - 1} kapanış</th>
+                <th className="py-2 pr-3 text-right">{butceYili} bütçe</th>
+                <th className="py-2 text-right">Artış %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {faaliyetGiderRows.map((row, idx) => {
+                const artis =
+                  row.oncekiYilTutari > 0
+                    ? row.butceTutari / row.oncekiYilTutari - 1
+                    : row.butceTutari > 0
+                      ? null
+                      : 0;
+                return (
+                  <tr key={row.hesap} className="border-b border-slate-100">
+                    <td className="py-1.5 pr-3 font-mono text-xs text-slate-600">{row.hesap}</td>
+                    <td className="py-1.5 pr-3 font-medium">{row.ad}</td>
+                    <td className="py-1.5 pr-3 text-right tabular-nums text-slate-600">
+                      {tl(row.oncekiYilTutari)}
+                      {row.kaynakAy && row.kaynakAy !== 12 ? (
+                        <span className="ml-1 text-[10px] text-amber-700">
+                          ({row.kaynakAy}. ay)
+                        </span>
+                      ) : null}
+                    </td>
+                    <td className="py-1.5 pr-3 text-right">
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        className="w-40 rounded border border-slate-300 px-2 py-1 text-right tabular-nums"
+                        value={Math.round(row.butceTutari)}
+                        onChange={(e) => {
+                          const tutar = Math.max(0, Number(e.target.value) || 0);
+                          setFaaliyetGiderRows((prev) => {
+                            const next = [...prev];
+                            next[idx] = { ...next[idx]!, butceTutari: tutar };
+                            return next;
+                          });
+                        }}
+                      />
+                    </td>
+                    <td className="py-1.5 text-right tabular-nums">
+                      {artis == null ? "Baz yok" : pct(artis)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
         <p className="mt-3 text-xs font-medium uppercase text-slate-500">
           Aylık vadeli mevduat / getiri oranı (%)
         </p>
@@ -348,7 +459,7 @@ export default function V2DashboardClient() {
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-900">Mali gelir proxy (banka roll-forward)</h2>
           <p className="mt-1 text-xs text-slate-500">
-            Açılış: {tl(proxy.acilisBanka)} ({proxy.acilisKaynak}) · Yıllık mali gelir:{" "}
+            Açılış: {tl(proxy.acilisBanka)} ({proxy.acilisKaynakEtiket}) · Yıllık mali gelir:{" "}
             <strong>{tl(proxy.maliGelirYillik)}</strong>
           </p>
           {proxy.negatifBakiyeAylar.length > 0 && (

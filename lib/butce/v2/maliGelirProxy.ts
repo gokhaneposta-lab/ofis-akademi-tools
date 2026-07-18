@@ -14,11 +14,6 @@ function normHesap(hesap: string): string {
   return String(hesap).replace(/\D/g, "");
 }
 
-function prefixMatch(hesap: string, prefix: string): boolean {
-  const h = normHesap(hesap);
-  return h === prefix || h.startsWith(prefix);
-}
-
 /** Aynı ay içindeki tutarları hesap koduna göre topla (mutlak). */
 function tutarByHesap(
   rows: { hesap: string; tutar: number }[],
@@ -66,30 +61,84 @@ export function resolveAcilisBanka(opts: {
   butceYili: number;
   bilancoAylik: BilancoAylikRow[];
   mizan: MizanRow[];
-}): { tutar: number; kaynak: "102/100" | "10" | "yok" } {
+}): {
+  tutar: number;
+  kaynak: "102/100" | "10" | "yok";
+  kaynakYil: number;
+  kaynakAy: number | null;
+  kaynakEtiket: string;
+  uyari?: string;
+} {
   const oncekiYil = opts.butceYili - 1;
 
   const bilancoOnceki = opts.bilancoAylik.filter((r) => r.yil === oncekiYil);
   if (bilancoOnceki.length > 0) {
-    let maxAy = 0;
-    for (const r of bilancoOnceki) if (r.ay > maxAy) maxAy = r.ay;
-    const byHesap = tutarByHesap(bilancoOnceki.filter((r) => r.ay === maxAy));
+    const aylar = [...new Set(bilancoOnceki.map((r) => r.ay))].filter((ay) => ay >= 1 && ay <= 12);
+    const kaynakAy = aylar.includes(12) ? 12 : Math.max(0, ...aylar);
+    const byHesap = tutarByHesap(bilancoOnceki.filter((r) => r.ay === kaynakAy));
+    const ayEtiket = AYLAR[kaynakAy - 1] ?? `${kaynakAy}. ay`;
+    const uyari =
+      kaynakAy !== 12
+        ? `${oncekiYil} Aralık bilançosu yok — açılış banka için son mevcut ay (${ayEtiket}) kullanıldı.`
+        : undefined;
     const leaf = bankaStokFromMap(byHesap);
-    if (leaf > 0) return { tutar: leaf, kaynak: "102/100" };
+    if (leaf > 0) {
+      return {
+        tutar: leaf,
+        kaynak: "102/100",
+        kaynakYil: oncekiYil,
+        kaynakAy,
+        kaynakEtiket: `${oncekiYil} ${ayEtiket} bilançosu — 102/100`,
+        uyari,
+      };
+    }
 
     const agg = agrega10FromMap(byHesap);
-    if (agg > 0) return { tutar: agg, kaynak: "10" };
+    if (agg > 0) {
+      return {
+        tutar: agg,
+        kaynak: "10",
+        kaynakYil: oncekiYil,
+        kaynakAy,
+        kaynakEtiket: `${oncekiYil} ${ayEtiket} bilançosu — 10`,
+        uyari,
+      };
+    }
   }
 
   const mizanYil = opts.mizan.filter((r) => r.yil === oncekiYil);
   const byMizan = tutarByHesap(mizanYil);
   const leafM = bankaStokFromMap(byMizan);
-  if (leafM > 0) return { tutar: leafM, kaynak: "102/100" };
+  if (leafM > 0) {
+    return {
+      tutar: leafM,
+      kaynak: "102/100",
+      kaynakYil: oncekiYil,
+      kaynakAy: null,
+      kaynakEtiket: `${oncekiYil} yılsonu mizanı — 102/100`,
+      uyari: `${oncekiYil} bilanço kapanışı bulunamadı — yıllık mizan kullanıldı.`,
+    };
+  }
 
   const aggM = agrega10FromMap(byMizan);
-  if (aggM > 0) return { tutar: aggM, kaynak: "10" };
+  if (aggM > 0) {
+    return {
+      tutar: aggM,
+      kaynak: "10",
+      kaynakYil: oncekiYil,
+      kaynakAy: null,
+      kaynakEtiket: `${oncekiYil} yılsonu mizanı — 10`,
+      uyari: `${oncekiYil} bilanço kapanışı bulunamadı — yıllık mizan agrega 10 kullanıldı.`,
+    };
+  }
 
-  return { tutar: 0, kaynak: "yok" };
+  return {
+    tutar: 0,
+    kaynak: "yok",
+    kaynakYil: oncekiYil,
+    kaynakAy: null,
+    kaynakEtiket: `${oncekiYil} kapanışı bulunamadı`,
+  };
 }
 
 function ayToplam(aylikToplam: Record<number, number[]>, satir: number, ayIdx: number): number {
@@ -105,6 +154,9 @@ export function buildMaliGelirProxy(opts: {
   aylikGetiriOrani: number[];
   acilisBanka: number;
   acilisKaynak: "102/100" | "10" | "yok";
+  acilisKaynakYil?: number;
+  acilisKaynakAy?: number | null;
+  acilisKaynakEtiket?: string;
 }): V2MaliGelirProxySonuc {
   const uyarilar: string[] = [V2_MALI_GELIR_DISCLAIMER, V2_VERGI_DISCLAIMER];
   if (opts.acilisKaynak === "yok" || opts.acilisBanka <= 0) {
@@ -160,6 +212,9 @@ export function buildMaliGelirProxy(opts: {
   return {
     acilisBanka: opts.acilisBanka,
     acilisKaynak: opts.acilisKaynak,
+    acilisKaynakYil: opts.acilisKaynakYil ?? 0,
+    acilisKaynakAy: opts.acilisKaynakAy ?? null,
+    acilisKaynakEtiket: opts.acilisKaynakEtiket ?? opts.acilisKaynak,
     aylar,
     maliGelirYillik: maliGelirAylik.reduce((a, b) => a + b, 0),
     maliGelirAylik,

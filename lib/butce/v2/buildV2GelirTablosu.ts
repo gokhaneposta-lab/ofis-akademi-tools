@@ -105,6 +105,8 @@ export const V2_GT_GOSTERIM: GtGosterimSatir[] = [
   { satir: 114, ad: "Muallak hasar karş. değişim", seviye: 1 },
   { satir: 177, ad: "Üretim komisyon gideri (-)", seviye: 2 },
   { satir: 196, ad: "Alınan reasürans komisyonları (+)", seviye: 2 },
+  { satir: 200, ad: "Diğer faaliyet giderleri (-)", seviye: 2 },
+  { satir: 201, ad: "Diğer faaliyet giderleri 2 (-)", seviye: 2 },
   { satir: V2_SENTETIK.teknikFaaliyetGideri, kod: "", ad: "Teknik faaliyet giderleri", seviye: 1 },
   { satir: 202, ad: "Matematik karş. değişim", seviye: 1, disGirdi: true },
   { satir: V2_SENTETIK.safiTkz, kod: "", ad: "SAFİ TKZ", seviye: 0, kalin: true, vurgu: true },
@@ -125,6 +127,14 @@ export type V2GelirTablosuSonuc = {
   endirektPrim: Record<string, number>;
   referansEtiket: string;
   giderArtisOrani: number;
+  faaliyetGiderOncekiYil: number;
+  faaliyetGiderBazSatirlari: Array<{
+    hesap: string;
+    ad: string;
+    oncekiYilTutari: number;
+    kaynakAy: number | null;
+  }>;
+  faaliyetGiderButce: Record<string, number>;
   uyarilar: string[];
 };
 
@@ -170,8 +180,9 @@ export function buildV2GelirTablosu(opts: {
     uyarilar.push("Prim dağıtımı 0 — tarife hedefleri veya pay tablosunu kontrol edin.");
   }
 
-  const refYil =
-    opts.mizanAylik.reduce((m, r) => Math.max(m, r.yil), 0) || butceYili - 1;
+  const uygunRefYillar = [...new Set(opts.mizanAylik.map((r) => r.yil))]
+    .filter((yil) => yil <= butceYili - 1);
+  const refYil = uygunRefYillar.length > 0 ? Math.max(...uygunRefYillar) : butceYili - 1;
   const oranSonuc = aylikOranlariFromMizan(opts.mizanAylik, [refYil]);
   const genelOranlar =
     oranSonuc.genelOranlar.some((x) => x > 0) ? oranSonuc.genelOranlar : varsayilanAylikDagilim();
@@ -191,8 +202,10 @@ export function buildV2GelirTablosu(opts: {
 
   const fg = buildFaaliyetGiderFromMizanArtis({
     mizan: opts.mizan,
+    mizanAylikFull: opts.mizanAylikFull,
     butceYili,
     giderArtisOrani: opts.varsayimlar.giderArtisOrani,
+    faaliyetGiderButce: opts.varsayimlar.faaliyetGiderButce,
   });
   uyarilar.push(...fg.uyarilar);
 
@@ -217,12 +230,16 @@ export function buildV2GelirTablosu(opts: {
     bilancoAylik: opts.bilancoAylik,
     mizan: opts.mizan,
   });
+  if (acilis.uyari) uyarilar.push(acilis.uyari);
 
   const proxy = buildMaliGelirProxy({
     aylikToplam: gtPass1.aylikToplam,
     aylikGetiriOrani: opts.varsayimlar.aylikGetiriOrani,
     acilisBanka: acilis.tutar,
     acilisKaynak: acilis.kaynak,
+    acilisKaynakYil: acilis.kaynakYil,
+    acilisKaynakAy: acilis.kaynakAy,
+    acilisKaynakEtiket: acilis.kaynakEtiket,
   });
   uyarilar.push(...proxy.uyarilar);
 
@@ -259,6 +276,9 @@ export function buildV2GelirTablosu(opts: {
     endirektPrim,
     referansEtiket,
     giderArtisOrani: opts.varsayimlar.giderArtisOrani,
+    faaliyetGiderOncekiYil: fg.oncekiYil,
+    faaliyetGiderBazSatirlari: fg.bazSatirlar,
+    faaliyetGiderButce: fg.uygulananButce,
     uyarilar: [...new Set(uyarilar)],
   };
 }

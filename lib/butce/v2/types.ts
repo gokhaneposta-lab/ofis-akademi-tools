@@ -6,6 +6,8 @@ export type V2VarsayimlarStore = {
   yilAgirliklari?: number[];
   /** 61402–06 için önceki yıla uygulanacak artış (örn. 0.35 = +%35). */
   giderArtisOrani: number;
+  /** 61402–06 hesap bazında yıllık bütçe tutarı (pozitif TL). */
+  faaliyetGiderButce?: Record<string, number>;
   /** Ocak–Aralık aylık getiri (decimal, örn. 0.0268 ≈ %2,68 — 2025 60301 backtest). */
   aylikGetiriOrani: number[];
 };
@@ -27,6 +29,9 @@ export type V2MaliGelirAySatir = {
 export type V2MaliGelirProxySonuc = {
   acilisBanka: number;
   acilisKaynak: "102/100" | "10" | "yok";
+  acilisKaynakYil: number;
+  acilisKaynakAy: number | null;
+  acilisKaynakEtiket: string;
   aylar: V2MaliGelirAySatir[];
   maliGelirYillik: number;
   maliGelirAylik: number[];

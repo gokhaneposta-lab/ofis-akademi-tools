@@ -39,6 +39,10 @@ const pct = (n: number) =>
     maximumFractionDigits: 2,
     minimumFractionDigits: 1,
   }).format(n);
+const AY_ADLARI = [
+  "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+  "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
+] as const;
 
 export default function V2DashboardClient() {
   const [butceYili, setButceYili] = useState(2027);
@@ -58,6 +62,7 @@ export default function V2DashboardClient() {
   const [gt, setGt] = useState<GelirTablosuSonuc | null>(null);
   const [proxy, setProxy] = useState<V2MaliGelirProxySonuc | null>(null);
   const [uyarilar, setUyarilar] = useState<string[]>([]);
+  const [ozetAy, setOzetAy] = useState(12);
 
   const load = useCallback(async (hedefYil?: number) => {
     const query = hedefYil ? `?butceYili=${hedefYil}` : "";
@@ -179,6 +184,10 @@ export default function V2DashboardClient() {
   }
 
   const refYears = REFERANS_YIL_SECENEKLERI[referans] ?? [2024];
+  const ozetDeger = (satir: number) =>
+    gt?.aylikToplam[satir]?.slice(0, ozetAy).reduce((toplam, tutar) => toplam + tutar, 0) ??
+    gt?.toplam[satir] ??
+    0;
 
   return (
     <div className="space-y-5">
@@ -401,7 +410,7 @@ export default function V2DashboardClient() {
         <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6 lg:grid-cols-12">
           {getiriPct.map((v, i) => (
             <label key={i} className="text-xs text-slate-600">
-              {["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"][i]}
+              {AY_ADLARI[i]?.slice(0, 3)}
               <input
                 type="number"
                 step="0.1"
@@ -526,10 +535,28 @@ export default function V2DashboardClient() {
 
       {gt && (
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">V2 Gelir tablosu özeti (şirket toplam)</h2>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h2 className="text-sm font-semibold text-slate-900">
+              V2 Gelir tablosu özeti (şirket toplam)
+            </h2>
+            <label className="text-xs text-slate-600">
+              Gösterim dönemi
+              <select
+                className="ml-2 rounded border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900"
+                value={ozetAy}
+                onChange={(e) => setOzetAy(Number(e.target.value))}
+              >
+                {AY_ADLARI.map((ay, i) => (
+                  <option key={ay} value={i + 1}>
+                    1–{i + 1} · {ay} sonu
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
           <p className="mt-1 text-xs text-slate-500">
-            Brüt prim: {tl(gt.brutPrimToplam)} · Safi TKZ:{" "}
-            {tl(gt.toplam[9003] ?? 0)} · TKZ: {tl(gt.toplam[9005] ?? 0)}
+            Brüt prim: {tl(ozetDeger(11))} · Safi TKZ: {tl(ozetDeger(9003))} · TKZ:{" "}
+            {tl(ozetDeger(9005))}
           </p>
           <div className="mt-3 max-h-[480px] overflow-auto">
             <table className="min-w-full text-sm">
@@ -537,7 +564,7 @@ export default function V2DashboardClient() {
                 <tr>
                   <th className="px-2 py-1 text-left">Satır</th>
                   <th className="px-2 py-1 text-left">Kalem</th>
-                  <th className="px-2 py-1 text-right">Yıllık</th>
+                  <th className="px-2 py-1 text-right">{AY_ADLARI[ozetAy - 1]} sonu</th>
                 </tr>
               </thead>
               <tbody>
@@ -554,7 +581,9 @@ export default function V2DashboardClient() {
                     <td className="px-2 py-1" style={{ paddingLeft: `${s.seviye * 12 + 8}px` }}>
                       {s.ad}
                     </td>
-                    <td className="px-2 py-1 text-right tabular-nums">{tl(gt.toplam[s.satir] ?? 0)}</td>
+                    <td className="px-2 py-1 text-right tabular-nums">
+                      {tl(ozetDeger(s.satir))}
+                    </td>
                   </tr>
                 ))}
               </tbody>

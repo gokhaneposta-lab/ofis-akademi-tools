@@ -55,11 +55,18 @@ export function buildKpkSonuc(opts: {
   kapanisTahmin?: KpkKapanisTahminStore | null;
   mizanAylikFull?: MizanAylikRow[];
 }): KpkSonuc {
+  // Tek kapanış store'u farklı bütçe yılına ait olabilir. Örneğin 2027 için
+  // kaydedilmiş 2026/04 tahmini, 2026 bütçesinin tam 2025 serisini kesmemeli.
+  const kapanisTahmin =
+    opts.kapanisTahmin?.butceYili === opts.butceYili &&
+    opts.kapanisTahmin.oncekiYil === opts.butceYili - 1
+      ? opts.kapanisTahmin
+      : null;
   const onceki = buildOncekiYilPrimSerisi({
     butceYili: opts.butceYili,
     mizanAylik: opts.mizanAylik,
     tarifeBransPay: opts.tarifeBransPay,
-    kapanisTahmin: opts.kapanisTahmin,
+    kapanisTahmin,
   });
 
   const cariPrim: Record<string, number[]> = {};

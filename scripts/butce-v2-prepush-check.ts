@@ -12,6 +12,7 @@ import { buildMaliGelirProxy, resolveAcilisBanka } from "../lib/butce/v2/maliGel
 import { buildFaaliyetGiderFromMizanArtis } from "../lib/butce/v2/faaliyetGiderFromMizanArtis";
 import { V2_GT_GOSTERIM } from "../lib/butce/v2/buildV2GelirTablosu";
 import { hesaplaKpkBrans } from "../lib/butce/kpk/kpkMotoru";
+import { buildKpkSonuc } from "../lib/butce/kpk/buildKpkSonuc";
 import type { FaaliyetGiderRow, MizanRow } from "../lib/butce/types";
 
 function pct(n: number): string {
@@ -178,30 +179,81 @@ async function checkButceYiliVeManuelGider() {
 
 async function checkKpkReasurHareketIsareti() {
   section("5) KPK reasürör payı hareket işareti");
-  const sonuc = hesaplaKpkBrans({
+  const vadeRows = Array.from({ length: 12 }, (_, i) => ({
+    bransKodu: "701",
+    bransAd: "Test",
+    ay: i + 1,
+    vadeGun: 365,
+  }));
+  const cariSonuc = hesaplaKpkBrans({
     bransKodu: "701",
     butceYili: 2026,
     cariPrimAylar: [1200, ...Array(11).fill(0)],
     oncekiYilPrimAylar: Array(12).fill(0),
-    vadeRows: Array.from({ length: 12 }, (_, i) => ({
-      bransKodu: "701",
-      bransAd: "Test",
-      ay: i + 1,
-      vadeGun: 30,
-    })),
+    vadeRows,
     reasurOrani: 0.5,
   });
   for (let i = 0; i < 12; i++) {
-    const brut = sonuc.gtAylik[23]?.[i] ?? 0;
-    const reasur = sonuc.gtAylik[26]?.[i] ?? 0;
+    const brut = cariSonuc.gtAylik[23]?.[i] ?? 0;
+    const reasur = cariSonuc.gtAylik[26]?.[i] ?? 0;
     if (Math.abs(reasur + brut * 0.5) > 1e-9) {
       throw new Error(`${i + 1}. ay F26, F23 hareketinin ters işaretlisi değil`);
     }
   }
-  if (Math.abs(sonuc.gtYillik[26] ?? 0) > 1e-9 || Math.abs(sonuc.gtYillik[21] ?? 0) > 1e-9) {
-    throw new Error("Yıl sonunda sıfırlanan KPK, yapay pozitif reasürör payı/F21 üretti");
+
+  const devredenSonuc = hesaplaKpkBrans({
+    bransKodu: "701",
+    butceYili: 2026,
+    cariPrimAylar: Array(12).fill(0),
+    oncekiYilPrimAylar: [...Array(11).fill(0), 1200],
+    vadeRows,
+    reasurOrani: 0.5,
+  });
+  for (let i = 0; i < 12; i++) {
+    const brut = devredenSonuc.gtAylik[24]?.[i] ?? 0;
+    const reasur = devredenSonuc.gtAylik[27]?.[i] ?? 0;
+    if (Math.abs(reasur + brut * 0.5) > 1e-9) {
+      throw new Error(`${i + 1}. ay F27, F24 hareketinin ters işaretlisi değil`);
+    }
   }
-  console.log("OK — stok azalışında F26 ters işaretli; yıllık hareket yapay biçimde şişmiyor");
+  const f24 = devredenSonuc.gtYillik[24] ?? 0;
+  const f27 = devredenSonuc.gtYillik[27] ?? 0;
+  if (f24 <= 0 || f27 >= 0 || Math.abs(f27 + f24 * 0.5) > 1e-9) {
+    throw new Error(`F27 devreden reasürör payı mutabık değil: F24=${f24}, F27=${f27}`);
+  }
+  console.log("OK — F26/F27, cari ve devreden brüt KPK hareketlerini ters işaretle izliyor");
+}
+
+async function checkKpkKapanisYilUyumu() {
+  section("6) KPK kapanış tahmini bütçe yılı uyumu");
+  const sonuc = buildKpkSonuc({
+    butceYili: 2026,
+    mizan: [],
+    mizanAylik: Array.from({ length: 12 }, (_, i) => ({
+      yil: 2025,
+      ay: i + 1,
+      hesap: "0111",
+      bransKodu: "701",
+      tutar: (i + 1) * 100,
+    })),
+    tarifeBransPay: [],
+    vadeRows: Array.from({ length: 12 }, (_, i) => ({
+      bransKodu: "701",
+      bransAd: "Test",
+      ay: i + 1,
+      vadeGun: 365,
+    })),
+    kapanisTahmin: {
+      butceYili: 2027,
+      oncekiYil: 2026,
+      sonGercekAy: 4,
+      guncellemeIso: "",
+    },
+  });
+  if (sonuc.sonGercekAy !== 12 || (sonuc.toplamGtYillik[24] ?? 0) <= 0) {
+    throw new Error("Farklı bütçe yılı kapanış kaydı 2025 tam devreden KPK serisini kesti");
+  }
+  console.log("OK — 2027 kapanış kaydı 2026 bütçesinin tam 2025 açılışını etkilemiyor");
 }
 
 async function check60301() {
@@ -305,6 +357,7 @@ async function main() {
   await checkF368();
   await checkButceYiliVeManuelGider();
   await checkKpkReasurHareketIsareti();
+  await checkKpkKapanisYilUyumu();
   section("Özet");
   console.log("1 Negatif bakiye UI/flag: motor OK (UI banner+satır bayrağı eklendi)");
   console.log(
@@ -315,6 +368,7 @@ async function main() {
   console.log("3 F368: 61402 pay/baz + dağıtım OK");
   console.log("4 Bütçe yılı + manuel gider: Y-1 kapanış ve 1/12 dağılım OK");
   console.log("5 KPK reasürör payı: aylık hareket işareti ve yıllık mutabakat OK");
+  console.log("6 KPK kapanış yılı: farklı çalışma kaydı açılışı kesmiyor");
 }
 
 main().catch((e) => {

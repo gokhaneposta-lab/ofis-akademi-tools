@@ -15,6 +15,7 @@ import {
 } from "@/lib/butce/v2/maliGelirProxyConfig";
 import type { V2MaliGelirProxySonuc } from "@/lib/butce/v2/types";
 import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
+import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu";
 
 type TarifeOzet = {
   tarifeGrubu: string;
@@ -63,6 +64,7 @@ export default function V2DashboardClient() {
   const [proxy, setProxy] = useState<V2MaliGelirProxySonuc | null>(null);
   const [uyarilar, setUyarilar] = useState<string[]>([]);
   const [ozetAy, setOzetAy] = useState(12);
+  const [excelBusy, setExcelBusy] = useState(false);
 
   const load = useCallback(async (hedefYil?: number) => {
     const query = hedefYil ? `?butceYili=${hedefYil}` : "";
@@ -539,20 +541,40 @@ export default function V2DashboardClient() {
             <h2 className="text-sm font-semibold text-slate-900">
               V2 Gelir tablosu özeti (şirket toplam)
             </h2>
-            <label className="text-xs text-slate-600">
-              Gösterim dönemi
-              <select
-                className="ml-2 rounded border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900"
-                value={ozetAy}
-                onChange={(e) => setOzetAy(Number(e.target.value))}
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="text-xs text-slate-600">
+                Gösterim dönemi
+                <select
+                  className="ml-2 rounded border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900"
+                  value={ozetAy}
+                  onChange={(e) => setOzetAy(Number(e.target.value))}
+                >
+                  {AY_ADLARI.map((ay, i) => (
+                    <option key={ay} value={i + 1}>
+                      1–{i + 1} · {ay} sonu
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                disabled={excelBusy}
+                onClick={async () => {
+                  setExcelBusy(true);
+                  setErr(null);
+                  try {
+                    await downloadV2GelirTablosuExcel(gt);
+                  } catch (e) {
+                    setErr(e instanceof Error ? e.message : "Excel oluşturulamadı");
+                  } finally {
+                    setExcelBusy(false);
+                  }
+                }}
+                className="rounded border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900 disabled:opacity-50"
               >
-                {AY_ADLARI.map((ay, i) => (
-                  <option key={ay} value={i + 1}>
-                    1–{i + 1} · {ay} sonu
-                  </option>
-                ))}
-              </select>
-            </label>
+                {excelBusy ? "Excel hazırlanıyor…" : "Aylık branş Excel indir"}
+              </button>
+            </div>
           </div>
           <p className="mt-1 text-xs text-slate-500">
             Brüt prim: {tl(ozetDeger(11))} · Safi TKZ: {tl(ozetDeger(9003))} · TKZ:{" "}

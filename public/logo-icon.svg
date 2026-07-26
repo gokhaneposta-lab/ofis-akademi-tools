@@ -1,24 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 72" fill="none" role="img" aria-label="Ofis Akademi">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 72" fill="none" role="img" aria-label="Ofis Akademi">
   <g stroke="#0D1117" stroke-linecap="round" stroke-linejoin="round" fill="none">
-    <!-- O -->
-    <path
-      d="M36 14c-12.7 0-22 10.3-22 22s9.3 22 22 22c8.4 0 15.6-4.7 19.3-11.6"
-      stroke-width="9"
-    />
-    <!-- A left + right legs -->
-    <path d="M58 58 L72 16 L86 58" stroke-width="8.5" />
-    <!-- A crossbar: thick start ? tapering swoosh -->
-    <path
-      d="M62 40 C78 38 96 39 112 46"
-      stroke-width="7"
-      stroke-linecap="round"
-    />
+    <!-- O: closed ring (not a C) -->
+    <circle cx="34" cy="36" r="20" stroke-width="8.5" />
+    <!-- A legs -->
+    <path d="M62 56 L76 14 L90 56" stroke-width="8" />
+    <!-- A crossbar + signature swoosh (thick ? thin) -->
+    <path d="M66 38 H84" stroke-width="7" />
+    <path d="M84 38 C96 37 108 39 118 45" stroke-width="5.5" />
   </g>
-  <!-- taper tip (thinner continuation) -->
   <path
-    d="M108 44.5 C113 46.5 116.5 48.5 118.5 50.5"
+    d="M116 44 C120 46 123 48 125.5 50"
     stroke="#0D1117"
-    stroke-width="3.2"
+    stroke-width="2.6"
     stroke-linecap="round"
     fill="none"
   />

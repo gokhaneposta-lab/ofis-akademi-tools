@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-const UPDATED_AT = "25 Nisan 2026";
+const UPDATED_AT = "26 Temmuz 2026";
 
 export default function GizlilikPage() {
   return (
@@ -74,9 +74,9 @@ export default function GizlilikPage() {
             </h2>
             <ul className="list-inside list-disc space-y-1.5">
               <li>
-                <strong>Bültene abone olduğunuzda:</strong> e-posta adresiniz ve formu
-                doldurduğunuz sayfanın adı (analitik amaçla — örn. &quot;footer&quot;,
-                &quot;blog-inline&quot;).
+                <strong>Bültene abone olduğunuzda:</strong> e-posta adresiniz,
+                kaydolduğunuz sayfa ve ilgi alanı etiketleri (ör. Excel, TSB).
+                Abonelik işlemleri event olarak kayıt altına alınır.
               </li>
               <li>
                 <strong>Site ziyaretinizde:</strong> Vercel sunucularına otomatik düşen
@@ -95,8 +95,8 @@ export default function GizlilikPage() {
             </h2>
             <ul className="list-inside list-disc space-y-1.5">
               <li>
-                Bülten gönderimi, hoş geldin e-postası ve yeni içerik bildirimleri için
-                (açık rızanıza dayanır).
+                Bülten gönderimi ve hoş geldin e-postası için; ileride ilgi alanınıza
+                göre içerik seçmek için (açık rızanıza dayanır).
               </li>
               <li>
                 Site performansını ölçmek, hangi içeriklerin işe yaradığını anlamak için
@@ -122,8 +122,8 @@ export default function GizlilikPage() {
                 <strong>Vercel</strong> (ABD/AB) — site barındırma ve teknik kayıtlar.
               </li>
               <li>
-                <strong>Resend</strong> (ABD) — e-posta gönderimi ve abone listesi
-                yönetimi.
+                <strong>Resend</strong> (ABD) — e-posta gönderimi. Abonelik kayıtlarının
+                asıl kaynağı Ofis Akademi veritabanıdır.
               </li>
               <li>
                 <strong>Google Search Console &amp; Bing Webmaster Tools</strong> —
@@ -137,8 +137,9 @@ export default function GizlilikPage() {
               5. Verilerinizi ne kadar saklıyoruz?
             </h2>
             <p>
-              Bülten aboneliğiniz devam ettiği sürece e-posta adresiniz Resend abone
-              listesinde saklanır. Aboneliğinizi iptal ettiğinizde veriniz silinir.
+              Bülten aboneliğiniz devam ettiği sürece e-posta ve ilgi alanı kayıtlarınız
+              Ofis Akademi veritabanında saklanır. Aboneliğinizi iptal ettiğinizde
+              (KVKK kapsamında talep veya bültendeki çıkış) işleme son verilir.
             </p>
           </section>
 
@@ -168,8 +169,8 @@ export default function GizlilikPage() {
             </h2>
             <p>
               Her bülten e-postasının altında <strong>tek tıkla abonelikten çık</strong>{" "}
-              linki bulunur. Alternatif olarak yukarıdaki e-postaya yazarak da çıkış
-              talep edebilirsiniz.
+              linki bulunur (veya e-posta ile talep). KVKK kapsamında abonelik
+              sonlandırılabilir.
             </p>
           </section>
 

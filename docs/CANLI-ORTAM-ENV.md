@@ -9,6 +9,7 @@ Kod GitHub’a push edildi. Site **Vercel**, **Netlify** veya başka bir platfor
 | Değişken | Değer | Açıklama |
 |----------|--------|----------|
 | `RESEND_API_KEY` | `re_...` (Resend’den kopyaladığınız key) | E-posta formunun çalışması için gerekli. |
+| `DATABASE_URL` | Neon / Vercel Postgres connection string | Newsletter v2 source of truth (`subscribers`). Yoksa `POST /api/subscriptions` → 503. |
 
 ---
 

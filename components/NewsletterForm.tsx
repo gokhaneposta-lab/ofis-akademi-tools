@@ -2,43 +2,90 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import type { SubscribeChannel, SubscribeReason } from "@/lib/subscription/rules";
 
 type Variant = "footer" | "inline" | "card";
 type Status = "idle" | "loading" | "success" | "error";
 
 type Props = {
   variant?: Variant;
-  /** "Hangi sayfadan abone oldu" — analitik için /api/abone'ye gönderilir. */
+  /** Eski prop — channel/reason türetilmesinde kullanılır. */
   source?: string;
-  /** Üstte görünen kısa başlık (variant'a göre default vardır). */
   heading?: string;
-  /** Başlığın altındaki açıklama satırı. */
   description?: string;
+  reason?: SubscribeReason;
+  channel?: SubscribeChannel;
 };
 
 const DEFAULTS: Record<Variant, { heading: string; description: string }> = {
   footer: {
     heading: "Haftalık Excel ipuçları",
     description:
-      "Haftada 1 kısa e-posta. Pratik formüller, mini şablonlar ve yeni rehberler. Spam yok, istediğin an çık.",
+      "Haftada 1 kısa e-posta. İlgi alanına göre seçilmiş içerikler. Spam yok, istediğin an çık.",
   },
   inline: {
     heading: "Bu rehberi beğendin mi?",
     description:
-      "Haftada 1 kısa e-posta — yeni rehberler, ücretsiz Excel şablonları ve formül ipuçları. İstediğin an çık.",
+      "Haftada 1 kısa e-posta — ilgi alanına göre rehberler ve araçlar. İstediğin an çık.",
   },
   card: {
-    heading: "Ücretsiz Excel kaynaklarına ilk sen ulaş",
+    heading: "Ücretsiz kaynaklara ilk sen ulaş",
     description:
-      "E-posta bırak; haftalık olarak yeni şablonları, rehberleri ve formül kartlarını gönderelim. İstediğin an çık.",
+      "E-posta bırak; ilgi alanına göre şablon, rehber ve güncellemeler gönderelim. İstediğin an çık.",
   },
 };
+
+function resolveChannel(
+  variant: Variant,
+  source: string,
+  explicit?: SubscribeChannel,
+): SubscribeChannel {
+  if (explicit) return explicit;
+  if (source === "footer" || variant === "footer") return "web_footer";
+  if (variant === "inline") return "web_inline";
+  return "web_inline";
+}
+
+function resolveReason(explicit?: SubscribeReason): SubscribeReason {
+  return explicit ?? "signup_form";
+}
+
+function readUtm(): Record<string, string | null> | undefined {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const q = new URLSearchParams(window.location.search);
+    const utm = {
+      source: q.get("utm_source"),
+      medium: q.get("utm_medium"),
+      campaign: q.get("utm_campaign"),
+      term: q.get("utm_term"),
+      content: q.get("utm_content"),
+    };
+    if (Object.values(utm).every((v) => !v)) return undefined;
+    return utm;
+  } catch {
+    return undefined;
+  }
+}
+
+function apiErrorMessage(data: unknown): string {
+  if (!data || typeof data !== "object") return "Bir hata oluştu.";
+  const err = (data as { error?: unknown }).error;
+  if (typeof err === "string") return err;
+  if (err && typeof err === "object" && "message" in err) {
+    const m = (err as { message?: unknown }).message;
+    if (typeof m === "string") return m;
+  }
+  return "Bir hata oluştu.";
+}
 
 export default function NewsletterForm({
   variant = "footer",
   source = "footer",
   heading,
   description,
+  reason,
+  channel,
 }: Props) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -53,15 +100,24 @@ export default function NewsletterForm({
     if (!email.trim()) return;
     setStatus("loading");
     setErrorMsg("");
+    const page =
+      typeof window !== "undefined" ? window.location.pathname || "/" : "/";
     try {
-      const res = await fetch("/api/abone", {
+      const res = await fetch("/api/subscriptions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), source }),
+        body: JSON.stringify({
+          email: email.trim(),
+          page,
+          reason: resolveReason(reason),
+          channel: resolveChannel(variant, source, channel),
+          referrer: typeof document !== "undefined" ? document.referrer || null : null,
+          utm: readUtm(),
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setErrorMsg(data.error ?? "Bir hata oluştu.");
+        setErrorMsg(apiErrorMessage(data));
         setStatus("error");
         return;
       }
@@ -82,7 +138,7 @@ export default function NewsletterForm({
         <p className="mb-3 text-xs leading-relaxed text-gray-500">{finalDescription}</p>
         {status === "success" ? (
           <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
-            Teşekkürler! Hoş geldin e-postası gönderildi — gelen kutunu kontrol et.
+            Teşekkürler! Aboneliğin alındı — gelen kutunu kontrol et.
           </div>
         ) : (
           <form onSubmit={onSubmit} className="flex flex-col gap-2">
@@ -125,7 +181,7 @@ export default function NewsletterForm({
         <p className="mt-1 text-xs leading-relaxed text-emerald-900/80">{finalDescription}</p>
         {status === "success" ? (
           <div className="mt-3 rounded-lg bg-white px-3 py-2 text-xs text-emerald-800 border border-emerald-200">
-            Teşekkürler! Hoş geldin e-postası gönderildi.
+            Teşekkürler! Aboneliğin alındı.
           </div>
         ) : (
           <form onSubmit={onSubmit} className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -163,7 +219,7 @@ export default function NewsletterForm({
       <p className="mt-1 text-sm leading-relaxed text-gray-700">{finalDescription}</p>
       {status === "success" ? (
         <div className="mt-4 rounded-lg border border-emerald-300 bg-white px-4 py-3 text-sm text-emerald-800">
-          Teşekkürler! Hoş geldin e-postası gönderildi — gelen kutunu kontrol et.
+          Teşekkürler! Aboneliğin alındı — gelen kutunu kontrol et.
         </div>
       ) : (
         <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-2 sm:flex-row">

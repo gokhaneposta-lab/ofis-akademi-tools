@@ -523,14 +523,24 @@ export default function HomeClient() {
                       setAboneStatus("loading");
                       setAboneError("");
                       try {
-                        const res = await fetch("/api/abone", {
+                        const res = await fetch("/api/subscriptions", {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ email: aboneEmail.trim() }),
+                          body: JSON.stringify({
+                            email: aboneEmail.trim(),
+                            page: "/",
+                            reason: "signup_form",
+                            channel: "web_home_hero",
+                          }),
                         });
                         const data = await res.json().catch(() => ({}));
                         if (!res.ok) {
-                          setAboneError(data.error ?? "Bir hata oluştu.");
+                          const err = data.error;
+                          setAboneError(
+                            typeof err === "string"
+                              ? err
+                              : err?.message ?? "Bir hata oluştu.",
+                          );
                           setAboneStatus("error");
                           return;
                         }

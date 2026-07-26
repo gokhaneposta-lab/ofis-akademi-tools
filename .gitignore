@@ -48,3 +48,6 @@ next-env.d.ts
 
 # Bütçe / projeksiyon — şirket içi veri (GT·BL, hedefler)
 /data/butce/private/
+
+.vercel
+.env*

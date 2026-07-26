@@ -23,9 +23,14 @@
     "butce:import-mizan": "node scripts/butce-import-mizan.mjs",
     "butce:import-aylik-gt": "node scripts/butce-import-aylik-gt.mjs",
     "butce:recon-oran": "npx --yes tsx scripts/butce-recon-oran.ts",
-    "butce:gen-brans": "node scripts/gen-brans-json.mjs"
+    "butce:gen-brans": "node scripts/gen-brans-json.mjs",
+    "subscription:migrate": "npx --yes tsx scripts/subscription-migrate.ts",
+    "subscription:rules-smoke": "npx --yes tsx scripts/subscription-rules-smoke.ts",
+    "subscription:sprint1-validate": "npx --yes tsx scripts/subscription-sprint1-validate.ts",
+    "subscription:sprint2-smoke": "npx --yes tsx scripts/subscription-sprint2-smoke.ts"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.4.0",
     "html2canvas": "^1.4.1",

@@ -1,4 +1,5 @@
 export { sendWelcomeEmail, buildWelcomeHtml } from "./welcome";
+export { buildUnsubscribePageUrl } from "./unsubscribeUrl";
 export {
   mapPageToCategory,
   normalizeChannel,

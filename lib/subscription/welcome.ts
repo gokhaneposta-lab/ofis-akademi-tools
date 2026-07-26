@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { getSiteUrl } from "@/lib/site";
 import type { InterestTag } from "./rules";
+import { buildUnsubscribePageUrl } from "./unsubscribeUrl";
 
 const INTROS: Record<InterestTag, string> = {
   excel:
@@ -26,9 +27,29 @@ function resolveIntro(category: InterestTag | string): string {
   return INTROS.general;
 }
 
-export function buildWelcomeHtml(category: InterestTag | string): string {
+function buildFooterHtml(email: string): string {
+  const unsubUrl = buildUnsubscribePageUrl(email);
+  if (!unsubUrl) {
+    return `<p style="margin-top:24px;font-size:12px;color:#6b7280;">Ofis Akademi</p>`;
+  }
+  return `
+    <p style="margin-top:24px;font-size:12px;color:#6b7280;">
+      Bu e-postayı Ofis Akademi bülteni aboneliğin için aldın.
+      <a href="${unsubUrl}" style="color:#6b7280;text-decoration:underline;">Abonelikten çık</a>
+    </p>
+  `.trim();
+}
+
+export function buildWelcomeHtml(
+  category: InterestTag | string,
+  email?: string,
+): string {
   const base = getSiteUrl();
   const intro = resolveIntro(category);
+  const footer =
+    email && email.trim()
+      ? buildFooterHtml(email)
+      : `<p style="margin-top:24px;font-size:12px;color:#6b7280;">Ofis Akademi</p>`;
   return `
     <p>Merhaba,</p>
     <p>Ofis Akademi bültenine hoş geldin.</p>
@@ -40,6 +61,7 @@ export function buildWelcomeHtml(category: InterestTag | string): string {
       <li><a href="${base}/sigorta/tsb">TSB / sigorta panelleri</a></li>
     </ul>
     <p>İyi çalışmalar,<br/>Ofis Akademi</p>
+    ${footer}
   `.trim();
 }
 
@@ -63,7 +85,7 @@ export async function sendWelcomeEmail(opts: {
       from: process.env.RESEND_FROM ?? "Ofis Akademi <onboarding@resend.dev>",
       to: [opts.email],
       subject: "Ofis Akademi’ye hoş geldin",
-      html: buildWelcomeHtml(opts.category),
+      html: buildWelcomeHtml(opts.category, opts.email),
     });
     if (error) {
       console.error("[welcome] Resend error:", error);

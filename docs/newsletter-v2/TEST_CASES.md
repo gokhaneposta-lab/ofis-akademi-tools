@@ -264,9 +264,9 @@ POST /api/subscriptions/unsubscribe
 | `UNSUBSCRIBE` |
 
 ### Kabul (Sprint 3)
-- [ ] Global unsub  
-- [ ] Tag’ler duruyor  
-- [ ] Idempotent ikinci çağrı  
+- [x] Global unsub  
+- [x] Tag’ler duruyor  
+- [x] Idempotent ikinci çağrı  
 
 ### Sprint 1
 - [ ] N/A — endpoint yok; manuel SQL ile TC-04 yolu kullanılır  
@@ -423,9 +423,9 @@ npx tsx scripts/subscription-migrate-legacy.ts
 | `SUBSCRIBE` | `migration` | `legacy` |
 
 ### Kabul (Sprint 3)
-- [ ] Idempotent  
-- [ ] `legacy` tag  
-- [ ] Resend listesiyle satır sayısı makul örtüşür  
+- [x] Idempotent  
+- [x] `legacy` tag  
+- [ ] Resend listesiyle satır sayısı makul örtüşür (prod dry-run sonrası manuel)  
 
 ### Sprint 1
 - [ ] N/A  
@@ -490,11 +490,11 @@ Farklı path ama aynı mapped tag → `already_subscribed`; ikinci `TAG_ADDED` y
 | TC-02 | Aynı abonelik | Evet | ☐ |
 | TC-03 | Yeni kategori | Evet | ☐ |
 | TC-04 | Resubscribe | Evet (manuel unsub SQL) | ☐ |
-| TC-05 | Unsubscribe API | Hayır → Sprint 3 | ☐ |
+| TC-05 | Unsubscribe API | Hayır → Sprint 3 | ☑ PASS (sprint3-smoke) |
 | TC-06 | Invalid email | Evet | ☐ |
 | TC-07 | Rate limit | Evet | ☐ |
 | TC-08 | Unknown page | Evet | ☐ |
-| TC-09 | Legacy migration | Hayır → Sprint 3 | ☐ |
+| TC-09 | Legacy migration | Hayır → Sprint 3 | ☑ PASS (sprint3-smoke) |
 | TC-10 | Duplicate tag | Evet | ☐ |
 
 **Sprint 1 Done:** TC-01, 02, 03, 04, 06, 07, 08, 10 = PASS.  

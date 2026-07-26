@@ -5,6 +5,23 @@ export {
   normalizePagePath,
   normalizeReason,
 } from "./rules";
-export { subscribe } from "./service";
+export {
+  importLegacySubscriber,
+  subscribe,
+  unsubscribe,
+} from "./service";
 export { isSubscriptionDbConfigured } from "./db";
-export type { SubscribeInput, SubscribeResult, SubscribeOutcome } from "./types";
+export {
+  createUnsubscribeToken,
+  isUnsubscribeSecretConfigured,
+  verifyUnsubscribeToken,
+} from "./unsubscribeToken";
+export type {
+  SubscribeInput,
+  SubscribeResult,
+  SubscribeOutcome,
+  UnsubscribeInput,
+  UnsubscribeResult,
+  UnsubscribeOutcome,
+  LegacyImportResult,
+} from "./types";

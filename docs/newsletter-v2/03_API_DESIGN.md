@@ -124,6 +124,16 @@ Mevcut `POST /api/abone` → cutover (`04`).
 
 Tag satırları silinmez.
 
+### Hata kodları (Sprint 3)
+
+| HTTP | code |
+|------|------|
+| 401 | `invalid_token` |
+| 404 | `not_found` |
+| 503 | `misconfigured` (`DATABASE_URL` veya `UNSUBSCRIBE_SECRET`) |
+
+Token: `UNSUBSCRIBE_SECRET` ile HMAC; üret/doğrula → `lib/subscription/unsubscribeToken.ts`.
+
 ---
 
 ## 5. Validation

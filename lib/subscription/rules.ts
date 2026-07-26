@@ -76,6 +76,7 @@ export const SUBSCRIBE_CHANNELS = [
   "web_popup",
   "web_home_hero",
   "email_footer",
+  "legacy_api",
   "unknown",
 ] as const;
 

@@ -56,9 +56,11 @@ UI cilası ve admin panel en sonda. Business logic Domain’de kalır.
 
 | İş | Çıktı |
 |----|--------|
-| Signed unsubscribe + global | |
-| Legacy migration → tag `legacy` | bir kerelik idempotent |
-| `/api/abone` wrapper/deprecate | |
+| Signed unsubscribe + global | `unsubscribeToken.ts` + `POST .../unsubscribe` |
+| Legacy migration → tag `legacy` | `subscription-migrate-legacy.ts` (idempotent) |
+| `/api/abone` wrapper/deprecate | Domain `subscribe`; çift welcome yok |
+
+**Done:** 2026-07-26 — TC-05 + TC-09 smoke PASS; `/api/abone` Domain wrapper.
 
 ---
 

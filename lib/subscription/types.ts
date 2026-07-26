@@ -18,6 +18,8 @@ export type SubscribeOutcome =
   | "resubscribed"
   | "already_subscribed";
 
+export type UnsubscribeOutcome = "unsubscribed" | "already_unsubscribed";
+
 export type UtmPayload = {
   source?: string | null;
   medium?: string | null;
@@ -34,6 +36,31 @@ export type SubscribeInput = {
   referrer?: string | null;
   sessionId?: string | null;
   utm?: UtmPayload | null;
+  /** Migration / internal paths — skip first-SUBSCRIBE welcome mail. */
+  skipWelcome?: boolean;
+};
+
+export type UnsubscribeInput = {
+  email: string;
+  reason: SubscribeReason;
+  channel: SubscribeChannel;
+};
+
+export type UnsubscribeResult = {
+  ok: true;
+  outcome: UnsubscribeOutcome;
+  email: string;
+  tags: InterestTag[];
+  subscriberId: string;
+  resendOk: boolean;
+};
+
+export type LegacyImportOutcome = "created" | "tagged" | "skipped";
+
+export type LegacyImportResult = {
+  outcome: LegacyImportOutcome;
+  email: string;
+  subscriberId: string | null;
 };
 
 export type SubscribeResult = {

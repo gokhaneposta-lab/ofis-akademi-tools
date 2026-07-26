@@ -1,5 +1,6 @@
 import { requireSubscriptionSql } from "./db";
 import { appendSubscriptionEvent } from "./events";
+import { softFailResendUnsubscribe } from "./resendContacts";
 import {
   mapPageToCategory,
   normalizePagePath,
@@ -7,11 +8,15 @@ import {
 } from "./rules";
 import { addTagIfMissing, listTagsForSubscriber } from "./tags";
 import type {
+  LegacyImportResult,
   SubscribeInput,
   SubscribeOutcome,
   SubscribeResult,
   SubscriberRow,
+  UnsubscribeInput,
+  UnsubscribeResult,
 } from "./types";
+import { normalizeEmail } from "./validate";
 import { sendWelcomeEmail } from "./welcome";
 
 async function findByEmail(email: string): Promise<SubscriberRow | null> {
@@ -93,6 +98,7 @@ export async function subscribe(input: SubscribeInput): Promise<SubscribeResult>
       referrer: input.referrer ?? null,
       sessionId: input.sessionId ?? null,
       utm: input.utm ?? null,
+      skipWelcome: Boolean(input.skipWelcome),
     });
   }
 
@@ -161,6 +167,7 @@ async function createNewSubscriber(opts: {
   referrer: string | null;
   sessionId: string | null;
   utm: SubscribeInput["utm"];
+  skipWelcome: boolean;
 }): Promise<SubscribeResult> {
   const sql = requireSubscriptionSql();
   const rows = await sql`
@@ -197,10 +204,12 @@ async function createNewSubscriber(opts: {
     tag: opts.category,
     sourceEventId: eventId,
   });
-  const welcomeSent = await sendWelcomeEmail({
-    email: opts.email,
-    category: opts.category,
-  });
+  const welcomeSent = opts.skipWelcome
+    ? false
+    : await sendWelcomeEmail({
+        email: opts.email,
+        category: opts.category,
+      });
   return {
     ok: true,
     outcome: "subscribed",
@@ -210,6 +219,122 @@ async function createNewSubscriber(opts: {
     welcomeSent,
     subscriberId,
   };
+}
+
+/**
+ * Global unsubscribe. Tags are preserved. Resend is soft-fail.
+ */
+export async function unsubscribe(
+  input: UnsubscribeInput,
+): Promise<UnsubscribeResult> {
+  const email = input.email;
+  const existing = await findByEmail(email);
+  if (!existing) {
+    const err = new Error("subscriber_not_found");
+    err.name = "SubscriberNotFoundError";
+    throw err;
+  }
+
+  const tags = await listTagsForSubscriber(existing.id);
+
+  if (existing.status === "unsubscribed") {
+    return {
+      ok: true,
+      outcome: "already_unsubscribed",
+      email,
+      tags,
+      subscriberId: existing.id,
+      resendOk: false,
+    };
+  }
+
+  const sql = requireSubscriptionSql();
+  await sql`
+    UPDATE subscribers
+    SET
+      status = 'unsubscribed',
+      unsubscribed_at = now(),
+      updated_at = now()
+    WHERE id = ${existing.id}
+  `;
+
+  await appendSubscriptionEvent({
+    subscriberId: existing.id,
+    email,
+    eventType: "UNSUBSCRIBE",
+    page: null,
+    category: null,
+    reason: input.reason,
+    channel: input.channel,
+    referrer: null,
+    sessionId: null,
+    utm: null,
+  });
+
+  const resendOk = await softFailResendUnsubscribe(email);
+
+  return {
+    ok: true,
+    outcome: "unsubscribed",
+    email,
+    tags,
+    subscriberId: existing.id,
+    resendOk,
+  };
+}
+
+/**
+ * One-shot legacy import: tag `legacy`, no welcome. Idempotent on legacy tag.
+ */
+export async function importLegacySubscriber(
+  emailRaw: string,
+): Promise<LegacyImportResult> {
+  const email = normalizeEmail(emailRaw);
+  const existing = await findByEmail(email);
+
+  if (!existing) {
+    const created = await createNewSubscriber({
+      email,
+      page: "/legacy-migration",
+      category: "legacy",
+      reason: "migration",
+      channel: "unknown",
+      referrer: null,
+      sessionId: null,
+      utm: null,
+      skipWelcome: true,
+    });
+    return {
+      outcome: "created",
+      email,
+      subscriberId: created.subscriberId,
+    };
+  }
+
+  const tags = await listTagsForSubscriber(existing.id);
+  if (tags.includes("legacy")) {
+    return { outcome: "skipped", email, subscriberId: existing.id };
+  }
+
+  const eventId = await appendSubscriptionEvent({
+    subscriberId: existing.id,
+    email,
+    eventType: "SUBSCRIBE",
+    page: "/legacy-migration",
+    category: "legacy",
+    reason: "migration",
+    channel: "unknown",
+    referrer: null,
+    sessionId: null,
+    utm: null,
+  });
+  await addTagIfMissing({
+    subscriberId: existing.id,
+    tag: "legacy",
+    sourceEventId: eventId,
+  });
+
+  return { outcome: "tagged", email, subscriberId: existing.id };
 }
 
 async function resubscribe(

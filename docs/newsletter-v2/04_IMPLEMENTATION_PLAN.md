@@ -64,12 +64,26 @@ UI cilası ve admin panel en sonda. Business logic Domain’de kalır.
 
 ---
 
-## Sprint 4 — Sertleştirme
+## Sprint 4 — Campaign Lite
+
+| İş | Çıktı |
+|----|--------|
+| `campaigns` + `campaign_sends` | `002_campaigns.sql` |
+| Tag → audience count / list | Domain `lib/subscription/campaign.ts` |
+| Admin panel (butce auth) | `/newsletter-admin` |
+| Test + send via Resend | `/api/newsletter-admin/...` |
+| Unsub footer otomatik | `appendCampaignFooter` |
+
+**Done kapısı:** smoke + build; Contacts sync yok.
+
+---
+
+## Sprint 5 — Sertleştirme (sonra)
 
 | İş | Çıktı |
 |----|--------|
 | Bounce/complaint webhook iskelet | |
-| Opsiyonel `session_id` client | zorunlu değil |
+| Opsiyonel queue / büyük kitle | |
 | Doküman ↔ kod uyum | |
 
 ---

@@ -35,5 +35,6 @@ Runner: `npm run subscription:sprint1-validate`
 | 2 — Welcome + form cutover | **DONE** (2026-07-26) |
 | 3 — Unsubscribe + legacy + `/api/abone` | **DONE** (2026-07-26) |
 | UX — Welcome footer + `/abonelikten-cik` | **DONE** (2026-07-26) |
-| 4 — Sertleştirme | Bekliyor |
+| 4 — Campaign Lite | **DONE** (2026-07-27) |
+| 5 — Sertleştirme | Bekliyor |
 

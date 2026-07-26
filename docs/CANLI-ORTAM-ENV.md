@@ -11,6 +11,7 @@ Kod GitHub’a push edildi. Site **Vercel**, **Netlify** veya başka bir platfor
 | `RESEND_API_KEY` | `re_...` (Resend’den kopyaladığınız key) | E-posta formunun çalışması için gerekli. |
 | `DATABASE_URL` | Neon / Vercel Postgres connection string | Newsletter v2 source of truth (`subscribers`). Yoksa `POST /api/subscriptions` → 503. |
 | `UNSUBSCRIBE_SECRET` | Uzun rastgele string (ör. `openssl rand -hex 32`) | Signed unsubscribe token. Yoksa `POST /api/subscriptions/unsubscribe` → 503. |
+| `BUTCE_SESSION_TOKEN` / `BUTCE_USERS` | Mevcut bütçe paneli | `/newsletter-admin` aynı oturumu kullanır (ayrı secret yok). |
 
 ---
 

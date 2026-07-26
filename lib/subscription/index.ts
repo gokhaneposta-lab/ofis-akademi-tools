@@ -11,6 +11,12 @@ export {
   subscribe,
   unsubscribe,
 } from "./service";
+export {
+  countAudience,
+  createCampaign,
+  sendCampaign,
+  sendTestEmail,
+} from "./campaign";
 export { isSubscriptionDbConfigured } from "./db";
 export {
   createUnsubscribeToken,

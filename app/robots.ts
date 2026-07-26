@@ -11,7 +11,16 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         // WordPress kullanmıyoruz. Bot taramalarının 404 ürettiği yolları engelliyoruz
         // (Search Console "Bulunamadı (404)" raporundan da düşer).
-        disallow: ["/wp-admin", "/wp-content", "/wp-includes", "/xmlrpc.php", "/butce", "/api/butce"],
+        disallow: [
+          "/wp-admin",
+          "/wp-content",
+          "/wp-includes",
+          "/xmlrpc.php",
+          "/butce",
+          "/api/butce",
+          "/newsletter-admin",
+          "/api/newsletter-admin",
+        ],
       },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,

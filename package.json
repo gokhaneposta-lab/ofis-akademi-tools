@@ -29,7 +29,8 @@
     "subscription:sprint1-validate": "npx --yes tsx scripts/subscription-sprint1-validate.ts",
     "subscription:sprint2-smoke": "npx --yes tsx scripts/subscription-sprint2-smoke.ts",
     "subscription:sprint3-smoke": "npx --yes tsx scripts/subscription-sprint3-smoke.ts",
-    "subscription:migrate-legacy": "npx --yes tsx scripts/subscription-migrate-legacy.ts"
+    "subscription:migrate-legacy": "npx --yes tsx scripts/subscription-migrate-legacy.ts",
+    "subscription:campaign-smoke": "npx --yes tsx scripts/subscription-campaign-smoke.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

@@ -1,15 +1,18 @@
 /**
- * Ofis Akademi brand mark — light backgrounds (header/drawer).
+ * Ofis Akademi brand mark — light backgrounds (header/drawer/footer).
  * Assets: /brand/logo-icon.svg
  */
 export default function BrandLogo({
   variant = "full",
   className = "",
   priority = false,
+  alwaysShowWordmark = false,
 }: {
   variant?: "full" | "mark";
   className?: string;
   priority?: boolean;
+  /** Footer gibi yerlerde wordmark her zaman görünsün */
+  alwaysShowWordmark?: boolean;
 }) {
   const mark = (
     // eslint-disable-next-line @next/next/no-img-element
@@ -29,7 +32,11 @@ export default function BrandLogo({
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       {mark}
-      <span className="hidden text-[13px] font-bold tracking-[0.12em] text-[#0D1117] sm:inline">
+      <span
+        className={`${
+          alwaysShowWordmark ? "inline" : "hidden sm:inline"
+        } text-[13px] font-bold tracking-[0.12em] text-[#0D1117]`}
+      >
         OFİS AKADEMİ
       </span>
     </span>

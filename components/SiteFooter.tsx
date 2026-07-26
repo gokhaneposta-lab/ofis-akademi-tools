@@ -1,8 +1,7 @@
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import NewsletterForm from "@/components/NewsletterForm";
 import { BLOG_CATEGORIES, getPopularPosts } from "@/lib/blog-posts";
-
-const ACCENT = "#217346";
 
 const quickLinks = [
   { label: "Sektör verileri (TSB)", href: "/sigorta/tsb" },
@@ -24,14 +23,12 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
           {/* Brand */}
           <div className="md:col-span-3">
-            <Link href="/" className="inline-flex items-center gap-2 mb-3">
-              <span
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white"
-                style={{ background: ACCENT }}
-              >
-                OA
-              </span>
-              <span className="text-sm font-bold text-gray-900">Ofis Akademi</span>
+            <Link
+              href="/"
+              className="mb-3 inline-flex items-center"
+              aria-label="Ofis Akademi ana sayfa"
+            >
+              <BrandLogo variant="full" alwaysShowWordmark />
             </Link>
             <p className="text-xs text-gray-500 leading-relaxed">
               Excel ve veri analizi becerilerini geliştirmek isteyenler için

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 72" fill="none" role="img" aria-label="Ofis Akademi">
+  <g stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path
+      d="M36 14c-12.7 0-22 10.3-22 22s9.3 22 22 22c8.4 0 15.6-4.7 19.3-11.6"
+      stroke-width="9"
+    />
+    <path d="M58 58 L72 16 L86 58" stroke-width="8.5" />
+    <path
+      d="M62 40 C78 38 96 39 112 46"
+      stroke-width="7"
+      stroke-linecap="round"
+    />
+  </g>
+  <path
+    d="M108 44.5 C113 46.5 116.5 48.5 118.5 50.5"
+    stroke="#FFFFFF"
+    stroke-width="3.2"
+    stroke-linecap="round"
+    fill="none"
+  />
+</svg>

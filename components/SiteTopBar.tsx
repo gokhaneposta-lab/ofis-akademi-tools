@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
-
-const ACCENT = "#217346";
+import BrandLogo from "@/components/BrandLogo";
 
 type NavItem = {
   label: string;
@@ -218,16 +217,8 @@ export default function SiteTopBar() {
           </button>
 
           {/* Brand */}
-          <Link href="/" className="flex items-center gap-2 min-w-0">
-            <span
-              className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
-              style={{ background: ACCENT }}
-            >
-              OA
-            </span>
-            <span className="hidden text-sm font-semibold text-gray-900 sm:inline">
-              Ofis Akademi
-            </span>
+          <Link href="/" className="flex min-w-0 items-center" aria-label="Ofis Akademi ana sayfa">
+            <BrandLogo variant="full" priority />
           </Link>
 
           {/* Spacer */}
@@ -258,14 +249,8 @@ export default function SiteTopBar() {
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-          <Link href="/" className="flex items-center gap-2.5" onClick={close}>
-            <span
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white"
-              style={{ background: ACCENT }}
-            >
-              OA
-            </span>
-            <span className="text-[15px] font-bold text-gray-900">Ofis Akademi</span>
+          <Link href="/" className="flex items-center gap-2.5" onClick={close} aria-label="Ofis Akademi ana sayfa">
+            <BrandLogo variant="full" />
           </Link>
           <button
             type="button"

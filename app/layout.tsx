@@ -91,7 +91,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#06a09b",
+  themeColor: "#0EA37F",
 };
 
 export default function RootLayout({
@@ -101,6 +101,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className="overflow-x-hidden">
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen overflow-x-hidden`}
       >

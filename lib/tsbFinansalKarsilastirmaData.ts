@@ -74,6 +74,7 @@ export const FINANSAL_KIYASLAMA_SATIRLARI: readonly FinansalKiyaslamaSatirTanim[
   { id: "oran_safi_prim", label: "SAFİ TEKNİK / PRİM", format: "yuzde" },
   { id: "oran_vok_oz", label: "VÖK / ÖZSERMAYE", format: "oran" },
   { id: "oran_yat_oz", label: "YATIRIM GELİRİ / ÖZSERMAYE", format: "oran" },
+  { id: "oran_yat_nakit_finansal", label: "YATIRIM GELİRİ / NAKİT + FİNANSAL VARLIK", format: "oran" },
   { id: "oran_oz_aktif", label: "ÖZSERMAYE / TOPLAM AKTİF", format: "yuzde" },
   { id: "oran_yuk_aktif", label: "YÜKÜMLÜLÜK (3+4) / TOPLAM AKTİF", format: "yuzde" },
   { id: "oran_fin_aktif", label: "NAKİT + FİNANSAL VARLIK / TOPLAM AKTİF", format: "yuzde" },
@@ -111,6 +112,7 @@ export type FinansalKiyaslamaSektorOranlar = {
   safiPrim: number | null;
   vokOz: number | null;
   yatOz: number | null;
+  yatNakitFinansal: number | null;
   ozAktif: number | null;
   yukAktif: number | null;
   finAktif: number | null;
@@ -275,6 +277,7 @@ function sektorOranlarFromPeerHams(list: FinansalKiyaslamaHamOlcum[]): FinansalK
     safiPrim: sumPrim !== 0 ? sumSafi / sumPrim : null,
     vokOz: sumOz !== 0 ? sumVok / sumOz : null,
     yatOz: sumOz !== 0 ? sumYat / sumOz : null,
+    yatNakitFinansal: sumFin11 !== 0 ? sumYat / sumFin11 : null,
     ozAktif: sumAktif !== 0 ? sumOz / sumAktif : null,
     yukAktif: sumAktif !== 0 ? sumYuk / sumAktif : null,
     finAktif: sumAktif !== 0 ? sumFin11 / sumAktif : null,
@@ -294,6 +297,7 @@ function oranlarFromSkorHam(
     safiPrim: m.oranSafiPrim,
     vokOz: m.oranVokOzsermaye,
     yatOz: m.oranYatirimOzsermaye,
+    yatNakitFinansal: null,
     ozAktif: m.oranOzAktif,
     yukAktif: m.oranYukAktif,
     finAktif: m.oranFinAktif,
@@ -509,6 +513,24 @@ export function finansalKiyaslamaSatirSayisal(
       return pickSkorOran("oranVokOzsermaye", "vokOz");
     case "oran_yat_oz":
       return pickSkorOran("oranYatirimOzsermaye", "yatOz");
+    case "oran_yat_nakit_finansal": {
+      const fin = (h: FinansalKiyaslamaHamOlcum | null) =>
+        h ? h.nakit10 + h.finansal11 : null;
+      const sirketFin = fin(sirketHam);
+      const kiyasFin = fin(kiyasHam);
+      return {
+        sirket:
+          sirketHam && sirketFin !== null && sirketFin !== 0
+            ? sirketHam.yatirimSegment / sirketFin
+            : null,
+        kiyas:
+          kiyasSkorHam != null
+            ? kiyasHam && kiyasFin !== null && kiyasFin !== 0
+              ? kiyasHam.yatirimSegment / kiyasFin
+              : null
+            : (kiyasOran?.yatNakitFinansal ?? null),
+      };
+    }
     case "oran_oz_aktif":
       return pickSkorOran("oranOzAktif", "ozAktif");
     case "oran_yuk_aktif":

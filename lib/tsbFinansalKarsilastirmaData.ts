@@ -69,6 +69,8 @@ export const FINANSAL_KIYASLAMA_SATIRLARI: readonly FinansalKiyaslamaSatirTanim[
   { kind: "spacer", id: "__spacer_gelir_bilanco" },
   { id: "ozsermaye", label: "ÖZSERMAYE", format: "tl" },
   { id: "teknik_karsilik", label: "TEKNİK KARŞILIKLAR", format: "tl" },
+  { id: "nakit_finansal", label: "NAKİT + FİNANSAL VARLIK", format: "tl" },
+  { id: "aktif_toplam", label: "AKTİF TOPLAMI", format: "tl" },
   { id: "oran_safi_prim", label: "SAFİ TEKNİK / PRİM", format: "yuzde" },
   { id: "oran_vok_oz", label: "VÖK / ÖZSERMAYE", format: "oran" },
   { id: "oran_yat_oz", label: "YATIRIM GELİRİ / ÖZSERMAYE", format: "oran" },
@@ -492,6 +494,13 @@ export function finansalKiyaslamaSatirSayisal(
       return pickHam("safiTeknikKz");
     case "teknik_karsilik":
       return pickHam("teknikKarsilik3545");
+    case "nakit_finansal":
+      return {
+        sirket: sirketHam ? sirketHam.nakit10 + sirketHam.finansal11 : null,
+        kiyas: kiyasHam ? kiyasHam.nakit10 + kiyasHam.finansal11 : null,
+      };
+    case "aktif_toplam":
+      return pickHam("toplamAktif");
     case "mali_kar":
       return pickHam("maliKarSentetik");
     case "oran_safi_prim":

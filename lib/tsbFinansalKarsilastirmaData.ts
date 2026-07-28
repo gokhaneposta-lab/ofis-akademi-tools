@@ -5,7 +5,6 @@
  * Kaynak: `public/data/tsb/gelir-tidy/{donem}.json` (+ `index.json`) — tanımlar `docs/tsb-kpi-tanimlari.md`.
  */
 
-import { GELIR_SYNTHETIC_HESAP_KODU } from "./tsbGelirSyntheticCodes";
 import {
   hasarPrimOranlariFromLookup,
   hasarPrimOranlariSektorFromLookup,
@@ -62,7 +61,6 @@ export const FINANSAL_KIYASLAMA_SATIRLARI: readonly FinansalKiyaslamaSatirTanim[
   { id: "genel_gider", label: "GENEL GİDERLER", format: "tl" },
   { id: "personel_gider", label: "PERSONEL GİDERLERİ", format: "tl" },
   { id: "yatirim", label: "YATIRIM GELİRİ", format: "tl" },
-  { id: "mali_kar", label: "MALÎ KAR", format: "tl" },
   { id: "teknik_kar_zarar", label: "TEKNİK KAR / ZARAR", format: "tl" },
   { id: "vergi_oncesi_kar", label: "VERGİ ÖNCESİ KAR", format: "tl" },
   { id: "net_kar", label: "NET KAR", format: "tl" },
@@ -98,7 +96,6 @@ export type FinansalKiyaslamaHamOlcum = {
   teknikKarZarar: number;
   safiTeknikKz: number;
   teknikKarsilik3545: number;
-  maliKarSentetik: number;
   vok: number;
   toplamAktif: number;
   yuk34: number;
@@ -169,7 +166,6 @@ export function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): Fi
   const personelGider = personelGiderFromLookup(lookup, sk);
   const genelGider = genelGiderFromLookup(lookup, sk);
   const teknikKarZarar = teknikKarZararFromLookup(lookup, sk);
-  const maliKarSentetik = g(MALI, GELIR_SYNTHETIC_HESAP_KODU.maliKar);
   const teknikKarsilik3545 = bl(PASIF, "35") + bl(PASIF, "45");
   const faaliyet614 = faaliyetGiderFromLookup(lookup, sk);
   const donemKar690 = g(MALI, "690");
@@ -189,7 +185,6 @@ export function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): Fi
     teknikKarZarar,
     safiTeknikKz,
     teknikKarsilik3545,
-    maliKarSentetik,
     vok: h.vok,
     toplamAktif: h.toplamAktif,
     yuk34: h.toplamYukPasif34,
@@ -220,7 +215,6 @@ function aggregateSektorHamOlcumleri(list: FinansalKiyaslamaHamOlcum[]): Finansa
     teknikKarZarar: s((x) => x.teknikKarZarar),
     safiTeknikKz: s((x) => x.safiTeknikKz),
     teknikKarsilik3545: s((x) => x.teknikKarsilik3545),
-    maliKarSentetik: s((x) => x.maliKarSentetik),
     vok: s((x) => x.vok),
     toplamAktif: s((x) => x.toplamAktif),
     yuk34: s((x) => x.yuk34),
@@ -249,7 +243,6 @@ function aggregateOlcekHamOrtalamasi(list: FinansalKiyaslamaHamOlcum[]): Finansa
     teknikKarZarar: avg((x) => x.teknikKarZarar),
     safiTeknikKz: avg((x) => x.safiTeknikKz),
     teknikKarsilik3545: avg((x) => x.teknikKarsilik3545),
-    maliKarSentetik: avg((x) => x.maliKarSentetik),
     vok: avg((x) => x.vok),
     toplamAktif: avg((x) => x.toplamAktif),
     yuk34: avg((x) => x.yuk34),
@@ -505,8 +498,6 @@ export function finansalKiyaslamaSatirSayisal(
       };
     case "aktif_toplam":
       return pickHam("toplamAktif");
-    case "mali_kar":
-      return pickHam("maliKarSentetik");
     case "oran_safi_prim":
       return pickSkorOran("oranSafiPrim", "safiPrim");
     case "oran_vok_oz":

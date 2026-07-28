@@ -69,6 +69,18 @@ function chartMaxAbs(seri: AnaBransTkzTrendNokta[], pick: (x: AnaBransTkzTrendNo
   return Math.max(...vals, 1);
 }
 
+function spreadLabelYs(entries: Array<{ key: string; y: number; prefer: number }>, minGap = 12) {
+  const sorted = [...entries].sort((a, b) => a.y - b.y);
+  let prev = -Infinity;
+  const placed = new Map<string, number>();
+  for (const item of sorted) {
+    const nextY = Math.max(item.y + item.prefer, prev + minGap);
+    placed.set(item.key, nextY);
+    prev = nextY;
+  }
+  return placed;
+}
+
 function TrendChart({
   title,
   subtitle,
@@ -134,46 +146,58 @@ function TrendChart({
         <polyline fill="none" stroke={COL_GIDER} strokeWidth={2.4} points={giderPts} strokeLinejoin="round" />
         <polyline fill="none" stroke={COL_TKZ} strokeWidth={2.8} points={tkzPts} strokeLinejoin="round" />
 
-        {seri.map((p, i) => (
+        {seri.map((p, i) => {
+          const gelirV = side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir;
+          const giderV = side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider;
+          const tkzV = side === "sirket" ? p.sirketTkz : p.kiyasTkz;
+          const gelirY = yAt(gelirV);
+          const giderY = yAt(giderV);
+          const tkzY = yAt(tkzV);
+          const labelYs = spreadLabelYs([
+            { key: "gelir", y: gelirY, prefer: -8 },
+            { key: "gider", y: giderY, prefer: 14 },
+            { key: "tkz", y: tkzY, prefer: -16 },
+          ]);
+          return (
           <g key={p.donem}>
-            <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir)} r={3} fill={COL_GELIR} />
-            <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider)} r={3} fill={COL_GIDER} />
-            <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTkz : p.kiyasTkz)} r={3.2} fill={COL_TKZ} />
+            <circle cx={xAt(i)} cy={gelirY} r={3} fill={COL_GELIR} />
+            <circle cx={xAt(i)} cy={giderY} r={3} fill={COL_GIDER} />
+            <circle cx={xAt(i)} cy={tkzY} r={3.2} fill={COL_TKZ} />
             <text
               x={xAt(i)}
-              y={yAt(side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir) - 8}
+              y={labelYs.get("gelir")}
               textAnchor="middle"
               fill={COL_GELIR}
               fontSize={8}
               fontWeight={700}
             >
-              {formatMn(side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir)}
+              {formatMn(gelirV)}
             </text>
             <text
               x={xAt(i)}
-              y={yAt(side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider) + 14}
+              y={labelYs.get("gider")}
               textAnchor="middle"
               fill={COL_GIDER}
               fontSize={8}
               fontWeight={700}
             >
-              {formatMn(side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider)}
+              {formatMn(giderV)}
             </text>
             <text
               x={xAt(i)}
-              y={yAt(side === "sirket" ? p.sirketTkz : p.kiyasTkz) - 16}
+              y={labelYs.get("tkz")}
               textAnchor="middle"
               fill={COL_TKZ}
               fontSize={8}
               fontWeight={800}
             >
-              {formatMn(side === "sirket" ? p.sirketTkz : p.kiyasTkz)}
+              {formatMn(tkzV)}
             </text>
             <text x={xAt(i)} y={h - 16} textAnchor="middle" fill="#334155" fontSize={9} fontWeight={600}>
               {p.donem}
             </text>
           </g>
-        ))}
+        )})}
       </svg>
     </div>
   );

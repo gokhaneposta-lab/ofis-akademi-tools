@@ -60,6 +60,10 @@ function shortLabel(mod: TsbKiyasModu, baslik: string): string {
   return baslik.length > 36 ? `${baslik.slice(0, 36)}…` : baslik;
 }
 
+function formatMn(v: number): string {
+  return new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 }).format(v / 1e6);
+}
+
 function chartMaxAbs(seri: AnaBransTkzTrendNokta[], pick: (x: AnaBransTkzTrendNokta) => number[]): number {
   const vals = seri.flatMap(pick).map((v) => Math.abs(v));
   return Math.max(...vals, 1);
@@ -91,7 +95,6 @@ function TrendChart({
   const yAt = (v: number) => pad.t + innerH * (1 - (v + hi) / (2 * hi));
   const zeroY = yAt(0);
   const tickVals = [-hi, -hi / 2, 0, hi / 2, hi];
-  const fmt = (v: number) => new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 }).format(v / 1e6);
   const points = (pick: (x: AnaBransTkzTrendNokta) => number) =>
     seri.map((p, i) => `${xAt(i)},${yAt(pick(p))}`).join(" ");
   const gelirPts = points((p) => (side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir));
@@ -105,7 +108,7 @@ function TrendChart({
       <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full max-w-full" role="img" aria-label={title}>
         <rect width={w} height={h} fill="#fafafa" />
         <text x={pad.l} y={20} fill="#374151" fontSize={12} fontWeight={600}>
-          Çeyreklik akış (Mn ₺)
+          Çeyreklik akış (değerler Mn ₺)
         </text>
         <text x={pad.l} y={36} fontSize={9}>
           <tspan fill={COL_GELIR} fontWeight={700}>Teknik Gelir</tspan>
@@ -119,7 +122,7 @@ function TrendChart({
           <g key={i}>
             <line x1={pad.l} y1={yAt(tv)} x2={pad.l + innerW} y2={yAt(tv)} stroke={tv === 0 ? "#94a3b8" : "#e5e7eb"} strokeWidth={1} />
             <text x={pad.l - 8} y={yAt(tv) + 3} textAnchor="end" fill="#64748b" fontSize={9}>
-              {fmt(tv)}
+              {formatMn(tv)}
             </text>
           </g>
         ))}
@@ -136,6 +139,36 @@ function TrendChart({
             <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir)} r={3} fill={COL_GELIR} />
             <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider)} r={3} fill={COL_GIDER} />
             <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTkz : p.kiyasTkz)} r={3.2} fill={COL_TKZ} />
+            <text
+              x={xAt(i)}
+              y={yAt(side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir) - 8}
+              textAnchor="middle"
+              fill={COL_GELIR}
+              fontSize={8}
+              fontWeight={700}
+            >
+              {formatMn(side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir)}
+            </text>
+            <text
+              x={xAt(i)}
+              y={yAt(side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider) + 14}
+              textAnchor="middle"
+              fill={COL_GIDER}
+              fontSize={8}
+              fontWeight={700}
+            >
+              {formatMn(side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider)}
+            </text>
+            <text
+              x={xAt(i)}
+              y={yAt(side === "sirket" ? p.sirketTkz : p.kiyasTkz) - 16}
+              textAnchor="middle"
+              fill={COL_TKZ}
+              fontSize={8}
+              fontWeight={800}
+            >
+              {formatMn(side === "sirket" ? p.sirketTkz : p.kiyasTkz)}
+            </text>
             <text x={xAt(i)} y={h - 16} textAnchor="middle" fill="#334155" fontSize={9} fontWeight={600}>
               {p.donem}
             </text>
@@ -448,7 +481,7 @@ export default function TsbAnaBransTkzDashboard() {
       </TsbFilterBar>
 
       {trend.length > 0 && (
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-4">
           <TrendChart
             title={`Son ${trend.length} çeyrek — ${secilenAd}`}
             subtitle={`${trendAnaBrans === TREND_TUM_BRANSLAR ? "Tüm branşlar" : trendAnaBrans} · Teknik Gelir / Teknik Gider / TKZ`}

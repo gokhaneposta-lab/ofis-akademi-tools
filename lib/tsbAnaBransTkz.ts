@@ -47,6 +47,16 @@ export type AnaBransTkzOzet = {
   toplam: AnaBransTkzSatir;
 };
 
+export type AnaBransTkzTrendNokta = {
+  donem: string;
+  sirketTeknikGelir: number;
+  sirketTeknikGider: number;
+  sirketTkz: number;
+  kiyasTeknikGelir: number;
+  kiyasTeknikGider: number;
+  kiyasTkz: number;
+};
+
 type SatirBilesen = {
   teknikGelir: number;
   teknikGider: number;
@@ -191,6 +201,54 @@ function toplamSatir(satirlar: AnaBransTkzSatir[], etiket: string): AnaBransTkzS
   );
 }
 
+function parseQuarter(donem: string): { yil: number; ceyrek: number } | null {
+  const m = donem.match(/^(\d{4})-([1-4])$/);
+  if (!m) return null;
+  return { yil: Number(m[1]), ceyrek: Number(m[2]) };
+}
+
+function prevQuarterSameYear(donem: string): string | null {
+  const p = parseQuarter(donem);
+  if (!p || p.ceyrek <= 1) return null;
+  return `${p.yil}-${p.ceyrek - 1}`;
+}
+
+function sortQuarterPeriods(donemler: string[]): string[] {
+  return [...donemler].sort((a, b) => {
+    const pa = parseQuarter(a);
+    const pb = parseQuarter(b);
+    if (!pa || !pb) return a.localeCompare(b, "tr");
+    return pa.yil === pb.yil ? pa.ceyrek - pb.ceyrek : pa.yil - pb.yil;
+  });
+}
+
+function aggregateBilesen(
+  lookup: GelirTidyDonemLookup,
+  rows: Iterable<TsbGelirTidyRowLike>,
+  donem: string,
+  sirketKodlari: readonly number[],
+  pool: SegmentSkorPool,
+  anaBransH: string | null,
+  ortalama: boolean,
+): SatirBilesen {
+  const satirTanimi = listAnaBranslarForPool(rows, donem, pool);
+  const gtBranslari = (
+    anaBransH
+      ? satirTanimi.find((x) => x.anaBransH === anaBransH)?.gtBranslari ?? []
+      : satirTanimi.flatMap((x) => x.gtBranslari)
+  ).filter((x, i, arr) => arr.indexOf(x) === i);
+  return bilesenForBranslar(lookup, sirketKodlari, gtBranslari, ortalama);
+}
+
+function farkBilesen(bu: SatirBilesen, onceki: SatirBilesen | null): SatirBilesen {
+  if (!onceki) return bu;
+  return {
+    teknikGelir: bu.teknikGelir - onceki.teknikGelir,
+    teknikGider: bu.teknikGider - onceki.teknikGider,
+    tkz: bu.tkz - onceki.tkz,
+  };
+}
+
 export function buildAnaBransTkzOzet(
   rows: Iterable<TsbGelirTidyRowLike>,
   donem: string,
@@ -250,4 +308,56 @@ export function buildAnaBransTkzOzet(
     satirlar,
     toplam,
   };
+}
+
+export function buildAnaBransTkzTrend(
+  rows: Iterable<TsbGelirTidyRowLike>,
+  donemler: string[],
+  sirketKodu: number,
+  pool: SegmentSkorPool,
+  anaBransH: string | null,
+  kiyasHedef: AnaBransTkzKiyasHedef = { mod: "sektor" },
+): AnaBransTkzTrendNokta[] {
+  const seciliDonemler = sortQuarterPeriods(donemler).slice(-9);
+  return seciliDonemler.map((donem) => {
+    const lookup = buildGelirTidyDonemLookup(rows, donem);
+    const sektorKodlari = segmentPeerSirketKodlari(rows, donem, pool);
+
+    let kiyasKodlari: number[] = [];
+    let ortalama = false;
+    if (kiyasHedef.mod === "sektor") {
+      kiyasKodlari = sektorKodlari;
+    } else if (kiyasHedef.mod === "olcek") {
+      const es = olcekSegmentEsleri(rows, donem, pool, sirketKodu);
+      kiyasKodlari = es.kodlar;
+      ortalama = es.kodlar.length > 0;
+    } else {
+      kiyasKodlari = [kiyasHedef.sirketKodu];
+    }
+
+    const kumSirket = aggregateBilesen(lookup, rows, donem, [sirketKodu], pool, anaBransH, false);
+    const kumKiyas = aggregateBilesen(lookup, rows, donem, kiyasKodlari, pool, anaBransH, ortalama);
+
+    const prevDonem = prevQuarterSameYear(donem);
+    const prevLookup = prevDonem ? buildGelirTidyDonemLookup(rows, prevDonem) : null;
+    const prevSirket = prevLookup
+      ? aggregateBilesen(prevLookup, rows, prevDonem!, [sirketKodu], pool, anaBransH, false)
+      : null;
+    const prevKiyas = prevLookup
+      ? aggregateBilesen(prevLookup, rows, prevDonem!, kiyasKodlari, pool, anaBransH, ortalama)
+      : null;
+
+    const sirket = farkBilesen(kumSirket, prevSirket);
+    const kiyas = farkBilesen(kumKiyas, prevKiyas);
+
+    return {
+      donem,
+      sirketTeknikGelir: sirket.teknikGelir,
+      sirketTeknikGider: sirket.teknikGider,
+      sirketTkz: sirket.tkz,
+      kiyasTeknikGelir: kiyas.teknikGelir,
+      kiyasTeknikGider: kiyas.teknikGider,
+      kiyasTkz: kiyas.tkz,
+    };
+  });
 }

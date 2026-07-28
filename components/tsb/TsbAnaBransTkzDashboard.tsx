@@ -11,6 +11,7 @@ import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import {
   cn,
   tsb,
+  tsbChart,
   TsbError,
   TsbFilterBar,
   TsbFilterField,
@@ -22,8 +23,10 @@ import {
 } from "@/components/tsb/tsbDashboardUi";
 import {
   buildAnaBransTkzOzet,
+  buildAnaBransTkzTrend,
   type AnaBransTkzKiyasHedef,
   type AnaBransTkzSatir,
+  type AnaBransTkzTrendNokta,
 } from "@/lib/tsbAnaBransTkz";
 import {
   fetchGelirTidyDonemIndex,
@@ -38,6 +41,10 @@ const POOL_LABELS: Record<SegmentSkorPool, string> = {
   HD: "Hayat dışı (HD)",
   HAYAT_EMEKLILIK: "Hayat / Emeklilik",
 };
+const TREND_TUM_BRANSLAR = "__all";
+const COL_GELIR = tsbChart.sirketBrut;
+const COL_GIDER = "#dc2626";
+const COL_TKZ = tsbChart.sektor;
 
 function defaultSirketModForPool(pool: SegmentSkorPool): "hayatdisi" | "hayat" {
   return pool === "HD" ? "hayatdisi" : "hayat";
@@ -51,6 +58,92 @@ function shortLabel(mod: TsbKiyasModu, baslik: string): string {
   if (mod === "sektor") return "Sektör toplamı";
   if (mod === "olcek") return baslik.length > 32 ? `${baslik.slice(0, 32)}…` : baslik;
   return baslik.length > 36 ? `${baslik.slice(0, 36)}…` : baslik;
+}
+
+function chartMaxAbs(seri: AnaBransTkzTrendNokta[], pick: (x: AnaBransTkzTrendNokta) => number[]): number {
+  const vals = seri.flatMap(pick).map((v) => Math.abs(v));
+  return Math.max(...vals, 1);
+}
+
+function TrendChart({
+  title,
+  subtitle,
+  seri,
+  side,
+}: {
+  title: string;
+  subtitle: string;
+  seri: AnaBransTkzTrendNokta[];
+  side: "sirket" | "kiyas";
+}) {
+  const w = 860;
+  const h = 340;
+  const pad = { l: 72, r: 24, t: 48, b: 54 };
+  const innerW = w - pad.l - pad.r;
+  const innerH = h - pad.t - pad.b;
+  const maxAbs = chartMaxAbs(seri, (x) =>
+    side === "sirket"
+      ? [x.sirketTeknikGelir, x.sirketTeknikGider, x.sirketTkz]
+      : [x.kiyasTeknikGelir, x.kiyasTeknikGider, x.kiyasTkz],
+  );
+  const hi = maxAbs * 1.15;
+  const xAt = (i: number) => pad.l + (i / Math.max(seri.length - 1, 1)) * innerW;
+  const yAt = (v: number) => pad.t + innerH * (1 - (v + hi) / (2 * hi));
+  const zeroY = yAt(0);
+  const tickVals = [-hi, -hi / 2, 0, hi / 2, hi];
+  const fmt = (v: number) => new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 }).format(v / 1e6);
+  const points = (pick: (x: AnaBransTkzTrendNokta) => number) =>
+    seri.map((p, i) => `${xAt(i)},${yAt(pick(p))}`).join(" ");
+  const gelirPts = points((p) => (side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir));
+  const giderPts = points((p) => (side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider));
+  const tkzPts = points((p) => (side === "sirket" ? p.sirketTkz : p.kiyasTkz));
+
+  return (
+    <div className={tsb.chartPanel}>
+      <h3 className="mb-1 text-sm font-semibold text-slate-900">{title}</h3>
+      <p className={cn(tsb.caption, "mb-4")}>{subtitle}</p>
+      <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full max-w-full" role="img" aria-label={title}>
+        <rect width={w} height={h} fill="#fafafa" />
+        <text x={pad.l} y={20} fill="#374151" fontSize={12} fontWeight={600}>
+          Çeyreklik akış (Mn ₺)
+        </text>
+        <text x={pad.l} y={36} fontSize={9}>
+          <tspan fill={COL_GELIR} fontWeight={700}>Teknik Gelir</tspan>
+          <tspan fill="#64748b"> · </tspan>
+          <tspan fill={COL_GIDER} fontWeight={700}>Teknik Gider</tspan>
+          <tspan fill="#64748b"> · </tspan>
+          <tspan fill={COL_TKZ} fontWeight={700}>TKZ</tspan>
+        </text>
+
+        {tickVals.map((tv, i) => (
+          <g key={i}>
+            <line x1={pad.l} y1={yAt(tv)} x2={pad.l + innerW} y2={yAt(tv)} stroke={tv === 0 ? "#94a3b8" : "#e5e7eb"} strokeWidth={1} />
+            <text x={pad.l - 8} y={yAt(tv) + 3} textAnchor="end" fill="#64748b" fontSize={9}>
+              {fmt(tv)}
+            </text>
+          </g>
+        ))}
+
+        <line x1={pad.l} y1={zeroY} x2={pad.l + innerW} y2={zeroY} stroke="#94a3b8" strokeWidth={1.2} />
+        <line x1={pad.l} y1={pad.t} x2={pad.l} y2={pad.t + innerH} stroke="#94a3b8" strokeWidth={1} />
+
+        <polyline fill="none" stroke={COL_GELIR} strokeWidth={2.4} points={gelirPts} strokeLinejoin="round" />
+        <polyline fill="none" stroke={COL_GIDER} strokeWidth={2.4} points={giderPts} strokeLinejoin="round" />
+        <polyline fill="none" stroke={COL_TKZ} strokeWidth={2.8} points={tkzPts} strokeLinejoin="round" />
+
+        {seri.map((p, i) => (
+          <g key={p.donem}>
+            <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTeknikGelir : p.kiyasTeknikGelir)} r={3} fill={COL_GELIR} />
+            <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTeknikGider : p.kiyasTeknikGider)} r={3} fill={COL_GIDER} />
+            <circle cx={xAt(i)} cy={yAt(side === "sirket" ? p.sirketTkz : p.kiyasTkz)} r={3.2} fill={COL_TKZ} />
+            <text x={xAt(i)} y={h - 16} textAnchor="middle" fill="#334155" fontSize={9} fontWeight={600}>
+              {p.donem}
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
 }
 
 function Satir({ satir, toplam = false }: { satir: AnaBransTkzSatir; toplam?: boolean }) {
@@ -78,6 +171,7 @@ export default function TsbAnaBransTkzDashboard() {
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [kiyasModu, setKiyasModu] = useState<TsbKiyasModu>("sektor");
   const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
+  const [trendAnaBrans, setTrendAnaBrans] = useState<string>(TREND_TUM_BRANSLAR);
 
   useEffect(() => {
     let cancelled = false;
@@ -94,12 +188,13 @@ export default function TsbAnaBransTkzDashboard() {
   }, []);
 
   const donem = tumDonemler.length > 0 ? tumDonemler[tumDonemler.length - 1] : "";
+  const trendDonemler = useMemo(() => tumDonemler.slice(-9), [tumDonemler]);
 
   useEffect(() => {
-    if (!donem) return;
+    if (trendDonemler.length === 0) return;
     let cancelled = false;
     setRows(null);
-    fetchGelirTidyDonemler([donem])
+    fetchGelirTidyDonemler(trendDonemler)
       .then((data) => {
         if (!cancelled) setRows(data);
       })
@@ -109,7 +204,7 @@ export default function TsbAnaBransTkzDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [donem]);
+  }, [trendDonemler]);
 
   const sirketListesi = useMemo(() => {
     if (!rows || !donem) return [];
@@ -149,6 +244,31 @@ export default function TsbAnaBransTkzDashboard() {
     if (!rows || !donem || sirketKodu === "") return null;
     return buildAnaBransTkzOzet(rows, donem, sirketKodu, pool, kiyasHedef);
   }, [rows, donem, sirketKodu, pool, kiyasHedef]);
+
+  const trendSecenekleri = useMemo(
+    () => [
+      { value: TREND_TUM_BRANSLAR, label: "Tüm branşlar" },
+      ...(ozet?.satirlar ?? []).map((s) => ({ value: s.anaBransH, label: s.anaBransH })),
+    ],
+    [ozet],
+  );
+
+  useEffect(() => {
+    if (trendSecenekleri.some((s) => s.value === trendAnaBrans)) return;
+    setTrendAnaBrans(TREND_TUM_BRANSLAR);
+  }, [trendSecenekleri, trendAnaBrans]);
+
+  const trend = useMemo(() => {
+    if (!rows || !donem || sirketKodu === "" || trendDonemler.length === 0) return [];
+    return buildAnaBransTkzTrend(
+      rows,
+      trendDonemler,
+      sirketKodu,
+      pool,
+      trendAnaBrans === TREND_TUM_BRANSLAR ? null : trendAnaBrans,
+      kiyasHedef,
+    );
+  }, [rows, donem, sirketKodu, trendDonemler, pool, trendAnaBrans, kiyasHedef]);
 
   const secilenAd =
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
@@ -309,6 +429,40 @@ export default function TsbAnaBransTkzDashboard() {
           </tbody>
         </table>
       </TsbTableShell>
+
+      <TsbFilterBar>
+        <TsbFilterGrid>
+          <TsbFilterField
+            label="Trend branşı"
+            hint="Çeyreklik akışlar kümülatif veriden önceki çeyrek düşülerek bulunur."
+          >
+            <TsbSelect value={trendAnaBrans} onChange={(e) => setTrendAnaBrans(e.target.value)}>
+              {trendSecenekleri.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </TsbSelect>
+          </TsbFilterField>
+        </TsbFilterGrid>
+      </TsbFilterBar>
+
+      {trend.length > 0 && (
+        <div className="grid gap-4 xl:grid-cols-2">
+          <TrendChart
+            title={`Son ${trend.length} çeyrek — ${secilenAd}`}
+            subtitle={`${trendAnaBrans === TREND_TUM_BRANSLAR ? "Tüm branşlar" : trendAnaBrans} · Teknik Gelir / Teknik Gider / TKZ`}
+            seri={trend}
+            side="sirket"
+          />
+          <TrendChart
+            title={`Son ${trend.length} çeyrek — ${shortLabel(kiyasModu, kiyasBaslik)}`}
+            subtitle={`${trendAnaBrans === TREND_TUM_BRANSLAR ? "Tüm branşlar" : trendAnaBrans} · Sağ blok kıyas serisi`}
+            seri={trend}
+            side="kiyas"
+          />
+        </div>
+      )}
     </div>
   );
 }

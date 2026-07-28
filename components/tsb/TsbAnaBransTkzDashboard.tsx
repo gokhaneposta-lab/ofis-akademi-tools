@@ -200,6 +200,7 @@ export default function TsbAnaBransTkzDashboard() {
   const [tumDonemler, setTumDonemler] = useState<string[]>([]);
   const [rows, setRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [donem, setDonem] = useState<string>("");
   const [pool, setPool] = useState<SegmentSkorPool>(urlPrefs.pool ?? "HD");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [kiyasModu, setKiyasModu] = useState<TsbKiyasModu>("sektor");
@@ -220,8 +221,21 @@ export default function TsbAnaBransTkzDashboard() {
     };
   }, []);
 
-  const donem = tumDonemler.length > 0 ? tumDonemler[tumDonemler.length - 1] : "";
-  const trendDonemler = useMemo(() => tumDonemler.slice(-9), [tumDonemler]);
+  useEffect(() => {
+    if (tumDonemler.length === 0) return;
+    setDonem((prev) => {
+      if (prev && tumDonemler.includes(prev)) return prev;
+      if (urlPrefs.donem && tumDonemler.includes(urlPrefs.donem)) return urlPrefs.donem;
+      return tumDonemler[tumDonemler.length - 1];
+    });
+  }, [tumDonemler, urlPrefs.donem]);
+
+  const trendDonemler = useMemo(() => {
+    if (!donem) return [];
+    const idx = tumDonemler.indexOf(donem);
+    if (idx < 0) return [];
+    return tumDonemler.slice(Math.max(0, idx - 8), idx + 1);
+  }, [tumDonemler, donem]);
 
   useEffect(() => {
     if (trendDonemler.length === 0) return;
@@ -362,13 +376,17 @@ export default function TsbAnaBransTkzDashboard() {
             label="Finansal dönem"
             hint={
               <>
-                Dashboard her zaman son finansal dönemi baz alır: <strong>{donem}</strong>
+                Varsayılan son finansal dönemdir; seçim değişince tablo ve trend birlikte güncellenir.
               </>
             }
           >
-            <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
-              {donem}
-            </div>
+            <TsbSelect id="tkz-ana-donem" value={donem} onChange={(e) => setDonem(e.target.value)}>
+              {[...tumDonemler].reverse().map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </TsbSelect>
           </TsbFilterField>
 
           <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">

@@ -26,6 +26,7 @@ import {
   buildAnaBransTkzTrend,
   type AnaBransTkzKiyasHedef,
   type AnaBransTkzSatir,
+  type AnaBransTkzTrendModu,
   type AnaBransTkzTrendNokta,
 } from "@/lib/tsbAnaBransTkz";
 import {
@@ -86,11 +87,13 @@ function TrendChart({
   subtitle,
   seri,
   side,
+  trendModu,
 }: {
   title: string;
   subtitle: string;
   seri: AnaBransTkzTrendNokta[];
   side: "sirket" | "kiyas";
+  trendModu: AnaBransTkzTrendModu;
 }) {
   const w = 860;
   const h = 340;
@@ -120,7 +123,7 @@ function TrendChart({
       <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full max-w-full" role="img" aria-label={title}>
         <rect width={w} height={h} fill="#fafafa" />
         <text x={pad.l} y={20} fill="#374151" fontSize={12} fontWeight={600}>
-          Çeyreklik akış (değerler Mn ₺)
+          {trendModu === "kumulatif" ? "Kümülatif tutar (değerler Mn ₺)" : "Çeyreklik akış (değerler Mn ₺)"}
         </text>
         <text x={pad.l} y={36} fontSize={9}>
           <tspan fill={COL_GELIR} fontWeight={700}>Teknik Gelir</tspan>
@@ -230,6 +233,7 @@ export default function TsbAnaBransTkzDashboard() {
   const [kiyasModu, setKiyasModu] = useState<TsbKiyasModu>("sektor");
   const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");
   const [trendAnaBrans, setTrendAnaBrans] = useState<string>(TREND_TUM_BRANSLAR);
+  const [trendModu, setTrendModu] = useState<AnaBransTkzTrendModu>("ceyrek");
 
   useEffect(() => {
     let cancelled = false;
@@ -338,8 +342,9 @@ export default function TsbAnaBransTkzDashboard() {
       pool,
       trendAnaBrans === TREND_TUM_BRANSLAR ? null : trendAnaBrans,
       kiyasHedef,
+      trendModu,
     );
-  }, [rows, donem, sirketKodu, trendDonemler, pool, trendAnaBrans, kiyasHedef]);
+  }, [rows, donem, sirketKodu, trendDonemler, pool, trendAnaBrans, kiyasHedef, trendModu]);
 
   const secilenAd =
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
@@ -509,7 +514,11 @@ export default function TsbAnaBransTkzDashboard() {
         <TsbFilterGrid>
           <TsbFilterField
             label="Trend branşı"
-            hint="Çeyreklik akışlar kümülatif veriden önceki çeyrek düşülerek bulunur."
+            hint={
+              trendModu === "ceyrek"
+                ? "Çeyreklik akış: kümülatiften önceki çeyrek düşülerek bulunur."
+                : "Kümülatif: seçili çeyreğin tidy’deki tutarı (çıkarma yok)."
+            }
           >
             <TsbSelect value={trendAnaBrans} onChange={(e) => setTrendAnaBrans(e.target.value)}>
               {trendSecenekleri.map((s) => (
@@ -519,6 +528,24 @@ export default function TsbAnaBransTkzDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
+          <TsbFilterField label="Trend modu">
+            <div className={cn(tsb.btnGroup, "mt-1")}>
+              <TsbToggleButton
+                pressed={trendModu === "ceyrek"}
+                variant="segment"
+                onClick={() => setTrendModu("ceyrek")}
+              >
+                Çeyrek bazlı
+              </TsbToggleButton>
+              <TsbToggleButton
+                pressed={trendModu === "kumulatif"}
+                variant="segment"
+                onClick={() => setTrendModu("kumulatif")}
+              >
+                Kümülatif
+              </TsbToggleButton>
+            </div>
+          </TsbFilterField>
         </TsbFilterGrid>
       </TsbFilterBar>
 
@@ -526,15 +553,17 @@ export default function TsbAnaBransTkzDashboard() {
         <div className="grid gap-4">
           <TrendChart
             title={`Son ${trend.length} çeyrek — ${secilenAd}`}
-            subtitle={`${trendAnaBrans === TREND_TUM_BRANSLAR ? "Tüm branşlar" : trendAnaBrans} · Teknik Gelir / Teknik Gider / TKZ`}
+            subtitle={`${trendAnaBrans === TREND_TUM_BRANSLAR ? "Tüm branşlar" : trendAnaBrans} · ${trendModu === "kumulatif" ? "Kümülatif" : "Çeyrek bazlı"} · Teknik Gelir / Teknik Gider / TKZ`}
             seri={trend}
             side="sirket"
+            trendModu={trendModu}
           />
           <TrendChart
             title={`Son ${trend.length} çeyrek — ${shortLabel(kiyasModu, kiyasBaslik)}`}
-            subtitle={`${trendAnaBrans === TREND_TUM_BRANSLAR ? "Tüm branşlar" : trendAnaBrans} · Sağ blok kıyas serisi`}
+            subtitle={`${trendAnaBrans === TREND_TUM_BRANSLAR ? "Tüm branşlar" : trendAnaBrans} · ${trendModu === "kumulatif" ? "Kümülatif" : "Çeyrek bazlı"} · Sağ blok kıyas serisi`}
             seri={trend}
             side="kiyas"
+            trendModu={trendModu}
           />
         </div>
       )}

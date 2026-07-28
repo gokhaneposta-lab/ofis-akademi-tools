@@ -310,6 +310,8 @@ export function buildAnaBransTkzOzet(
   };
 }
 
+export type AnaBransTkzTrendModu = "ceyrek" | "kumulatif";
+
 export function buildAnaBransTkzTrend(
   rows: Iterable<TsbGelirTidyRowLike>,
   donemler: string[],
@@ -317,6 +319,7 @@ export function buildAnaBransTkzTrend(
   pool: SegmentSkorPool,
   anaBransH: string | null,
   kiyasHedef: AnaBransTkzKiyasHedef = { mod: "sektor" },
+  trendModu: AnaBransTkzTrendModu = "ceyrek",
 ): AnaBransTkzTrendNokta[] {
   const seciliDonemler = sortQuarterPeriods(donemler).slice(-9);
   return seciliDonemler.map((donem) => {
@@ -338,17 +341,20 @@ export function buildAnaBransTkzTrend(
     const kumSirket = aggregateBilesen(lookup, rows, donem, [sirketKodu], pool, anaBransH, false);
     const kumKiyas = aggregateBilesen(lookup, rows, donem, kiyasKodlari, pool, anaBransH, ortalama);
 
-    const prevDonem = prevQuarterSameYear(donem);
-    const prevLookup = prevDonem ? buildGelirTidyDonemLookup(rows, prevDonem) : null;
-    const prevSirket = prevLookup
-      ? aggregateBilesen(prevLookup, rows, prevDonem!, [sirketKodu], pool, anaBransH, false)
-      : null;
-    const prevKiyas = prevLookup
-      ? aggregateBilesen(prevLookup, rows, prevDonem!, kiyasKodlari, pool, anaBransH, ortalama)
-      : null;
-
-    const sirket = farkBilesen(kumSirket, prevSirket);
-    const kiyas = farkBilesen(kumKiyas, prevKiyas);
+    let sirket = kumSirket;
+    let kiyas = kumKiyas;
+    if (trendModu === "ceyrek") {
+      const prevDonem = prevQuarterSameYear(donem);
+      const prevLookup = prevDonem ? buildGelirTidyDonemLookup(rows, prevDonem) : null;
+      const prevSirket = prevLookup
+        ? aggregateBilesen(prevLookup, rows, prevDonem!, [sirketKodu], pool, anaBransH, false)
+        : null;
+      const prevKiyas = prevLookup
+        ? aggregateBilesen(prevLookup, rows, prevDonem!, kiyasKodlari, pool, anaBransH, ortalama)
+        : null;
+      sirket = farkBilesen(kumSirket, prevSirket);
+      kiyas = farkBilesen(kumKiyas, prevKiyas);
+    }
 
     return {
       donem,

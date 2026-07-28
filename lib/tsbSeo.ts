@@ -75,6 +75,19 @@ export const TSB_SEO = {
     jsonLdName: "TSB Finansal Karşılaştırma",
     breadcrumbLabel: "Finansal karşılaştırma",
   },
+  anaBransTkz: {
+    path: "/sigorta/ana-brans-tkz",
+    title: "TSB Ana Branş TKZ — Teknik Gelir, Teknik Gider ve TKZ",
+    description:
+      "TSB çeyreklik finansal verilerinden, son finansal dönemde TSB ana branş bazında teknik gelir, teknik gider ve teknik kar/zarar (TKZ) kırılımı; şirket, sektör, benzer ölçek veya başka bir şirket kıyası.",
+    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_FINANSAL, [
+      "TSB teknik kar zarar",
+      "TSB ana branş TKZ",
+      "sigorta teknik gelir gider",
+    ]),
+    jsonLdName: "TSB Ana Branş TKZ",
+    breadcrumbLabel: "Ana branş TKZ",
+  },
   olcekSegmentasyon: {
     path: "/sigorta/olcek-segmentasyon",
     title: "TSB Ölçek Segmentasyonu — A+…D Şirket Grupları",

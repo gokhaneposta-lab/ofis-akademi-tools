@@ -65,6 +65,14 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
 
 export const TSB_TEKNIK_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
+    href: "/sigorta/ana-brans-tkz",
+    badge: "TKZ",
+    title: "Ana branş TKZ",
+    subtitle: "TSB ana branş · teknik gelir/gider · şirket vs kıyas",
+    icon: "🧮",
+    group: "teknik",
+  },
+  {
     href: "/sigorta/hasar-prim-orani",
     badge: "H/P",
     title: "Hasar / Prim oranı",

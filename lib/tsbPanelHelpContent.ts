@@ -31,6 +31,14 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     ],
   },
   {
+    href: "/sigorta/ana-brans-tkz",
+    items: [
+      "Satırlar TSB ana branş etiketleriyle görünür; hesaplama GT finansal branşlarından türetilir.",
+      "Teknik gelir = gelir - 603, teknik gider = gider - 02..06, TKZ = bu ikisinin toplamı.",
+      "Sağ blok sektör toplamı, benzer ölçek ortalaması veya başka bir şirket olabilir.",
+    ],
+  },
+  {
     href: "/sigorta/hasar-prim-orani",
     items: [
       "Hasar/prim (H/P): gerçekleşen hasarın kazanılmış prime oranı. Düşük oran genelde daha iyi teknik sonuç demektir.",

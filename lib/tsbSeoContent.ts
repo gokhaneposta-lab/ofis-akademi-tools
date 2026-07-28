@@ -77,6 +77,28 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
     ],
     blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
   },
+  anaBransTkz: {
+    heading: "TSB ana branş TKZ — teknik gelir, teknik gider ve teknik sonuç",
+    paragraphs: [
+      "Bu panel son finansal dönemi sabit baz alır ve seçili şirketin teknik sonucunu TSB ana branş etiketleriyle kırar. Her satırda teknik gelir, teknik gider ve bunların toplamı olan teknik kar/zarar (TKZ) birlikte gösterilir.",
+      "Hesap GT verisinden türetilir: teknik gelir ilgili gelir bloğundan 603 düşülerek, teknik gider ise gider bloğundan 02–06 alt giderleri ayrıştırılarak bulunur. Sağ blokta sektör toplamı, benzer ölçek ortalaması veya başka bir şirketle kıyas yapılabilir.",
+      "Prim panellerindeki TSB ana branş adları ile finansal GT branşları birebir aynı olmadığından, panel arkada bir eşleme katmanı kullanır; amaç finansal sonucu daha tanıdık iş birimi etiketleriyle okumaktır.",
+    ],
+    faqs: [
+      ...COMMON_FAQS.slice(0, 2),
+      {
+        question: "Bu panel hangi dönemi gösterir?",
+        answer:
+          "Her zaman içeride bulunan son finansal çeyreği kullanır. Dönem seçici yoktur; başlıkta ve bilgi kartında aktif finansal dönem gösterilir.",
+      },
+      {
+        question: "TKZ satırları TSB ana branş mı yoksa GT branşı mı?",
+        answer:
+          "Görünen etiketler TSB ana branştır. Ancak hesaplama gelir tablosu GT branşlarından türetilir ve uygun eşlemeyle ana branş etiketine taşınır.",
+      },
+    ],
+    blogSlugs: ["tsb-hasar-prim-orani-dashboard-rehberi"],
+  },
   olcekSegmentasyon: {
     heading: "TSB ölçek segmentasyonu — A+…D şirket grupları",
     paragraphs: [

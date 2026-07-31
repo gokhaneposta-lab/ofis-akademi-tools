@@ -1,7 +1,7 @@
 /**
  * Excel “Sektör Karşılaştırma” yapısına yakın tablo:
  * satırlar = KPI, sütunlar = (bu dönem · 1 yıl önce · Δ) × (şirket · sektör toplamı).
- * Üstte havuz seçici: HD (hayat dışı) veya hayat–emeklilik.
+ * Üstte havuz seçici: HD, hayat–emeklilik veya toplam (HD + H/E).
  * Kaynak: `public/data/tsb/gelir-tidy/{donem}.json` (+ `index.json`) — tanımlar `docs/tsb-kpi-tanimlari.md`.
  */
 
@@ -10,6 +10,7 @@ import {
   hasarPrimOranlariSektorFromLookup,
   type HasarPrimOranlari,
 } from "./tsbHasarPrimOrani";
+import { sirketKoduHayatEmeklilikPrefix } from "./tsbPrimDashboard";
 import type { TsbGelirTidyRowLike } from "./tsbYatirimGeliriKpi";
 import type { TsbKiyasHedef } from "./tsbKiyasHedef";
 import { olcekSegmentEsleri, type OlcekSegmentHarfi } from "./tsbOlcekSegment";
@@ -22,10 +23,46 @@ import {
   type SegmentSkorPool,
 } from "./tsbSirketSegmentSkor";
 
+/** Finansal karşılaştırma havuzu — `SEKTOR` = HD + hayat/emeklilik birleşik toplam. */
+export type FinansalKarsilastirmaPool = SegmentSkorPool | "SEKTOR";
+
+export const FINANSAL_KARSILASTIRMA_POOL_LABELS: Record<FinansalKarsilastirmaPool, string> = {
+  HD: "Hayat dışı (HD)",
+  HAYAT_EMEKLILIK: "Hayat / Emeklilik",
+  SEKTOR: "Toplam (HD + H/E)",
+};
+
+/** Ölçek / H/P / TKZ panelleri yalnızca HD | H/E kabul eder; URL’deki SEKTOR → HD. */
+export function coerceSegmentSkorPool(
+  pool: FinansalKarsilastirmaPool | undefined | null,
+  fallback: SegmentSkorPool = "HD",
+): SegmentSkorPool {
+  if (pool === "HD" || pool === "HAYAT_EMEKLILIK") return pool;
+  return fallback;
+}
+
+/** Ölçek segmenti yalnızca HD veya H/E içinde anlamlıdır; şirketin kendi havuzunu döner. */
+export function olcekPoolForSirketKodu(sirketKodu: number): SegmentSkorPool {
+  return sirketKoduHayatEmeklilikPrefix(sirketKodu) ? "HAYAT_EMEKLILIK" : "HD";
+}
+
+/** Havuz peer kodları — `SEKTOR` için HD ∪ H/E. */
+export function finansalPeerSirketKodlari(
+  rows: Iterable<TsbGelirTidyRowLike>,
+  donem: string,
+  pool: FinansalKarsilastirmaPool,
+): number[] {
+  if (pool !== "SEKTOR") return segmentPeerSirketKodlari(rows, donem, pool);
+  const set = new Set<number>([
+    ...segmentPeerSirketKodlari(rows, donem, "HD"),
+    ...segmentPeerSirketKodlari(rows, donem, "HAYAT_EMEKLILIK"),
+  ]);
+  return [...set].sort((a, b) => a - b);
+}
+
 const GT = "GT";
 const BL = "BL";
 const MALI = "MALI";
-const HAYATDISI = "HAYATDISI";
 const PASIF = "Pasif";
 const AKTIF = "Aktif";
 const TRAFIK = "TRAFİK";
@@ -129,9 +166,9 @@ export function uniqueSortedGelirDonemler(rows: Iterable<TsbGelirTidyRowLike>): 
 export function listSirketleriGelirDonemForPool(
   rows: Iterable<TsbGelirTidyRowLike>,
   donem: string,
-  pool: SegmentSkorPool,
+  pool: FinansalKarsilastirmaPool,
 ): { kod: number; ad: string }[] {
-  const kodlar = new Set(segmentPeerSirketKodlari(rows, donem, pool));
+  const kodlar = new Set(finansalPeerSirketKodlari(rows, donem, pool));
   const adlar = new Map<number, string>();
   for (const r of rows) {
     if (r.donem !== donem) continue;
@@ -302,7 +339,7 @@ function oranlarFromSkorHam(
 
 export type FinansalKiyaslamaDonemPaketi = {
   donem: string;
-  pool: SegmentSkorPool;
+  pool: FinansalKarsilastirmaPool;
   sirketHam: FinansalKiyaslamaHamOlcum | null;
   sirketSkorHam: ReturnType<typeof hamMetrikFromLookup> | null;
   sirketHp: HasarPrimOranlari;
@@ -320,11 +357,11 @@ export function finansalKiyaslamaDonemPaketi(
   rows: Iterable<TsbGelirTidyRowLike>,
   donem: string,
   sirketKodu: number,
-  pool: SegmentSkorPool,
+  pool: FinansalKarsilastirmaPool,
   kiyasHedef: FinansalKiyasHedef = { mod: "sektor" },
 ): FinansalKiyaslamaDonemPaketi {
   const lookup = buildGelirTidyDonemLookup(rows, donem);
-  const peers = segmentPeerSirketKodlari(rows, donem, pool).filter((k) => lookup.has(k));
+  const peers = finansalPeerSirketKodlari(rows, donem, pool).filter((k) => lookup.has(k));
   const peerHams = peers
     .map((pk) => hamOlcumFromLookup(lookup, pk))
     .filter((x): x is FinansalKiyaslamaHamOlcum => x !== null);
@@ -350,7 +387,9 @@ export function finansalKiyaslamaDonemPaketi(
     kiyasOran = sektorOran;
     kiyasHp = sektorHp;
   } else if (kiyasHedef.mod === "olcek") {
-    const es = olcekSegmentEsleri(rows, donem, pool, sirketKodu);
+    // Ölçek peer’ı her zaman şirketin kendi havuzunda (HD veya H/E); SEKTOR birleşik skor yok.
+    const olcekPool = pool === "SEKTOR" ? olcekPoolForSirketKodu(sirketKodu) : pool;
+    const es = olcekSegmentEsleri(rows, donem, olcekPool, sirketKodu);
     kiyasOlcekSegment = es.segment ?? undefined;
     const olcekPeers = es.kodlar.filter((k) => lookup.has(k));
     kiyasOlcekPeerSayisi = olcekPeers.length;

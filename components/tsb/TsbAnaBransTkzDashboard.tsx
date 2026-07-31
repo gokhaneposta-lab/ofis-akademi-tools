@@ -35,7 +35,7 @@ import {
 } from "@/lib/tsbGelirTidyFetch";
 import type { TsbKiyasModu } from "@/lib/tsbKiyasHedef";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
-import { listSirketleriGelirDonemForPool } from "@/lib/tsbFinansalKarsilastirmaData";
+import { listSirketleriGelirDonemForPool, coerceSegmentSkorPool } from "@/lib/tsbFinansalKarsilastirmaData";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
 
 const POOL_LABELS: Record<SegmentSkorPool, string> = {
@@ -228,7 +228,7 @@ export default function TsbAnaBransTkzDashboard() {
   const [rows, setRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [donem, setDonem] = useState<string>("");
-  const [pool, setPool] = useState<SegmentSkorPool>(urlPrefs.pool ?? "HD");
+  const [pool, setPool] = useState<SegmentSkorPool>(() => coerceSegmentSkorPool(urlPrefs.pool));
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [kiyasModu, setKiyasModu] = useState<TsbKiyasModu>("sektor");
   const [kiyasSirketKodu, setKiyasSirketKodu] = useState<number | "">("");

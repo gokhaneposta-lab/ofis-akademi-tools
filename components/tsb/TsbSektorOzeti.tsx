@@ -102,13 +102,13 @@ export default function TsbSektorOzeti({ data }: { data: SektorOzetiData }) {
       <div className={tsb.sektorOzetiBaslikWrap}>
         <div className={tsb.sektorOzetiBaslikRow}>
           <h2 id="tsb-sektor-ozeti-baslik" className={tsb.sektorOzetiBaslik}>
-            Sektör Özeti
+            Şirket liderlikleri
           </h2>
           <MetodolojiInfo />
         </div>
         <p className={tsb.sektorOzetiAltBaslik}>
-          Son dönemde sektörde öne çıkan şirketler — karlılık, teknik sonuç, büyüme ve pazar payına göre
-          sıralanmış kısa listeler.
+          Hayat dışı havuzunda son dönemde öne çıkan şirketler — kârlılık, teknik sonuç, büyüme ve pazar
+          payına göre sıralanmış kısa listeler.
         </p>
         <div className={tsb.sektorOzetiDonemGrid} aria-label="Kullanılan dönemler">
           {donemChips.map((c) => (

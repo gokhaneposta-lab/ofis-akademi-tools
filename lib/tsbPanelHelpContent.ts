@@ -7,10 +7,18 @@ export type TsbPanelHelpEntry = {
 
 export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
   {
+    href: "/sigorta/sektor-gorunumu",
+    items: [
+      "Üst kartlar hayat dışı ve hayat–emeklilik tutarlarının birleşik sektör toplamını gösterir; kartların altında iki havuzun katkısı ayrılır.",
+      "Kâr trendi seçicisinde toplam, hayat dışı veya hayat–emeklilik görünümünü değiştirebilirsiniz. Yıllar aynı çeyrek üzerinden karşılaştırılır.",
+      "Oranlar şirket yüzdelerinin ortalaması değildir. İlk 10 kırılımı her dönemde brüt prime göre yeniden hesaplanır ve yalnız hayat dışını kapsar.",
+    ],
+  },
+  {
     href: "/sigorta/finansal-karsilastirma",
     items: [
-      "Önce havuz seçin: hayat dışı veya hayat–emeklilik. Sonra çeyreği belirleyin.",
-      "Sol sütun odak şirketiniz; sağ sütun sektör toplamı veya seçtiğiniz başka bir şirket.",
+      "Önce havuz seçin: hayat dışı, hayat–emeklilik veya toplam (HD + H/E). Sonra çeyreği belirleyin.",
+      "Sol sütun odak şirketiniz; sağ sütun sektör toplamı veya seçtiğiniz başka bir şirket. Toplam havuzunda benzer ölçek kıyası yoktur.",
       "TL satırları tutar, oran satırları yüzdedir. Δ sütunu bir önceki yılın aynı çeyreğine göre farkı gösterir.",
     ],
   },

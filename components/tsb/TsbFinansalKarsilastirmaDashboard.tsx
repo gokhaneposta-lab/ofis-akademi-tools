@@ -2,8 +2,8 @@
 
 import { Fragment, useEffect, useMemo, useState } from "react";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
-import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import {
+  FINANSAL_KARSILASTIRMA_POOL_LABELS,
   FINANSAL_KIYASLAMA_SATIRLARI,
   finansalKiyaslamaDegisim,
   finansalKiyaslamaBenchmarkFark,
@@ -13,6 +13,8 @@ import {
   formatFinansalHucre,
   listSirketleriGelirDonemForPool,
   oncekiYilDonem,
+  olcekPoolForSirketKodu,
+  type FinansalKarsilastirmaPool,
   type FinansalKiyasHedef,
   type FinansalKiyaslamaDonemPaketi,
 } from "@/lib/tsbFinansalKarsilastirmaData";
@@ -39,13 +41,10 @@ import {
   tsbDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
 
-const POOL_LABELS: Record<SegmentSkorPool, string> = {
-  HD: "Hayat dışı (HD)",
-  HAYAT_EMEKLILIK: "Hayat / Emeklilik",
-};
+const POOL_OPTIONS: readonly FinansalKarsilastirmaPool[] = ["HD", "HAYAT_EMEKLILIK", "SEKTOR"];
 
-function defaultSirketModForPool(pool: SegmentSkorPool): "hayatdisi" | "hayat" {
-  return pool === "HD" ? "hayatdisi" : "hayat";
+function defaultSirketModForPool(pool: FinansalKarsilastirmaPool): "hayatdisi" | "hayat" {
+  return pool === "HAYAT_EMEKLILIK" ? "hayat" : "hayatdisi";
 }
 
 export default function TsbFinansalKarsilastirmaDashboard() {
@@ -53,7 +52,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
   const [tumDonemler, setTumDonemler] = useState<string[]>([]);
   const [rows, setRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pool, setPool] = useState<SegmentSkorPool>(urlPrefs.pool ?? "HD");
+  const [pool, setPool] = useState<FinansalKarsilastirmaPool>(urlPrefs.pool ?? "HD");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
   const [donem, setDonem] = useState<string>("");
   const [kiyasModu, setKiyasModu] = useState<TsbKiyasModu>("sektor");
@@ -151,13 +150,16 @@ export default function TsbFinansalKarsilastirmaDashboard() {
     sirketListesi.find((s) => s.kod === sirketKodu)?.ad ??
     (sirketKodu === "" ? "" : `Şirket ${sirketKodu}`);
 
+  const olcekPool =
+    sirketKodu === "" ? "HD" : pool === "SEKTOR" ? olcekPoolForSirketKodu(sirketKodu) : pool;
+
   const { kayit: olcekKayit, finDonem: olcekFinDonem } = useOlcekSegmentKayit(
     rows && donem && sirketKodu !== ""
       ? {
           kaynak: "gelir",
           rows,
           donem,
-          pool,
+          pool: olcekPool,
           sirketKodu,
           sirketAdi: secilenAd,
         }
@@ -173,8 +175,9 @@ export default function TsbFinansalKarsilastirmaDashboard() {
       sektorPeerSayisi: paketBu?.peerSayisi,
       olcekSegment: paketBu?.kiyasOlcekSegment,
       olcekPeerSayisi: paketBu?.kiyasOlcekPeerSayisi,
+      sektorBaslik: pool === "SEKTOR" ? "Sektör toplamı (HD + H/E)" : undefined,
     });
-  }, [kiyasModu, paketBu, kiyasListe, kiyasSirketKodu]);
+  }, [kiyasModu, paketBu, kiyasListe, kiyasSirketKodu, pool]);
 
   if (error) return <TsbError message={error} />;
   if (tumDonemler.length === 0 && !error) return <TsbLoading message="Dönem listesi yükleniyor…" />;
@@ -190,7 +193,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
       <TsbFilterBar>
         <p className={tsb.filterSectionLabel}>Sektör havuzu</p>
         <div role="tablist" aria-label="Sektör havuzu" className={cn(tsb.btnGroup, "mb-3")}>
-          {(["HD", "HAYAT_EMEKLILIK"] as const).map((p) => (
+          {POOL_OPTIONS.map((p) => (
             <TsbToggleButton
               key={p}
               pressed={pool === p}
@@ -198,9 +201,10 @@ export default function TsbFinansalKarsilastirmaDashboard() {
               onClick={() => {
                 setPool(p);
                 setSirketKodu("");
+                if (p === "SEKTOR") setKiyasModu("sektor");
               }}
             >
-              {POOL_LABELS[p]}
+              {FINANSAL_KARSILASTIRMA_POOL_LABELS[p]}
             </TsbToggleButton>
           ))}
         </div>
@@ -274,6 +278,12 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                   kiyasSirketKodu={kiyasSirketKodu}
                   onKiyasSirketKoduChange={setKiyasSirketKodu}
                   selectId="fk-kiyas-sirket"
+                  olcekDisabled={pool === "SEKTOR"}
+                  sektorAciklama={
+                    pool === "SEKTOR"
+                      ? "Hayat dışı + hayat/emeklilik tüm şirketlerin tutar toplamı; oranlar payların toplamı ÷ paydaların toplamı."
+                      : undefined
+                  }
                 />
               </div>
             </div>
@@ -281,12 +291,10 @@ export default function TsbFinansalKarsilastirmaDashboard() {
         </TsbFilterGrid>
 
         <p className={tsb.filterHint}>
-          {POOL_LABELS[pool]} havuzu · Δ: TL satırlarında yüzde değişim; oran satırlarında puan farkı (pp).{" "}
-          {segmentBenchmark ? (
-            <>
-              Benzer ölçek: TL ortalaması, oranlarda havuzlanmış oran ·{" "}
-            </>
-          ) : null}
+          {FINANSAL_KARSILASTIRMA_POOL_LABELS[pool]}
+          {pool === "SEKTOR" ? "" : " havuzu"} · Δ: TL satırlarında yüzde değişim; oran satırlarında puan farkı
+          (pp).{" "}
+          {segmentBenchmark ? <>Benzer ölçek: TL ortalaması, oranlarda havuzlanmış oran · </> : null}
           <span className="text-emerald-800">Artış yeşil</span>, <span className="text-red-700">düşüş kırmızı</span>.
         </p>
       </TsbFilterBar>
@@ -297,11 +305,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
         <table className={cn(tsb.table, "min-w-[820px]")}>
           <thead className={tsb.thead}>
             <tr>
-              <th
-                scope="col"
-                rowSpan={2}
-                className={cn(tsb.thSticky, "min-w-[15rem]")}
-              >
+              <th scope="col" rowSpan={2} className={cn(tsb.thSticky, "min-w-[15rem]")}>
                 KPI
               </th>
               <th
@@ -406,7 +410,10 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                 <tr key={satir.id} className={tsb.tbodyRow}>
                   <th
                     scope="row"
-                    className={cn(tsb.tdSticky, "max-w-[18rem] text-left align-top text-[10px] font-semibold uppercase leading-snug tracking-wide")}
+                    className={cn(
+                      tsb.tdSticky,
+                      "max-w-[18rem] text-left align-top text-[10px] font-semibold uppercase leading-snug tracking-wide",
+                    )}
                   >
                     {satir.label}
                   </th>

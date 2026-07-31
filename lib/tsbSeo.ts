@@ -66,11 +66,25 @@ export const TSB_SEO = {
     jsonLdName: "TSB Prim ve Finansal İstatistikleri",
     breadcrumbLabel: "TSB Sektör Verileri",
   },
+  sektorGorunumu: {
+    path: "/sigorta/sektor-gorunumu",
+    title: "Sigorta Sektörü Görünümü — HD, Hayat ve Toplam Finansal Dashboard",
+    description:
+      "TSB çeyreklik verileriyle hayat dışı, hayat–emeklilik ve toplam sigorta sektörü: prim, teknik kâr, net kâr, aktif, özsermaye, finansal oranlar ve ilk 10 şirket analizi.",
+    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_FINANSAL, [
+      "sigorta sektörü toplam aktif",
+      "sigorta sektörü özsermaye",
+      "hayat dışı hayat toplam",
+      "sigorta sektörü karlılık",
+    ]),
+    jsonLdName: "Sigorta Sektörü Görünümü",
+    breadcrumbLabel: "Sektör görünümü",
+  },
   finansalKarsilastirma: {
     path: "/sigorta/finansal-karsilastirma",
     title: "TSB Finansal Karşılaştırma — Gelir Tablosu ve Bilanço KPI",
     description:
-      "TSB finansal veriler: çeyreklik gelir tablosu ve bilanço KPI'ları; sigorta şirketi ile sektör toplamı veya ikinci şirket yan yana, dönemsel değişimle.",
+      "TSB finansal veriler: çeyreklik gelir tablosu ve bilanço KPI'ları; hayat dışı, hayat–emeklilik veya HD+H/E toplam havuzunda şirket ile sektör toplamı veya ikinci şirket yan yana, dönemsel değişimle.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_FINANSAL),
     jsonLdName: "TSB Finansal Karşılaştırma",
     breadcrumbLabel: "Finansal karşılaştırma",

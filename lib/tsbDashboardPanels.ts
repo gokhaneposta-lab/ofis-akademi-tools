@@ -38,6 +38,14 @@ export const TSB_DASHBOARD_GROUPS: readonly TsbDashboardGroupMeta[] = [
 
 export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
+    href: "/sigorta/sektor-gorunumu",
+    badge: "Sektör",
+    title: "Sigorta sektörü görünümü",
+    subtitle: "HD + H/E toplam · kâr · bilanço · oranlar · ilk 10",
+    icon: "🌐",
+    group: "finansal",
+  },
+  {
     href: "/sigorta/sirket-karne",
     badge: "Karne",
     title: "Şirket karne",
@@ -49,7 +57,7 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
     href: "/sigorta/finansal-karsilastirma",
     badge: "Finansal",
     title: "Finansal karşılaştırma",
-    subtitle: "KPI satırları · çeyrekler · şirket vs sektör",
+    subtitle: "KPI satırları · çeyrekler · HD / H/E / toplam · şirket vs sektör",
     icon: "📋",
     group: "finansal",
   },

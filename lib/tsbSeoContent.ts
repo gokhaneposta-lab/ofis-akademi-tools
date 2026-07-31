@@ -61,11 +61,33 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
       "tsb-kanal-brans-prim-rehberi",
     ],
   },
+  sektorGorunumu: {
+    heading: "Sigorta sektörü görünümü — hayat dışı, hayat–emeklilik ve genel toplam",
+    paragraphs: [
+      "Bu panel tek bir şirket yerine sigorta sektörünün tamamını okur. Hayat dışı ve hayat–emeklilik şirketlerinin tutarları ayrı gösterilir; Toplam görünümü iki havuzun birleşik finansal büyüklüğüdür.",
+      "Brüt prim, teknik ve safî sonuç, yatırım geliri, net kâr, aktif ve özsermaye kartlarında güncel dönem ile önceki yılın aynı çeyreği kıyaslanır. Trendler farklı mevsimsellikleri karıştırmamak için her yılın aynı çeyreğini kullanır.",
+      "Oranlarda şirket yüzdelerinin ortalaması alınmaz; paylar ve paydalar sektör düzeyinde toplanarak oran yeniden hesaplanır. İlk 10 analizi yalnız hayat dışı şirketlerde, her dönemin brüt prim sıralamasına göre oluşturulur.",
+    ],
+    faqs: [
+      ...COMMON_FAQS.slice(0, 2),
+      {
+        question: "Toplam (HD + H/E) nasıl hesaplanır?",
+        answer:
+          "Hayat dışı ve hayat–emeklilik şirketlerinin finansal tutarları toplanır. Oranlar bu birleşik tutarların pay ve paydalarıyla yeniden hesaplanır.",
+      },
+      {
+        question: "İlk 10 şirket grubu sabit mi?",
+        answer:
+          "Hayır. İlk 10 hayat dışı şirket, seçilen her dönemde brüt prim büyüklüğüne göre yeniden sıralanır.",
+      },
+    ],
+    blogSlugs: ["tsb-prim-istatistikleri-nasil-takip-edilir"],
+  },
   finansalKarsilastirma: {
-    heading: "TSB finansal karşılaştırma — gelir tablosu ve bilanço KPI",
+    heading: "TSB finansal karşılaştırma — gelir tablosu ve bilanço göstergeleri",
     paragraphs: [
       "Bu panel TSB çeyreklik gelir tablosu ve bilanço verilerinden türetilmiş göstergeleri gösterir. Odak şirketinizi sektör toplamı veya seçtiğiniz ikinci bir şirketle yan yana kıyaslayabilir; dönemsel değişim (Δ) sütunları bir önceki yılın aynı çeyreğine göre farkı verir.",
-      "Hayat dışı ile hayat–emeklilik havuzları ayrı değerlendirilir. Sektör toplamı havuzdaki tüm şirketlerin toplamıdır — ortalama değil. TL satırları tutar, oran satırları yüzdedir; yatırım geliri, teknik sonuç ve öz kaynak yapısını tek ekranda okumak için uygundur.",
+      "Hayat dışı ve hayat–emeklilik havuzları ayrı seçilebilir; ayrıca Toplam (HD + H/E) ile tüm sigorta sektörü birleşik kıyaslanır. Seçili havuzdaki sektör toplamı tutarların toplamıdır — ortalama değil. Toplam havuzunda benzer ölçek kıyası yoktur. TL satırları tutar, oran satırları yüzdedir; yatırım geliri, teknik sonuç ve öz kaynak yapısını tek ekranda okumak için uygundur.",
       "Excel'de pivot kurmak yerine hazır gösterge seti arayan finans ve raporlama ekipleri için pratik bir alternatiftir. Resmi tablo satır tanımları TSB finansal istatistiklerinde yer alır.",
     ],
     faqs: [

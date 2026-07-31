@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { coerceSegmentSkorPool } from "@/lib/tsbFinansalKarsilastirmaData";
 import type { OlcekSegmentHarfi } from "@/lib/tsbOlcekSegment";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import {
@@ -50,11 +51,11 @@ function SegmentBadge({ harf }: { harf: OlcekSegmentHarfi }) {
 export default function TsbOlcekSegmentasyonDashboard() {
   const urlPrefs = useTsbDashboardUrlPrefs();
   const { cache, yukleniyor, hata } = useOlcekSegmentCache();
-  const [pool, setPool] = useState<SegmentSkorPool>(urlPrefs.pool ?? "HD");
+  const [pool, setPool] = useState<SegmentSkorPool>(() => coerceSegmentSkorPool(urlPrefs.pool));
   const [segment, setSegment] = useState<SegmentFiltre>("tumu");
 
   useEffect(() => {
-    if (urlPrefs.pool) setPool(urlPrefs.pool);
+    if (urlPrefs.pool) setPool(coerceSegmentSkorPool(urlPrefs.pool));
   }, [urlPrefs.pool]);
 
   const sonPool = useMemo(() => sonFinDonemPoolData(cache, pool), [cache, pool]);

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
-import { listSirketleriGelirDonemForPool, oncekiYilDonem } from "@/lib/tsbFinansalKarsilastirmaData";
+import { listSirketleriGelirDonemForPool, oncekiYilDonem, coerceSegmentSkorPool } from "@/lib/tsbFinansalKarsilastirmaData";
 import {
   buildHasarPrimTablosu,
   buildHasarPrimTrend,
@@ -290,7 +290,7 @@ export default function TsbHasarPrimDashboard() {
   const [tumDonemler, setTumDonemler] = useState<string[]>([]);
   const [rows, setRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pool, setPool] = useState<SegmentSkorPool>(urlPrefs.pool ?? "HD");
+  const [pool, setPool] = useState<SegmentSkorPool>(() => coerceSegmentSkorPool(urlPrefs.pool));
   const [donem, setDonem] = useState("");
   const [kirisumModu, setKirisumModu] = useState<HpKirisumModu>("bransAp");
   const [bransAp, setBransAp] = useState(HAYATDISI);

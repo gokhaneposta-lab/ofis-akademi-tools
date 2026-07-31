@@ -93,6 +93,7 @@ const NAV: NavSection[] = [
     ),
     children: [
       { label: "Dashboard özeti", href: "/sigorta/tsb" },
+      { label: "Sektör görünümü", href: "/sigorta/sektor-gorunumu" },
       { label: "Finansal karşılaştırma", href: "/sigorta/finansal-karsilastirma" },
       { label: "Ölçek segmentasyonu", href: "/sigorta/olcek-segmentasyon" },
       { label: "Kanal bazlı prim", href: "/sigorta/kanal-prim" },
@@ -156,6 +157,7 @@ const pathTitles: Record<string, string> = {
   "/egitimler/ileri": "Seviye 3 · İleri",
   "/formul-kutuphanesi": "Formül Kütüphanesi",
   "/sigorta/tsb": "Sektör verileri (TSB)",
+  "/sigorta/sektor-gorunumu": "Sigorta sektörü görünümü",
   "/sigorta/kanal-prim": "Kanal bazlı prim",
   "/sigorta/brans-degisim": "Branş değişim tablosu",
   "/sigorta/pazar-yogunlasma": "Pazar yoğunlaşması",

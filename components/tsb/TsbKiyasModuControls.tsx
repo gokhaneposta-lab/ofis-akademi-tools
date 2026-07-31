@@ -15,6 +15,10 @@ type Props = {
   onKiyasSirketKoduChange: (kod: number | "") => void;
   selectId: string;
   layout?: "inline" | "stacked";
+  /** Toplam (HD+H/E) havuzunda ölçek kıyası anlamsız — butonu gizle. */
+  olcekDisabled?: boolean;
+  /** Sektör toplamı ipucu metni (havuza göre özelleştirilebilir). */
+  sektorAciklama?: string;
 };
 
 export default function TsbKiyasModuControls({
@@ -28,6 +32,8 @@ export default function TsbKiyasModuControls({
   onKiyasSirketKoduChange,
   selectId,
   layout = "stacked",
+  olcekDisabled = false,
+  sektorAciklama,
 }: Props) {
   return (
     <div className={layout === "inline" ? "min-w-0 flex-1" : undefined}>
@@ -35,9 +41,11 @@ export default function TsbKiyasModuControls({
         <TsbToggleButton pressed={kiyasModu === "sektor"} onClick={() => onKiyasModuChange("sektor")}>
           Sektör toplamı
         </TsbToggleButton>
-        <TsbToggleButton pressed={kiyasModu === "olcek"} onClick={() => onKiyasModuChange("olcek")}>
-          Benzer ölçek
-        </TsbToggleButton>
+        {olcekDisabled ? null : (
+          <TsbToggleButton pressed={kiyasModu === "olcek"} onClick={() => onKiyasModuChange("olcek")}>
+            Benzer ölçek
+          </TsbToggleButton>
+        )}
         <TsbToggleButton pressed={kiyasModu === "sirket"} onClick={() => onKiyasModuChange("sirket")}>
           Diğer şirket
         </TsbToggleButton>
@@ -48,7 +56,7 @@ export default function TsbKiyasModuControls({
           <strong>Sektör toplamı</strong>
           {sektorPeerSayisi !== undefined ? ` (n = ${sektorPeerSayisi})` : null}
           <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">
-            Havuzdaki tüm şirketlerin toplamı / ortalaması.
+            {sektorAciklama ?? "Havuzdaki tüm şirketlerin toplamı / ortalaması."}
           </span>
         </p>
       ) : kiyasModu === "olcek" ? (
@@ -95,12 +103,13 @@ export function kiyasBaslikFromModu(
     olcekSegment?: OlcekSegmentHarfi | null;
     olcekPeerSayisi?: number;
     sirketAdi?: string;
+    /** Örn. "Sektör toplamı (HD + H/E)" */
+    sektorBaslik?: string;
   },
 ): string {
   if (mod === "sektor") {
-    return opts.sektorPeerSayisi !== undefined
-      ? `Sektör toplamı (n = ${opts.sektorPeerSayisi})`
-      : "Sektör toplamı";
+    const base = opts.sektorBaslik ?? "Sektör toplamı";
+    return opts.sektorPeerSayisi !== undefined ? `${base} (n = ${opts.sektorPeerSayisi})` : base;
   }
   if (mod === "olcek") {
     if (opts.olcekSegment && opts.olcekPeerSayisi !== undefined) {

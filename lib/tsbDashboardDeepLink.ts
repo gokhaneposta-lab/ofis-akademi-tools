@@ -1,11 +1,12 @@
+import type { FinansalKarsilastirmaPool } from "./tsbFinansalKarsilastirmaData";
 import type { TsbSektorSegment } from "./tsbPrimDashboard";
 import type { TsbSirketKarneSekme } from "./tsbSirketKarneSekmeler";
-import type { SegmentSkorPool } from "./tsbSirketSegmentSkor";
 
 export type TsbDashboardUrlPrefs = {
   sirket?: number;
   donem?: string;
-  pool?: SegmentSkorPool;
+  /** Finansal paneller: HD | HAYAT_EMEKLILIK | SEKTOR (toplam). */
+  pool?: FinansalKarsilastirmaPool;
   segment?: TsbSektorSegment;
   sekme?: TsbSirketKarneSekme;
 };
@@ -36,7 +37,7 @@ export function parseTsbDashboardUrl(search: string): TsbDashboardUrlPrefs {
   if (donem) out.donem = donem;
 
   const pool = sp.get("pool");
-  if (pool === "HD" || pool === "HAYAT_EMEKLILIK") out.pool = pool;
+  if (pool === "HD" || pool === "HAYAT_EMEKLILIK" || pool === "SEKTOR") out.pool = pool;
 
   const segment = sp.get("segment");
   if (segment === "hayatdisi" || segment === "hayat") out.segment = segment;

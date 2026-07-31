@@ -80,8 +80,8 @@ export default function TsbOlcekSegmentRozeti({ sirketAdi, kayit, finDonem, yukl
             karşılaştırılır.
           </p>
           <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-            Finansal karşılaştırmada segment ortalaması: TL satırlarında aritmetik ortalama; oran satırlarında
-            Σ pay ÷ Σ payda (havuzlanmış oran).
+            Finansal karşılaştırmada segment ortalaması: tutar satırlarında aritmetik ortalama; oran satırlarında
+            payların toplamı ÷ paydaların toplamı.
           </p>
         </div>
       </details>

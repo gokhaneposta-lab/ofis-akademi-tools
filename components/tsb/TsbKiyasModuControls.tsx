@@ -62,8 +62,8 @@ export default function TsbKiyasModuControls({
             <strong>Benzer ölçek grubu</strong>
           )}
           <span className="mt-0.5 block text-[10px] leading-snug text-slate-500">
-            Seçili şirketle aynı ölçek segmentindeki şirketlerin ortalaması — TL satırlarında aritmetik ortalama,
-            oranlarda Σ pay ÷ Σ payda.
+            Seçili şirketle aynı ölçek segmentindeki şirketlerin ortalaması — tutar satırlarında aritmetik ortalama,
+            oranlarda payların toplamı ÷ paydaların toplamı.
           </span>
         </p>
       ) : kiyasListe.length === 0 ? (

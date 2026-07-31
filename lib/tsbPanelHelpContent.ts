@@ -33,8 +33,8 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
   {
     href: "/sigorta/ana-brans-tkz",
     items: [
-      "Satırlar TSB ana branş etiketleriyle görünür; hesaplama GT finansal branşlarından türetilir.",
-      "Teknik gelir = gelir - 603, teknik gider = gider - 02..06, TKZ = bu ikisinin toplamı.",
+      "Satırlar TSB ana branş adlarıyla görünür; rakamlar gelir tablosu branşlarından hesaplanır.",
+      "Teknik gelir: teknik gelir − tek. olmayan bölümden aktarılan yatırım gelirleri. Teknik gider: teknik gider − genel gider. TKZ: ikisinin toplamı.",
       "Sağ blok sektör toplamı, benzer ölçek ortalaması veya başka bir şirket olabilir.",
     ],
   },
@@ -43,14 +43,14 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     items: [
       "Hasar/prim (H/P): gerçekleşen hasarın kazanılmış prime oranı. Düşük oran genelde daha iyi teknik sonuç demektir.",
       "Grafikte yeşil/mavi sütunlar şirketin brüt/net H/P değeri; gri kesik çizgi sektör referansıdır.",
-      "Tabloda brüt ve net, DERK dahil/hariç seçenekleri vardır.",
+      "Tabloda brüt ve net; Devam Eden Riskler Karşılığı (DERK) dahil veya hariç seçenekleri vardır.",
     ],
   },
   {
     href: "/sigorta/kanal-prim",
     items: [
       "Hayat dışı ile hayat–emeklilik şirketleri ayrı listelenir.",
-      "Dönem = ay. Kanal ve branş filtreleri tabloyu daraltır.",
+      "Dönem ay bazlıdır. Kanal ve branş filtreleri tabloyu daraltır.",
       "Sıra: küçük numara daha yüksek üretim. Sıra değişimi renklerle gösterilir.",
     ],
   },
@@ -79,15 +79,15 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     href: "/sigorta/prim-trend-12",
     items: [
       "Seçilen bitiş ayından geriye en fazla 12 ay gösterilir.",
-      "Grafiklerde yeşil odak şirket, gri sektör toplamıdır (üst çizgi = kümülatif, alt sütun = aylık üretim).",
+      "Üst grafik yıl içi birikimli prim; alt grafik aylık üretim. Yeşil odak şirket, gri sektör.",
     ],
   },
   {
     href: "/sigorta/pazar-yogunlasma",
     items: [
-      "HHI: her şirketin pazar payının karesi toplamı. Yüksek değer = daha az şirketde toplanmış pazar.",
+      "Yoğunlaşma endeksi (HHI): pazar paylarının karesi toplamı. Yüksek değer = pazar daha az şirkette toplanmış demektir.",
       "Hesap aylık prim üzerinden yapılır; branş ve kanal filtresi değişince endeks de değişir.",
-      "URL'de şirket seçiliyse tabloda odak şirket vurgulanır.",
+      "URL’de şirket seçiliyse tabloda odak şirket vurgulanır.",
     ],
   },
 ] as const;

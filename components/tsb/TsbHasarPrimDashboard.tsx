@@ -541,7 +541,7 @@ export default function TsbHasarPrimDashboard() {
           <TsbFilterField label="Kırılım">
             <div className={tsb.btnGroup}>
               <TsbToggleButton pressed={kirisumModu === "bransAp"} variant="segment" onClick={() => setKirisumModu("bransAp")}>
-                Branş (GT)
+                Gelir tablosu branşı
               </TsbToggleButton>
               <TsbToggleButton pressed={kirisumModu === "tarifeGrubu"} variant="segment" onClick={() => setKirisumModu("tarifeGrubu")}>
                 Tarife grubu
@@ -627,6 +627,7 @@ export default function TsbHasarPrimDashboard() {
           </h3>
           <p className={cn(tsb.caption, "mb-4")}>
             {kirisum.gorunenAd} kırılımında şirket brüt/net H/P (DERK dahil) sütunlar; kesik çizgi sektör brüt H/P.
+            DERK = Devam Eden Riskler Karşılığı.
           </p>
           <HpTrendGrafik
             donemler={trendDonemler}

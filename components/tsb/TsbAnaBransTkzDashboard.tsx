@@ -467,15 +467,16 @@ export default function TsbAnaBransTkzDashboard() {
         </TsbFilterGrid>
 
         <p className={tsb.filterHint}>
-          Satırlar <strong>TSB ana branş</strong> etiketleriyle gösterilir; teknik hesap GT branşlarından türetilir.
+          Satırlar <strong>TSB ana branş</strong> adlarıyla gösterilir; rakamlar gelir tablosu branşlarından hesaplanır.
         </p>
       </TsbFilterBar>
 
       {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
 
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>
-        <strong>{POOL_LABELS[pool]}</strong> · Teknik gelir = <strong>gelir - 603</strong> · Teknik gider ={" "}
-        <strong>gider - 02..06</strong> · TKZ = <strong>teknik gelir + teknik gider</strong>.
+        <strong>{POOL_LABELS[pool]}</strong> · Teknik gelir ={" "}
+        <strong>teknik gelir − tek. olmayan bölümden aktarılan yatırım gelirleri</strong> · Teknik gider ={" "}
+        <strong>teknik gider − genel gider</strong> · TKZ = <strong>teknik gelir + teknik gider</strong>.
       </p>
 
       <TsbTableShell>
@@ -516,8 +517,8 @@ export default function TsbAnaBransTkzDashboard() {
             label="Trend branşı"
             hint={
               trendModu === "ceyrek"
-                ? "Çeyreklik akış: kümülatiften önceki çeyrek düşülerek bulunur."
-                : "Kümülatif: seçili çeyreğin tidy’deki tutarı (çıkarma yok)."
+                ? "Çeyreklik akış: birikimli tutardan önceki çeyrek düşülerek bulunur."
+                : "Birikimli: seçili çeyreğin dönem tutarı (çıkarma yok)."
             }
           >
             <TsbSelect value={trendAnaBrans} onChange={(e) => setTrendAnaBrans(e.target.value)}>

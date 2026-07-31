@@ -26,6 +26,7 @@ import { oncekiYilDonem } from "@/lib/tsbFinansalKarsilastirmaData";
 import {
   buildSektorGorunumuPaket,
   sektorGorunumuTrendDonemleri,
+  type SektorGorunumuDonem,
   type SektorGorunumuIlk10,
   type SektorGorunumuPool,
   type SektorGorunumuSnapshot,
@@ -55,11 +56,11 @@ function fmtPct(v: number | null): string {
 
 function fmtDegisim(bu: number, onceki: number | undefined): { text: string; className: string } {
   if (onceki === undefined || !Number.isFinite(onceki) || onceki === 0) {
-    return { text: "Geçen yıl: —", className: "text-slate-400" };
+    return { text: "—", className: "text-slate-400" };
   }
   const d = (bu - onceki) / Math.abs(onceki);
   return {
-    text: `${d > 0 ? "+" : ""}${pct.format(d * 100)}% yıllık`,
+    text: `${d > 0 ? "+" : ""}${pct.format(d * 100)}%`,
     className: d > 0 ? "text-emerald-700" : d < 0 ? "text-red-700" : "text-slate-500",
   };
 }
@@ -85,45 +86,61 @@ const KPI_LIST: { key: KpiKey; label: string; hint: string }[] = [
   { key: "aktifToplami", label: "Aktif toplamı", hint: "Toplam bilanço büyüklüğü" },
 ];
 
-function KpiCard({
-  item,
-  bu,
+function KpiTable({
+  donem,
+  trend,
+  secili,
   onceki,
-  oncekiDonem,
 }: {
-  item: (typeof KPI_LIST)[number];
-  bu: { SEKTOR: SektorGorunumuSnapshot; HD: SektorGorunumuSnapshot; HAYAT_EMEKLILIK: SektorGorunumuSnapshot };
-  onceki?: SektorGorunumuSnapshot;
-  oncekiDonem: string | null;
+  donem: string;
+  trend: SektorGorunumuDonem[];
+  secili: SektorGorunumuDonem;
+  onceki: SektorGorunumuDonem | null;
 }) {
-  const degisim = fmtDegisim(bu.SEKTOR[item.key], onceki?.[item.key]);
+  const yilKolonlari = trend.filter((p) => p.donem !== donem);
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03]">
-      <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{item.label}</p>
-      <p className="mt-2 text-xl font-bold tabular-nums tracking-tight text-slate-950">
-        {fmtTl(bu.SEKTOR[item.key])}
-      </p>
-      <p className={cn("mt-1 text-xs font-semibold tabular-nums", degisim.className)}>{degisim.text}</p>
-      <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2">
-        <span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">
-          Geçen yıl toplamı{oncekiDonem ? ` · ${oncekiDonem}` : ""}
-        </span>
-        <strong className="mt-0.5 block text-sm tabular-nums text-slate-700">
-          {onceki ? fmtTl(onceki[item.key]) : "—"}
-        </strong>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-2 text-[11px]">
-        <div>
-          <span className="block text-slate-400">HD</span>
-          <strong className="tabular-nums text-slate-700">{fmtTl(bu.HD[item.key])}</strong>
-        </div>
-        <div>
-          <span className="block text-slate-400">H/E</span>
-          <strong className="tabular-nums text-sky-700">{fmtTl(bu.HAYAT_EMEKLILIK[item.key])}</strong>
-        </div>
-      </div>
-      <p className="mt-2 text-[10px] leading-snug text-slate-400">{item.hint}</p>
-    </article>
+    <TsbTableShell>
+      <table className={cn(tsb.table, "min-w-[980px]")}>
+        <thead className={tsb.thead}>
+          <tr>
+            <th className={tsb.thSticky}>Gösterge</th>
+            {yilKolonlari.map((p) => (
+              <th key={p.donem} className={tsb.th}>{p.donem}</th>
+            ))}
+            <th className={tsb.th}>{donem}</th>
+            <th className={tsb.th}>Yıllık değişim</th>
+            <th className={tsb.th}>{donem} · HD</th>
+            <th className={tsb.th}>{donem} · H/E</th>
+          </tr>
+        </thead>
+        <tbody>
+          {KPI_LIST.map((item) => {
+            const degisim = fmtDegisim(secili.SEKTOR[item.key], onceki?.SEKTOR[item.key]);
+            return (
+              <tr key={item.key} className={tsb.tbodyRow}>
+                <th scope="row" className={cn(tsb.tdSticky, "text-left")}>
+                  <span className="block font-semibold text-slate-900">{item.label}</span>
+                  <span className="block text-[11px] font-normal text-slate-400">{item.hint}</span>
+                </th>
+                {yilKolonlari.map((p) => (
+                  <td key={p.donem} className={cn(tsb.td, "text-right text-slate-500")}>
+                    {fmtTl(p.SEKTOR[item.key])}
+                  </td>
+                ))}
+                <td className={cn(tsb.td, "bg-emerald-50/40 text-right font-bold")}>
+                  {fmtTl(secili.SEKTOR[item.key])}
+                </td>
+                <td className={cn(tsb.td, "text-right font-semibold", degisim.className)}>{degisim.text}</td>
+                <td className={cn(tsb.td, "text-right")}>{fmtTl(secili.HD[item.key])}</td>
+                <td className={cn(tsb.td, "text-right text-sky-700")}>
+                  {fmtTl(secili.HAYAT_EMEKLILIK[item.key])}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </TsbTableShell>
   );
 }
 
@@ -228,32 +245,29 @@ export default function TsbSektorGorunumuDashboard() {
           </div>
         </TsbFilterGrid>
         <p className={tsb.filterHint}>
-          Üst kartlarda her zaman <strong>HD + H/E sektör toplamı</strong>; grafik seçicisi yalnız kâr trendini değiştirir.
+          Üst tabloda her zaman <strong>HD + H/E sektör toplamı</strong>; grafik seçicisi yalnız kâr trendini değiştirir.
           Oranlar tutarların toplamından yeniden hesaplanır, şirket oranlarının ortalaması alınmaz.
         </p>
       </TsbFilterBar>
 
-      <section aria-labelledby="sg-kpi">
-        <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+      <section className={tsb.dataPanel} aria-labelledby="sg-kpi">
+        <div className={cn(tsb.dataPanelHeader, "flex flex-wrap items-end justify-between gap-2")}>
           <div>
-            <h2 id="sg-kpi" className="text-lg font-bold text-slate-900">Sigorta sektörü ana göstergeleri</h2>
-            <p className="text-sm text-slate-500">{donem} · HD + Hayat/Emeklilik toplamı</p>
+            <h2 id="sg-kpi" className={tsb.dataPanelTitle}>Sigorta sektörü ana göstergeleri</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              {donem} · HD + Hayat/Emeklilik toplamı · aynı çeyreğin yıllar arası seyri
+            </p>
           </div>
           <span className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white">
             {paket.secili.SEKTOR.sirketSayisi} şirket
           </span>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-          {KPI_LIST.map((item) => (
-            <KpiCard
-              key={item.key}
-              item={item}
-              bu={paket.secili}
-              onceki={paket.onceki?.SEKTOR}
-              oncekiDonem={paket.onceki?.donem ?? null}
-            />
-          ))}
-        </div>
+        <KpiTable
+          donem={donem}
+          trend={paket.trend}
+          secili={paket.secili}
+          onceki={paket.onceki}
+        />
       </section>
 
       <section className={tsb.chartPanel}>

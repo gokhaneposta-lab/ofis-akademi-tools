@@ -89,10 +89,12 @@ function KpiCard({
   item,
   bu,
   onceki,
+  oncekiDonem,
 }: {
   item: (typeof KPI_LIST)[number];
   bu: { SEKTOR: SektorGorunumuSnapshot; HD: SektorGorunumuSnapshot; HAYAT_EMEKLILIK: SektorGorunumuSnapshot };
   onceki?: SektorGorunumuSnapshot;
+  oncekiDonem: string | null;
 }) {
   const degisim = fmtDegisim(bu.SEKTOR[item.key], onceki?.[item.key]);
   return (
@@ -102,6 +104,14 @@ function KpiCard({
         {fmtTl(bu.SEKTOR[item.key])}
       </p>
       <p className={cn("mt-1 text-xs font-semibold tabular-nums", degisim.className)}>{degisim.text}</p>
+      <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2">
+        <span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">
+          Geçen yıl toplamı{oncekiDonem ? ` · ${oncekiDonem}` : ""}
+        </span>
+        <strong className="mt-0.5 block text-sm tabular-nums text-slate-700">
+          {onceki ? fmtTl(onceki[item.key]) : "—"}
+        </strong>
+      </div>
       <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-2 text-[11px]">
         <div>
           <span className="block text-slate-400">HD</span>
@@ -240,6 +250,7 @@ export default function TsbSektorGorunumuDashboard() {
               item={item}
               bu={paket.secili}
               onceki={paket.onceki?.SEKTOR}
+              oncekiDonem={paket.onceki?.donem ?? null}
             />
           ))}
         </div>

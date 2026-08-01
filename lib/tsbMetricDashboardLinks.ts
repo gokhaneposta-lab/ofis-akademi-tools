@@ -45,7 +45,7 @@ export const METRIC_TSB_DASHBOARD: Partial<Record<string, TsbMetricDashboardLink
   },
   "prim-tahsilat-orani": {
     href: "/sigorta/prim?panel=kanal-prim",
-    title: "TSB kanal bazlı prim",
+    title: "TSB prim sıralaması",
     description: "Kanal ve branş bazında aylık prim üretimi, sıra ve pay.",
   },
   "cari-oran": {

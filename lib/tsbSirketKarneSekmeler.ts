@@ -139,9 +139,9 @@ export function sirketKarnePanelLinks(
       return [
         {
           href: buildTsbDashboardHref("/sigorta/prim?panel=kanal-prim", base),
-          title: "Kanal bazlı prim",
-          subtitle: "Merkez, acente, banka, broker kırılımı",
-          badge: "Kanal",
+          title: "Prim sıralaması",
+          subtitle: "Kanal / branş kırılımında şirket sırası",
+          badge: "Sıra",
         },
         {
           href: buildTsbDashboardHref("/sigorta/prim?panel=kanal-dagilim", base),

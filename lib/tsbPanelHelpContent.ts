@@ -71,7 +71,7 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
   {
     href: "/sigorta/kanal-prim",
     items: [
-      "Hayat dışı ile hayat–emeklilik şirketleri ayrı listelenir.",
+      "Prim sıralaması: seçili kanal veya branşta şirketleri üretim sırasına dizer.",
       "Dönem ay bazlıdır. Kanal ve branş filtreleri tabloyu daraltır.",
       "Sıra: küçük numara daha yüksek üretim. Sıra değişimi renklerle gösterilir.",
     ],

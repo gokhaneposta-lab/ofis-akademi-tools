@@ -144,6 +144,13 @@ export const tsb = {
   selectWide:
     "h-11 w-full max-w-xl rounded-xl border border-slate-200 bg-white px-3 text-base text-slate-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 sm:h-10 sm:px-2.5 sm:text-sm",
   btnGroup: "flex flex-wrap gap-2",
+  /** Bütünleşik switch track (YoY/Aylık tarzı) */
+  segmentSwitch:
+    "inline-flex max-w-full flex-wrap rounded-full bg-slate-100/95 p-1 ring-1 ring-inset ring-slate-200/90",
+  segmentSwitchBtn:
+    "min-h-[2.25rem] rounded-full px-3.5 py-1.5 text-sm font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 sm:min-h-0 sm:px-4 sm:py-1.5",
+  segmentSwitchBtnOn: "bg-emerald-700 text-white shadow-sm",
+  segmentSwitchBtnOff: "bg-transparent text-slate-600 hover:text-slate-900",
   btnToggle:
     "min-h-[2.75rem] rounded-xl border px-3.5 py-2 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-emerald-100 sm:min-h-0 sm:px-3 sm:py-1.5",
   btnToggleOn: "border-slate-900 bg-slate-900 text-white shadow-md",
@@ -509,6 +516,38 @@ export function TsbToggleButton({
     >
       {children}
     </button>
+  );
+}
+
+/** İki+ seçenekli bütünleşik switch (filtre pill’lerinden ayrı, rakip YoY/Aylık dili). */
+export function TsbSegmentSwitch<T extends string>({
+  value,
+  onChange,
+  options,
+  "aria-label": ariaLabel,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: readonly { id: T; label: ReactNode }[];
+  "aria-label"?: string;
+}) {
+  return (
+    <div className={tsb.segmentSwitch} role="group" aria-label={ariaLabel}>
+      {options.map((opt) => {
+        const on = opt.id === value;
+        return (
+          <button
+            key={opt.id}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(opt.id)}
+            className={cn(tsb.segmentSwitchBtn, on ? tsb.segmentSwitchBtnOn : tsb.segmentSwitchBtnOff)}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

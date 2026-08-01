@@ -31,9 +31,9 @@ export type KanalHubTab = "genel" | "brans" | "sirket" | "liderler";
 
 export const KANAL_HUB_TABS: { id: KanalHubTab; label: string; hint: string }[] = [
   { id: "genel", label: "Genel bakış", hint: "Sektör mix · trend · şirket listesi" },
+  { id: "liderler", label: "Kanal liderleri", hint: "Seçili kanalda tüm şirket sırası" },
   { id: "brans", label: "Branş kanal profili", hint: "Seçili branş donut · tüm branşlar" },
   { id: "sirket", label: "Şirket kanalı", hint: "Şirket vs sektör · branş × kanal" },
-  { id: "liderler", label: "Kanal liderleri", hint: "Seçili kanalda şirket sırası" },
 ];
 
 export function emptyKanalKutu(): KanalDagilimKutu {

@@ -159,7 +159,7 @@ const pathTitles: Record<string, string> = {
   "/sigorta/tsb": "Sektör verileri (TSB)",
   "/sigorta/sektor-gorunumu": "Sigorta sektörü görünümü",
   "/sigorta/prim": "Prim ve üretim",
-  "/sigorta/kanal-prim": "Kanal bazlı prim",
+  "/sigorta/kanal-prim": "Prim sıralaması",
   "/sigorta/brans-degisim": "Branş değişim tablosu",
   "/sigorta/pazar-yogunlasma": "Pazar yoğunlaşması",
   "/sigorta/brans-sira": "Branş sıra özeti",

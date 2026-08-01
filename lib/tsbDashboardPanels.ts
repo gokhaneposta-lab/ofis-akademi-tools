@@ -119,8 +119,8 @@ export const TSB_PRIM_VIEW_TABS: readonly TsbPrimViewTab[] = [
   },
   {
     id: "kanal-prim",
-    title: "Kanal bazlı prim",
-    subtitle: "Satış kanalı kırılımı · hayat dışı / hayat–emeklilik",
+    title: "Prim sıralaması",
+    subtitle: "Kanal / branş kırılımında şirket sırası · pay · YoY",
     legacyHref: "/sigorta/kanal-prim",
   },
   {

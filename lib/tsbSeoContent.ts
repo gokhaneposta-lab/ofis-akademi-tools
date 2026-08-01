@@ -177,7 +177,7 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
     blogSlugs: ["tsb-hasar-prim-orani-dashboard-rehberi"],
   },
   kanalPrim: {
-    heading: "TSB kanal bazlı prim üretimi istatistikleri",
+    heading: "TSB prim sıralaması — kanal ve branş kırılımı",
     paragraphs: [
       "TSB aylık prim istatistiği merkez, acente, banka, broker ve diğer kanallarda üretimi ayrı raporlar. Bu panel hayat dışı ve hayat–emeklilik şirketlerini ayrı bloklarda listeler; dönem, kanal, ana branş veya tarife grubu ile daraltma yapılır.",
       "Tabloda şirket primi, sektör toplamı, pay yüzdesi ve sektör içi sıra yer alır. Sıra rengi geçen yılın aynı ayına göre iyileşme veya kötüleşmeyi gösterir. Kanal stratejisi ve acente/banka performans toplantıları için uygundur.",

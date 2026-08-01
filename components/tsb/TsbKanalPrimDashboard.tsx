@@ -27,6 +27,7 @@ import {
   TsbFilterField,
   TsbFilterGrid,
   TsbLoading,
+  TsbSegmentSwitch,
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
@@ -151,39 +152,35 @@ export default function TsbKanalPrimDashboard() {
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
-        <p className={tsb.filterSectionLabel}>Sektör görünümü</p>
-        <div className={cn(tsb.btnGroup, "mb-3")}>
-          <TsbToggleButton
-            pressed={segment === "hayatdisi"}
-            variant="segment"
-            onClick={() => {
-              setSegment("hayatdisi");
-              setAnaBrans("");
-              setTarifeSecim("");
-            }}
-          >
-            Hayat dışı
-          </TsbToggleButton>
-          <TsbToggleButton
-            pressed={segment === "hayat"}
-            variant="segment"
-            onClick={() => {
-              setSegment("hayat");
-              setAnaBrans("");
-              setTarifeSecim("");
-            }}
-          >
-            Hayat &amp; emeklilik
-          </TsbToggleButton>
-        </div>
-        <p className={tsb.filterSectionLabel}>Daraltma türü</p>
-        <div className={cn(tsb.btnGroup, "mb-2")}>
-          <TsbToggleButton pressed={filtreModu === "anaBransH"} onClick={() => setFiltreModu("anaBransH")}>
-            Ana branş (TSB)
-          </TsbToggleButton>
-          <TsbToggleButton pressed={filtreModu === "tarifeGrubu"} onClick={() => setFiltreModu("tarifeGrubu")}>
-            Tarife grubu
-          </TsbToggleButton>
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-6">
+          <div>
+            <p className={tsb.filterSectionLabel}>Havuz</p>
+            <TsbSegmentSwitch
+              aria-label="Sektör havuzu"
+              value={segment}
+              onChange={(v) => {
+                setSegment(v);
+                setAnaBrans("");
+                setTarifeSecim("");
+              }}
+              options={[
+                { id: "hayatdisi", label: "Hayat dışı" },
+                { id: "hayat", label: "Hayat & emeklilik" },
+              ]}
+            />
+          </div>
+          <div>
+            <p className={tsb.filterSectionLabel}>Daraltma</p>
+            <TsbSegmentSwitch
+              aria-label="Daraltma türü"
+              value={filtreModu}
+              onChange={setFiltreModu}
+              options={[
+                { id: "anaBransH", label: "Ana branş (TSB)" },
+                { id: "tarifeGrubu", label: "Tarife grubu" },
+              ]}
+            />
+          </div>
         </div>
         <p className={tsb.filterHint}>
           Hayat ve hayat dışı şirketler ayrı gruplanmıştır; <strong>ana branş</strong> veya{" "}

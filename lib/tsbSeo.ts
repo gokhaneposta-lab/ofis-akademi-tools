@@ -139,12 +139,12 @@ export const TSB_SEO = {
   },
   kanalPrim: {
     path: "/sigorta/prim?panel=kanal-prim",
-    title: "TSB Prim — Kanal Bazlı Prim Üretimi İstatistikleri",
+    title: "TSB Prim — Prim Sıralaması (Kanal / Branş)",
     description:
-      "TSB prim istatistikleri: hayat dışı ve hayat–emeklilik için merkez, acente, banka, broker kanallarında prim üretimi, sıra ve pay.",
-    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB kanal prim", "kanal bazlı prim"]),
-    jsonLdName: "TSB Kanal Bazlı Prim",
-    breadcrumbLabel: "Kanal bazlı prim",
+      "TSB prim sıralaması: hayat dışı ve hayat–emeklilikte kanal veya branş kırılımında şirket sırası, pay ve yıllık değişim.",
+    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB prim sıralaması", "kanal prim"]),
+    jsonLdName: "TSB Prim Sıralaması",
+    breadcrumbLabel: "Prim sıralaması",
   },
   kanalDagilim: {
     path: "/sigorta/prim?panel=kanal-dagilim",

@@ -14,6 +14,7 @@ import {
   TsbFilterField,
   TsbFilterGrid,
   TsbLoading,
+  TsbSegmentSwitch,
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
@@ -189,14 +190,17 @@ export default function TsbBransSiraDashboard() {
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
-        <p className={tsb.filterSectionLabel}>Daraltma türü</p>
-        <div className={cn(tsb.btnGroup, "mb-2")}>
-          <TsbToggleButton pressed={filtreModu === "anaBransH"} onClick={() => setFiltreModu("anaBransH")}>
-            Ana branş (TSB)
-          </TsbToggleButton>
-          <TsbToggleButton pressed={filtreModu === "tarifeGrubu"} onClick={() => setFiltreModu("tarifeGrubu")}>
-            Tarife grubu
-          </TsbToggleButton>
+        <p className={tsb.filterSectionLabel}>Daraltma</p>
+        <div className="mb-2">
+          <TsbSegmentSwitch
+            aria-label="Daraltma türü"
+            value={filtreModu}
+            onChange={setFiltreModu}
+            options={[
+              { id: "anaBransH", label: "Ana branş (TSB)" },
+              { id: "tarifeGrubu", label: "Tarife grubu" },
+            ]}
+          />
         </div>
         <p className={tsb.filterHint}>
           Satır listesi ana branş veya tarife moduna göre değişir. Hayat dışı üretimi olmayan şirketlerde{" "}

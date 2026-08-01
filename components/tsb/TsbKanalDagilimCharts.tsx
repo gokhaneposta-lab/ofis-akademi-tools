@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   KANAL_DAGILIM_SATIRLARI,
   kanalYuzdeleri,
@@ -58,7 +59,7 @@ export function KanalStackedBar({
   );
 }
 
-/** Donut + legend (tutar + %). */
+/** Donut + legend (tutar + %). Dilim hover’da merkezde % pay. */
 export function KanalDonutChart({
   kutu,
   title,
@@ -66,6 +67,7 @@ export function KanalDonutChart({
   kutu: KanalDagilimKutu;
   title: string;
 }) {
+  const [hoverKey, setHoverKey] = useState<KanalDagilimSatirKey | null>(null);
   const yuzde = kanalYuzdeleri(kutu);
   const size = 180;
   const cx = size / 2;
@@ -88,47 +90,93 @@ export function KanalDonutChart({
     offset += len;
     return item;
   });
+  const hover = hoverKey ? slices.find((s) => s.key === hoverKey) : null;
 
   return (
     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-      <svg viewBox={`0 0 ${size} ${size}`} className="h-44 w-44 shrink-0" role="img" aria-label={title}>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
-        {slices.map((s) => (
-          <circle
-            key={s.key}
-            cx={cx}
-            cy={cy}
-            r={r}
-            fill="none"
-            stroke={KANAL_HEX[s.key]}
-            strokeWidth={stroke}
-            strokeDasharray={s.dash}
-            strokeDashoffset={-s.offset}
-            transform={`rotate(-90 ${cx} ${cy})`}
-          >
-            <title>{`${s.label}: ${tsbFormatPrim(s.tutar)} · %${pf.format(s.pay)}`}</title>
-          </circle>
-        ))}
-        <text x={cx} y={cy - 4} textAnchor="middle" fontSize={11} fontWeight={700} fill="#0f172a">
-          {fmtMr(kutu.genelToplam)}
-        </text>
-        <text x={cx} y={cy + 12} textAnchor="middle" fontSize={9} fill="#64748b">
-          toplam
-        </text>
-      </svg>
+      <div className="relative shrink-0">
+        <svg viewBox={`0 0 ${size} ${size}`} className="h-44 w-44" role="img" aria-label={title}>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
+          {slices.map((s) => {
+            const active = hoverKey === s.key;
+            return (
+              <circle
+                key={s.key}
+                cx={cx}
+                cy={cy}
+                r={r}
+                fill="none"
+                stroke={KANAL_HEX[s.key]}
+                strokeWidth={active ? stroke + 4 : stroke}
+                strokeDasharray={s.dash}
+                strokeDashoffset={-s.offset}
+                strokeOpacity={hoverKey && !active ? 0.35 : 1}
+                transform={`rotate(-90 ${cx} ${cy})`}
+                className="cursor-pointer transition-[stroke-opacity,stroke-width]"
+                onMouseEnter={() => setHoverKey(s.key)}
+                onMouseLeave={() => setHoverKey(null)}
+                onFocus={() => setHoverKey(s.key)}
+                onBlur={() => setHoverKey(null)}
+                tabIndex={0}
+              >
+                <title>{`${s.label}: %${pf.format(s.pay)} · ${tsbFormatPrim(s.tutar)}`}</title>
+              </circle>
+            );
+          })}
+          {hover ? (
+            <>
+              <text x={cx} y={cy - 6} textAnchor="middle" fontSize={16} fontWeight={800} fill="#0f172a">
+                %{pf.format(hover.pay)}
+              </text>
+              <text x={cx} y={cy + 12} textAnchor="middle" fontSize={10} fontWeight={600} fill="#475569">
+                {hover.label}
+              </text>
+            </>
+          ) : (
+            <>
+              <text x={cx} y={cy - 4} textAnchor="middle" fontSize={11} fontWeight={700} fill="#0f172a">
+                {fmtMr(kutu.genelToplam)}
+              </text>
+              <text x={cx} y={cy + 12} textAnchor="middle" fontSize={9} fill="#64748b">
+                toplam
+              </text>
+            </>
+          )}
+        </svg>
+        {hover ? (
+          <p className="mt-1 text-center text-[11px] tabular-nums text-slate-600">
+            {tsbFormatPrim(hover.tutar)}
+          </p>
+        ) : (
+          <p className="mt-1 text-center text-[11px] text-slate-400">Dilim üzerine gelin → pay %</p>
+        )}
+      </div>
       <ul className="min-w-0 flex-1 space-y-1.5 text-sm">
-        {KANAL_DAGILIM_SATIRLARI.map(({ key, label }) => (
-          <li key={key} className="flex items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 text-slate-700">
-              <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: KANAL_HEX[key] }} />
-              {label}
-            </span>
-            <span className="tabular-nums text-slate-900">
-              <strong>{tsbFormatPrim(kutu[key])}</strong>
-              <span className="ml-2 text-slate-500">%{pf.format(yuzde[key])}</span>
-            </span>
-          </li>
-        ))}
+        {KANAL_DAGILIM_SATIRLARI.map(({ key, label }) => {
+          const active = hoverKey === key;
+          return (
+            <li
+              key={key}
+              className={cn(
+                "flex items-center justify-between gap-3 rounded-lg px-1.5 py-0.5 transition",
+                active && "bg-slate-50",
+              )}
+              onMouseEnter={() => setHoverKey(key)}
+              onMouseLeave={() => setHoverKey(null)}
+            >
+              <span className="inline-flex items-center gap-2 text-slate-700">
+                <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: KANAL_HEX[key] }} />
+                {label}
+              </span>
+              <span className="tabular-nums text-slate-900">
+                <strong>{tsbFormatPrim(kutu[key])}</strong>
+                <span className={cn("ml-2", active ? "font-bold text-slate-800" : "text-slate-500")}>
+                  %{pf.format(yuzde[key])}
+                </span>
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

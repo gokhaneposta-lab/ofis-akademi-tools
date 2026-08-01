@@ -65,8 +65,9 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
   {
     href: "/sigorta/kanal-dagilim",
     items: [
-      "Odak şirketin kanal paylarını sektör dağılımı ile yan yana görürsünüz.",
-      "Her kanalda şirketin sektör içindeki payı ayrıca gösterilir.",
+      "Dört sekme: genel bakış, branş kanal profili, şirket kanalı ve kanal liderleri. Dönem aylık YTD’dir.",
+      "Genel bakışta sektör donut, kanal trendi ve şirket satırında stacked bar görülür. Branş sekmesinde tüm branşların kanal mix’i listelenir.",
+      "Şirket sekmesi odak şirket ile sektörü kıyaslar; branş × kanal matrisi ekler. Liderler sekmesi seçili kanalda şirket sıralamasını gösterir.",
     ],
   },
   {

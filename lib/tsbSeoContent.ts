@@ -193,11 +193,11 @@ export const TSB_SEO_CONTENT: Record<TsbSeoPageId | "hub", TsbSeoContent> = {
     blogSlugs: ["tsb-kanal-brans-prim-rehberi"],
   },
   kanalDagilim: {
-    heading: "TSB kanal dağılımı — şirket ve sektör pay karşılaştırması",
+    heading: "TSB satış kanalları — dağılım, branş profili ve liderler",
     paragraphs: [
-      "Prim hacminden bağımsız olarak kanal mix'inizi sektörle kıyaslamak için tasarlanmış paneldir. Her kanalda sol koyu çubuk şirketin kendi toplam primine göre kanal payını, sağ açık çubuk sektörün payını gösterir — ikisi de kendi içinde %100 dağılımdır.",
-      "«Kanalda %» satırı o kanaldaki şirket priminin sektör primine oranıdır; pazar payı gibi düşünülebilir. Acente ağırlıklı bir şirket ile banka ağırlıklı sektör profilini yan yana görmek dağıtım stratejisi analizini hızlandırır.",
-      "Kanal başına renk zemininde gruplanmış grafik okunabilirliği artırır. Dönem ve branş/tarife filtresi prim panelleriyle aynı mantıkta çalışır.",
+      "Panel dört bakış sunar: sektör genel bakışı (KPI, donut, kanal trendi, şirket satırında stacked bar), branş kanal profili, şirket–sektör kıyası ve seçili kanalda şirket liderleri.",
+      "Şirket sekmesinde her kanalda sol koyu çubuk şirketin kendi toplamına göre kanal payını, sağ açık çubuk sektör payını gösterir. «Kanalda %» o kanaldaki şirket primi ÷ sektör kanal primidir.",
+      "Dönem aylık YTD’dir; YoY bir önceki yılın aynı ayına göredir. Hayat dışı ve hayat–emeklilik havuzları ayrı tutulur.",
     ],
     faqs: [
       ...COMMON_FAQS.slice(0, 2),

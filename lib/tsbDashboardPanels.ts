@@ -101,9 +101,9 @@ export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   },
   {
     href: "/sigorta/kanal-dagilim",
-    badge: "Dağılım",
-    title: "Sektör kanal dağılımı",
-    subtitle: "Şirket vs sektör · kanal payları ve yüzdeler",
+    badge: "Kanallar",
+    title: "Satış kanalları",
+    subtitle: "Genel bakış · branş profili · şirket kıyası · liderler",
     icon: "📈",
     group: "prim",
   },

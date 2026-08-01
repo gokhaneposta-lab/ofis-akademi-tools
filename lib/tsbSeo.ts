@@ -148,12 +148,12 @@ export const TSB_SEO = {
   },
   kanalDagilim: {
     path: "/sigorta/kanal-dagilim",
-    title: "TSB Prim — Kanal Dağılımı ve Pay İstatistikleri",
+    title: "TSB Prim — Satış Kanalları (Dağılım, Branş, Liderler)",
     description:
-      "TSB prim verileri: kanal bazında şirket ve sektör prim dağılımı; hayat dışı veya hayat–emeklilik havuzunda pay karşılaştırması.",
-    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB kanal dağılımı"]),
-    jsonLdName: "TSB Kanal Dağılımı",
-    breadcrumbLabel: "Kanal dağılımı",
+      "TSB prim: sektör kanal dağılımı, branş kanal profili, şirket–sektör kıyası ve kanal liderleri; hayat dışı / hayat–emeklilik.",
+    keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB kanal dağılımı", "satış kanalları"]),
+    jsonLdName: "TSB Satış Kanalları",
+    breadcrumbLabel: "Satış kanalları",
   },
   bransDegisim: {
     path: "/sigorta/brans-degisim",

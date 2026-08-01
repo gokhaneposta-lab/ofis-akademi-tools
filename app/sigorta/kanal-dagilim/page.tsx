@@ -12,10 +12,10 @@ export default function SigortaKanalDagilimPage() {
     <TsbPageLayout
       seoPageId="kanalDagilim"
       currentHref="/sigorta/kanal-dagilim"
-      title="Sektör kanal dağılımı"
+      title="Satış kanalları"
       description={
         <>
-          Odak şirketin kanal payları ile sektör dağılımı aynı dönem ve branş filtresinde yan yana.
+          Genel bakış, branş kanal profili, şirket–sektör kıyası ve kanal liderleri — prim-tidy YTD.
         </>
       }
       sourceNote={<TsbSourceNote />}

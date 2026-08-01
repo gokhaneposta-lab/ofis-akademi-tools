@@ -162,7 +162,7 @@ const pathTitles: Record<string, string> = {
   "/sigorta/brans-degisim": "Branş değişim tablosu",
   "/sigorta/pazar-yogunlasma": "Pazar yoğunlaşması",
   "/sigorta/brans-sira": "Branş sıra özeti",
-  "/sigorta/kanal-dagilim": "Sektör kanal dağılımı",
+  "/sigorta/kanal-dagilim": "Satış kanalları",
   "/finans-sigorta": "Finans & Sigorta",
 };
 

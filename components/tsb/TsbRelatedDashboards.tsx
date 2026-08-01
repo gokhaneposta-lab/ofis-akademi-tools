@@ -28,7 +28,7 @@ export default function TsbRelatedDashboards({ currentHref }: Props) {
     current?.group === "finansal"
       ? "Diğer finansal paneller: çeyreklik KPI karşılaştırması ve ölçek segmentasyonu listesi."
       : current?.group === "prim"
-        ? "Diğer aylık prim panelleri ve çeyreklik finansal karşılaştırma."
+        ? "Prim görünümleri üst sekmelerde; aşağıdaki bağlantılar çeyreklik finansal ve teknik panellere gider."
         : "TSB gösterge panelleri arasında gezinmek için aşağıdaki bağlantıları kullanın.";
 
   const pillCls = tsb.pillLink;

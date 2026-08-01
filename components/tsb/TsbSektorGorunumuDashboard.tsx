@@ -491,7 +491,7 @@ export default function TsbSektorGorunumuDashboard() {
         <Link href={`/sigorta/finansal-karsilastirma?donem=${finansalDonem}&pool=SEKTOR`} className={tsb.pillLink}>
           Finansal karşılaştırmada sektörü aç →
         </Link>
-        <Link href="/sigorta/kanal-prim" className={tsb.pillLink}>Kanal prim detayı →</Link>
+        <Link href="/sigorta/prim?panel=kanal-prim" className={tsb.pillLink}>Kanal prim detayı →</Link>
         <Link href="/sigorta/ana-brans-tkz" className={tsb.pillLink}>Ana branş TKZ →</Link>
         <Link href="/sigorta/hasar-prim-orani" className={tsb.pillLink}>Hasar / Prim →</Link>
       </div>

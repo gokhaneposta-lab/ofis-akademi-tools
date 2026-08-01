@@ -12,14 +12,16 @@ export type TsbDashboardUrlPrefs = {
 };
 
 export function buildTsbDashboardHref(path: string, prefs: TsbDashboardUrlPrefs): string {
-  const q = new URLSearchParams();
+  const qIdx = path.indexOf("?");
+  const base = qIdx >= 0 ? path.slice(0, qIdx) : path;
+  const q = new URLSearchParams(qIdx >= 0 ? path.slice(qIdx + 1) : "");
   if (prefs.sirket != null) q.set("sirket", String(prefs.sirket));
   if (prefs.donem) q.set("donem", prefs.donem);
   if (prefs.pool) q.set("pool", prefs.pool);
   if (prefs.segment) q.set("segment", prefs.segment);
   if (prefs.sekme && prefs.sekme !== "ozet") q.set("sekme", prefs.sekme);
   const s = q.toString();
-  return s ? `${path}?${s}` : path;
+  return s ? `${base}?${s}` : base;
 }
 
 export function parseTsbDashboardUrl(search: string): TsbDashboardUrlPrefs {

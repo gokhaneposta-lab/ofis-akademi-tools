@@ -55,6 +55,13 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     ],
   },
   {
+    href: "/sigorta/prim",
+    items: [
+      "Üst sekmeler aynı prim-tidy kaynağının farklı görünümleridir: kanal prim, satış kanalları, branş değişim, sıra, 12 ay trend ve HHI.",
+      "Sekme değiştirmek sayfalar arası gidip gelmeyi kaldırır; her sekmenin kendi filtreleri vardır.",
+    ],
+  },
+  {
     href: "/sigorta/kanal-prim",
     items: [
       "Hayat dışı ile hayat–emeklilik şirketleri ayrı listelenir.",

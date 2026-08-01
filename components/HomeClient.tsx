@@ -397,7 +397,7 @@ export default function HomeClient() {
               </p>
             </Link>
             <Link
-              href="/sigorta/kanal-prim"
+              href="/sigorta/prim"
               className="group flex flex-col gap-2 rounded-xl border border-slate-700/60 bg-slate-950/90 p-5 transition hover:border-emerald-500/50"
             >
               <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400">Aylık · Prim</span>

@@ -18,6 +18,8 @@ type TsbPageLayoutProps = {
   currentHref: string;
   seoPageId: TsbSeoPageId;
   helpItems?: readonly string[];
+  /** Prim hub sticky sekme vurgusu */
+  activePrimPanel?: string;
   children: ReactNode;
 };
 
@@ -29,6 +31,7 @@ export function TsbPageLayout({
   currentHref,
   seoPageId,
   helpItems,
+  activePrimPanel,
   children,
 }: TsbPageLayoutProps) {
   const help = helpItems ?? tsbPanelHelpForHref(currentHref);
@@ -61,7 +64,7 @@ export function TsbPageLayout({
           </div>
         </header>
         <main className={tsb.main}>
-          <TsbDashboardStickyNav currentHref={currentHref} />
+          <TsbDashboardStickyNav currentHref={currentHref} activePrimPanel={activePrimPanel} />
           {help.length > 0 ? <TsbPanelHelp items={help} /> : null}
           {children}
           <TsbSeoSection pageId={seoPageId} />

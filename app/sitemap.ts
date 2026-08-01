@@ -24,12 +24,7 @@ const HUB_ROUTES = [
   "/sigorta/finansal-karsilastirma",
   "/sigorta/olcek-segmentasyon",
   "/sigorta/hasar-prim-orani",
-  "/sigorta/kanal-prim",
-  "/sigorta/brans-degisim",
-  "/sigorta/brans-sira",
-  "/sigorta/kanal-dagilim",
-  "/sigorta/prim-trend-12",
-  "/sigorta/pazar-yogunlasma",
+  "/sigorta/prim",
   "/kaynaklar",
   "/gizlilik",
 ] as const;
@@ -39,12 +34,7 @@ const TSB_ROUTES = new Set<string>([
   "/sigorta/finansal-karsilastirma",
   "/sigorta/olcek-segmentasyon",
   "/sigorta/hasar-prim-orani",
-  "/sigorta/kanal-prim",
-  "/sigorta/brans-degisim",
-  "/sigorta/brans-sira",
-  "/sigorta/kanal-dagilim",
-  "/sigorta/prim-trend-12",
-  "/sigorta/pazar-yogunlasma",
+  "/sigorta/prim",
 ]);
 
 function priorityFor(route: string): number {
@@ -60,12 +50,7 @@ function priorityFor(route: string): number {
   }
   if (route === "/sigorta/tsb") return 0.84;
   if (
-    route === "/sigorta/kanal-prim" ||
-    route === "/sigorta/kanal-dagilim" ||
-    route === "/sigorta/brans-degisim" ||
-    route === "/sigorta/brans-sira" ||
-    route === "/sigorta/prim-trend-12" ||
-    route === "/sigorta/pazar-yogunlasma" ||
+    route === "/sigorta/prim" ||
     route === "/sigorta/finansal-karsilastirma" ||
     route === "/sigorta/olcek-segmentasyon" ||
     route === "/sigorta/hasar-prim-orani"

@@ -32,7 +32,7 @@ export const TSB_DASHBOARD_GROUPS: readonly TsbDashboardGroupMeta[] = [
     id: "prim",
     title: "Prim ve üretim",
     description:
-      "Aylık TSB prim istatistikleri; kanal, branş, sıralama ve son 12 ay trend panelleri.",
+      "Aylık TSB prim istatistikleri — kanal, branş, sıra, trend ve yoğunlaşma tek hub’da sekmelerle.",
   },
 ] as const;
 
@@ -90,52 +90,69 @@ export const TSB_TEKNIK_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   },
 ] as const;
 
-export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
+/** Prim hub — tek kart / tek sayfa; alt görünümler sekmeyle. */
+export const TSB_PRIM_HUB_HREF = "/sigorta/prim";
+
+export type TsbPrimPanelId =
+  | "kanal-prim"
+  | "kanal-dagilim"
+  | "brans-degisim"
+  | "brans-sira"
+  | "prim-trend-12"
+  | "pazar-yogunlasma";
+
+export type TsbPrimViewTab = {
+  id: TsbPrimPanelId;
+  title: string;
+  subtitle: string;
+  legacyHref: string;
+};
+
+export const TSB_PRIM_VIEW_TABS: readonly TsbPrimViewTab[] = [
   {
-    href: "/sigorta/kanal-prim",
-    badge: "Kanal",
+    id: "kanal-prim",
     title: "Kanal bazlı prim",
     subtitle: "Satış kanalı kırılımı · hayat dışı / hayat–emeklilik",
-    icon: "📊",
-    group: "prim",
+    legacyHref: "/sigorta/kanal-prim",
   },
   {
-    href: "/sigorta/kanal-dagilim",
-    badge: "Kanallar",
+    id: "kanal-dagilim",
     title: "Satış kanalları",
     subtitle: "Genel bakış · branş profili · şirket kıyası · liderler",
-    icon: "📈",
-    group: "prim",
+    legacyHref: "/sigorta/kanal-dagilim",
   },
   {
-    href: "/sigorta/brans-degisim",
-    badge: "Branş",
-    title: "Sektör branş değişim tablosu",
+    id: "brans-degisim",
+    title: "Branş değişim",
     subtitle: "Şirket vs sektör · pazar payı · önceki yıl aynı ay",
-    icon: "📑",
-    group: "prim",
+    legacyHref: "/sigorta/brans-degisim",
   },
   {
-    href: "/sigorta/brans-sira",
-    badge: "Sıra",
+    id: "brans-sira",
     title: "Branş sıra özeti",
     subtitle: "Sıra · branş/sektör ağırlığı · önceki yıl Δ sıra",
-    icon: "🏅",
-    group: "prim",
+    legacyHref: "/sigorta/brans-sira",
   },
   {
-    href: "/sigorta/prim-trend-12",
-    badge: "Trend",
+    id: "prim-trend-12",
     title: "Son 12 ay prim",
     subtitle: "Sektör vs şirket çizgisi · aylık üretim",
-    icon: "〰️",
-    group: "prim",
+    legacyHref: "/sigorta/prim-trend-12",
   },
   {
-    href: "/sigorta/pazar-yogunlasma",
-    badge: "HHI",
+    id: "pazar-yogunlasma",
     title: "Pazar yoğunlaşması",
     subtitle: "Branş bazında HHI · top-5 pay · 12 ay trend",
+    legacyHref: "/sigorta/pazar-yogunlasma",
+  },
+] as const;
+
+export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
+  {
+    href: TSB_PRIM_HUB_HREF,
+    badge: "Prim",
+    title: "Prim ve üretim",
+    subtitle: "Kanal · branş · sıra · trend · yoğunlaşma — sekmeli hub",
     icon: "📊",
     group: "prim",
   },
@@ -148,6 +165,24 @@ export const TSB_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   ...TSB_PRIM_DASHBOARD_PANELS,
 ] as const;
 
+export function parsePrimPanelId(raw: string | null | undefined): TsbPrimPanelId {
+  if (TSB_PRIM_VIEW_TABS.some((t) => t.id === raw)) return raw as TsbPrimPanelId;
+  return "kanal-prim";
+}
+
+export function primPanelHref(id: TsbPrimPanelId): string {
+  return `${TSB_PRIM_HUB_HREF}?panel=${id}`;
+}
+
+export function primPanelTab(id: TsbPrimPanelId): TsbPrimViewTab {
+  return TSB_PRIM_VIEW_TABS.find((t) => t.id === id) ?? TSB_PRIM_VIEW_TABS[1];
+}
+
+export function primPanelIdFromLegacyHref(href: string): TsbPrimPanelId | null {
+  const path = href.split("?")[0] ?? href;
+  return TSB_PRIM_VIEW_TABS.find((t) => t.legacyHref === path)?.id ?? null;
+}
+
 export function tsbDashboardPanelsForGroup(groupId: TsbDashboardGroupId): TsbDashboardPanel[] {
   return TSB_DASHBOARD_PANELS.filter((p) => p.group === groupId);
 }
@@ -157,5 +192,9 @@ export function tsbDashboardPanelsExcept(excludeHref: string): TsbDashboardPanel
 }
 
 export function tsbDashboardPanelByHref(href: string): TsbDashboardPanel | undefined {
-  return TSB_DASHBOARD_PANELS.find((p) => p.href === href);
+  const path = href.split("?")[0] ?? href;
+  if (path === TSB_PRIM_HUB_HREF || primPanelIdFromLegacyHref(path)) {
+    return TSB_PRIM_DASHBOARD_PANELS[0];
+  }
+  return TSB_DASHBOARD_PANELS.find((p) => p.href === path);
 }

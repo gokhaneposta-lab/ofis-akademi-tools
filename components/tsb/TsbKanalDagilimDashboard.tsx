@@ -880,7 +880,7 @@ export default function TsbKanalDagilimDashboard() {
                 </p>
               </div>
               <Link
-                href={`/sigorta/kanal-prim?donem=${encodeURIComponent(secilenDonem)}&segment=${segment}`}
+                href={`/sigorta/prim?panel=kanal-prim&donem=${encodeURIComponent(secilenDonem)}&segment=${segment}`}
                 className={tsb.pillLink}
               >
                 Kanal bazlı prim detayı →

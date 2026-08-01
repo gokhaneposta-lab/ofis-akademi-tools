@@ -3,6 +3,8 @@ import type { ReactNode, SelectHTMLAttributes } from "react";
 import {
   TSB_DASHBOARD_GROUPS,
   TSB_DASHBOARD_PANELS,
+  TSB_PRIM_VIEW_TABS,
+  primPanelHref,
   tsbDashboardPanelByHref,
   type TsbDashboardGroupId,
 } from "@/lib/tsbDashboardPanels";
@@ -396,10 +398,16 @@ export function TsbInsights({ items }: { items: readonly TsbInsightItem[] }) {
   );
 }
 
-export function TsbDashboardStickyNav({ currentHref }: { currentHref: string }) {
+export function TsbDashboardStickyNav({
+  currentHref,
+  activePrimPanel,
+}: {
+  currentHref: string;
+  /** Prim hub sekmeleri için aktif panel id */
+  activePrimPanel?: string;
+}) {
   const groupId: TsbDashboardGroupId = tsbDashboardPanelByHref(currentHref)?.group ?? "prim";
   const group = TSB_DASHBOARD_GROUPS.find((g) => g.id === groupId);
-  const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === groupId);
 
   return (
     <nav className={tsb.stickyNavWrap} aria-label="TSB panel geçişi">
@@ -411,19 +419,35 @@ export function TsbDashboardStickyNav({ currentHref }: { currentHref: string }) 
           </Link>
         </div>
         <div className={tsb.stickyNavLinks}>
-          {panels.map((p) => {
-            const active = p.href === currentHref;
-            return (
-              <Link
-                key={p.href}
-                href={p.href}
-                aria-current={active ? "page" : undefined}
-                className={cn(tsb.stickyNavLink, active && tsb.stickyNavLinkActive)}
-              >
-                {p.title}
-              </Link>
-            );
-          })}
+          {groupId === "prim" ? (
+            TSB_PRIM_VIEW_TABS.map((t) => {
+              const active = (activePrimPanel ?? "kanal-prim") === t.id;
+              return (
+                <Link
+                  key={t.id}
+                  href={primPanelHref(t.id)}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(tsb.stickyNavLink, active && tsb.stickyNavLinkActive)}
+                >
+                  {t.title}
+                </Link>
+              );
+            })
+          ) : (
+            TSB_DASHBOARD_PANELS.filter((p) => p.group === groupId).map((p) => {
+              const active = p.href === currentHref;
+              return (
+                <Link
+                  key={p.href}
+                  href={p.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(tsb.stickyNavLink, active && tsb.stickyNavLinkActive)}
+                >
+                  {p.title}
+                </Link>
+              );
+            })
+          )}
         </div>
       </div>
     </nav>

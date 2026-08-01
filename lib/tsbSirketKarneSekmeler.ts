@@ -138,19 +138,19 @@ export function sirketKarnePanelLinks(
     case "prim":
       return [
         {
-          href: buildTsbDashboardHref("/sigorta/kanal-prim", base),
+          href: buildTsbDashboardHref("/sigorta/prim?panel=kanal-prim", base),
           title: "Kanal bazlı prim",
           subtitle: "Merkez, acente, banka, broker kırılımı",
           badge: "Kanal",
         },
         {
-          href: buildTsbDashboardHref("/sigorta/kanal-dagilim", base),
+          href: buildTsbDashboardHref("/sigorta/prim?panel=kanal-dagilim", base),
           title: "Kanal dağılımı",
           subtitle: "Şirket vs sektör kanal payları",
           badge: "Dağılım",
         },
         {
-          href: buildTsbDashboardHref("/sigorta/prim-trend-12", base),
+          href: buildTsbDashboardHref("/sigorta/prim?panel=prim-trend-12", base),
           title: "Son 12 ay prim",
           subtitle: "Aylık üretim trendi ve sektör payı",
           badge: "Trend",
@@ -159,19 +159,19 @@ export function sirketKarnePanelLinks(
     case "pazar":
       return [
         {
-          href: buildTsbDashboardHref("/sigorta/pazar-yogunlasma", base),
+          href: buildTsbDashboardHref("/sigorta/prim?panel=pazar-yogunlasma", base),
           title: "Pazar yoğunlaşması (HHI)",
           subtitle: "Branş bazında yoğunlaşma endeksi ve top-5 pay",
           badge: "HHI",
         },
         {
-          href: buildTsbDashboardHref("/sigorta/brans-degisim", base),
+          href: buildTsbDashboardHref("/sigorta/prim?panel=brans-degisim", base),
           title: "Branş değişim tablosu",
           subtitle: "Pazar payı ve yıllık değişim",
           badge: "Branş",
         },
         {
-          href: buildTsbDashboardHref("/sigorta/brans-sira", base),
+          href: buildTsbDashboardHref("/sigorta/prim?panel=brans-sira", base),
           title: "Branş sıra özeti",
           subtitle: "Sektör içi sıra ve YoY Δ sıra",
           badge: "Sıra",

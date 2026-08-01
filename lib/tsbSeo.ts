@@ -138,7 +138,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Hasar / Prim oranı",
   },
   kanalPrim: {
-    path: "/sigorta/kanal-prim",
+    path: "/sigorta/prim?panel=kanal-prim",
     title: "TSB Prim — Kanal Bazlı Prim Üretimi İstatistikleri",
     description:
       "TSB prim istatistikleri: hayat dışı ve hayat–emeklilik için merkez, acente, banka, broker kanallarında prim üretimi, sıra ve pay.",
@@ -147,7 +147,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Kanal bazlı prim",
   },
   kanalDagilim: {
-    path: "/sigorta/kanal-dagilim",
+    path: "/sigorta/prim?panel=kanal-dagilim",
     title: "TSB Prim — Satış Kanalları (Dağılım, Branş, Liderler)",
     description:
       "TSB prim: sektör kanal dağılımı, branş kanal profili, şirket–sektör kıyası ve kanal liderleri; hayat dışı / hayat–emeklilik.",
@@ -156,7 +156,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Satış kanalları",
   },
   bransDegisim: {
-    path: "/sigorta/brans-degisim",
+    path: "/sigorta/prim?panel=brans-degisim",
     title: "TSB Prim İstatistikleri — Branş Değişim ve Pazar Payı",
     description:
       "TSB prim istatistikleri: branş veya tarife grubunda şirket–sektör prim karşılaştırması, yıllık değişim ve pazar payı (hayat dışı / hayat–emeklilik).",
@@ -165,7 +165,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Branş değişim",
   },
   bransSira: {
-    path: "/sigorta/brans-sira",
+    path: "/sigorta/prim?panel=brans-sira",
     title: "TSB Prim — Branş Sıralama ve Sektör İçi Konum",
     description:
       "TSB prim verileri: branş/tarife satırında şirket primi, sektör ağırlığı, sektör içi sıra ve önceki yılın aynı ayına göre sıra değişimi.",
@@ -174,7 +174,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Branş sıra özeti",
   },
   primTrend12: {
-    path: "/sigorta/prim-trend-12",
+    path: "/sigorta/prim?panel=prim-trend-12",
     title: "TSB Prim İstatistikleri — Son 12 Ay Sektör ve Şirket Trendi",
     description:
       "TSB prim istatistikleri: son 12 ay sektör toplamı ile tek şirket prim trendi; hayat dışı / hayat–emeklilik, branş/tarife ve kanal filtresi.",
@@ -183,7 +183,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Son 12 ay prim trendi",
   },
   pazarYogunlasma: {
-    path: "/sigorta/pazar-yogunlasma",
+    path: "/sigorta/prim?panel=pazar-yogunlasma",
     title: "TSB Prim — Pazar Yoğunlaşması (HHI) ve Top-5 Pay",
     description:
       "TSB prim istatistikleri: ana branş bazında HHI (Herfindahl–Hirschman) endeksi, ilk 5 şirket payı ve son 12 ay yoğunlaşma trendi.",

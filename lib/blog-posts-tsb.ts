@@ -29,7 +29,7 @@ const clusterLinks = (exclude: string) =>
       { label: "TSB hasar/prim oranı dashboard rehberi", href: `/blog/${HP_SLUG}` },
       { label: "Kanal ve branş prim verilerini okumak", href: `/blog/${KANAL_SLUG}` },
       { label: "TSB dashboard hub", href: "/sigorta/tsb" },
-      { label: "Kanal bazlı prim paneli", href: "/sigorta/kanal-prim" },
+      { label: "Kanal bazlı prim paneli", href: "/sigorta/prim?panel=kanal-prim" },
       { label: "Hasar/prim oranı paneli", href: "/sigorta/hasar-prim-orani" },
       { label: "Finansal karşılaştırma paneli", href: "/sigorta/finansal-karsilastirma" },
     ].filter((x) => !x.href.endsWith(`/${exclude}`) && x.href !== `/blog/${exclude}`),
@@ -171,7 +171,7 @@ export const BLOG_POSTS_TSB: BlogPost[] = [
     description:
       "TSB aylık prim istatistiğinde kanal (merkez, acente, banka) ve branş kırılımı nasıl yorumlanır? Kanal dağılımı, branş sıra ve pazar payı panelleri rehberi.",
     date: "2026-05-24",
-    guideHref: "/sigorta/kanal-prim",
+    guideHref: "/sigorta/prim?panel=kanal-prim",
     guideName: "Kanal bazlı prim paneli",
     image: OG_IMAGE,
     keywords: [
@@ -218,10 +218,10 @@ export const BLOG_POSTS_TSB: BlogPost[] = [
         type: "links",
         title: "Panellere doğrudan git",
         items: [
-          { label: "Kanal bazlı prim", href: "/sigorta/kanal-prim" },
-          { label: "Kanal dağılımı", href: "/sigorta/kanal-dagilim" },
-          { label: "Branş değişim", href: "/sigorta/brans-degisim" },
-          { label: "Branş sıra", href: "/sigorta/brans-sira" },
+          { label: "Kanal bazlı prim", href: "/sigorta/prim?panel=kanal-prim" },
+          { label: "Kanal dağılımı", href: "/sigorta/prim?panel=kanal-dagilim" },
+          { label: "Branş değişim", href: "/sigorta/prim?panel=brans-degisim" },
+          { label: "Branş sıra", href: "/sigorta/prim?panel=brans-sira" },
         ],
       },
       clusterLinks(KANAL_SLUG),

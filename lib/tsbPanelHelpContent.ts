@@ -9,9 +9,9 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
   {
     href: "/sigorta/sektor-gorunumu",
     items: [
-      "Üst kartlar hayat dışı ve hayat–emeklilik tutarlarının birleşik sektör toplamını gösterir; kartların altında iki havuzun katkısı ayrılır.",
-      "Kâr trendi seçicisinde toplam, hayat dışı veya hayat–emeklilik görünümünü değiştirebilirsiniz. Yıllar aynı çeyrek üzerinden karşılaştırılır.",
-      "Oranlar şirket yüzdelerinin ortalaması değildir. İlk 10 kırılımı her dönemde brüt prime göre yeniden hesaplanır ve yalnız hayat dışını kapsar.",
+      "En üstte havuzu seçin (toplam / hayat dışı / hayat–emeklilik). Prim dönemi aylık, finansal dönem çeyrekliktir; ikisi bağımsız çalışır.",
+      "Prim üretimi tablosu prim-tidy kaynaktan gelir (ör. 2026-06 YTD). Finansal göstergeler gelir/bilanço çeyreğindendir.",
+      "Tablolar birleşik sektör toplamını ve HD / H/E kırılımını gösterir; havuz seçici yalnız kâr trendini değiştirir. Oranlar tutar toplamından hesaplanır.",
     ],
   },
   {

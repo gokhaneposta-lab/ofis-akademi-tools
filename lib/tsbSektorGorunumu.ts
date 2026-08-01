@@ -9,6 +9,12 @@ import {
   type HasarPrimOranlari,
 } from "./tsbHasarPrimOrani";
 import {
+  aggregateByCompany,
+  countSirketlerSegmentDonem,
+  prevYearPeriod,
+  type TsbPrimRow,
+} from "./tsbPrimDashboard";
+import {
   buildGelirTidyDonemLookup,
   type GelirTidyDonemLookup,
 } from "./tsbSirketSegmentSkor";
@@ -232,4 +238,76 @@ export function sektorGorunumuTrendDonemleri(
     if (mevcut.has(donem)) out.push(donem);
   }
   return out;
+}
+
+export type SektorPrimSnapshot = {
+  donem: string;
+  HD: number;
+  HAYAT_EMEKLILIK: number;
+  SEKTOR: number;
+  sirketSayisiHd: number;
+  sirketSayisiHe: number;
+  sirketSayisi: number;
+};
+
+const PRIM_DARALTMA_TUMU = { kind: "anaBransH" as const, anaBransH: null };
+
+function sumCompanyMap(map: Map<number, { toplam: number }>): number {
+  let s = 0;
+  for (const v of map.values()) s += v.toplam;
+  return s;
+}
+
+/** prim-tidy brüt prim üretimi (kanal: genel toplam, daraltma yok). */
+export function buildSektorPrimDonem(
+  rows: readonly TsbPrimRow[],
+  donem: string,
+): SektorPrimSnapshot {
+  const list = rows as TsbPrimRow[];
+  const hd = sumCompanyMap(aggregateByCompany(list, donem, "genelToplam", PRIM_DARALTMA_TUMU, "hayatdisi"));
+  const he = sumCompanyMap(aggregateByCompany(list, donem, "genelToplam", PRIM_DARALTMA_TUMU, "hayat"));
+  const sirketSayisiHd = countSirketlerSegmentDonem(list, donem, "hayatdisi");
+  const sirketSayisiHe = countSirketlerSegmentDonem(list, donem, "hayat");
+  return {
+    donem,
+    HD: hd,
+    HAYAT_EMEKLILIK: he,
+    SEKTOR: hd + he,
+    sirketSayisiHd,
+    sirketSayisiHe,
+    sirketSayisi: sirketSayisiHd + sirketSayisiHe,
+  };
+}
+
+/** Seçili ayın aynı ayını geçmiş yıllarda karşılaştırır (YTD uyumu). */
+export function sektorPrimTrendDonemleri(
+  tumDonemler: readonly string[],
+  seciliDonem: string,
+  yilSayisi = 5,
+): string[] {
+  const match = seciliDonem.match(/^(\d{4})-(0[1-9]|1[0-2])$/);
+  if (!match) return [seciliDonem];
+  const yil = Number(match[1]);
+  const ay = match[2];
+  const mevcut = new Set(tumDonemler);
+  const out: string[] = [];
+  for (let y = yil - yilSayisi + 1; y <= yil; y += 1) {
+    const donem = `${y}-${ay}`;
+    if (mevcut.has(donem)) out.push(donem);
+  }
+  return out;
+}
+
+export function buildSektorPrimPaket(
+  rows: readonly TsbPrimRow[],
+  seciliDonem: string,
+  tumDonemler: readonly string[],
+): { secili: SektorPrimSnapshot; onceki: SektorPrimSnapshot | null; trend: SektorPrimSnapshot[] } {
+  const oncekiDonem = prevYearPeriod(seciliDonem);
+  const oncekiVar = oncekiDonem !== null && tumDonemler.includes(oncekiDonem);
+  return {
+    secili: buildSektorPrimDonem(rows, seciliDonem),
+    onceki: oncekiVar && oncekiDonem ? buildSektorPrimDonem(rows, oncekiDonem) : null,
+    trend: sektorPrimTrendDonemleri(tumDonemler, seciliDonem).map((d) => buildSektorPrimDonem(rows, d)),
+  };
 }

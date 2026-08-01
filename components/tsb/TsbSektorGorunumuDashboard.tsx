@@ -23,13 +23,21 @@ import {
   fetchGelirTidyDonemler,
 } from "@/lib/tsbGelirTidyFetch";
 import { oncekiYilDonem } from "@/lib/tsbFinansalKarsilastirmaData";
+import { formatPrimYtdAralik } from "@/lib/tsbPrimDonemEtiket";
+import {
+  isTsbToplamSirketKodu,
+  uniqueSortedPeriods,
+  type TsbPrimRow,
+} from "@/lib/tsbPrimDashboard";
 import {
   buildSektorGorunumuPaket,
+  buildSektorPrimPaket,
   sektorGorunumuTrendDonemleri,
   type SektorGorunumuDonem,
   type SektorGorunumuIlk10,
   type SektorGorunumuPool,
   type SektorGorunumuSnapshot,
+  type SektorPrimSnapshot,
 } from "@/lib/tsbSektorGorunumu";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
 
@@ -77,7 +85,7 @@ type KpiKey = keyof Pick<
 >;
 
 const KPI_LIST: { key: KpiKey; label: string; hint: string }[] = [
-  { key: "brutPrim", label: "Brüt prim", hint: "Toplam yazılan prim" },
+  { key: "brutPrim", label: "Brüt prim (finansal GT)", hint: "Gelir tablosu yazılan prim · çeyrek" },
   { key: "teknikKar", label: "Teknik kâr / zarar", hint: "Teknik bölüm sonucu" },
   { key: "safiTeknik", label: "Safî teknik sonuç", hint: "Yatırım etkisi ayrıştırılmış" },
   { key: "yatirimGeliri", label: "Yatırım geliri", hint: "Karşılaştırılabilir yatırım KPI" },
@@ -85,6 +93,56 @@ const KPI_LIST: { key: KpiKey; label: string; hint: string }[] = [
   { key: "ozsermaye", label: "Özsermaye", hint: "Sektör sermaye tabanı" },
   { key: "aktifToplami", label: "Aktif toplamı", hint: "Toplam bilanço büyüklüğü" },
 ];
+
+function PrimUretimTable({
+  donem,
+  paket,
+}: {
+  donem: string;
+  paket: { secili: SektorPrimSnapshot; onceki: SektorPrimSnapshot | null; trend: SektorPrimSnapshot[] };
+}) {
+  const yilKolonlari = paket.trend.filter((p) => p.donem !== donem);
+  const degisim = fmtDegisim(paket.secili.SEKTOR, paket.onceki?.SEKTOR);
+  return (
+    <TsbTableShell>
+      <table className={cn(tsb.table, "min-w-[980px]")}>
+        <thead className={tsb.thead}>
+          <tr>
+            <th className={tsb.thSticky}>Gösterge</th>
+            {yilKolonlari.map((p) => (
+              <th key={p.donem} className={tsb.th}>{p.donem}</th>
+            ))}
+            <th className={tsb.th}>{donem}</th>
+            <th className={tsb.th}>Yıllık değişim</th>
+            <th className={tsb.th}>{donem} · HD</th>
+            <th className={tsb.th}>{donem} · H/E</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr className={tsb.tbodyRow}>
+            <th scope="row" className={cn(tsb.tdSticky, "text-left")}>
+              <span className="block font-semibold text-slate-900">Brüt prim üretimi</span>
+              <span className="block text-[11px] font-normal text-slate-400">
+                prim-tidy · {formatPrimYtdAralik(donem)} · YTD
+              </span>
+            </th>
+            {yilKolonlari.map((p) => (
+              <td key={p.donem} className={cn(tsb.td, "text-right text-slate-500")}>
+                {fmtTl(p.SEKTOR)}
+              </td>
+            ))}
+            <td className={cn(tsb.td, "bg-emerald-50/40 text-right font-bold")}>
+              {fmtTl(paket.secili.SEKTOR)}
+            </td>
+            <td className={cn(tsb.td, "text-right font-semibold", degisim.className)}>{degisim.text}</td>
+            <td className={cn(tsb.td, "text-right")}>{fmtTl(paket.secili.HD)}</td>
+            <td className={cn(tsb.td, "text-right text-sky-700")}>{fmtTl(paket.secili.HAYAT_EMEKLILIK)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </TsbTableShell>
+  );
+}
 
 function KpiTable({
   donem,
@@ -168,127 +226,194 @@ const GROUP_LABEL: Record<SektorGorunumuIlk10["grup"], string> = {
 };
 
 export default function TsbSektorGorunumuDashboard() {
-  const [tumDonemler, setTumDonemler] = useState<string[]>([]);
-  const [donem, setDonem] = useState("");
-  const [rows, setRows] = useState<TsbGelirTidyRowLike[] | null>(null);
   const [pool, setPool] = useState<SektorGorunumuPool>("SEKTOR");
+
+  const [primDonemler, setPrimDonemler] = useState<string[]>([]);
+  const [primDonem, setPrimDonem] = useState("");
+  const [primRows, setPrimRows] = useState<TsbPrimRow[] | null>(null);
+
+  const [finansalDonemler, setFinansalDonemler] = useState<string[]>([]);
+  const [finansalDonem, setFinansalDonem] = useState("");
+  const [finansalRows, setFinansalRows] = useState<TsbGelirTidyRowLike[] | null>(null);
+
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetchGelirTidyDonemIndex()
-      .then((list) => {
+    Promise.all([
+      fetch("/data/tsb/prim-tidy.json").then(async (r) => {
+        if (!r.ok) throw new Error("Prim verisi yüklenemedi");
+        return (await r.json()) as TsbPrimRow[];
+      }),
+      fetchGelirTidyDonemIndex(),
+    ])
+      .then(([primData, finList]) => {
         if (cancelled) return;
-        setTumDonemler(list);
-        setDonem(list.at(-1) ?? "");
+        const primFiltered = primData.filter((row) => !isTsbToplamSirketKodu(row.sirketKodu));
+        const pDonemler = uniqueSortedPeriods(primFiltered);
+        setPrimRows(primFiltered);
+        setPrimDonemler(pDonemler);
+        setPrimDonem(pDonemler.at(-1) ?? "");
+        setFinansalDonemler(finList);
+        setFinansalDonem(finList.at(-1) ?? "");
       })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Dönemler yüklenemedi"));
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Veriler yüklenemedi"));
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const onceki = useMemo(() => (donem ? oncekiYilDonem(donem) : null), [donem]);
-  const trendDonemler = useMemo(
-    () => (donem ? sektorGorunumuTrendDonemleri(tumDonemler, donem) : []),
-    [tumDonemler, donem],
+  const oncekiFinansal = useMemo(
+    () => (finansalDonem ? oncekiYilDonem(finansalDonem) : null),
+    [finansalDonem],
+  );
+  const trendFinansal = useMemo(
+    () => (finansalDonem ? sektorGorunumuTrendDonemleri(finansalDonemler, finansalDonem) : []),
+    [finansalDonemler, finansalDonem],
   );
 
   useEffect(() => {
-    if (!donem) return;
-    const yuklenecek = [...new Set([...trendDonemler, ...(onceki && tumDonemler.includes(onceki) ? [onceki] : []), donem])];
+    if (!finansalDonem) return;
+    const yuklenecek = [
+      ...new Set([
+        ...trendFinansal,
+        ...(oncekiFinansal && finansalDonemler.includes(oncekiFinansal) ? [oncekiFinansal] : []),
+        finansalDonem,
+      ]),
+    ];
     let cancelled = false;
     fetchGelirTidyDonemler(yuklenecek)
       .then((data) => {
-        if (!cancelled) setRows(data);
+        if (!cancelled) setFinansalRows(data);
       })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Sektör verisi yüklenemedi"));
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : "Finansal veri yüklenemedi"));
     return () => {
       cancelled = true;
     };
-  }, [donem, onceki, trendDonemler, tumDonemler]);
+  }, [finansalDonem, oncekiFinansal, trendFinansal, finansalDonemler]);
 
-  const paket = useMemo(() => {
-    // Dönem seçimi değiştiğinde önceki fetch'in satırlarıyla geçici "0" kartları üretme.
-    if (!rows || !donem || !rows.some((row) => row.donem === donem)) return null;
+  const primPaket = useMemo(() => {
+    if (!primRows || !primDonem || !primDonemler.includes(primDonem)) return null;
+    return buildSektorPrimPaket(primRows, primDonem, primDonemler);
+  }, [primRows, primDonem, primDonemler]);
+
+  const finansalPaket = useMemo(() => {
+    if (!finansalRows || !finansalDonem || !finansalRows.some((row) => row.donem === finansalDonem)) {
+      return null;
+    }
     return buildSektorGorunumuPaket(
-      rows,
-      donem,
-      onceki && tumDonemler.includes(onceki) ? onceki : null,
-      trendDonemler,
+      finansalRows,
+      finansalDonem,
+      oncekiFinansal && finansalDonemler.includes(oncekiFinansal) ? oncekiFinansal : null,
+      trendFinansal,
     );
-  }, [rows, donem, onceki, trendDonemler, tumDonemler]);
+  }, [finansalRows, finansalDonem, oncekiFinansal, trendFinansal, finansalDonemler]);
 
   if (error) return <TsbError message={error} />;
-  if (!paket) return <TsbLoading message="Sektör görünümü hazırlanıyor…" />;
+  if (!primPaket || !finansalPaket) return <TsbLoading message="Sektör görünümü hazırlanıyor…" />;
 
-  const oncekiIlk10 = new Map(paket.ilk10Onceki.map((x) => [x.grup, x]));
+  const oncekiIlk10 = new Map(finansalPaket.ilk10Onceki.map((x) => [x.grup, x]));
 
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
+        <div className="mb-3">
+          <span className={tsb.filterLabel}>Sektör havuzu</span>
+          <div className={tsb.btnGroup}>
+            {(["SEKTOR", "HD", "HAYAT_EMEKLILIK"] as const).map((p) => (
+              <TsbToggleButton key={p} variant="segment" pressed={pool === p} onClick={() => setPool(p)}>
+                {POOL_LABEL[p]}
+              </TsbToggleButton>
+            ))}
+          </div>
+        </div>
         <TsbFilterGrid>
-          <TsbFilterField label="Finansal dönem" hint="Trend, seçili çeyreğin geçmiş yıllardaki aynı çeyreğini kullanır.">
-            <TsbSelect value={donem} onChange={(e) => setDonem(e.target.value)}>
-              {[...tumDonemler].reverse().map((d) => <option key={d}>{d}</option>)}
+          <TsbFilterField
+            label="Prim dönemi"
+            hint="Aylık prim-tidy (YTD). Finansal dönemden bağımsızdır."
+          >
+            <TsbSelect value={primDonem} onChange={(e) => setPrimDonem(e.target.value)}>
+              {[...primDonemler].reverse().map((d) => (
+                <option key={d} value={d}>
+                  {d} · {formatPrimYtdAralik(d)}
+                </option>
+              ))}
             </TsbSelect>
           </TsbFilterField>
-          <div className="sm:col-span-1 lg:col-span-2">
-            <span className={tsb.filterLabel}>Kâr trendi görünümü</span>
-            <div className={tsb.btnGroup}>
-              {(["SEKTOR", "HD", "HAYAT_EMEKLILIK"] as const).map((p) => (
-                <TsbToggleButton key={p} variant="segment" pressed={pool === p} onClick={() => setPool(p)}>
-                  {POOL_LABEL[p]}
-                </TsbToggleButton>
+          <TsbFilterField
+            label="Finansal dönem"
+            hint="Çeyreklik gelir/bilanço. Prim döneminden bağımsızdır."
+          >
+            <TsbSelect value={finansalDonem} onChange={(e) => setFinansalDonem(e.target.value)}>
+              {[...finansalDonemler].reverse().map((d) => (
+                <option key={d}>{d}</option>
               ))}
-            </div>
-          </div>
+            </TsbSelect>
+          </TsbFilterField>
         </TsbFilterGrid>
         <p className={tsb.filterHint}>
-          Üst tabloda her zaman <strong>HD + H/E sektör toplamı</strong>; grafik seçicisi yalnız kâr trendini değiştirir.
-          Oranlar tutarların toplamından yeniden hesaplanır, şirket oranlarının ortalaması alınmaz.
+          Prim üretimi aylık, finansallar çeyrekliktir; dönemleri ayrı seçebilirsiniz.
+          Tablolar her zaman <strong>HD + H/E sektör toplamını</strong> gösterir; havuz seçici yalnız kâr trendini değiştirir.
+          Oranlar tutarların toplamından yeniden hesaplanır.
         </p>
       </TsbFilterBar>
+
+      <section className={tsb.dataPanel} aria-labelledby="sg-prim">
+        <div className={cn(tsb.dataPanelHeader, "flex flex-wrap items-end justify-between gap-2")}>
+          <div>
+            <h2 id="sg-prim" className={tsb.dataPanelTitle}>Prim üretimi</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              {primDonem} · {formatPrimYtdAralik(primDonem)} · aynı ayın yıllar arası seyri
+            </p>
+          </div>
+          <span className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white">
+            {primPaket.secili.sirketSayisi} şirket
+          </span>
+        </div>
+        <PrimUretimTable donem={primDonem} paket={primPaket} />
+      </section>
 
       <section className={tsb.dataPanel} aria-labelledby="sg-kpi">
         <div className={cn(tsb.dataPanelHeader, "flex flex-wrap items-end justify-between gap-2")}>
           <div>
-            <h2 id="sg-kpi" className={tsb.dataPanelTitle}>Sigorta sektörü ana göstergeleri</h2>
+            <h2 id="sg-kpi" className={tsb.dataPanelTitle}>Finansal ana göstergeler</h2>
             <p className="mt-1 text-sm text-slate-500">
-              {donem} · HD + Hayat/Emeklilik toplamı · aynı çeyreğin yıllar arası seyri
+              {finansalDonem} · HD + Hayat/Emeklilik toplamı · aynı çeyreğin yıllar arası seyri
             </p>
           </div>
           <span className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white">
-            {paket.secili.SEKTOR.sirketSayisi} şirket
+            {finansalPaket.secili.SEKTOR.sirketSayisi} şirket
           </span>
         </div>
         <KpiTable
-          donem={donem}
-          trend={paket.trend}
-          secili={paket.secili}
-          onceki={paket.onceki}
+          donem={finansalDonem}
+          trend={finansalPaket.trend}
+          secili={finansalPaket.secili}
+          onceki={finansalPaket.onceki}
         />
       </section>
 
       <section className={tsb.chartPanel}>
         <div className="min-w-[720px]">
-          <TsbSektorKarBilesenleriChart trend={paket.trend} pool={pool} />
+          <TsbSektorKarBilesenleriChart trend={finansalPaket.trend} pool={pool} />
         </div>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
         <div className={tsb.chartPanel}>
-          <TsbSektorBilançoStackedChart trend={paket.trend} metric="aktifToplami" title="Aktif büyüklüğü" />
+          <TsbSektorBilançoStackedChart trend={finansalPaket.trend} metric="aktifToplami" title="Aktif büyüklüğü" />
         </div>
         <div className={tsb.chartPanel}>
-          <TsbSektorBilançoStackedChart trend={paket.trend} metric="ozsermaye" title="Özsermaye büyüklüğü" />
+          <TsbSektorBilançoStackedChart trend={finansalPaket.trend} metric="ozsermaye" title="Özsermaye büyüklüğü" />
         </div>
       </section>
 
       <section className={tsb.dataPanel}>
         <div className={tsb.dataPanelHeader}>
           <h2 className={tsb.dataPanelTitle}>Finansal sağlık oranları</h2>
-          <p className="mt-1 text-sm text-slate-500">HD, H/E ve birleşik sektör aynı hesap tabanında.</p>
+          <p className="mt-1 text-sm text-slate-500">
+            {finansalDonem} · HD, H/E ve birleşik sektör aynı hesap tabanında.
+          </p>
         </div>
         <TsbTableShell>
           <table className={cn(tsb.table, "min-w-[720px]")}>
@@ -305,10 +430,14 @@ export default function TsbSektorGorunumuDashboard() {
               {RATIO_ROWS.map((r) => (
                 <tr key={r.key} className={tsb.tbodyRow}>
                   <th scope="row" className={cn(tsb.tdSticky, "text-left font-semibold")}>{r.label}</th>
-                  <td className={cn(tsb.td, "text-right")}>{fmtPct(paket.secili.HD[r.key])}</td>
-                  <td className={cn(tsb.td, "text-right")}>{fmtPct(paket.secili.HAYAT_EMEKLILIK[r.key])}</td>
-                  <td className={cn(tsb.td, "bg-emerald-50/40 text-right font-bold")}>{fmtPct(paket.secili.SEKTOR[r.key])}</td>
-                  <td className={cn(tsb.td, "text-right text-slate-500")}>{fmtPct(paket.onceki?.SEKTOR[r.key] ?? null)}</td>
+                  <td className={cn(tsb.td, "text-right")}>{fmtPct(finansalPaket.secili.HD[r.key])}</td>
+                  <td className={cn(tsb.td, "text-right")}>{fmtPct(finansalPaket.secili.HAYAT_EMEKLILIK[r.key])}</td>
+                  <td className={cn(tsb.td, "bg-emerald-50/40 text-right font-bold")}>
+                    {fmtPct(finansalPaket.secili.SEKTOR[r.key])}
+                  </td>
+                  <td className={cn(tsb.td, "text-right text-slate-500")}>
+                    {fmtPct(finansalPaket.onceki?.SEKTOR[r.key] ?? null)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -320,7 +449,7 @@ export default function TsbSektorGorunumuDashboard() {
         <div className={tsb.dataPanelHeader}>
           <h2 className={tsb.dataPanelTitle}>Hayat dışı: İlk 10 şirket vs diğerleri</h2>
           <p className="mt-1 text-sm text-slate-500">
-            Her dönemde brüt prime göre yeniden sıralanır. Bu kırılım ölçek segmentasyonu değildir.
+            {finansalDonem} · her dönemde brüt prime göre yeniden sıralanır. Bu kırılım ölçek segmentasyonu değildir.
           </p>
         </div>
         <TsbTableShell>
@@ -338,7 +467,7 @@ export default function TsbSektorGorunumuDashboard() {
               </tr>
             </thead>
             <tbody>
-              {paket.ilk10.map((row) => {
+              {finansalPaket.ilk10.map((row) => {
                 const prev = oncekiIlk10.get(row.grup);
                 return (
                   <tr key={row.grup} className={tsb.tbodyRow}>
@@ -359,9 +488,10 @@ export default function TsbSektorGorunumuDashboard() {
       </section>
 
       <div className="flex flex-wrap gap-2">
-        <Link href={`/sigorta/finansal-karsilastirma?donem=${donem}&pool=SEKTOR`} className={tsb.pillLink}>
+        <Link href={`/sigorta/finansal-karsilastirma?donem=${finansalDonem}&pool=SEKTOR`} className={tsb.pillLink}>
           Finansal karşılaştırmada sektörü aç →
         </Link>
+        <Link href="/sigorta/kanal-prim" className={tsb.pillLink}>Kanal prim detayı →</Link>
         <Link href="/sigorta/ana-brans-tkz" className={tsb.pillLink}>Ana branş TKZ →</Link>
         <Link href="/sigorta/hasar-prim-orani" className={tsb.pillLink}>Hasar / Prim →</Link>
       </div>

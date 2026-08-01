@@ -29,11 +29,11 @@ export const KANAL_DAGILIM_SATIRLARI: { key: KanalDagilimSatirKey; label: string
 
 export type KanalHubTab = "genel" | "brans" | "sirket" | "liderler";
 
-export const KANAL_HUB_TABS: { id: KanalHubTab; label: string }[] = [
-  { id: "genel", label: "Genel bakış" },
-  { id: "brans", label: "Branş kanal profili" },
-  { id: "sirket", label: "Şirket kanalı" },
-  { id: "liderler", label: "Kanal liderleri" },
+export const KANAL_HUB_TABS: { id: KanalHubTab; label: string; hint: string }[] = [
+  { id: "genel", label: "Genel bakış", hint: "Sektör mix · trend · şirket listesi" },
+  { id: "brans", label: "Branş kanal profili", hint: "Seçili branş donut · tüm branşlar" },
+  { id: "sirket", label: "Şirket kanalı", hint: "Şirket vs sektör · branş × kanal" },
+  { id: "liderler", label: "Kanal liderleri", hint: "Seçili kanalda şirket sırası" },
 ];
 
 export function emptyKanalKutu(): KanalDagilimKutu {

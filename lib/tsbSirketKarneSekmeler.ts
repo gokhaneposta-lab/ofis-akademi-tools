@@ -165,14 +165,14 @@ export function sirketKarnePanelLinks(
           badge: "HHI",
         },
         {
-          href: buildTsbDashboardHref("/sigorta/prim?panel=brans-degisim", base),
-          title: "Branş değişim tablosu",
+          href: buildTsbDashboardHref("/sigorta/prim?panel=brans&view=degisim", base),
+          title: "Branş kıyası — değişim",
           subtitle: "Pazar payı ve yıllık değişim",
           badge: "Branş",
         },
         {
-          href: buildTsbDashboardHref("/sigorta/prim?panel=brans-sira", base),
-          title: "Branş sıra özeti",
+          href: buildTsbDashboardHref("/sigorta/prim?panel=brans&view=sira", base),
+          title: "Branş kıyası — sıra",
           subtitle: "Sektör içi sıra ve YoY Δ sıra",
           badge: "Sıra",
         },

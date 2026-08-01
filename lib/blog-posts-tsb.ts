@@ -220,8 +220,8 @@ export const BLOG_POSTS_TSB: BlogPost[] = [
         items: [
           { label: "Kanal bazlı prim", href: "/sigorta/prim?panel=kanal-prim" },
           { label: "Kanal dağılımı", href: "/sigorta/prim?panel=kanal-dagilim" },
-          { label: "Branş değişim", href: "/sigorta/prim?panel=brans-degisim" },
-          { label: "Branş sıra", href: "/sigorta/prim?panel=brans-sira" },
+          { label: "Branş değişim", href: "/sigorta/prim?panel=brans&view=degisim" },
+          { label: "Branş sıra", href: "/sigorta/prim?panel=brans&view=sira" },
         ],
       },
       clusterLinks(KANAL_SLUG),

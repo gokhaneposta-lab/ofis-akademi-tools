@@ -19,8 +19,8 @@ export const METRIC_TSB_DASHBOARD: Partial<Record<string, TsbMetricDashboardLink
     description: "Aylık prim üretimi trendi; şirket ve sektör çizgisi, branş/kanal filtresi.",
   },
   "yenileme-orani": {
-    href: "/sigorta/prim?panel=brans-degisim",
-    title: "TSB branş değişim tablosu",
+    href: "/sigorta/prim?panel=brans&view=degisim",
+    title: "TSB branş kıyası — değişim",
     description: "Branş bazında yıllık prim değişimi ve pazar payı — portföy kayması analizi.",
   },
   "kayip-orani": {
@@ -79,8 +79,8 @@ export const METRIC_TSB_DASHBOARD: Partial<Record<string, TsbMetricDashboardLink
     description: "Kaldıraç ve öz kaynak yapısı sektör kıyaslaması.",
   },
   "iptal-orani": {
-    href: "/sigorta/prim?panel=brans-degisim",
-    title: "TSB branş değişim",
+    href: "/sigorta/prim?panel=brans&view=degisim",
+    title: "TSB branş kıyası — değişim",
     description: "Branş bazında üretim kaybı ve pay değişimini izleyin.",
   },
 };

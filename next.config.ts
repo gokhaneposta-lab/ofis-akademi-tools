@@ -15,8 +15,12 @@ const nextConfig: NextConfig = {
       // Prim panelleri tek hub altında sekmeye taşındı.
       { source: "/sigorta/kanal-prim", destination: "/sigorta/prim?panel=kanal-prim", permanent: true },
       { source: "/sigorta/kanal-dagilim", destination: "/sigorta/prim?panel=kanal-dagilim", permanent: true },
-      { source: "/sigorta/brans-degisim", destination: "/sigorta/prim?panel=brans-degisim", permanent: true },
-      { source: "/sigorta/brans-sira", destination: "/sigorta/prim?panel=brans-sira", permanent: true },
+      {
+        source: "/sigorta/brans-degisim",
+        destination: "/sigorta/prim?panel=brans&view=degisim",
+        permanent: true,
+      },
+      { source: "/sigorta/brans-sira", destination: "/sigorta/prim?panel=brans&view=sira", permanent: true },
       { source: "/sigorta/prim-trend-12", destination: "/sigorta/prim?panel=prim-trend-12", permanent: true },
       {
         source: "/sigorta/pazar-yogunlasma",

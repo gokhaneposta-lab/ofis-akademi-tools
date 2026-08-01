@@ -421,7 +421,7 @@ export function TsbDashboardStickyNav({
         <div className={tsb.stickyNavLinks}>
           {groupId === "prim" ? (
             TSB_PRIM_VIEW_TABS.map((t) => {
-              const active = (activePrimPanel ?? "kanal-prim") === t.id;
+              const active = (activePrimPanel ?? "brans") === t.id;
               return (
                 <Link
                   key={t.id}

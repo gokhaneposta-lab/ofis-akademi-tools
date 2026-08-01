@@ -57,8 +57,15 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
   {
     href: "/sigorta/prim",
     items: [
-      "Üst sekmeler aynı prim-tidy kaynağının farklı görünümleridir: kanal prim, satış kanalları, branş değişim, sıra, 12 ay trend ve HHI.",
-      "Sekme değiştirmek sayfalar arası gidip gelmeyi kaldırır; her sekmenin kendi filtreleri vardır.",
+      "Üst sekmeler aynı prim-tidy kaynağının panelleridir. İlk sekme Branş kıyası; altında Değişim ve Sıra ayrı alt sayfalardır (filtre değil).",
+      "Satış kanallarında da Genel bakış / Branş profili / Şirket / Liderler alt sayfa geçişidir. HD–H/E ve daraltma ise filtredir.",
+    ],
+  },
+  {
+    href: "/sigorta/brans",
+    items: [
+      "Branş kıyası iki alt sayfadır: Değişim ve pay · Sıra özeti. Üstteki sticky sekmeden diğer prim panellerine geçersiniz.",
+      "Filtreler (dönem, şirket, branş/tarife) her alt sayfada kendi paneline aittir.",
     ],
   },
   {

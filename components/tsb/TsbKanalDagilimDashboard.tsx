@@ -49,6 +49,7 @@ import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import { formatPrimYtdAralik } from "@/lib/tsbPrimDonemEtiket";
 import { TSB_TUM_BRANS_LABEL } from "@/lib/tsbKirilimSozluk";
+import { TsbSubPageNav } from "@/components/tsb/TsbSubPageNav";
 import {
   cn,
   tsb,
@@ -405,6 +406,13 @@ export default function TsbKanalDagilimDashboard() {
 
   return (
     <div className={tsb.dashboardStack}>
+      <TsbSubPageNav
+        label="Satış kanalları — alt sayfa"
+        items={KANAL_HUB_TABS}
+        value={tab}
+        onChange={setTab}
+      />
+
       <TsbFilterBar>
         <p className={tsb.filterSectionLabel}>Görünüm</p>
         <div className={cn(tsb.btnGroup, "mb-3")}>
@@ -414,14 +422,6 @@ export default function TsbKanalDagilimDashboard() {
           <TsbToggleButton pressed={segment === "hayat"} variant="segment" onClick={() => setSegment("hayat")}>
             Hayat &amp; emeklilik
           </TsbToggleButton>
-        </div>
-        <p className={tsb.filterSectionLabel}>Sekme</p>
-        <div className={cn(tsb.btnGroup, "mb-3 flex-wrap")}>
-          {KANAL_HUB_TABS.map((t) => (
-            <TsbToggleButton key={t.id} variant="segment" pressed={tab === t.id} onClick={() => setTab(t.id)}>
-              {t.label}
-            </TsbToggleButton>
-          ))}
         </div>
         <p className={tsb.filterSectionLabel}>Daraltma türü</p>
         <div className={tsb.btnGroup}>

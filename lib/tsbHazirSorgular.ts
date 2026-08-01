@@ -49,9 +49,9 @@ export function tsbHazirSorgularKarne(girdi: HazirSorguGirdi): TsbHazirSorgu[] {
     { id: "finansal", label: "Finansal KPI", path: "/sigorta/finansal-karsilastirma" },
     { id: "hp", label: "Hasar / Prim", path: "/sigorta/hasar-prim-orani" },
     { id: "kanal", label: "Kanal payı", path: "/sigorta/prim?panel=kanal-dagilim" },
-    { id: "brans-sira", label: "Branş sırası", path: "/sigorta/prim?panel=brans-sira" },
+    { id: "brans-sira", label: "Branş sırası", path: "/sigorta/prim?panel=brans&view=sira" },
     { id: "trend", label: "12 ay trend", path: "/sigorta/prim?panel=prim-trend-12" },
-    { id: "brans-degisim", label: "Branş değişim", path: "/sigorta/prim?panel=brans-degisim" },
+    { id: "brans-degisim", label: "Branş değişim", path: "/sigorta/prim?panel=brans&view=degisim" },
     { id: "hhi", label: "Pazar yoğunlaşma", path: "/sigorta/prim?panel=pazar-yogunlasma" },
     { id: "olcek", label: "Ölçek segmenti", path: "/sigorta/olcek-segmentasyon" },
   ];

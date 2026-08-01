@@ -1,29 +1,32 @@
 "use client";
 
-import TsbBransDegisimDashboard from "@/components/tsb/TsbBransDegisimDashboard";
-import TsbBransSiraDashboard from "@/components/tsb/TsbBransSiraDashboard";
+import TsbBransKiyasHub from "@/components/tsb/TsbBransKiyasHub";
 import TsbKanalDagilimDashboard from "@/components/tsb/TsbKanalDagilimDashboard";
 import TsbKanalPrimDashboard from "@/components/tsb/TsbKanalPrimDashboard";
 import TsbPazarYogunlasmaDashboard from "@/components/tsb/TsbPazarYogunlasmaDashboard";
 import TsbPrimTrend12Dashboard from "@/components/tsb/TsbPrimTrend12Dashboard";
-import type { TsbPrimPanelId } from "@/lib/tsbDashboardPanels";
+import type { TsbBransKiyasView, TsbPrimPanelId } from "@/lib/tsbDashboardPanels";
 
 /** Prim hub içeriği — sticky nav sekmesi hangi paneli göstereceğini belirler. */
-export default function TsbPrimUretimHub({ panel }: { panel: TsbPrimPanelId }) {
+export default function TsbPrimUretimHub({
+  panel,
+  bransView = "degisim",
+}: {
+  panel: TsbPrimPanelId;
+  bransView?: TsbBransKiyasView;
+}) {
   switch (panel) {
+    case "brans":
+      return <TsbBransKiyasHub view={bransView} />;
     case "kanal-prim":
       return <TsbKanalPrimDashboard />;
     case "kanal-dagilim":
       return <TsbKanalDagilimDashboard />;
-    case "brans-degisim":
-      return <TsbBransDegisimDashboard />;
-    case "brans-sira":
-      return <TsbBransSiraDashboard />;
     case "prim-trend-12":
       return <TsbPrimTrend12Dashboard />;
     case "pazar-yogunlasma":
       return <TsbPazarYogunlasmaDashboard />;
     default:
-      return <TsbKanalPrimDashboard />;
+      return <TsbBransKiyasHub view={bransView} />;
   }
 }

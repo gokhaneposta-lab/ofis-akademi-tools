@@ -214,8 +214,33 @@ const GROUP_LABEL: Record<SektorGorunumuIlk10["grup"], string> = {
   TOPLAM: "HD toplam",
 };
 
+const POOL_OPTIONS: { id: SektorGorunumuPool; label: string }[] = [
+  { id: "SEKTOR", label: POOL_LABEL.SEKTOR },
+  { id: "HD", label: POOL_LABEL.HD },
+  { id: "HAYAT_EMEKLILIK", label: POOL_LABEL.HAYAT_EMEKLILIK },
+];
+
+function HavuzKoseFiltre({
+  value,
+  onChange,
+  ariaLabel,
+}: {
+  value: SektorGorunumuPool;
+  onChange: (v: SektorGorunumuPool) => void;
+  ariaLabel: string;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Havuz</span>
+      <TsbSegmentSwitch aria-label={ariaLabel} value={value} onChange={onChange} options={POOL_OPTIONS} />
+    </div>
+  );
+}
+
 export default function TsbSektorGorunumuDashboard() {
-  const [pool, setPool] = useState<SektorGorunumuPool>("SEKTOR");
+  const [karPool, setKarPool] = useState<SektorGorunumuPool>("SEKTOR");
+  const [aktifPool, setAktifPool] = useState<SektorGorunumuPool>("SEKTOR");
+  const [ozsermayePool, setOzsermayePool] = useState<SektorGorunumuPool>("SEKTOR");
 
   const [primDonemler, setPrimDonemler] = useState<string[]>([]);
   const [primDonem, setPrimDonem] = useState("");
@@ -306,19 +331,6 @@ export default function TsbSektorGorunumuDashboard() {
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
-        <div className="mb-3">
-          <p className={tsb.filterSectionLabel}>Sektör havuzu</p>
-          <TsbSegmentSwitch
-            aria-label="Sektör havuzu"
-            value={pool}
-            onChange={setPool}
-            options={[
-              { id: "SEKTOR", label: POOL_LABEL.SEKTOR },
-              { id: "HD", label: POOL_LABEL.HD },
-              { id: "HAYAT_EMEKLILIK", label: POOL_LABEL.HAYAT_EMEKLILIK },
-            ]}
-          />
-        </div>
         <TsbFilterGrid>
           <TsbFilterField
             label="Prim dönemi"
@@ -345,8 +357,8 @@ export default function TsbSektorGorunumuDashboard() {
         </TsbFilterGrid>
         <p className={tsb.filterHint}>
           Prim üretimi aylık, finansallar çeyrekliktir; dönemleri ayrı seçebilirsiniz.
-          Tablolar her zaman <strong>HD + H/E sektör toplamını</strong> gösterir; havuz seçici yalnız kâr trendini değiştirir.
-          Oranlar tutarların toplamından yeniden hesaplanır.
+          Tablolar HD + H/E kırılımını birlikte gösterir. Havuz seçici yalnız ilgili grafiklerin köşesinde
+          vardır.
         </p>
       </TsbFilterBar>
 
@@ -386,17 +398,48 @@ export default function TsbSektorGorunumuDashboard() {
       </section>
 
       <section className={tsb.chartPanel}>
+        <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
+          <HavuzKoseFiltre
+            value={karPool}
+            onChange={setKarPool}
+            ariaLabel="Kâr bileşenleri sektör havuzu"
+          />
+        </div>
         <div className="min-w-[720px]">
-          <TsbSektorKarBilesenleriChart trend={finansalPaket.trend} pool={pool} />
+          <TsbSektorKarBilesenleriChart trend={finansalPaket.trend} pool={karPool} />
         </div>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
         <div className={tsb.chartPanel}>
-          <TsbSektorBilançoStackedChart trend={finansalPaket.trend} metric="aktifToplami" title="Aktif büyüklüğü" />
+          <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
+            <HavuzKoseFiltre
+              value={aktifPool}
+              onChange={setAktifPool}
+              ariaLabel="Aktif büyüklüğü sektör havuzu"
+            />
+          </div>
+          <TsbSektorBilançoStackedChart
+            trend={finansalPaket.trend}
+            metric="aktifToplami"
+            title="Aktif büyüklüğü"
+            pool={aktifPool}
+          />
         </div>
         <div className={tsb.chartPanel}>
-          <TsbSektorBilançoStackedChart trend={finansalPaket.trend} metric="ozsermaye" title="Özsermaye büyüklüğü" />
+          <div className="mb-2 flex flex-wrap items-center justify-end gap-2">
+            <HavuzKoseFiltre
+              value={ozsermayePool}
+              onChange={setOzsermayePool}
+              ariaLabel="Özsermaye büyüklüğü sektör havuzu"
+            />
+          </div>
+          <TsbSektorBilançoStackedChart
+            trend={finansalPaket.trend}
+            metric="ozsermaye"
+            title="Özsermaye büyüklüğü"
+            pool={ozsermayePool}
+          />
         </div>
       </section>
 

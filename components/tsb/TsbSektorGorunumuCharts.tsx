@@ -338,34 +338,55 @@ export function TsbSektorBilançoStackedChart({
   trend,
   metric,
   title,
+  pool = "SEKTOR",
 }: {
   trend: SektorGorunumuDonem[];
   metric: "aktifToplami" | "ozsermaye";
   title: string;
+  pool?: SektorGorunumuPool;
 }) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
-  const max = Math.max(1, ...trend.map((p) => p.HD[metric] + p.HAYAT_EMEKLILIK[metric]));
+  const showHd = pool === "SEKTOR" || pool === "HD";
+  const showHe = pool === "SEKTOR" || pool === "HAYAT_EMEKLILIK";
+  const valueOf = (p: SektorGorunumuDonem) => {
+    const hd = showHd ? p.HD[metric] : 0;
+    const he = showHe ? p.HAYAT_EMEKLILIK[metric] : 0;
+    return hd + he;
+  };
+  const max = Math.max(1, ...trend.map(valueOf));
   const innerH = H - PAD.t - PAD.b;
   const yAt = (v: number) => PAD.t + innerH - (v / max) * innerH;
   const innerW = W - PAD.l - PAD.r;
   const band = innerW / Math.max(1, trend.length);
   const barW = Math.min(72, band * 0.52);
   const ticks = Array.from({ length: 5 }, (_, i) => (max * i) / 4);
+  const altBaslik =
+    pool === "HD"
+      ? "Yalnız hayat dışı · milyar TL · hover = YoY"
+      : pool === "HAYAT_EMEKLILIK"
+        ? "Yalnız hayat / emeklilik · milyar TL · hover = YoY"
+        : "HD + H/E yığılmış · milyar TL · hover = YoY";
 
   const tip =
     hoverIdx !== null
       ? (() => {
           const p = trend[hoverIdx];
           const onceki = hoverIdx > 0 ? trend[hoverIdx - 1] : null;
-          const bu = p.HD[metric] + p.HAYAT_EMEKLILIK[metric];
-          const onc = onceki ? onceki.HD[metric] + onceki.HAYAT_EMEKLILIK[metric] : null;
+          const bu = valueOf(p);
+          const onc = onceki ? valueOf(onceki) : null;
           const cx = PAD.l + band * hoverIdx + band / 2;
+          const detay =
+            pool === "SEKTOR"
+              ? `HD ${fmtMr(p.HD[metric])} · H/E ${fmtMr(p.HAYAT_EMEKLILIK[metric])}`
+              : pool === "HD"
+                ? `HD ${fmtMr(p.HD[metric])}`
+                : `H/E ${fmtMr(p.HAYAT_EMEKLILIK[metric])}`;
           return {
             x: Math.min(W - 220, Math.max(PAD.l, cx + 12)),
             y: PAD.t,
             lines: [
               { text: p.donem },
-              { text: `HD ${fmtMr(p.HD[metric])} · H/E ${fmtMr(p.HAYAT_EMEKLILIK[metric])}`, muted: true },
+              { text: detay, muted: true },
               {
                 text: onceki ? `${tsbChartYoyLabel(bu, onc)} vs ${onceki.donem}` : "YoY: — (önceki yok)",
                 accent: true,
@@ -388,7 +409,7 @@ export function TsbSektorBilançoStackedChart({
         {title}
       </text>
       <text x={PAD.l} y={43} fontSize={10} fill="#64748b">
-        HD + H/E yığılmış · milyar TL · hover = YoY
+        {altBaslik}
       </text>
       {ticks.map((tick, i) => {
         const y = yAt(tick);
@@ -403,30 +424,36 @@ export function TsbSektorBilançoStackedChart({
       })}
       {trend.map((p, i) => {
         const cx = PAD.l + band * i + band / 2;
-        const hdH = innerH - (yAt(p.HD[metric]) - PAD.t);
-        const heH = innerH - (yAt(p.HAYAT_EMEKLILIK[metric]) - PAD.t);
+        const hdVal = showHd ? p.HD[metric] : 0;
+        const heVal = showHe ? p.HAYAT_EMEKLILIK[metric] : 0;
+        const hdH = showHd ? innerH - (yAt(hdVal) - PAD.t) : 0;
+        const heH = showHe ? innerH - (yAt(heVal) - PAD.t) : 0;
         const base = PAD.t + innerH;
         const active = hoverIdx === i;
         return (
           <g key={p.donem} className="cursor-pointer" onMouseEnter={() => setHoverIdx(i)}>
-            <rect
-              x={cx - barW / 2}
-              y={base - hdH}
-              width={barW}
-              height={hdH}
-              fill={COLORS.HD}
-              fillOpacity={active ? 1 : 0.85}
-              rx={2}
-            />
-            <rect
-              x={cx - barW / 2}
-              y={base - hdH - heH}
-              width={barW}
-              height={heH}
-              fill={COLORS.HAYAT_EMEKLILIK}
-              fillOpacity={active ? 1 : 0.85}
-              rx={2}
-            />
+            {showHd ? (
+              <rect
+                x={cx - barW / 2}
+                y={base - hdH}
+                width={barW}
+                height={hdH}
+                fill={COLORS.HD}
+                fillOpacity={active ? 1 : 0.85}
+                rx={2}
+              />
+            ) : null}
+            {showHe ? (
+              <rect
+                x={cx - barW / 2}
+                y={base - hdH - heH}
+                width={barW}
+                height={heH}
+                fill={COLORS.HAYAT_EMEKLILIK}
+                fillOpacity={active ? 1 : 0.85}
+                rx={2}
+              />
+            ) : null}
             <text x={cx} y={H - 18} textAnchor="middle" fontSize={10} fill="#334155" fontWeight={active ? 700 : 400}>
               {p.donem}
             </text>
@@ -434,14 +461,22 @@ export function TsbSektorBilançoStackedChart({
         );
       })}
       <g transform={`translate(${PAD.l}, ${H - 2})`}>
-        <rect x={0} y={-11} width={12} height={8} fill={COLORS.HD} rx={1} />
-        <text x={17} y={-3} fontSize={10} fill="#475569">
-          Hayat dışı
-        </text>
-        <rect x={100} y={-11} width={12} height={8} fill={COLORS.HAYAT_EMEKLILIK} rx={1} />
-        <text x={117} y={-3} fontSize={10} fill="#475569">
-          Hayat / Emeklilik
-        </text>
+        {showHd ? (
+          <>
+            <rect x={0} y={-11} width={12} height={8} fill={COLORS.HD} rx={1} />
+            <text x={17} y={-3} fontSize={10} fill="#475569">
+              Hayat dışı
+            </text>
+          </>
+        ) : null}
+        {showHe ? (
+          <>
+            <rect x={showHd ? 100 : 0} y={-11} width={12} height={8} fill={COLORS.HAYAT_EMEKLILIK} rx={1} />
+            <text x={showHd ? 117 : 17} y={-3} fontSize={10} fill="#475569">
+              Hayat / Emeklilik
+            </text>
+          </>
+        ) : null}
       </g>
       {tip ? <TsbSvgTooltip x={tip.x} y={tip.y} width={214} lines={tip.lines} /> : null}
     </svg>

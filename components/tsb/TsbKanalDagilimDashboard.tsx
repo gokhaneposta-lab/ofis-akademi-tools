@@ -675,13 +675,28 @@ export default function TsbKanalDagilimDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sirketSatirlari.slice(0, 40).map((row, i) => (
+                  {(segment === "toplam"
+                    ? [
+                        ...sirketSatirlari.filter((s) => s.havuz === "hayatdisi"),
+                        ...sirketSatirlari.filter((s) => s.havuz === "hayat"),
+                      ]
+                    : sirketSatirlari.slice(0, 50)
+                  ).map((row, i) => (
                     <tr key={row.sirketKodu} className={tsb.tbodyRow}>
                       <td className={cn(tsb.td, "text-slate-500")}>{i + 1}</td>
                       <th scope="row" className={cn(tsb.tdSticky, "text-left font-medium")}>{row.sirketAdi}</th>
                       {segment === "toplam" ? (
-                        <td className={cn(tsb.td, "text-slate-600")}>
-                          {row.havuz === "hayatdisi" ? "HD" : "H/E"}
+                        <td className={tsb.td}>
+                          <span
+                            className={cn(
+                              "inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wide",
+                              row.havuz === "hayatdisi"
+                                ? "bg-teal-100 text-teal-900"
+                                : "bg-sky-100 text-sky-950",
+                            )}
+                          >
+                            {row.havuz === "hayatdisi" ? "HD" : "H/E"}
+                          </span>
                         </td>
                       ) : null}
                       <td className={cn(tsb.td, "text-right font-semibold")}>{tsbFormatPrim(row.bu.genelToplam)}</td>

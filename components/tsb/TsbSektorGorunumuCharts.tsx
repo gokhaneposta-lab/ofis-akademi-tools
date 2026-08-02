@@ -593,8 +593,8 @@ export function TsbSektorBilançoStackedChart({
 const pfYoy = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1, signDisplay: "exceptZero" });
 
 function shortBransLabel(s: string): string {
-  if (s.length <= 16) return s;
-  return `${s.slice(0, 14)}…`;
+  if (s.length <= 22) return s;
+  return `${s.slice(0, 20)}…`;
 }
 
 /** Branş bazlı prim — bu dönem vs önceki yıl aynı ay (gruplu sütun). */
@@ -611,16 +611,18 @@ export function TsbSektorBransBuyumeChart({
   const padL = 72;
   const padR = 20;
   const padT = 48;
-  const padB = 78;
-  const band = Math.max(44, Math.min(64, Math.floor(780 / Math.max(1, satirlar.length))));
-  const chartW = Math.max(860, padL + padR + satirlar.length * band);
-  const chartH = 340;
+  const padB = 118;
+  const band = Math.max(48, Math.min(72, Math.floor(820 / Math.max(1, satirlar.length))));
+  const chartW = Math.max(900, padL + padR + satirlar.length * band);
+  const chartH = 390;
   const innerH = chartH - padT - padB;
   const max = Math.max(1, ...satirlar.flatMap((s) => [s.primBu, s.primOnceki]));
   const yAt = (v: number) => padT + innerH - (v / max) * innerH;
   const ticks = Array.from({ length: 5 }, (_, i) => (max * i) / 4);
   const gap = 3;
-  const barW = Math.min(16, (band * 0.7 - gap) / 2);
+  const barW = Math.min(18, (band * 0.72 - gap) / 2);
+  const base = padT + innerH;
+  const labelAnchorY = base + 10;
 
   const tip =
     hoverIdx !== null
@@ -692,7 +694,6 @@ export function TsbSektorBransBuyumeChart({
       })}
       {satirlar.map((s, i) => {
         const cx = padL + band * i + band / 2;
-        const base = padT + innerH;
         const hBu = Math.max(0, base - yAt(s.primBu));
         const hOn = Math.max(0, base - yAt(s.primOnceki));
         const active = hoverIdx === i;
@@ -730,12 +731,12 @@ export function TsbSektorBransBuyumeChart({
             ) : null}
             <text
               x={cx}
-              y={chartH - 14}
+              y={labelAnchorY}
               textAnchor="end"
-              fontSize={9}
-              fill="#334155"
-              fontWeight={active ? 700 : 500}
-              transform={`rotate(-38 ${cx} ${chartH - 14})`}
+              fontSize={10}
+              fill="#0f172a"
+              fontWeight={active ? 700 : 600}
+              transform={`rotate(-42 ${cx} ${labelAnchorY})`}
             >
               {shortBransLabel(s.anaBransH)}
             </text>

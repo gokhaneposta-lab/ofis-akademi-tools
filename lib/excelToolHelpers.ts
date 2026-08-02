@@ -26,26 +26,38 @@ export function formatSqlValue(cell: string, forceQuote: boolean): string {
   return `'${sqlEscape(t)}'`;
 }
 
-/** TR şirket ünvanından hukukî ekleri ve gürültüyü temizler. */
+/**
+ * TR şirket ünvanından hukukî ekleri temizler.
+ * Noktalı yazımlar da kapsanır: L.T.D, L.T.D., A.Ş., Ş.T.İ. vb.
+ * Son sınır `\b` yerine (?=\s|$|noktalama) — "A.Ş." / "L.T.D." için gerekli.
+ */
+const UNVAN_END = "(?=\\s|$|[.,;|/\\\\])";
 const UNVAN_SUFFIXES: RegExp[] = [
-  /\bANON[İI]M\s+Ş[İI]RKET[İI]\b/gi,
-  /\bL[İI]M[İI]TED\s+Ş[İI]RKET[İI]\b/gi,
-  /\bLTD\.?\s*ŞT[İI]\.?\b/gi,
-  /\bA\.?\s*Ş\.?\b/gi,
-  /\bA\.?\s*S\.?\b/gi,
-  /\bLTD\.?\b/gi,
-  /\bŞT[İI]\.?\b/gi,
-  /\bINC\.?\b/gi,
-  /\bCORP\.?\b/gi,
-  /\bCO\.?\b/gi,
-  /\bLLC\.?\b/gi,
-  /\bGMBH\b/gi,
-  /\bS\.?\s*A\.?\b/gi,
+  new RegExp(`\\bANON[İI]M\\s+Ş[İI]RKET[İI]${UNVAN_END}`, "gi"),
+  new RegExp(`\\bL[İI]M[İI]TED\\s+Ş[İI]RKET[İI]${UNVAN_END}`, "gi"),
+  new RegExp(`\\bL\\.?\\s*T\\.?\\s*D\\.?\\s*Ş\\.?\\s*T\\.?\\s*[İI]\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bLTD\\.?\\s*ŞT[İI]\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bL\\.?\\s*T\\.?\\s*D\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bLTD\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bA\\.?\\s*Ş\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bA\\.?\\s*S\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bŞ\\.?\\s*T\\.?\\s*[İI]\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bŞT[İI]\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bI\\.?\\s*N\\.?\\s*C\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bINC\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bC\\.?\\s*O\\.?\\s*R\\.?\\s*P\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bCORP\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bL\\.?\\s*L\\.?\\s*C\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bLLC\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bG\\.?\\s*M\\.?\\s*B\\.?\\s*H\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bGMBH${UNVAN_END}`, "gi"),
+  new RegExp(`\\bS\\.?\\s*A\\.?${UNVAN_END}`, "gi"),
+  new RegExp(`\\bCO\\.?${UNVAN_END}`, "gi"),
 ];
 
 export function cleanSirketUnvan(raw: string): string {
   let s = raw
-    .replace(/["'`´]/g, "")
+    .replace(/["'`´']/g, "")
     .replace(/\u00a0/g, " ")
     .trim();
   for (const re of UNVAN_SUFFIXES) {

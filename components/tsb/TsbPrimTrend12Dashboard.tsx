@@ -36,6 +36,7 @@ import {
   TsbFilterField,
   TsbFilterGrid,
   TsbLoading,
+  TsbSegmentSwitch,
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
@@ -440,38 +441,46 @@ export default function TsbPrimTrend12Dashboard() {
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
-        <p className={tsb.filterSectionLabel}>Görünüm</p>
-        <div className={cn(tsb.btnGroup, "mb-3")}>
-          <TsbToggleButton pressed={segment === "hayatdisi"} variant="segment" onClick={() => setSegment("hayatdisi")}>
-            Hayat dışı
-          </TsbToggleButton>
-          <TsbToggleButton pressed={segment === "hayat"} variant="segment" onClick={() => setSegment("hayat")}>
-            Hayat &amp; emeklilik
-          </TsbToggleButton>
-        </div>
-        <p className={tsb.filterSectionLabel}>Branş filtresi türü</p>
-        <div className={cn(tsb.btnGroup, "mb-3")}>
-          <TsbToggleButton pressed={filtreModu === "anaBransH"} onClick={() => setFiltreModu("anaBransH")}>
-            Ana branş (TSB)
-          </TsbToggleButton>
-          <TsbToggleButton pressed={filtreModu === "tarifeGrubu"} onClick={() => setFiltreModu("tarifeGrubu")}>
-            Tarife grubu
-          </TsbToggleButton>
-        </div>
-        <p className={tsb.filterSectionLabel}>Eksen</p>
-        <div className={cn(tsb.btnGroup, "mb-2")}>
-          <TsbToggleButton pressed={logOlcek} onClick={() => setLogOlcek(true)}>
-            Logaritmik (önerilen)
-          </TsbToggleButton>
-          <TsbToggleButton pressed={!logOlcek} onClick={() => setLogOlcek(false)}>
-            Doğrusal
-          </TsbToggleButton>
+        <div className={tsb.filterCompactRow}>
+          <div>
+            <p className={tsb.filterSectionLabel}>Havuz</p>
+            <TsbSegmentSwitch
+              aria-label="Sektör havuzu"
+              value={segment}
+              onChange={setSegment}
+              options={[
+                { id: "hayatdisi", label: "Hayat dışı" },
+                { id: "hayat", label: "Hayat & emeklilik" },
+              ]}
+            />
+          </div>
+          <div>
+            <p className={tsb.filterSectionLabel}>Kırılım</p>
+            <TsbSegmentSwitch
+              aria-label="Kırılım türü"
+              value={filtreModu}
+              onChange={setFiltreModu}
+              options={[
+                { id: "anaBransH", label: "Ana branş" },
+                { id: "tarifeGrubu", label: "Tarife grubu" },
+              ]}
+            />
+          </div>
+          <div>
+            <p className={tsb.filterSectionLabel}>Ölçek</p>
+            <TsbSegmentSwitch
+              aria-label="Grafik ölçeği"
+              value={logOlcek ? "log" : "lin"}
+              onChange={(v) => setLogOlcek(v === "log")}
+              options={[
+                { id: "log", label: "Logaritmik" },
+                { id: "lin", label: "Doğrusal" },
+              ]}
+            />
+          </div>
         </div>
         <p className={tsb.filterHint}>
-          Seçtiğiniz <strong>bitiş ayına</strong> kadar geriye dönük en fazla <strong>12 ay</strong>. Üst grafik{" "}
-          <strong>yıl içi kümülatif</strong> prim; alt grafik <strong>aylık üretim</strong> (ardışık aylar arası fark).
-          Sektör <strong className="text-slate-600">gri</strong>, şirket{" "}
-          <strong className="text-emerald-700">yeşil</strong>.
+          Bitiş ayına kadar en fazla 12 ay. Üst grafik kümülatif prim; alt grafik aylık üretim.
         </p>
       </TsbFilterBar>
 

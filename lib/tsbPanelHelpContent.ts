@@ -10,7 +10,7 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     href: "/sigorta/sektor-gorunumu",
     items: [
       "En üstte havuzu seçin (toplam / hayat dışı / hayat–emeklilik). Prim dönemi aylık, finansal dönem çeyrekliktir; ikisi bağımsız çalışır.",
-      "Prim üretimi tablosu prim-tidy kaynaktan gelir (ör. 2026-06 YTD). Finansal göstergeler gelir/bilanço çeyreğindendir.",
+      "Prim üretimi aylık TSB istatistiklerindendir (yılbaşı–seçili ay, YTD). Finansal göstergeler gelir/bilanço çeyreğindendir.",
       "Tablolar birleşik sektör toplamını ve HD / H/E kırılımını gösterir; havuz seçici yalnız kâr trendini değiştirir. Oranlar tutar toplamından hesaplanır.",
     ],
   },
@@ -57,8 +57,8 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
   {
     href: "/sigorta/prim",
     items: [
-      "Üst sekmeler aynı prim-tidy kaynağının panelleridir. İlk sekme Branş kıyası; altında Değişim ve Sıra ayrı alt sayfalardır (filtre değil).",
-      "Satış kanallarında da Genel bakış / Branş profili / Şirket / Liderler alt sayfa geçişidir. HD–H/E ve daraltma ise filtredir.",
+      "Üst sekmeler aynı prim istatistiklerinin farklı bakışlarıdır. İlk sekme Branş kıyası; altında Değişim ve Sıra ayrı alt sayfalardır (filtre değil).",
+      "Satış kanallarında Genel bakış / Branş profili / Şirket / Liderler alt sayfa geçişidir. Havuz ve kırılım seçimleri filtredir.",
     ],
   },
   {

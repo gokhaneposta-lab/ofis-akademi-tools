@@ -298,21 +298,20 @@ export default function TsbBransDegisimDashboard() {
             />
           </div>
           <div>
-            <p className={tsb.filterSectionLabel}>Daraltma</p>
+            <p className={tsb.filterSectionLabel}>Kırılım</p>
             <TsbSegmentSwitch
-              aria-label="Daraltma türü"
+              aria-label="Kırılım türü"
               value={filtreModu}
               onChange={setFiltreModu}
               options={[
-                { id: "anaBransH", label: "Ana branş (TSB)" },
+                { id: "anaBransH", label: "Ana branş" },
                 { id: "tarifeGrubu", label: "Tarife grubu" },
               ]}
             />
           </div>
         </div>
         <p className={tsb.filterHint}>
-          Tablo yalnızca <strong>seçili şirketin havuzuna</strong> ({HAVUZ_LABEL[tablo.tabloHavuzu]}) ait branşları
-          gösterir.
+          Tablo yalnızca seçili şirketin havuzundaki ({HAVUZ_LABEL[tablo.tabloHavuzu]}) branşları gösterir.
         </p>
       </TsbFilterBar>
 

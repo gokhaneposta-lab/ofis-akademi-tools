@@ -13,12 +13,7 @@ export default function SigortaSirketKarnePage() {
       seoPageId="sirketKarne"
       currentHref="/sigorta/sirket-karne"
       title="Şirket karne"
-      description={
-        <>
-          Tek şirket için merkezi görünüm: özet karne (prim, finansal, kanal, trend), finansal/teknik/prim/pazar
-          sekmeleri ve ilgili panellere filtreli geçiş.
-        </>
-      }
+      description="Bu şirket sektörün neresinde — prim, finans, kanal ve trend tek bakışta."
       sourceNote={<TsbSourceNote />}
     >
       <TsbSirketKarneDashboard />

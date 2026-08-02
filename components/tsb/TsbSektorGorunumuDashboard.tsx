@@ -123,7 +123,7 @@ function PrimUretimTable({
             <th scope="row" className={cn(tsb.tdSticky, "text-left")}>
               <span className="block font-semibold text-slate-900">Brüt prim üretimi</span>
               <span className="block text-[11px] font-normal text-slate-400">
-                prim-tidy · {formatPrimYtdAralik(donem)} · YTD
+                {formatPrimYtdAralik(donem)} · YTD
               </span>
             </th>
             {yilKolonlari.map((p) => (
@@ -333,7 +333,7 @@ export default function TsbSektorGorunumuDashboard() {
         <TsbFilterGrid>
           <TsbFilterField
             label="Prim dönemi"
-            hint="Aylık prim-tidy (YTD). Finansal dönemden bağımsızdır."
+            hint="Aylık prim istatistiği (YTD). Finansal dönemden bağımsızdır."
           >
             <TsbSelect value={primDonem} onChange={(e) => setPrimDonem(e.target.value)}>
               {[...primDonemler].reverse().map((d) => (
@@ -365,7 +365,7 @@ export default function TsbSektorGorunumuDashboard() {
         <div className={cn(tsb.dataPanelHeader, "flex flex-wrap items-end justify-between gap-2")}>
           <div>
             <h2 id="sg-prim" className={tsb.dataPanelTitle}>Prim üretimi</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className={tsb.sectionLead}>
               {primDonem} · {formatPrimYtdAralik(primDonem)} · aynı ayın yıllar arası seyri
             </p>
           </div>
@@ -380,7 +380,7 @@ export default function TsbSektorGorunumuDashboard() {
         <div className={cn(tsb.dataPanelHeader, "flex flex-wrap items-end justify-between gap-2")}>
           <div>
             <h2 id="sg-kpi" className={tsb.dataPanelTitle}>Finansal ana göstergeler</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className={tsb.sectionLead}>
               {finansalDonem} · HD + Hayat/Emeklilik toplamı · aynı çeyreğin yıllar arası seyri
             </p>
           </div>
@@ -414,7 +414,7 @@ export default function TsbSektorGorunumuDashboard() {
       <section className={tsb.dataPanel}>
         <div className={tsb.dataPanelHeader}>
           <h2 className={tsb.dataPanelTitle}>Finansal sağlık oranları</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className={tsb.sectionLead}>
             {finansalDonem} · HD, H/E ve birleşik sektör aynı hesap tabanında.
           </p>
         </div>
@@ -451,8 +451,8 @@ export default function TsbSektorGorunumuDashboard() {
       <section className={tsb.dataPanel}>
         <div className={tsb.dataPanelHeader}>
           <h2 className={tsb.dataPanelTitle}>Hayat dışı: İlk 10 şirket vs diğerleri</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            {finansalDonem} · her dönemde brüt prime göre yeniden sıralanır. Bu kırılım ölçek segmentasyonu değildir.
+          <p className={tsb.sectionLead}>
+            {finansalDonem} · her dönemde brüt prime göre yeniden sıralanır.
           </p>
         </div>
         <TsbTableShell>

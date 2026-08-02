@@ -12,13 +12,8 @@ export default function SigortaAnaBransTkzPage() {
     <TsbPageLayout
       seoPageId="anaBransTkz"
       currentHref="/sigorta/ana-brans-tkz"
-      title="TSB ana branş TKZ tablosu"
-      description={
-        <>
-          Son finansal dönemde seçili şirketin ve kıyasın TSB ana branş bazında <strong>Teknik Gelir</strong>,{" "}
-          <strong>Teknik Gider</strong> ve <strong>TKZ</strong> kırılımı.
-        </>
-      }
+      title="Ana branş TKZ"
+      description="Hangi branşlar teknik kâr üretiyor — gelir, gider ve TKZ nasıl dağılmış?"
       sourceNote={<TsbSourceNote />}
     >
       <TsbAnaBransTkzDashboard />

@@ -57,7 +57,6 @@ import {
   TsbError,
   TsbFilterBar,
   TsbFilterField,
-  TsbFilterGrid,
   TsbKpiCard,
   TsbKpiGrid,
   TsbLoading,
@@ -434,6 +433,37 @@ export default function TsbKanalDagilimDashboard() {
       ? "Tüm kanallarda üretim var."
       : `${liderOzet.aktifSayisi} / 5 kanal üretimde.`;
 
+  const genelKpi = (
+    <TsbKpiGrid>
+      <TsbKpiCard
+        accent
+        label="Toplam prim (YTD)"
+        value={tsbFormatPrim(sektorKutu.genelToplam)}
+        delta={`${tsbFormatDegisimYuzde(sektorYoy)} YoY`}
+        deltaClassName={tsbDeltaRenk(sektorYoy)}
+        story={toplamStory}
+      />
+      <TsbKpiCard
+        label="Lider kanal"
+        value={liderOzet.lider?.label ?? "—"}
+        delta={liderOzet.lider ? `%${pf1.format(liderOzet.lider.pay)} pay` : undefined}
+        story={liderStory}
+      />
+      <TsbKpiCard
+        label="2. kanal"
+        value={liderOzet.ikinci?.label ?? "—"}
+        delta={liderOzet.ikinci ? `%${pf1.format(liderOzet.ikinci.pay)} pay` : undefined}
+        story={ikinciStory}
+      />
+      <TsbKpiCard
+        label="Aktif kanal"
+        value={liderOzet.aktifSayisi}
+        delta="Üretimi olan kanal"
+        story={aktifStory}
+      />
+    </TsbKpiGrid>
+  );
+
   return (
     <div className={tsb.dashboardStack}>
       <TsbSubPageNav
@@ -443,8 +473,10 @@ export default function TsbKanalDagilimDashboard() {
         onChange={setTab}
       />
 
+      {tab === "genel" ? genelKpi : null}
+
       <TsbFilterBar>
-        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-6">
+        <div className={tsb.filterCompactRow}>
           <div>
             <p className={tsb.filterSectionLabel}>Havuz</p>
             <TsbSegmentSwitch
@@ -458,23 +490,18 @@ export default function TsbKanalDagilimDashboard() {
             />
           </div>
           <div>
-            <p className={tsb.filterSectionLabel}>Daraltma</p>
+            <p className={tsb.filterSectionLabel}>Kırılım</p>
             <TsbSegmentSwitch
-              aria-label="Daraltma türü"
+              aria-label="Kırılım türü"
               value={filtreModu}
               onChange={setFiltreModu}
               options={[
-                { id: "anaBransH", label: "Ana branş (TSB)" },
+                { id: "anaBransH", label: "Ana branş" },
                 { id: "tarifeGrubu", label: "Tarife grubu" },
               ]}
             />
           </div>
-        </div>
-      </TsbFilterBar>
-
-      <TsbFilterBar>
-        <TsbFilterGrid>
-          <TsbFilterField label="Dönem" className="sm:col-span-2" hint={`${formatPrimYtdAralik(secilenDonem)} · YTD`}>
+          <TsbFilterField label="Dönem" hint={`${formatPrimYtdAralik(secilenDonem)} · YTD`}>
             <TsbSelect
               value={secilenDonem}
               onChange={(e) => {
@@ -492,8 +519,7 @@ export default function TsbKanalDagilimDashboard() {
           </TsbFilterField>
           {showBransFilter ? (
             <TsbFilterField
-              label={filtreModu === "anaBransH" ? "Ana branş (opsiyonel)" : "Tarife grubu (opsiyonel)"}
-              className="sm:col-span-2"
+              label={filtreModu === "anaBransH" ? "Branş (opsiyonel)" : "Tarife (opsiyonel)"}
             >
               {filtreModu === "anaBransH" ? (
                 <TsbSelect value={anaBrans} onChange={(e) => setAnaBrans(e.target.value)}>
@@ -519,7 +545,7 @@ export default function TsbKanalDagilimDashboard() {
             </TsbFilterField>
           ) : null}
           {showSirketSelect ? (
-            <TsbFilterField label="Şirket" className="sm:col-span-2 lg:col-span-4">
+            <TsbFilterField label="Şirket" className="min-w-[14rem] flex-1 sm:min-w-[18rem]">
               <TsbSelect
                 className={tsb.selectWide}
                 value={effectiveSirketKodu !== null ? String(effectiveSirketKodu) : ""}
@@ -533,55 +559,22 @@ export default function TsbKanalDagilimDashboard() {
               </TsbSelect>
             </TsbFilterField>
           ) : null}
-        </TsbFilterGrid>
-        <p className={tsb.filterHint}>
-          Prim aylık YTD’dir. YoY, bir önceki yılın aynı ayına göredir.
-          {tab === "brans" ? " Branş sekmesinde tüm branşlar listelenir; üstteki branş filtresi bu sekmede kullanılmaz." : null}
-        </p>
+        </div>
       </TsbFilterBar>
 
       {tab === "genel" && (
         <>
-          <TsbKpiGrid>
-            <TsbKpiCard
-              accent
-              label="Toplam prim (YTD)"
-              value={tsbFormatPrim(sektorKutu.genelToplam)}
-              delta={`${tsbFormatDegisimYuzde(sektorYoy)} YoY`}
-              deltaClassName={tsbDeltaRenk(sektorYoy)}
-              story={toplamStory}
-            />
-            <TsbKpiCard
-              label="Lider kanal"
-              value={liderOzet.lider?.label ?? "—"}
-              delta={liderOzet.lider ? `%${pf1.format(liderOzet.lider.pay)} pay` : undefined}
-              story={liderStory}
-            />
-            <TsbKpiCard
-              label="2. kanal"
-              value={liderOzet.ikinci?.label ?? "—"}
-              delta={liderOzet.ikinci ? `%${pf1.format(liderOzet.ikinci.pay)} pay` : undefined}
-              story={ikinciStory}
-            />
-            <TsbKpiCard
-              label="Aktif kanal"
-              value={liderOzet.aktifSayisi}
-              delta="Üretimi olan kanal"
-              story={aktifStory}
-            />
-          </TsbKpiGrid>
-
-          <section className="grid gap-4 xl:grid-cols-2">
+          <section className="grid gap-3 xl:grid-cols-2">
             <div className={tsb.chartPanel}>
-              <h2 className="mb-1 text-sm font-bold text-slate-900">Sektör kanal dağılımı</h2>
-              <p className="mb-3 text-xs text-slate-500">
+              <h2 className={tsb.sectionTitle}>Sektör kanal dağılımı</h2>
+              <p className={cn(tsb.sectionLead, "mb-3")}>
                 Prim hangi kanallardan geliyor — pay dağılımı tek bakışta.
               </p>
               <KanalDonutChart kutu={sektorKutu} title="Sektör kanal dağılımı" />
             </div>
             <div className={tsb.chartPanel}>
-              <p className="mb-1 text-sm font-bold text-slate-900">Yıllar arası kanal payı</p>
-              <p className="mb-3 text-xs text-slate-500">
+              <h2 className={tsb.sectionTitle}>Yıllar arası kanal payı</h2>
+              <p className={cn(tsb.sectionLead, "mb-3")}>
                 Aynı ayın yıllar arası seyri — liderlik kalıcı mı kayıyor mu?
               </p>
               <div className="min-w-[560px]">
@@ -593,8 +586,8 @@ export default function TsbKanalDagilimDashboard() {
           <section className={tsb.dataPanel}>
             <div className={cn(tsb.dataPanelHeader, "flex flex-wrap items-end justify-between gap-2")}>
               <div>
-                <h2 className={tsb.dataPanelTitle}>Şirket bazında kanal kırılımı</h2>
-                <p className="mt-1 text-sm text-slate-500">{secilenDonem} · {formatPrimYtdAralik(secilenDonem)}</p>
+                <h2 className={tsb.dataPanelTitle}>Şirket bazında kanal dağılımı</h2>
+                <p className={tsb.sectionLead}>{secilenDonem} · {formatPrimYtdAralik(secilenDonem)}</p>
               </div>
               <KanalLegendChips />
             </div>
@@ -633,7 +626,7 @@ export default function TsbKanalDagilimDashboard() {
       {tab === "brans" && (
         <>
           <TsbFilterBar>
-            <TsbFilterField label={filtreModu === "tarifeGrubu" ? "Profil tarife grubu" : "Profil ana branş"}>
+            <TsbFilterField label={filtreModu === "tarifeGrubu" ? "Tarife grubu" : "Branş"}>
               <TsbSelect value={profilBrans} onChange={(e) => setProfilBrans(e.target.value)}>
                 {bransSatirlari.map((b) => (
                   <option key={b.bransKey} value={b.bransKey}>
@@ -646,10 +639,10 @@ export default function TsbKanalDagilimDashboard() {
 
           {profilSatir ? (
             <section className={tsb.chartPanel}>
-              <h2 className="mb-1 text-sm font-bold text-slate-900">
+              <h2 className={tsb.sectionTitle}>
                 Branş kanal profili — {tsbFormatPrim(profilSatir.bu.genelToplam)}
               </h2>
-              <p className="mb-3 text-sm text-slate-500">
+              <p className={cn(tsb.sectionLead, "mb-3")}>
                 {profilSatir.label}
                 {profilSatir.yoy !== null ? (
                   <span className={cn("ml-2 font-semibold", tsbDeltaRenk(profilSatir.yoy))}>
@@ -764,11 +757,11 @@ export default function TsbKanalDagilimDashboard() {
 
               <section className="grid gap-4 xl:grid-cols-2">
                 <div className={tsb.chartPanel}>
-                  <h2 className="mb-3 text-sm font-bold text-slate-900">{secilenAd} — kanal dağılımı</h2>
+                  <h2 className={cn(tsb.sectionTitle, "mb-3")}>{secilenAd} — kanal dağılımı</h2>
                   <KanalDonutChart kutu={kiyas.sirket} title={`${secilenAd} kanal`} />
                 </div>
                 <div className={tsb.chartPanel}>
-                  <h2 className="mb-3 text-sm font-bold text-slate-900">Sektör — kanal dağılımı</h2>
+                  <h2 className={cn(tsb.sectionTitle, "mb-3")}>Sektör — kanal dağılımı</h2>
                   <KanalDonutChart kutu={kiyas.sektor} title="Sektör kanal" />
                 </div>
               </section>

@@ -65,8 +65,8 @@ export function TsbPageLayout({
         </header>
         <main className={tsb.main}>
           <TsbDashboardStickyNav currentHref={currentHref} activePrimPanel={activePrimPanel} />
-          {help.length > 0 ? <TsbPanelHelp items={help} /> : null}
           {children}
+          {help.length > 0 ? <TsbPanelHelp items={help} /> : null}
           <TsbSeoSection pageId={seoPageId} />
         </main>
       </div>

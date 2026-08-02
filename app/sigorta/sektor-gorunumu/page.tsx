@@ -12,13 +12,8 @@ export default function SigortaSektorGorunumuPage() {
     <TsbPageLayout
       seoPageId="sektorGorunumu"
       currentHref="/sigorta/sektor-gorunumu"
-      title="Sigorta sektörü görünümü"
-      description={
-        <>
-          Hayat dışı, hayat–emeklilik ve birleşik sektörün finansal büyüklükleri; kârlılık, bilanço,
-          teknik oranlar ve ilk 10 şirket kırılımıyla.
-        </>
-      }
+      title="Sektör görünümü"
+      description="Sektör ne kadar büyüdü — prim, kâr, bilanço ve ilk 10 nasıl dağılıyor?"
       sourceNote={<TsbSourceNote />}
     >
       <TsbSektorGorunumuDashboard />

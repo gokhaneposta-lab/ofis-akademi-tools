@@ -25,7 +25,6 @@ import {
   TsbError,
   TsbFilterBar,
   TsbFilterField,
-  TsbFilterGrid,
   TsbKpiCard,
   TsbKpiGrid,
   TsbLoading,
@@ -154,8 +153,64 @@ export default function TsbKanalPrimDashboard() {
 
   return (
     <div className={tsb.dashboardStack}>
+      {tablo ? (
+        <TsbKpiGrid>
+          <TsbKpiCard
+            accent
+            label="Sektör toplamı"
+            value={tsbFormatPrim(tablo.sektorToplamBu)}
+            delta={`${tsbFormatDegisimYuzde(toplamDegisim)} YoY`}
+            deltaClassName={tsbDeltaRenk(toplamDegisim)}
+            story={
+              toplamDegisim == null
+                ? "YoY karşılaştırması yok."
+                : toplamDegisim > 0
+                  ? "Seçili kırılımda pazar büyüyor."
+                  : toplamDegisim < 0
+                    ? "Seçili kırılımda pazar daralıyor."
+                    : "Seçili kırılımda değişim yok."
+            }
+          />
+          <TsbKpiCard
+            label="Lider şirket"
+            value={liderSatir?.sirketAdi ?? "—"}
+            delta={liderSatir ? `%${pf.format(liderSatir.payBuYuzde)} pay` : undefined}
+            story={
+              liderSatir
+                ? liderSatir.siraOnceki > liderSatir.siraBu
+                  ? "Sıra geçen yıla göre iyileşti."
+                  : liderSatir.siraOnceki < liderSatir.siraBu
+                    ? "Sıra geçen yıla göre geriledi."
+                    : "Sıra geçen yılla aynı."
+                : "—"
+            }
+          />
+          <TsbKpiCard
+            label="Listelenen şirket"
+            value={tablo.satirlar.length}
+            delta={kanalLabel}
+            story={`${secilenDonem} · seçili filtreye göre.`}
+          />
+          <TsbKpiCard
+            label="Lider prim"
+            value={liderSatir ? tsbFormatPrim(liderSatir.primBu) : "—"}
+            delta={liderSatir ? `${tsbFormatDegisimYuzde(liderSatir.degisimYuzde)} YoY` : undefined}
+            deltaClassName={liderSatir ? tsbDeltaRenk(liderSatir.degisimYuzde) : undefined}
+            story={
+              liderSatir && liderSatir.degisimYuzde != null && toplamDegisim != null
+                ? liderSatir.degisimYuzde > toplamDegisim
+                  ? "Pazarın üzerinde büyüyor."
+                  : liderSatir.degisimYuzde < toplamDegisim
+                    ? "Pazarın altında büyüyor."
+                    : "Pazarla aynı hızda."
+                : "—"
+            }
+          />
+        </TsbKpiGrid>
+      ) : null}
+
       <TsbFilterBar>
-        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-6">
+        <div className={tsb.filterCompactRow}>
           <div>
             <p className={tsb.filterSectionLabel}>Havuz</p>
             <TsbSegmentSwitch
@@ -173,26 +228,17 @@ export default function TsbKanalPrimDashboard() {
             />
           </div>
           <div>
-            <p className={tsb.filterSectionLabel}>Daraltma</p>
+            <p className={tsb.filterSectionLabel}>Kırılım</p>
             <TsbSegmentSwitch
-              aria-label="Daraltma türü"
+              aria-label="Kırılım türü"
               value={filtreModu}
               onChange={setFiltreModu}
               options={[
-                { id: "anaBransH", label: "Ana branş (TSB)" },
+                { id: "anaBransH", label: "Ana branş" },
                 { id: "tarifeGrubu", label: "Tarife grubu" },
               ]}
             />
           </div>
-        </div>
-        <p className={tsb.filterHint}>
-          Hayat ve hayat dışı şirketler ayrı gruplanmıştır; <strong>ana branş</strong> veya{" "}
-          <strong>tarife grubu</strong> ile daraltıp dönem ve kanalla tabloyu güncelleyebilirsiniz.
-        </p>
-      </TsbFilterBar>
-
-      <TsbFilterBar>
-        <TsbFilterGrid>
           <TsbFilterField label="Dönem">
             <TsbSelect
               value={secilenDonem}
@@ -209,10 +255,7 @@ export default function TsbKanalPrimDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
-          <TsbFilterField
-            label={filtreModu === "anaBransH" ? "Ana branş" : "Tarife grubu"}
-            className="sm:col-span-2"
-          >
+          <TsbFilterField label={filtreModu === "anaBransH" ? "Branş" : "Tarife grubu"}>
             {filtreModu === "anaBransH" ? (
               <TsbSelect className={tsb.selectWide} value={anaBrans} onChange={(e) => setAnaBrans(e.target.value)}>
                 <option value="">{tumAnaBransLabel}</option>
@@ -248,88 +291,35 @@ export default function TsbKanalPrimDashboard() {
               ))}
             </TsbSelect>
           </TsbFilterField>
-        </TsbFilterGrid>
+        </div>
       </TsbFilterBar>
 
       {tablo && (
         <>
-          <TsbKpiGrid>
-            <TsbKpiCard
-              accent
-              label="Sektör toplamı"
-              value={tsbFormatPrim(tablo.sektorToplamBu)}
-              delta={`${tsbFormatDegisimYuzde(toplamDegisim)} YoY`}
-              deltaClassName={tsbDeltaRenk(toplamDegisim)}
-              story={
-                toplamDegisim == null
-                  ? "YoY karşılaştırması yok."
-                  : toplamDegisim > 0
-                    ? "Seçili kırılımda pazar büyüyor."
-                    : toplamDegisim < 0
-                      ? "Seçili kırılımda pazar daralıyor."
-                      : "Seçili kırılımda değişim yok."
-              }
-            />
-            <TsbKpiCard
-              label="Lider şirket"
-              value={liderSatir?.sirketAdi ?? "—"}
-              delta={liderSatir ? `%${pf.format(liderSatir.payBuYuzde)} pay` : undefined}
-              story={
-                liderSatir
-                  ? liderSatir.siraOnceki > liderSatir.siraBu
-                    ? "Sıra geçen yıla göre iyileşti."
-                    : liderSatir.siraOnceki < liderSatir.siraBu
-                      ? "Sıra geçen yıla göre geriledi."
-                      : "Sıra geçen yılla aynı."
-                  : "—"
-              }
-            />
-            <TsbKpiCard
-              label="Listelenen şirket"
-              value={tablo.satirlar.length}
-              delta={kanalLabel}
-              story={`${secilenDonem} · seçili filtreye göre.`}
-            />
-            <TsbKpiCard
-              label="Lider prim"
-              value={liderSatir ? tsbFormatPrim(liderSatir.primBu) : "—"}
-              delta={
-                liderSatir ? `${tsbFormatDegisimYuzde(liderSatir.degisimYuzde)} YoY` : undefined
-              }
-              deltaClassName={liderSatir ? tsbDeltaRenk(liderSatir.degisimYuzde) : undefined}
-              story={
-                liderSatir && liderSatir.degisimYuzde != null && toplamDegisim != null
-                  ? liderSatir.degisimYuzde > toplamDegisim
-                    ? "Pazarın üzerinde büyüyor."
-                    : liderSatir.degisimYuzde < toplamDegisim
-                      ? "Pazarın altında büyüyor."
-                      : "Pazarla aynı hızda."
-                  : "—"
-              }
-            />
-          </TsbKpiGrid>
-
-          <div className="space-y-2">
-            <p className={tsb.caption}>
-              Karşılaştırma dönemi: <strong>{secilenDonem}</strong>
-              {tablo.donemOnceki ? (
-                <>
-                  {" "}
-                  · geçen yılın aynı ayı: <strong>{tablo.donemOnceki}</strong>
-                </>
-              ) : null}
-              . Alt satır seçili filtrelere göre toplam prim; pay sütunları en fazla %100.
-            </p>
-            <TsbRenkAciklama
-              baslik="Renk kodları"
-              items={[
-                { label: "Bu yıl sıra — yeşil: sıra iyileşti (daha küçük numara)", ton: "iyi" },
-                { label: "Bu yıl sıra — sarı: sıra değişmedi", ton: "notr" },
-                { label: "Bu yıl sıra — kırmızı: sıra kötüleşti", ton: "kotu" },
-                { label: "Değişim % — yeşil: prim artışı", ton: "iyi" },
-                { label: "Değişim % — kırmızı: prim düşüşü", ton: "kotu" },
-              ]}
-            />
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h2 className={tsb.sectionTitle}>Şirket sıralaması</h2>
+              <p className={tsb.sectionLead}>
+                {secilenDonem}
+                {tablo.donemOnceki ? ` · geçen yıl aynı ay: ${tablo.donemOnceki}` : ""}
+              </p>
+            </div>
+            <details className="text-xs text-slate-500">
+              <summary className="cursor-pointer font-semibold text-slate-600 hover:text-slate-900">
+                Renk kodları
+              </summary>
+              <div className="mt-2">
+                <TsbRenkAciklama
+                  baslik="Renk kodları"
+                  items={[
+                    { label: "Bu yıl sıra — yeşil: sıra iyileşti", ton: "iyi" },
+                    { label: "Bu yıl sıra — sarı: değişmedi", ton: "notr" },
+                    { label: "Bu yıl sıra — kırmızı: kötüleşti", ton: "kotu" },
+                    { label: "Değişim % — yeşil: artış / kırmızı: düşüş", ton: "iyi" },
+                  ]}
+                />
+              </div>
+            </details>
           </div>
           <TsbTableShell>
             <table className={tsb.tableDense}>

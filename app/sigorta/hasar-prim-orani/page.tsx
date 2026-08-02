@@ -13,12 +13,7 @@ export default function SigortaHasarPrimOraniPage() {
       seoPageId="hasarPrimOrani"
       currentHref="/sigorta/hasar-prim-orani"
       title="Hasar / Prim oranı"
-      description={
-        <>
-          Hasar/prim (H/P) oranı: branş veya tarife grubu kırılımında brüt/net, DERK dahil/hariç; odak şirketin sektör
-          sırası ve çeyreklik trendi.
-        </>
-      }
+      description="Teknik sonuç ne durumda — branş bazında H/P sektörün neresinde?"
       sourceNote={<TsbSourceNote />}
     >
       <TsbHasarPrimDashboard />

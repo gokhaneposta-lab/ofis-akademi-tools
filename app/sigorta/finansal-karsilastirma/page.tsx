@@ -13,12 +13,7 @@ export default function SigortaFinansalKarsilastirmaPage() {
       seoPageId="finansalKarsilastirma"
       currentHref="/sigorta/finansal-karsilastirma"
       title="Finansal karşılaştırma"
-      description={
-        <>
-          Çeyreklik gelir tablosu ve bilanço KPI&apos;ları; odak şirket ile sektör toplamı veya başka bir şirket yan yana,
-          önceki yılın aynı çeyreğine göre değişimle.
-        </>
-      }
+      description="Şirket sektörün neresinde — büyüklük, kâr ve oranlar nasıl kıyaslanıyor?"
       sourceNote={<TsbSourceNote />}
     >
       <TsbFinansalKarsilastirmaDashboard />

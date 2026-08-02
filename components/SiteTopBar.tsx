@@ -157,7 +157,7 @@ const pathTitles: Record<string, string> = {
   "/egitimler/ileri": "Seviye 3 · İleri",
   "/formul-kutuphanesi": "Formül Kütüphanesi",
   "/sigorta/tsb": "Sektör verileri (TSB)",
-  "/sigorta/sektor-gorunumu": "Sigorta sektörü görünümü",
+  "/sigorta/sektor-gorunumu": "Sektör görünümü",
   "/sigorta/prim": "Prim ve üretim",
   "/sigorta/kanal-prim": "Prim sıralaması",
   "/sigorta/brans-degisim": "Branş değişim tablosu",

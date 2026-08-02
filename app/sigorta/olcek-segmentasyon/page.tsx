@@ -13,13 +13,7 @@ export default function SigortaOlcekSegmentasyonPage() {
       seoPageId="olcekSegmentasyon"
       currentHref="/sigorta/olcek-segmentasyon"
       title="Ölçek segmentasyonu"
-      description={
-        <>
-          Son finansal çeyreğe göre şirketler brüt prim, özsermaye ve toplam aktif büyüklüklerine göre A+…D
-          ölçek gruplarına ayrılır. Hayat dışı ve hayat–emeklilik havuzları ayrı sınıflandırılır; tabloda
-          segmentteki tüm şirketler listelenir.
-        </>
-      }
+      description="Şirketler hangi ölçek grubunda — A+’dan D’ye kimlerle aynı lige düşüyor?"
       sourceNote={<TsbSourceNote />}
     >
       <TsbOlcekSegmentasyonDashboard />

@@ -18,37 +18,39 @@ export const tsb = {
     "min-h-screen bg-[#e8edf3] bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(16,185,129,0.08),transparent)]",
   pageHeader:
     "border-b border-slate-200/80 bg-white/95 shadow-[0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-sm",
-  pageHeaderInner: "mx-auto max-w-[88rem] px-4 py-4 sm:px-6 sm:py-5 lg:px-8",
+  pageHeaderInner: "mx-auto max-w-[88rem] px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8",
   backLink:
-    "mb-2 inline-flex min-h-[2rem] items-center gap-1.5 text-xs font-semibold text-slate-600 transition hover:text-emerald-800 sm:text-sm",
-  pageTitle: "text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[1.85rem]",
+    "mb-1.5 inline-flex min-h-[2rem] items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-emerald-800 sm:text-sm",
+  pageTitle:
+    "text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl lg:text-[2.25rem] lg:leading-tight",
   pageBadge:
     "rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300",
-  pageLead: "mt-2 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-[0.9375rem]",
+  pageLead: "mt-1.5 max-w-2xl text-sm font-medium leading-snug text-slate-600 sm:text-[0.95rem]",
   sourceNote:
-    "mt-2 max-w-3xl rounded-xl border border-slate-200/70 bg-slate-50/90 px-3 py-2 text-xs leading-relaxed text-slate-600 sm:text-[13px]",
-  main: "mx-auto max-w-[88rem] space-y-6 px-4 py-5 sm:space-y-7 sm:px-6 sm:py-7 lg:px-8",
-  dashboardStack: "space-y-5 sm:space-y-6",
+    "mt-1.5 max-w-3xl text-[11px] leading-relaxed text-slate-500 sm:text-xs",
+  main: "mx-auto max-w-[88rem] space-y-4 px-4 py-4 sm:space-y-5 sm:px-6 sm:py-5 lg:px-8",
+  dashboardStack: "space-y-3.5 sm:space-y-4",
 
   stickyNavWrap:
-    "sticky top-14 z-30 -mx-4 mb-1 border-b border-slate-200/80 bg-white/95 px-3 py-2.5 shadow-[0_1px_4px_rgba(15,23,42,0.05)] backdrop-blur-md sm:-mx-6 sm:px-5 lg:-mx-8 lg:px-7",
-  stickyNavInner: "flex flex-col gap-2",
+    "sticky top-14 z-30 -mx-4 mb-0.5 border-b border-slate-200/80 bg-white/95 px-3 py-2 shadow-[0_1px_4px_rgba(15,23,42,0.05)] backdrop-blur-md sm:-mx-6 sm:px-5 lg:-mx-8 lg:px-7",
+  stickyNavInner: "flex flex-col gap-1.5",
   stickyNavTopRow: "flex flex-wrap items-center justify-between gap-2",
   stickyNavGroupLabel: "text-[10px] font-bold uppercase tracking-widest text-slate-400",
   stickyNavLinks: "flex flex-wrap gap-1",
   stickyNavLink:
     "rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900 sm:px-2.5 sm:py-1.5",
   stickyNavLinkActive:
-    "border-slate-300 bg-slate-900 font-bold text-white shadow-sm hover:bg-slate-900 hover:text-white",
+    "border-emerald-700 bg-slate-900 font-bold text-white shadow-sm ring-1 ring-emerald-500/40 hover:bg-slate-900 hover:text-white",
   stickyNavHubBtn:
     "inline-flex min-h-[2.25rem] shrink-0 items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-900",
   stickyNavAllLabel: "text-[10px] font-medium text-slate-500",
 
   filterBar:
-    "rounded-2xl border border-slate-200/70 bg-white/95 px-4 py-4 shadow-sm ring-1 ring-slate-900/[0.03] backdrop-blur-sm sm:px-5",
-  filterSectionLabel: "mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400",
-  filterHint: "mt-2 text-sm leading-relaxed text-slate-600",
-  filterGrid: "grid gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+    "rounded-xl border border-slate-200/70 bg-white/95 px-3 py-2.5 shadow-sm ring-1 ring-slate-900/[0.03] backdrop-blur-sm sm:px-4 sm:py-3",
+  filterSectionLabel: "mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400",
+  filterHint: "mt-1.5 text-[11px] leading-snug text-slate-500",
+  filterGrid: "grid gap-2 sm:grid-cols-2 sm:gap-2.5 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+  filterCompactRow: "flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-5 sm:gap-y-2",
 
   panelHelp:
     "group rounded-lg border border-slate-200/90 bg-white text-sm shadow-[0_1px_2px_rgba(15,23,42,0.04)] open:border-emerald-200/80 open:shadow-[0_2px_8px_rgba(15,23,42,0.06)] [&_summary::-webkit-details-marker]:hidden",
@@ -158,14 +160,16 @@ export const tsb = {
   btnSegmentOn: "border-emerald-700 bg-emerald-700 text-white shadow-md",
   btnTabOn: "border-emerald-800 bg-emerald-800 text-white shadow-md",
 
-  caption: "text-sm leading-relaxed text-slate-500",
+  caption: "text-xs leading-snug text-slate-500 sm:text-sm",
   dataPanel:
     "rounded-2xl border border-slate-200/70 bg-white shadow-sm ring-1 ring-slate-900/[0.03]",
-  dataPanelHeader: "border-b border-slate-100 px-4 py-3.5 sm:px-5 sm:py-4",
-  dataPanelTitle: "text-base font-bold text-slate-900 sm:text-lg",
-  dataPanelBody: "p-4 sm:p-5",
+  dataPanelHeader: "border-b border-slate-100 px-4 py-3 sm:px-5",
+  dataPanelTitle: "text-lg font-extrabold tracking-tight text-slate-950 sm:text-xl",
+  dataPanelBody: "p-3.5 sm:p-4",
   chartPanel:
-    "overflow-x-auto rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5",
+    "overflow-x-auto rounded-2xl border border-slate-200/70 bg-white p-3.5 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-4",
+  sectionTitle: "text-lg font-extrabold tracking-tight text-slate-950 sm:text-xl",
+  sectionLead: "mt-0.5 text-xs font-medium leading-snug text-slate-500 sm:text-sm",
 
   heroCard:
     "overflow-hidden rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-white via-emerald-50/40 to-slate-50 p-4 shadow-sm ring-1 ring-emerald-900/[0.04] sm:p-5",
@@ -200,13 +204,13 @@ export const tsb = {
     "relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r before:bg-emerald-500 before:content-[''] sm:p-5",
   kpiCardAccent:
     "border-emerald-200/80 bg-gradient-to-br from-emerald-50/50 to-white ring-emerald-900/[0.06] before:bg-emerald-600",
-  kpiLabel: "pl-2 text-[11px] font-bold uppercase tracking-widest text-slate-400",
+  kpiLabel: "pl-2 text-[11px] font-bold uppercase tracking-widest text-slate-500",
   kpiValue:
-    "mt-2 pl-2 text-2xl font-bold tabular-nums tracking-tight text-slate-900 sm:text-[1.65rem] lg:text-3xl",
+    "mt-1.5 pl-2 text-2xl font-extrabold tabular-nums tracking-tight text-slate-950 sm:text-[1.75rem] lg:text-[2rem]",
   kpiValueAccent: "text-emerald-800",
   kpiHint: "mt-1.5 pl-2 text-xs leading-snug text-slate-500",
-  kpiDelta: "mt-1 pl-2 text-xs font-semibold tabular-nums",
-  kpiStory: "mt-1.5 pl-2 text-xs font-medium leading-snug text-slate-600",
+  kpiDelta: "mt-1 pl-2 text-xs font-bold tabular-nums",
+  kpiStory: "mt-1 pl-2 text-xs font-medium leading-snug text-slate-600",
 
   karnePerformansEyebrow:
     "mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500",

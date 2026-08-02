@@ -190,21 +190,21 @@ export default function TsbBransSiraDashboard() {
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
-        <p className={tsb.filterSectionLabel}>Daraltma</p>
+        <p className={tsb.filterSectionLabel}>Kırılım</p>
         <div className="mb-2">
           <TsbSegmentSwitch
-            aria-label="Daraltma türü"
+            aria-label="Kırılım türü"
             value={filtreModu}
             onChange={setFiltreModu}
             options={[
-              { id: "anaBransH", label: "Ana branş (TSB)" },
+              { id: "anaBransH", label: "Ana branş" },
               { id: "tarifeGrubu", label: "Tarife grubu" },
             ]}
           />
         </div>
         <p className={tsb.filterHint}>
-          Satır listesi ana branş veya tarife moduna göre değişir. Hayat dışı üretimi olmayan şirketlerde{" "}
-          <strong>TRAFİK HARİÇ TOPLAM</strong> satırı gösterilmez.
+          Satırlar ana branş veya tarife grubuna göre değişir. Trafik üretimi yoksa TRAFİK HARİÇ TOPLAM satırı
+          gösterilmez.
         </p>
       </TsbFilterBar>
 

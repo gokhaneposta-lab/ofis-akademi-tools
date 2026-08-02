@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   TsbSektorBilançoStackedChart,
   TsbSektorKarBilesenleriChart,
+  TsbSektorPrimUretimChart,
 } from "@/components/tsb/TsbSektorGorunumuCharts";
 import {
   cn,
@@ -94,53 +95,41 @@ const KPI_LIST: { key: KpiKey; label: string; hint: string }[] = [
   { key: "aktifToplami", label: "Aktif toplamı", hint: "Toplam bilanço büyüklüğü" },
 ];
 
-function PrimUretimTable({
+function PrimUretimPanel({
   donem,
   paket,
 }: {
   donem: string;
   paket: { secili: SektorPrimSnapshot; onceki: SektorPrimSnapshot | null; trend: SektorPrimSnapshot[] };
 }) {
-  const yilKolonlari = paket.trend.filter((p) => p.donem !== donem);
   const degisim = fmtDegisim(paket.secili.SEKTOR, paket.onceki?.SEKTOR);
+  const hdDeg = fmtDegisim(paket.secili.HD, paket.onceki?.HD);
+  const heDeg = fmtDegisim(paket.secili.HAYAT_EMEKLILIK, paket.onceki?.HAYAT_EMEKLILIK);
   return (
-    <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[980px]")}>
-        <thead className={tsb.thead}>
-          <tr>
-            <th className={tsb.thSticky}>Gösterge</th>
-            {yilKolonlari.map((p) => (
-              <th key={p.donem} className={tsb.th}>{p.donem}</th>
-            ))}
-            <th className={tsb.th}>{donem}</th>
-            <th className={tsb.th}>Yıllık değişim</th>
-            <th className={tsb.th}>{donem} · HD</th>
-            <th className={tsb.th}>{donem} · H/E</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className={tsb.tbodyRow}>
-            <th scope="row" className={cn(tsb.tdSticky, "text-left")}>
-              <span className="block font-semibold text-slate-900">Brüt prim üretimi</span>
-              <span className="block text-[11px] font-normal text-slate-400">
-                {formatPrimYtdAralik(donem)} · YTD
-              </span>
-            </th>
-            {yilKolonlari.map((p) => (
-              <td key={p.donem} className={cn(tsb.td, "text-right text-slate-500")}>
-                {fmtTl(p.SEKTOR)}
-              </td>
-            ))}
-            <td className={cn(tsb.td, "bg-emerald-50/40 text-right font-bold")}>
-              {fmtTl(paket.secili.SEKTOR)}
-            </td>
-            <td className={cn(tsb.td, "text-right font-semibold", degisim.className)}>{degisim.text}</td>
-            <td className={cn(tsb.td, "text-right")}>{fmtTl(paket.secili.HD)}</td>
-            <td className={cn(tsb.td, "text-right text-sky-700")}>{fmtTl(paket.secili.HAYAT_EMEKLILIK)}</td>
-          </tr>
-        </tbody>
-      </table>
-    </TsbTableShell>
+    <div className="space-y-3">
+      <div className={tsb.chartPanel}>
+        <div className="min-w-[620px]">
+          <TsbSektorPrimUretimChart trend={paket.trend} seciliDonem={donem} />
+        </div>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-3">
+        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Sektör toplam · YoY</p>
+          <p className={cn("mt-1 text-lg font-bold tabular-nums", degisim.className)}>{degisim.text}</p>
+          <p className="mt-0.5 text-xs text-slate-500">{fmtTl(paket.secili.SEKTOR)}</p>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-teal-800">Hayat dışı · YoY</p>
+          <p className={cn("mt-1 text-lg font-bold tabular-nums", hdDeg.className)}>{hdDeg.text}</p>
+          <p className="mt-0.5 text-xs text-slate-500">{fmtTl(paket.secili.HD)}</p>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-sky-800">Hayat / Emeklilik · YoY</p>
+          <p className={cn("mt-1 text-lg font-bold tabular-nums", heDeg.className)}>{heDeg.text}</p>
+          <p className="mt-0.5 text-xs text-slate-500">{fmtTl(paket.secili.HAYAT_EMEKLILIK)}</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -373,7 +362,7 @@ export default function TsbSektorGorunumuDashboard() {
             {primPaket.secili.sirketSayisi} şirket
           </span>
         </div>
-        <PrimUretimTable donem={primDonem} paket={primPaket} />
+        <PrimUretimPanel donem={primDonem} paket={primPaket} />
       </section>
 
       <section className={tsb.dataPanel} aria-labelledby="sg-kpi">

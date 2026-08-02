@@ -114,18 +114,18 @@ export type TsbPrimViewTab = {
 
 export const TSB_PRIM_VIEW_TABS: readonly TsbPrimViewTab[] = [
   {
-    id: "brans",
-    title: "Branş kıyası",
-    subtitle: "Karşılaştırma ve sıra — değişim/pay veya sıra özeti",
-    story: "Hangi branşlar büyüyor, hangileri küçülüyor — sıra nasıl değişti?",
-    legacyHref: "/sigorta/brans-degisim",
-  },
-  {
     id: "kanal-prim",
     title: "Prim sıralaması",
     subtitle: "Kanal / branş kırılımında şirket sırası · pay · YoY",
     story: "Seçili kırılımda hangi şirketler önde — pay ve YoY nasıl?",
     legacyHref: "/sigorta/kanal-prim",
+  },
+  {
+    id: "brans",
+    title: "Branş kıyası",
+    subtitle: "Karşılaştırma ve sıra — değişim/pay veya sıra özeti",
+    story: "Hangi branşlar büyüyor, hangileri küçülüyor — sıra nasıl değişti?",
+    legacyHref: "/sigorta/brans-degisim",
   },
   {
     id: "kanal-dagilim",
@@ -176,7 +176,7 @@ export const TSB_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
 export function parsePrimPanelId(raw: string | null | undefined): TsbPrimPanelId {
   if (raw === "brans-degisim" || raw === "brans-sira") return "brans";
   if (TSB_PRIM_VIEW_TABS.some((t) => t.id === raw)) return raw as TsbPrimPanelId;
-  return "brans";
+  return "kanal-prim";
 }
 
 export function parseBransKiyasView(raw: string | null | undefined): TsbBransKiyasView {

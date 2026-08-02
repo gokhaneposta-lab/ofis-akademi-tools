@@ -350,13 +350,6 @@ export default function TsbSirketKarneDashboard() {
             </div>
           </div>
 
-          <TsbOlcekSegmentRozeti
-            sirketAdi={secilenAd}
-            kayit={olcekKayit}
-            finDonem={olcekFinDonem}
-            yukleniyor={olcekYukleniyor}
-          />
-
           <TsbHazirSorguChips sorgular={hazirSorgular} />
 
           <nav className={cn(tsb.dataPanel, "p-3 sm:p-4")} aria-label="Şirket karne sekmeleri">
@@ -430,6 +423,13 @@ export default function TsbSirketKarneDashboard() {
                 <p className="mb-2 text-sm font-semibold text-slate-700">İlgili paneller</p>
                 <PanelLinkGrid links={sirketKarnePanelLinks(panelPrefs, sekme)} />
               </div>
+
+              <TsbOlcekSegmentRozeti
+                sirketAdi={secilenAd}
+                kayit={olcekKayit}
+                finDonem={olcekFinDonem}
+                yukleniyor={olcekYukleniyor}
+              />
             </div>
           )}
         </>

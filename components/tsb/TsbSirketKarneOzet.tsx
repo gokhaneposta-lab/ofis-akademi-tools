@@ -740,15 +740,6 @@ export default function TsbSirketKarneOzet({
           </div>
           ) : null}
 
-          {!hideHero ? (
-          <TsbOlcekSegmentRozeti
-            sirketAdi={secilenAd}
-            kayit={olcekKayit}
-            finDonem={olcekFinDonem}
-            yukleniyor={olcekYukleniyor}
-          />
-          ) : null}
-
           <KarneSection
             title="Kümülatif prim üretim ve pay"
             subtitle={`YTD ${formatPrimYtdAralikKisa(donem)} · ${yilBu} vs ${yilOnceki}`}
@@ -827,6 +818,15 @@ export default function TsbSirketKarneOzet({
                 <TrendPayTablo seri={primPaket.trendAylik} />
               </div>
             </KarneSection>
+          ) : null}
+
+          {!hideHero ? (
+            <TsbOlcekSegmentRozeti
+              sirketAdi={secilenAd}
+              kayit={olcekKayit}
+              finDonem={olcekFinDonem}
+              yukleniyor={olcekYukleniyor}
+            />
           ) : null}
         </>
       ) : sirketKodu === "" && !hideFilters ? (

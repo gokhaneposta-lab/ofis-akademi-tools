@@ -546,10 +546,6 @@ export default function TsbPrimTrend12Dashboard() {
         </TsbFilterGrid>
       </TsbFilterBar>
 
-      {sirketAdi ? (
-        <TsbOlcekSegmentRozeti sirketAdi={sirketAdi} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
-      ) : null}
-
       {seri && seri.length > 0 && seriAylik && sirketAdi && (
         <>
           <TsbPrimSirketSektorLegend sirketAdi={sirketAdi} />
@@ -592,6 +588,10 @@ export default function TsbPrimTrend12Dashboard() {
           </TsbTableShell>
         </>
       )}
+
+      {sirketAdi ? (
+        <TsbOlcekSegmentRozeti sirketAdi={sirketAdi} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
+      ) : null}
     </div>
   );
 }

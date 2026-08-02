@@ -6,8 +6,10 @@ import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
   ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
   buildKiyaslamaTablosu,
+  channelPremium,
   daraltmaFromUiState,
   isTsbToplamSirketKodu,
+  rowMatchesSegment,
   sektorToplamDegisimYuzde,
   TARIFE_GRUBU_FILTER_TRAFIK_HARIC,
   TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL,
@@ -15,6 +17,7 @@ import {
   uniqueSortedPeriods,
   uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
+import { buildSektorPrimPaket } from "@/lib/tsbSektorGorunumu";
 import { TsbRenkAciklama } from "@/components/tsb/TsbRenkAciklama";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
 import { useTsbDashboardUrlPrefs } from "@/components/tsb/useTsbDashboardUrlPrefs";
@@ -47,6 +50,33 @@ const KANALLAR: { value: TsbKanalField; label: string }[] = [
 ];
 
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+
+function enBuyukAnaBrans(
+  rows: TsbPrimRow[],
+  donem: string,
+  segment: TsbSektorSegment,
+): { ad: string; payYuzde: number; prim: number } | null {
+  const byBrans = new Map<string, number>();
+  let toplam = 0;
+  for (const r of rows) {
+    if (r.donem !== donem) continue;
+    if (!rowMatchesSegment(r, segment)) continue;
+    const v = channelPremium(r, "genelToplam");
+    if (v === 0) continue;
+    byBrans.set(r.anaBransH, (byBrans.get(r.anaBransH) ?? 0) + v);
+    toplam += v;
+  }
+  if (toplam <= 0 || byBrans.size === 0) return null;
+  let bestAd = "";
+  let bestPrim = 0;
+  for (const [ad, prim] of byBrans) {
+    if (prim > bestPrim) {
+      bestAd = ad;
+      bestPrim = prim;
+    }
+  }
+  return { ad: bestAd, prim: bestPrim, payYuzde: (bestPrim / toplam) * 100 };
+}
 
 export default function TsbKanalPrimDashboard() {
   const urlPrefs = useTsbDashboardUrlPrefs();
@@ -136,6 +166,16 @@ export default function TsbKanalPrimDashboard() {
     return buildKiyaslamaTablosu(rows, secilenDonem, kanal, daraltma, segment);
   }, [rows, secilenDonem, kanal, daraltma, segment]);
 
+  const sektorBuyume = useMemo(() => {
+    if (!rows || !secilenDonem) return null;
+    return buildSektorPrimPaket(rows, secilenDonem, donemler);
+  }, [rows, secilenDonem, donemler]);
+
+  const enBuyukBrans = useMemo(() => {
+    if (!rows || !secilenDonem) return null;
+    return enBuyukAnaBrans(rows, secilenDonem, segment);
+  }, [rows, secilenDonem, segment]);
+
   if (error) return <TsbError message={error} />;
   if (!rows) return <TsbLoading />;
   if (rows.length === 0) {
@@ -148,62 +188,82 @@ export default function TsbKanalPrimDashboard() {
     tablo !== null
       ? sektorToplamDegisimYuzde(tablo.sektorToplamOnceki, tablo.sektorToplamBu)
       : null;
-  const liderSatir = tablo?.satirlar[0] ?? null;
+  const hdDegisim =
+    sektorBuyume?.onceki != null
+      ? sektorToplamDegisimYuzde(sektorBuyume.onceki.HD, sektorBuyume.secili.HD)
+      : null;
+  const heDegisim =
+    sektorBuyume?.onceki != null
+      ? sektorToplamDegisimYuzde(sektorBuyume.onceki.HAYAT_EMEKLILIK, sektorBuyume.secili.HAYAT_EMEKLILIK)
+      : null;
+  const sektorDegisim =
+    sektorBuyume?.onceki != null
+      ? sektorToplamDegisimYuzde(sektorBuyume.onceki.SEKTOR, sektorBuyume.secili.SEKTOR)
+      : null;
   const kanalLabel = KANALLAR.find((k) => k.value === kanal)?.label ?? "Kanal";
 
   return (
     <div className={tsb.dashboardStack}>
-      {tablo ? (
+      {sektorBuyume ? (
         <TsbKpiGrid>
           <TsbKpiCard
+            label="Hayat dışı · YoY"
+            value={tsbFormatDegisimYuzde(hdDegisim)}
+            delta={tsbFormatPrim(sektorBuyume.secili.HD)}
+            deltaClassName={tsbDeltaRenk(hdDegisim)}
+            story={
+              hdDegisim == null
+                ? "Önceki yıl karşılaştırması yok."
+                : hdDegisim > 0
+                  ? "Hayat dışı pazar büyüyor."
+                  : hdDegisim < 0
+                    ? "Hayat dışı pazar daralıyor."
+                    : "Hayat dışı değişim yok."
+            }
+          />
+          <TsbKpiCard
+            label="Hayat / Emeklilik · YoY"
+            value={tsbFormatDegisimYuzde(heDegisim)}
+            delta={tsbFormatPrim(sektorBuyume.secili.HAYAT_EMEKLILIK)}
+            deltaClassName={tsbDeltaRenk(heDegisim)}
+            story={
+              heDegisim == null
+                ? "Önceki yıl karşılaştırması yok."
+                : heDegisim > 0
+                  ? "Hayat & emeklilik büyüyor."
+                  : heDegisim < 0
+                    ? "Hayat & emeklilik daralıyor."
+                    : "Hayat & emeklilik değişim yok."
+            }
+          />
+          <TsbKpiCard
             accent
-            label="Sektör toplamı"
-            value={tsbFormatPrim(tablo.sektorToplamBu)}
-            delta={`${tsbFormatDegisimYuzde(toplamDegisim)} YoY`}
-            deltaClassName={tsbDeltaRenk(toplamDegisim)}
+            label="Sektör toplamı · YoY"
+            value={tsbFormatDegisimYuzde(sektorDegisim)}
+            delta={tsbFormatPrim(sektorBuyume.secili.SEKTOR)}
+            deltaClassName={tsbDeltaRenk(sektorDegisim)}
             story={
-              toplamDegisim == null
-                ? "YoY karşılaştırması yok."
-                : toplamDegisim > 0
-                  ? "Seçili kırılımda pazar büyüyor."
-                  : toplamDegisim < 0
-                    ? "Seçili kırılımda pazar daralıyor."
-                    : "Seçili kırılımda değişim yok."
+              sektorDegisim == null
+                ? "Önceki yıl karşılaştırması yok."
+                : sektorDegisim > 0
+                  ? "Sektör toplamı büyüyor."
+                  : sektorDegisim < 0
+                    ? "Sektör toplamı daralıyor."
+                    : "Sektör toplamında değişim yok."
             }
           />
           <TsbKpiCard
-            label="Lider şirket"
-            value={liderSatir?.sirketAdi ?? "—"}
-            delta={liderSatir ? `%${pf.format(liderSatir.payBuYuzde)} pay` : undefined}
-            story={
-              liderSatir
-                ? liderSatir.siraOnceki > liderSatir.siraBu
-                  ? "Sıra geçen yıla göre iyileşti."
-                  : liderSatir.siraOnceki < liderSatir.siraBu
-                    ? "Sıra geçen yıla göre geriledi."
-                    : "Sıra geçen yılla aynı."
-                : "—"
+            label="En büyük branş"
+            value={enBuyukBrans?.ad ?? "—"}
+            delta={
+              enBuyukBrans
+                ? `%${pf.format(enBuyukBrans.payYuzde)} pay · ${segment === "hayat" ? "H/E" : "HD"}`
+                : kanalLabel
             }
-          />
-          <TsbKpiCard
-            label="Listelenen şirket"
-            value={tablo.satirlar.length}
-            delta={kanalLabel}
-            story={`${secilenDonem} · seçili filtreye göre.`}
-          />
-          <TsbKpiCard
-            label="Lider prim"
-            value={liderSatir ? tsbFormatPrim(liderSatir.primBu) : "—"}
-            delta={liderSatir ? `${tsbFormatDegisimYuzde(liderSatir.degisimYuzde)} YoY` : undefined}
-            deltaClassName={liderSatir ? tsbDeltaRenk(liderSatir.degisimYuzde) : undefined}
             story={
-              liderSatir && liderSatir.degisimYuzde != null && toplamDegisim != null
-                ? liderSatir.degisimYuzde > toplamDegisim
-                  ? "Pazarın üzerinde büyüyor."
-                  : liderSatir.degisimYuzde < toplamDegisim
-                    ? "Pazarın altında büyüyor."
-                    : "Pazarla aynı hızda."
-                : "—"
+              enBuyukBrans
+                ? `${secilenDonem} · seçili havuzda en yüksek pay.`
+                : `${secilenDonem} · branş bulunamadı.`
             }
           />
         </TsbKpiGrid>

@@ -251,10 +251,6 @@ export default function TsbBransSiraDashboard() {
         </TsbFilterGrid>
       </TsbFilterBar>
 
-      {secilenAd ? (
-        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
-      ) : null}
-
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>
         <strong>Sıra:</strong> Kanaldaki prim üretimine göre sektör içi yarışma sırası (1 en yüksek prim).{" "}
         <strong>Δ sıra:</strong> Önceki yıla göre sıra farkı; sayının azalması iyileşmedir.
@@ -314,6 +310,10 @@ export default function TsbBransSiraDashboard() {
           </tbody>
         </table>
       </TsbTableShell>
+
+      {secilenAd ? (
+        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
+      ) : null}
     </div>
   );
 }

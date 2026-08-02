@@ -601,8 +601,6 @@ export default function TsbHasarPrimDashboard() {
         </TsbFilterGrid>
       </TsbFilterBar>
 
-      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
-
       {secilenSatir && kiyasOzet && (
         <div className="grid gap-3 lg:grid-cols-2">
           <OzetKart
@@ -696,6 +694,8 @@ export default function TsbHasarPrimDashboard() {
         </table>
         </TsbTableShell>
       </div>
+
+      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
     </div>
   );
 }

@@ -395,10 +395,6 @@ export default function TsbBransDegisimDashboard() {
         </TsbFilterGrid>
       </TsbFilterBar>
 
-      {secilenAd ? (
-        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
-      ) : null}
-
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>
         <strong>{blokBaslik}</strong> · <strong>Değişim %</strong> ve <strong>Δ pp</strong> önceki yıla göre:{" "}
         <span className="text-emerald-800">artış yeşil</span>, <span className="text-red-700">düşüş kırmızı</span>.
@@ -461,6 +457,10 @@ export default function TsbBransDegisimDashboard() {
           </tbody>
         </table>
       </TsbTableShell>
+
+      {secilenAd ? (
+        <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} yukleniyor={olcekYukleniyor} />
+      ) : null}
     </div>
   );
 }

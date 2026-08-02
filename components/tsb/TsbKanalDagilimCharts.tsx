@@ -182,12 +182,13 @@ export function KanalDonutChart({
   );
 }
 
-/** Yıllar arası stacked area (kanal bileşimi). */
+/** Yıllar arası stacked area (kanal bileşimi) — hover’da dönem primleri. */
 export function KanalStackedTrendChart({
   trend,
 }: {
   trend: KanalTrendNokta[];
 }) {
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const W = 720;
   const H = 280;
   const PAD = { l: 56, r: 16, t: 36, b: 40 };
@@ -216,9 +217,35 @@ export function KanalStackedTrendChart({
   });
 
   const ticks = Array.from({ length: 4 }, (_, i) => (max * i) / 3);
+  const tip = hoverIdx !== null ? trend[hoverIdx] : null;
+  const tipX = tip ? Math.min(W - 190, Math.max(PAD.l, xAt(hoverIdx!) - 70)) : 0;
+  const tipY = PAD.t + 8;
+
+  function nearestIndex(clientX: number, svg: SVGSVGElement): number {
+    const rect = svg.getBoundingClientRect();
+    const scaleX = W / rect.width;
+    const x = (clientX - rect.left) * scaleX;
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < n; i += 1) {
+      const d = Math.abs(xAt(i) - x);
+      if (d < bestDist) {
+        bestDist = d;
+        best = i;
+      }
+    }
+    return best;
+  }
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="h-auto min-w-[560px] w-full" role="img" aria-label="Kanal trendi">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="h-auto min-w-[560px] w-full"
+      role="img"
+      aria-label="Kanal trendi"
+      onMouseLeave={() => setHoverIdx(null)}
+      onMouseMove={(e) => setHoverIdx(nearestIndex(e.clientX, e.currentTarget))}
+    >
       <rect width={W} height={H} fill="#fff" />
       <text x={PAD.l} y={22} fontSize={13} fontWeight={700} fill="#0f172a">
         Kanal trendi
@@ -237,6 +264,28 @@ export function KanalStackedTrendChart({
       {paths.map((p) => (
         <path key={p.key} d={p.d} fill={KANAL_HEX[p.key]} fillOpacity={0.85} />
       ))}
+      {hoverIdx !== null ? (
+        <line
+          x1={xAt(hoverIdx)}
+          x2={xAt(hoverIdx)}
+          y1={PAD.t}
+          y2={PAD.t + innerH}
+          stroke="#0f172a"
+          strokeWidth={1.25}
+          strokeDasharray="3 3"
+          opacity={0.55}
+        />
+      ) : null}
+      {trend.map((t, i) => (
+        <circle
+          key={`dot-${t.donem}`}
+          cx={xAt(i)}
+          cy={yAt(t.kutu.genelToplam)}
+          r={hoverIdx === i ? 4.5 : 3}
+          fill="#0f172a"
+          opacity={hoverIdx === null || hoverIdx === i ? 0.9 : 0.25}
+        />
+      ))}
       {trend.map((t, i) => (
         <text key={t.donem} x={xAt(i)} y={H - 14} textAnchor="middle" fontSize={10} fill="#475569">
           {t.donem}
@@ -250,6 +299,25 @@ export function KanalStackedTrendChart({
           </text>
         </g>
       ))}
+      {tip ? (
+        <g transform={`translate(${tipX}, ${tipY})`} pointerEvents="none">
+          <rect width={178} height={124} rx={8} fill="#0f172a" opacity={0.92} />
+          <text x={10} y={18} fontSize={11} fontWeight={700} fill="#fff">
+            {tip.donem} · prim üretimi
+          </text>
+          <text x={10} y={36} fontSize={12} fontWeight={700} fill="#a7f3d0">
+            Toplam {tsbFormatPrim(tip.kutu.genelToplam)}
+          </text>
+          {order.map((key, i) => (
+            <g key={key} transform={`translate(10, ${50 + i * 13})`}>
+              <rect width={8} height={8} y={-7} rx={1} fill={KANAL_HEX[key]} />
+              <text x={14} y={0} fontSize={10} fill="#e2e8f0">
+                {KANAL_DAGILIM_SATIRLARI.find((x) => x.key === key)?.label}: {fmtMr(tip.kutu[key])}
+              </text>
+            </g>
+          ))}
+        </g>
+      ) : null}
     </svg>
   );
 }

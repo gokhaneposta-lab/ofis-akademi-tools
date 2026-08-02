@@ -4,6 +4,7 @@ import type {
   SektorGorunumuDonem,
   SektorGorunumuPool,
   SektorGorunumuSnapshot,
+  SektorPrimSnapshot,
 } from "@/lib/tsbSektorGorunumu";
 
 const W = 860;
@@ -98,6 +99,126 @@ export function TsbSektorKarBilesenleriChart({
           </text>
         </g>
       ))}
+    </svg>
+  );
+}
+
+/** Prim üretimi — yıllar arası gruplu bar (HD | H/E); seçili dönem vurgulu. */
+export function TsbSektorPrimUretimChart({
+  trend,
+  seciliDonem,
+}: {
+  trend: SektorPrimSnapshot[];
+  seciliDonem: string;
+}) {
+  const max = Math.max(1, ...trend.flatMap((p) => [p.HD, p.HAYAT_EMEKLILIK]));
+  const chartH = H + 8;
+  const padB = 56;
+  const innerH = chartH - PAD.t - padB;
+  const yAt = (v: number) => PAD.t + innerH - (v / max) * innerH;
+  const innerW = W - PAD.l - PAD.r;
+  const band = innerW / Math.max(1, trend.length);
+  const gap = 4;
+  const barW = Math.min(28, (band * 0.62 - gap) / 2);
+  const ticks = Array.from({ length: 5 }, (_, i) => (max * i) / 4);
+  const lastIdx = trend.length - 1;
+
+  return (
+    <svg viewBox={`0 0 ${W} ${chartH}`} className="h-auto min-w-[620px] w-full" role="img" aria-label="Prim üretimi — hayat dışı ve hayat/emeklilik">
+      <rect width={W} height={chartH} fill="#fff" />
+      <text x={PAD.l} y={25} fontSize={14} fontWeight={700} fill="#0f172a">
+        Prim üretimi
+      </text>
+      <text x={PAD.l} y={43} fontSize={10} fill="#64748b">
+        Aynı ayın yıllar arası seyri · hayat dışı ve hayat/emeklilik yan yana · milyar TL
+      </text>
+      <g transform={`translate(${W - PAD.r - 220}, 18)`}>
+        <rect x={0} y={0} width={12} height={8} fill={COLORS.HD} rx={1} />
+        <text x={17} y={8} fontSize={10} fill="#475569">Hayat dışı</text>
+        <rect x={100} y={0} width={12} height={8} fill={COLORS.HAYAT_EMEKLILIK} rx={1} />
+        <text x={117} y={8} fontSize={10} fill="#475569">Hayat / Emeklilik</text>
+      </g>
+      {ticks.map((tick, i) => {
+        const y = yAt(tick);
+        return (
+          <g key={i}>
+            <line x1={PAD.l} x2={W - PAD.r} y1={y} y2={y} stroke="#e2e8f0" />
+            <text x={PAD.l - 9} y={y + 3} textAnchor="end" fontSize={9} fill="#64748b">
+              {fmtMr(tick)}
+            </text>
+          </g>
+        );
+      })}
+      {trend.map((p, i) => {
+        const cx = PAD.l + band * i + band / 2;
+        const isSecili = p.donem === seciliDonem;
+        const isIlk = i === 0;
+        const isSon = i === lastIdx;
+        const base = PAD.t + innerH;
+        const hdH = Math.max(0, base - yAt(p.HD));
+        const heH = Math.max(0, base - yAt(p.HAYAT_EMEKLILIK));
+        const hdX = cx - gap / 2 - barW;
+        const heX = cx + gap / 2;
+        const labelFill = isSecili ? "#0f172a" : "#64748b";
+        return (
+          <g key={p.donem}>
+            {isSecili ? (
+              <rect
+                x={cx - band * 0.42}
+                y={PAD.t - 6}
+                width={band * 0.84}
+                height={innerH + 14}
+                fill="#ecfdf5"
+                rx={6}
+              />
+            ) : null}
+            <rect
+              x={hdX}
+              y={base - hdH}
+              width={barW}
+              height={hdH}
+              fill={COLORS.HD}
+              fillOpacity={isSecili ? 1 : 0.72}
+              rx={2}
+              stroke={isSecili ? "#134e4a" : "none"}
+              strokeWidth={isSecili ? 1.5 : 0}
+            >
+              <title>{`${p.donem} · Hayat dışı: ${fmtMr(p.HD)} TL`}</title>
+            </rect>
+            <rect
+              x={heX}
+              y={base - heH}
+              width={barW}
+              height={heH}
+              fill={COLORS.HAYAT_EMEKLILIK}
+              fillOpacity={isSecili ? 1 : 0.72}
+              rx={2}
+              stroke={isSecili ? "#0369a1" : "none"}
+              strokeWidth={isSecili ? 1.5 : 0}
+            >
+              <title>{`${p.donem} · Hayat/Emeklilik: ${fmtMr(p.HAYAT_EMEKLILIK)} TL`}</title>
+            </rect>
+            {isSecili ? (
+              <>
+                <text x={hdX + barW / 2} y={base - hdH - 6} textAnchor="middle" fontSize={9} fontWeight={700} fill={COLORS.HD}>
+                  {fmtMr(p.HD)}
+                </text>
+                <text x={heX + barW / 2} y={base - heH - 6} textAnchor="middle" fontSize={9} fontWeight={700} fill="#0284c7">
+                  {fmtMr(p.HAYAT_EMEKLILIK)}
+                </text>
+              </>
+            ) : null}
+            <text x={cx} y={chartH - 28} textAnchor="middle" fontSize={isSecili ? 11 : 10} fontWeight={isSecili ? 700 : 400} fill={labelFill}>
+              {p.donem}
+            </text>
+            {isIlk || isSon ? (
+              <text x={cx} y={chartH - 14} textAnchor="middle" fontSize={9} fontWeight={700} fill={isSon ? "#047857" : "#94a3b8"}>
+                {isIlk ? "← başlangıç" : "son dönem →"}
+              </text>
+            ) : null}
+          </g>
+        );
+      })}
     </svg>
   );
 }

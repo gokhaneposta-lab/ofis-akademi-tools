@@ -471,8 +471,6 @@ export default function TsbAnaBransTkzDashboard() {
         </p>
       </TsbFilterBar>
 
-      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
-
       <p className={cn(tsb.filterBar, tsb.filterHint, "!mt-0")}>
         <strong>{POOL_LABELS[pool]}</strong> · Teknik gelir ={" "}
         <strong>teknik gelir − tek. olmayan bölümden aktarılan yatırım gelirleri</strong> · Teknik gider ={" "}
@@ -568,6 +566,8 @@ export default function TsbAnaBransTkzDashboard() {
           />
         </div>
       )}
+
+      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
     </div>
   );
 }

@@ -297,8 +297,6 @@ export default function TsbFinansalKarsilastirmaDashboard() {
         </p>
       </TsbFilterBar>
 
-      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
-
       <TsbTableShell>
         <table className={cn(tsb.table, "min-w-[820px]")}>
           <thead className={tsb.thead}>
@@ -449,6 +447,8 @@ export default function TsbFinansalKarsilastirmaDashboard() {
           </tbody>
         </table>
       </TsbTableShell>
+
+      {secilenAd ? <TsbOlcekSegmentRozeti sirketAdi={secilenAd} kayit={olcekKayit} finDonem={olcekFinDonem} /> : null}
     </div>
   );
 }

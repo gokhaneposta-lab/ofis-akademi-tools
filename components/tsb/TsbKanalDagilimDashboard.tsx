@@ -713,15 +713,6 @@ export default function TsbKanalDagilimDashboard() {
             <p className={tsb.alertWarn}>Bu dönem ve filtreye göre şirket bulunamadı.</p>
           ) : kiyas && effectiveSirketKodu !== null ? (
             <>
-              {secilenAd ? (
-                <TsbOlcekSegmentRozeti
-                  sirketAdi={secilenAd}
-                  kayit={olcekKayit}
-                  finDonem={olcekFinDonem}
-                  yukleniyor={olcekYukleniyor}
-                />
-              ) : null}
-
               {(() => {
                 const sirketLider = kanalLiderOzeti(kiyas.sirket);
                 return (
@@ -876,6 +867,15 @@ export default function TsbKanalDagilimDashboard() {
                 </TsbTableShell>
               </section>
             </>
+          ) : null}
+
+          {secilenAd ? (
+            <TsbOlcekSegmentRozeti
+              sirketAdi={secilenAd}
+              kayit={olcekKayit}
+              finDonem={olcekFinDonem}
+              yukleniyor={olcekYukleniyor}
+            />
           ) : null}
         </>
       )}

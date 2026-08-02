@@ -11,227 +11,271 @@ type Tool = {
   description: string;
 };
 
-const hizliAraclar: Tool[] = [
+const temizleme: Tool[] = [
   {
-    name: "Ad Soyad Ayırıcı",
-    href: "/excel-araclari/ad-soyad-ayir",
-    description: "Tam ad listesini otomatik olarak ad ve soyad olarak ayırır.",
+    name: "Boşluk Temizle",
+    href: "/excel-araclari/bosluk-temizle",
+    description: "TRIM + isteğe bağlı boş satır silme. Eşleştirme öncesi kirli metni temizler.",
   },
   {
-    name: "CSV Ayırıcı",
-    href: "/excel-araclari/csv-ayir",
-    description: "CSV verilerini otomatik olarak sütunlara ayırır.",
-  },
-  {
-    name: "Liste Birleştirici",
-    href: "/excel-araclari/liste-birlestir",
-    description:
-      "Birden fazla satırdaki verileri seçilen ayraç ile tek satırda birleştirir.",
+    name: "Büyük / Küçük Harf",
+    href: "/excel-araclari/buyuk-kucuk-harf",
+    description: "UPPER, LOWER, PROPER — toplu harf dönüşümü.",
   },
   {
     name: "Tekrarlananları Kaldır",
     href: "/excel-araclari/tekrarlananlari-kaldir",
-    description: "Listedeki tekrar eden satırları kaldırır; benzersiz liste üretir.",
+    description: "Listedeki yinelenen satırları kaldırır; benzersiz liste üretir.",
   },
   {
-    name: "Tarih Farkı (Vade / Gün / Yaş)",
-    href: "/excel-araclari/tarih-farki",
-    description: "İki tarih arası gün, ay, yıl hesaplar. Vade farkı veya yaş hesaplama (doğum tarihi → bugün) için ideal.",
+    name: "Sadece Sayı / Sadece Metin",
+    href: "/excel-araclari/sayi-metin-ayikla",
+    description: "Karışık hücrelerden yalnızca rakam veya yalnızca harf ayıklar.",
   },
   {
-    name: "Sayıyı Yazıya Çevir",
-    href: "/excel-araclari/sayi-yaziya",
-    description: "Rakamları Türkçe yazıya dönüştürür (fatura, çek, sözleşme için TL/kuruş).",
-  },
-  {
-    name: "Satır / Sütun Döndür (Transpoz)",
-    href: "/excel-araclari/transpoz",
-    description: "Satırları sütunlara, sütunları satırlara çevirir; Excel'e yapıştırmaya uygun.",
-  },
-  {
-    name: "Kelime & Karakter Sayacı",
-    href: "/excel-araclari/kelime-karakter-sayaci",
-    description: "Metindeki kelime ve karakter sayısı (boşluklu / boşluksuz).",
-  },
-  {
-    name: "Boşluk Temizle",
-    href: "/excel-araclari/bosluk-temizle",
-    description: "Excel başındaki ve sondaki boşlukları siler; metin içi çoklu boşlukları tek boşluğa indirir (TRIM).",
-  },
-  {
-    name: "Metni Kolonlara Böl",
-    href: "/excel-araclari/kolonlara-bol",
-    description: "Metni virgül, noktalı virgül veya sekme ile kolonlara ayırır — Excel Metni Sütunlara Dönüştür alternatifi.",
-  },
-  {
-    name: "Büyük / Küçük Harf Dönüştür",
-    href: "/excel-araclari/buyuk-kucuk-harf",
-    description: "Metni büyük harf, küçük harf veya her kelimenin ilk harfi büyük (Proper) yapar. UPPER, LOWER, PROPER.",
-  },
-  {
-    name: "Hafta Numarası & Gün Adı",
-    href: "/excel-araclari/hafta-gun",
-    description: "Tarihten ISO hafta numarası ve gün adı (Pazartesi, Salı…).",
-  },
-  {
-    name: "Tarih Format Dönüştürücü",
-    href: "/excel-araclari/tarih-format-donusturucu",
-    description: "Tarih formatlarını farklı biçimlere çevirir (ISO, Türkçe uzun, GG.AA.YYYY vb.).",
-  },
-  {
-    name: "Excel Dosya Birleştirici",
-    href: "/excel-araclari/excel-dosya-birlestirici",
-    description: "Birden fazla Excel dosyasını tek dosyada birleştirir. Aynı kolon yapısına sahip dosyaları alt alta ekleyerek tek Excel çıktısı oluşturur.",
-  },
-];
-
-const mantikFormulAraclar: Tool[] = [
-  {
-    name: "Excel Formül Asistanı",
-    href: "/excel-araclari/formul-asistani",
-    description: "Yapmak istediğinizi yazın (örn. iki kolonu birleştir); size uygun Excel fonksiyonunu önerir (Türkçe / İngilizce).",
-  },
-  {
-    name: "DÜŞEYARA Formül Oluşturucu",
-    href: "/excel-araclari/duseyara-olusturucu",
-    description: "Aranan değer, tablo ve sütun numarasından DÜŞEYARA formülü üretir. Kopyalayıp Excel'e yapıştırın.",
-  },
-  {
-    name: "EĞER Formül Oluşturucu",
-    href: "/excel-araclari/eger-olusturucu",
-    description: "Koşul, doğruysa ve yanlışsa değerlerinden EĞER formülü oluşturur.",
-  },
-  {
-    name: "İç içe EĞER Oluşturucu",
-    href: "/excel-araclari/ic-ice-eger-olusturucu",
-    description: "Birden fazla koşul–sonuç satırından iç içe EĞER formülü üretir (not aralığı, kademe vb.).",
-  },
-  {
-    name: "Excel Formül Açıklayıcı",
-    href: "/excel-araclari/formul-aciklayici",
-    description: "Yapıştırdığınız Excel formülünü Türkçe olarak adım adım açıklar.",
-  },
-];
-
-const finansAraclar: Tool[] = [
-  {
-    name: "IBAN Doğrulama",
-    href: "/excel-araclari/iban-dogrulama",
-    description: "IBAN numaralarını doğrulayın (TR ve uluslararası MOD-97).",
-  },
-  {
-    name: "Faiz Hesaplama",
-    href: "/excel-araclari/faiz-hesaplama",
-    description: "Basit ve bileşik faiz tutarını hesaplayın.",
-  },
-  {
-    name: "Kredi Taksit Hesaplama",
-    href: "/excel-araclari/kredi-taksit",
-    description: "Aylık taksit, toplam geri ödeme ve toplam faizi hesaplayın.",
-  },
-  {
-    name: "Yüzde Hesaplama",
-    href: "/excel-araclari/yuzde-hesaplama",
-    description: "X'in Y%'si kaç? A, B'nin yüzde kaçı? KDV, komisyon, marj.",
-  },
-];
-
-const istatistikAraclar: Tool[] = [
-  {
-    name: "Ortalama, Medyan, Standart Sapma Hesaplama",
-    href: "/excel-araclari/betimsel-istatistik",
-    description: "Betimsel istatistik: ortalama, medyan, mod, standart sapma, varyans, min, max — sayı listesinden tek seferde.",
-  },
-  {
-    name: "Çeyrek (Quartile) ve Yüzdelik Hesaplama",
-    href: "/excel-araclari/ceyrek-yuzdelik",
-    description: "Quartile ve percentile hesaplama: minimum, Q1, medyan, Q3, maksimum ve özel yüzdelik dilimi (örn. %90).",
-  },
-  {
-    name: "Korelasyon Hesaplama (Pearson)",
-    href: "/excel-araclari/korelasyon",
-    description: "İki değişken (X, Y) arasındaki Pearson korelasyon katsayısı r — ücretsiz korelasyon hesaplama.",
-  },
-  {
-    name: "Z Skor (Z-Score) Hesaplama",
-    href: "/excel-araclari/z-score",
-    description: "Z skor hesaplama: her değerin z-skoru, aykırı değer tespiti.",
-  },
-  {
-    name: "Frekans Dağılımı Hesaplama",
-    href: "/excel-araclari/frekans-dagilimi",
-    description: "Sayıları sınıf aralıklarına bölerek frekans tablosu (histogram verisi) oluşturma.",
-  },
-  {
-    name: "Regresyon Hesaplama (Doğrusal)",
-    href: "/excel-araclari/basit-regresyon",
-    description: "Basit doğrusal regresyon: Y = a + b·X, eğim, kesişim ve R² — iki sütun X, Y.",
-  },
-];
-
-const databaseAraclar: Tool[] = [
-  {
-    name: "Excel → SQL INSERT Dönüştürücü",
-    href: "/excel-araclari/excel-sql-insert",
-    description: "Excel tablosunu SQL INSERT komutlarına dönüştürür. Veritabanına veri eklemek için kullanılır.",
-  },
-  {
-    name: "Excel → JSON Dönüştürücü",
-    href: "/excel-araclari/excel-json",
-    description: "Excel veya CSV verisini JSON formatına çevirir. API ve yazılım geliştirme için kullanılır.",
-  },
-  {
-    name: "İki Listeyi Karşılaştır",
-    href: "/excel-araclari/iki-listeyi-karsilastir",
-    description: "İki listeyi karşılaştırır ve ortak veya farklı kayıtları bulur.",
+    name: "Şirket Ünvanı Temizleyici",
+    href: "/excel-araclari/sirket-unvan-temizle",
+    description: "A.Ş., Ltd. Şti., Anonim Şirket eklerini kaldırır.",
   },
   {
     name: "E-posta Liste Temizleme",
     href: "/excel-araclari/email-liste-temizleme",
-    description: "E-posta listesinde tekrar eden veya geçersiz formatta olan adresleri temizler.",
+    description: "Geçersiz ve tekrarlayan e-posta adreslerini ayıklar.",
   },
   {
     name: "Telefon Numarası Formatlama",
     href: "/excel-araclari/telefon-formatlama",
-    description: "Telefon numaralarını standart formata çevirir (yerel, uluslararası, parantez, boşluk/tire/nokta).",
+    description: "Numaraları standart yerel / uluslararası forma getirir.",
+  },
+  {
+    name: "Ad Soyad Ayırıcı",
+    href: "/excel-araclari/ad-soyad-ayir",
+    description: "Tam adı ad ve soyad sütunlarına ayırır.",
+  },
+];
+
+const donusturuculer: Tool[] = [
+  {
+    name: "CSV Ayırıcı",
+    href: "/excel-araclari/csv-ayir",
+    description: "CSV / ayraçlı metni sütunlara böler.",
+  },
+  {
+    name: "CSV Validator",
+    href: "/excel-araclari/csv-dogrula",
+    description: "Ayırıcı, sütun tutarlılığı ve bozuk satırları kontrol eder.",
+  },
+  {
+    name: "Metni Kolonlara Böl",
+    href: "/excel-araclari/kolonlara-bol",
+    description: "Virgül, noktalı virgül veya sekme ile kolonlara ayırır.",
+  },
+  {
+    name: "Liste Birleştirici",
+    href: "/excel-araclari/liste-birlestir",
+    description: "Satırları seçilen ayraçla tek satırda birleştirir.",
+  },
+  {
+    name: "Satır / Sütun Döndür",
+    href: "/excel-araclari/transpoz",
+    description: "Transpoz: satır ↔ sütun.",
+  },
+  {
+    name: "Excel Dosya Birleştirici",
+    href: "/excel-araclari/excel-dosya-birlestirici",
+    description: "Aynı kolonlu Excel dosyalarını alt alta birleştirir.",
+  },
+  {
+    name: "Excel → SQL INSERT",
+    href: "/excel-araclari/excel-sql-insert",
+    description: "Tabloyu INSERT komutlarına çevirir.",
+  },
+  {
+    name: "SQL IN Formatter",
+    href: "/excel-araclari/sql-in-formatter",
+    description: "Listeyi WHERE … IN (…) formatına çevirir.",
+  },
+  {
+    name: "SQL UPDATE Formatter",
+    href: "/excel-araclari/sql-update-formatter",
+    description: "Excel’den toplu UPDATE üretir.",
+  },
+  {
+    name: "Excel ⇄ JSON",
+    href: "/excel-araclari/excel-json",
+    description: "Tablo ↔ JSON iki yönlü dönüşüm.",
+  },
+  {
+    name: "Tarih Format Dönüştürücü",
+    href: "/excel-araclari/tarih-format-donusturucu",
+    description: "Tarih biçimlerini birbirine çevirir.",
+  },
+];
+
+const finans: Tool[] = [
+  {
+    name: "Sayıyı Yazıya Çevir",
+    href: "/excel-araclari/sayi-yaziya",
+    description: "Tutarı Türkçe yazıya çevirir (fatura / çek).",
+  },
+  {
+    name: "KDV Hesaplama",
+    href: "/excel-araclari/kdv-hesapla",
+    description: "KDV dahil / hariç matrah ve tutar.",
+  },
+  {
+    name: "Yüzde Hesaplama",
+    href: "/excel-araclari/yuzde-hesaplama",
+    description: "X’in Y%’si veya A’nın B içindeki payı.",
+  },
+  {
+    name: "IBAN Doğrulama",
+    href: "/excel-araclari/iban-dogrulama",
+    description: "TR ve uluslararası IBAN MOD-97 kontrolü.",
+  },
+  {
+    name: "Faiz Hesaplama",
+    href: "/excel-araclari/faiz-hesaplama",
+    description: "Basit ve bileşik faiz.",
+  },
+  {
+    name: "Kredi Taksit Hesaplama",
+    href: "/excel-araclari/kredi-taksit",
+    description: "Aylık taksit, toplam faiz ve geri ödeme.",
+  },
+  {
+    name: "Tarih Farkı (Vade / Gün / Yaş)",
+    href: "/excel-araclari/tarih-farki",
+    description: "İki tarih arası gün, ay, yıl; vade veya yaş.",
+  },
+  {
+    name: "Hafta Numarası & Gün Adı",
+    href: "/excel-araclari/hafta-gun",
+    description: "ISO hafta numarası ve gün adı.",
+  },
+];
+
+const formulYardim: Tool[] = [
+  {
+    name: "Excel Formül Asistanı",
+    href: "/excel-araclari/formul-asistani",
+    description: "İhtiyacı yazın; uygun Excel fonksiyonu önerilir.",
+  },
+  {
+    name: "DÜŞEYARA Formül Oluşturucu",
+    href: "/excel-araclari/duseyara-olusturucu",
+    description: "DÜŞEYARA formülünü adım adım üretir.",
+  },
+  {
+    name: "EĞER Formül Oluşturucu",
+    href: "/excel-araclari/eger-olusturucu",
+    description: "Koşullu EĞER formülü oluşturur.",
+  },
+  {
+    name: "İç içe EĞER Oluşturucu",
+    href: "/excel-araclari/ic-ice-eger-olusturucu",
+    description: "Çoklu koşul–sonuç için iç içe EĞER.",
+  },
+  {
+    name: "Excel Formül Açıklayıcı",
+    href: "/excel-araclari/formul-aciklayici",
+    description: "Formülü Türkçe adım adım açıklar.",
+  },
+  {
+    name: "Hata Kontrol Checklist'i",
+    href: "/excel-araclari/hata-kontrol-checklist",
+    description: "Teslim öncesi Excel kontrol listesi.",
+  },
+  {
+    name: "Kısayol & Formül Kartları",
+    href: "/excel-araclari/kisayol-formul-kartlari",
+    description: "Sık kullanılan kısayol ve formül hatırlatıcıları.",
+  },
+  {
+    name: "Otomatik Rapor Şablonları",
+    href: "/excel-araclari/rapor-sablonlari",
+    description: "Hazır rapor Excel şablonları indirin.",
+  },
+];
+
+const analiz: Tool[] = [
+  {
+    name: "İki Listeyi Karşılaştır",
+    href: "/excel-araclari/iki-listeyi-karsilastir",
+    description: "Ortak, sadece A’da ve sadece B’de kayıtlar.",
+  },
+  {
+    name: "Betimsel İstatistik",
+    href: "/excel-araclari/betimsel-istatistik",
+    description: "Ortalama, medyan, standart sapma, min/max.",
+  },
+  {
+    name: "Çeyrek ve Yüzdelik",
+    href: "/excel-araclari/ceyrek-yuzdelik",
+    description: "Q1–Q3 ve özel yüzdelik dilimleri.",
+  },
+  {
+    name: "Korelasyon (Pearson)",
+    href: "/excel-araclari/korelasyon",
+    description: "İki değişken arası Pearson r.",
+  },
+  {
+    name: "Z Skor",
+    href: "/excel-araclari/z-score",
+    description: "Z-skor ve aykırı değer tespiti.",
+  },
+  {
+    name: "Frekans Dağılımı",
+    href: "/excel-araclari/frekans-dagilimi",
+    description: "Sınıf aralıklarına göre frekans tablosu.",
+  },
+  {
+    name: "Basit Regresyon",
+    href: "/excel-araclari/basit-regresyon",
+    description: "Doğrusal regresyon: eğim, kesişim, R².",
+  },
+  {
+    name: "Kelime & Karakter Sayacı",
+    href: "/excel-araclari/kelime-karakter-sayaci",
+    description: "Kelime ve karakter sayısı (boşluklu / boşluksuz).",
   },
 ];
 
 const SECTIONS: { id: string; title: string; subtitle: string; icon: string; tools: Tool[] }[] = [
   {
-    id: "hizli",
-    title: "Hızlı İşlem",
-    subtitle: "Anında kullan: metin, veri, tarih ve sayı araçları",
-    icon: "⚡",
-    tools: hizliAraclar,
+    id: "temizleme",
+    title: "Veri temizleme",
+    subtitle: "Kirli listeleri 5 saniyede kullanılabilir hale getirin",
+    icon: "🧹",
+    tools: temizleme,
   },
   {
-    id: "mantik",
-    title: "Mantık & Formül",
-    subtitle: "DÜŞEYARA, EĞER formül oluşturucu ve formül açıklayıcı — eğitimde kullanın",
-    icon: "🧮",
-    tools: mantikFormulAraclar,
+    id: "donusturucu",
+    title: "Dönüştürücüler",
+    subtitle: "CSV, SQL, JSON, liste ve dosya dönüşümleri",
+    icon: "🔄",
+    tools: donusturuculer,
   },
   {
     id: "finans",
-    title: "Finans & Bankacılık",
-    subtitle: "IBAN, faiz, kredi taksit, yüzde, vade hesaplamaları",
+    title: "Finans & doğrulama",
+    subtitle: "Tutar, KDV, faiz, IBAN ve tarih hesapları",
     icon: "💰",
-    tools: finansAraclar,
+    tools: finans,
   },
   {
-    id: "istatistik",
-    title: "Excel Veri Analizi Araçları",
-    subtitle: "İstatistik araçları: çeyrek, yüzdelik, z skor, korelasyon, regresyon",
+    id: "formul",
+    title: "Formül & Excel yardımı",
+    subtitle: "Formül üret, açıkla, kontrol et, şablon indir",
+    icon: "🧮",
+    tools: formulYardim,
+  },
+  {
+    id: "analiz",
+    title: "Veri analizi",
+    subtitle: "Liste kıyası ve istatistik araçları",
     icon: "📊",
-    tools: istatistikAraclar,
-  },
-  {
-    id: "database",
-    title: "Database & Veri Dönüştürme",
-    subtitle: "Excel ile veritabanı arasında veri taşıma ve dönüştürme",
-    icon: "🗄️",
-    tools: databaseAraclar,
+    tools: analiz,
   },
 ];
 
@@ -241,15 +285,13 @@ function ToolCard({ tool }: { tool: Tool }) {
       href={tool.href}
       className="group flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.05)] transition hover:border-emerald-400/60 hover:shadow-[0_2px_8px_rgba(15,23,42,0.06)] active:scale-[0.99]"
     >
-      <div className="flex-1 min-w-0">
-        <h3 className="text-[15px] font-semibold text-gray-900 group-hover:text-emerald-700 transition-colors leading-snug">
+      <div className="min-w-0 flex-1">
+        <h3 className="text-[15px] font-semibold leading-snug text-gray-900 transition-colors group-hover:text-emerald-700">
           {tool.name}
         </h3>
-        <p className="mt-1 text-[13px] leading-relaxed text-gray-500">
-          {tool.description}
-        </p>
+        <p className="mt-1 text-[13px] leading-relaxed text-gray-500">{tool.description}</p>
       </div>
-      <span className="mt-0.5 flex-shrink-0 text-gray-300 group-hover:text-emerald-500 transition-colors">
+      <span className="mt-0.5 flex-shrink-0 text-gray-300 transition-colors group-hover:text-emerald-500">
         <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
@@ -275,7 +317,7 @@ export default function ToolsHub() {
             </svg>
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-base font-semibold text-slate-900">Excel Araçları</h1>
+            <h1 className="truncate text-base font-semibold text-slate-900">Ofis araçları</h1>
             <p className="truncate text-xs text-slate-500">Tarayıcıda çalışan ücretsiz veri araçları</p>
           </div>
           <span
@@ -288,12 +330,11 @@ export default function ToolsHub() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
-        {/* SEO description */}
         <p className="mb-6 rounded-xl border border-slate-200/80 bg-white px-4 py-3 text-sm leading-relaxed text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.05)]">
-          Ücretsiz Excel araçları: hızlı işlem (ad soyad ayırma, CSV kolonlara ayırma, liste birleştirme, sayıyı yazıya çevirme, boşluk temizleme, büyük/küçük harf, tarih farkı, tarih format dönüştürme, Excel dosya birleştirme); mantık & formül (formül asistanı, DÜŞEYARA ve EĞER oluşturucu, formül açıklayıcı); finans (IBAN doğrulama, faiz, kredi taksit, yüzde); istatistik (betimsel istatistik, çeyrek-yüzdelik, korelasyon, z skor, regresyon); database & veri dönüştürme (Excel → SQL INSERT, Excel → JSON, iki listeyi karşılaştır, e-posta temizleme, telefon formatlama). Tarayıcıda çalışır, kurulum gerekmez.
+          Ofis çalışanlarının her gün yaşadığı küçük problemler: temizleme, dönüştürme, finans, formül ve analiz.
+          Verileriniz tarayıcınızda işlenir; kurulum gerekmez.
         </p>
 
-        {/* Quick nav */}
         <div className="mb-6 flex flex-wrap gap-2">
           {SECTIONS.map((section) => (
             <a
@@ -306,7 +347,6 @@ export default function ToolsHub() {
           ))}
         </div>
 
-        {/* Sections */}
         <div className="space-y-8">
           {SECTIONS.map((section, index) => (
             <section key={section.id} id={section.id}>
@@ -319,7 +359,7 @@ export default function ToolsHub() {
                 </span>
                 <div className="min-w-0">
                   <h2 className="text-base font-bold text-gray-900">{section.title}</h2>
-                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{section.subtitle}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-gray-500">{section.subtitle}</p>
                 </div>
               </div>
 
@@ -332,7 +372,6 @@ export default function ToolsHub() {
           ))}
         </div>
       </main>
-
     </div>
   );
 }

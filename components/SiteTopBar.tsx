@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import BrandLogo from "@/components/BrandLogo";
+import { EXCEL_TOOLS } from "@/lib/excel-tools";
 
 type NavItem = {
   label: string;
@@ -28,7 +29,7 @@ const NAV: NavSection[] = [
     ),
   },
   {
-    label: "Excel Araçları",
+    label: "Ofis Araçları",
     href: "/excel-araclari",
     icon: (
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -37,17 +38,17 @@ const NAV: NavSection[] = [
     ),
     children: [
       { label: "Tüm Araçlar", href: "/excel-araclari" },
+      { label: "SQL IN Formatter", href: "/excel-araclari/sql-in-formatter" },
+      { label: "KDV Hesaplama", href: "/excel-araclari/kdv-hesapla" },
+      { label: "Şirket Ünvan Temizle", href: "/excel-araclari/sirket-unvan-temizle" },
+      { label: "Sadece Sayı / Metin", href: "/excel-araclari/sayi-metin-ayikla" },
+      { label: "CSV Validator", href: "/excel-araclari/csv-dogrula" },
+      { label: "Excel ⇄ JSON", href: "/excel-araclari/excel-json" },
       { label: "Ad Soyad Ayırıcı", href: "/excel-araclari/ad-soyad-ayir" },
       { label: "CSV Ayırıcı", href: "/excel-araclari/csv-ayir" },
-      { label: "Liste Birleştirici", href: "/excel-araclari/liste-birlestir" },
       { label: "Formül Asistanı", href: "/excel-araclari/formul-asistani" },
-      { label: "DÜŞEYARA Oluşturucu", href: "/excel-araclari/duseyara-olusturucu" },
-      { label: "EĞER Oluşturucu", href: "/excel-araclari/eger-olusturucu" },
       { label: "IBAN Doğrulama", href: "/excel-araclari/iban-dogrulama" },
-      { label: "Faiz Hesaplama", href: "/excel-araclari/faiz-hesaplama" },
-      { label: "Kredi Taksit", href: "/excel-araclari/kredi-taksit" },
-      { label: "Betimsel İstatistik", href: "/excel-araclari/betimsel-istatistik" },
-      { label: "Korelasyon (Pearson)", href: "/excel-araclari/korelasyon" },
+      { label: "Sayıyı Yazıya", href: "/excel-araclari/sayi-yaziya" },
     ],
   },
   {
@@ -144,10 +145,7 @@ const NAV: NavSection[] = [
 
 const pathTitles: Record<string, string> = {
   "/": "Ana Sayfa",
-  "/excel-araclari": "Excel Araçları",
-  "/excel-araclari/rapor-sablonlari": "Otomatik Rapor Şablonları",
-  "/excel-araclari/hata-kontrol-checklist": "Hata Kontrol Checklist'i",
-  "/excel-araclari/kisayol-formul-kartlari": "Kısayol & Formül Kartları",
+  "/excel-araclari": "Ofis araçları",
   "/blog": "Blog",
   "/egitimler": "Eğitimler",
   "/kaynaklar": "Ücretsiz Kaynaklar",
@@ -165,6 +163,7 @@ const pathTitles: Record<string, string> = {
   "/sigorta/brans-sira": "Branş sıra özeti",
   "/sigorta/kanal-dagilim": "Satış kanalları",
   "/finans-sigorta": "Finans & Sigorta",
+  ...Object.fromEntries(EXCEL_TOOLS.map((t) => [t.href, t.name])),
 };
 
 export default function SiteTopBar() {

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Excel → JSON Dönüştürücü | CSV'yi JSON'a Çevir",
+  title: "Excel ⇄ JSON Dönüştürücü | JSON'u Excel'e Çevir",
   description:
-    "Excel veya CSV verisini JSON formatına çevirin. API ve yazılım geliştirme için tablo verisini nesne dizisine dönüştürün. Ücretsiz, tarayıcıda çalışır. Ofis Akademi.",
+    "Excel/CSV ↔ JSON iki yönlü dönüşüm. Tabloyu JSON'a, JSON dizisini Excel'e yapıştırılabilir tabloya çevirin. Ücretsiz. Ofis Akademi.",
   alternates: {
     canonical: canonicalUrl("/excel-araclari/excel-json"),
   },

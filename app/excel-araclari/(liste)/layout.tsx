@@ -4,14 +4,14 @@ import { getSiteUrl } from "@/lib/site";
 const BASE_URL = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Excel Araçları | Hızlı İşlem, Mantık & Formül, Finans, İstatistik",
+  title: "Ofis Araçları | Temizleme, Dönüştürücü, Finans, Formül, Analiz",
   description:
-    "Ücretsiz Excel araçları: ad soyad ayırma, CSV ayırma, liste birleştirme, sayıyı yazıya çevirme, DÜŞEYARA ve EĞER oluşturucu, formül asistanı, IBAN-faiz-yüzde, istatistik. Tarayıcıda çalışır, kurulum yok. Ofis Akademi.",
+    "Ücretsiz ofis araçları: veri temizleme, SQL/JSON/CSV dönüştürücüler, KDV ve tutar yazıya, formül yardımı, istatistik. Tarayıcıda çalışır. Ofis Akademi.",
   alternates: { canonical: `${BASE_URL}/excel-araclari` },
   openGraph: {
-    title: "Excel Araçları | Hızlı İşlem, Mantık & Formül, Finans, İstatistik",
+    title: "Ofis Araçları | Temizleme, Dönüştürücü, Finans, Formül, Analiz",
     description:
-      "Ücretsiz Excel araçları: ad soyad ayırma, CSV ayırma, liste birleştirme, sayıyı yazıya çevirme, DÜŞEYARA ve EĞER oluşturucu, formül asistanı, IBAN-faiz-yüzde, istatistik. Tarayıcıda çalışır, kurulum yok. Ofis Akademi.",
+      "Ücretsiz ofis araçları: veri temizleme, SQL/JSON/CSV, KDV, formül yardımı ve analiz. Tarayıcıda çalışır. Ofis Akademi.",
     type: "website",
     url: `${BASE_URL}/excel-araclari`,
     siteName: "Ofis Akademi",
@@ -19,9 +19,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Excel Araçları | Ofis Akademi",
+    title: "Ofis Araçları | Ofis Akademi",
     description:
-      "Ücretsiz Excel araçları: ad soyad ayırma, CSV ayırma, liste birleştirme, formül oluşturucular, finans ve istatistik araçları.",
+      "Temizleme, dönüştürücü, finans, formül ve analiz araçları — tarayıcıda, ücretsiz.",
   },
 };
 

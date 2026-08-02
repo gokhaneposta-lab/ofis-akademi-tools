@@ -14,8 +14,9 @@ const H = 350;
 const PAD = { l: 78, r: 24, t: 62, b: 48 };
 const COLORS = {
   safiTeknik: "#7c3aed",
-  yatirimGeliri: "#2563eb",
-  faaliyetGideri: "#ea580c",
+  genelGider: "#ea580c",
+  aktarim603: "#0d9488",
+  maliNet: "#2563eb",
   vok: "#0f172a",
   HD: "#0f766e",
   HAYAT_EMEKLILIK: "#38bdf8",
@@ -34,9 +35,10 @@ function xAt(i: number, n: number): number {
   return PAD.l + (n <= 1 ? inner / 2 : (i / (n - 1)) * inner);
 }
 
-type VokParca = { key: "safiTeknik" | "yatirimGeliri" | "faaliyetGideri"; label: string; value: number };
+type VokParcaKey = "safiTeknik" | "genelGider" | "aktarim603" | "maliNet";
+type VokParca = { key: VokParcaKey; label: string; value: number };
 
-/** Safi teknik kâr + yatırım geliri + faaliyet gideri → VÖK (yığılmış, işaretli). */
+/** Safi teknik + genel gider + 603 + mali (66+67+68) → VÖK. */
 export function TsbSektorKarBilesenleriChart({
   trend,
   pool,
@@ -46,8 +48,8 @@ export function TsbSektorKarBilesenleriChart({
 }) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const padT = 48;
-  const padB = 52;
-  const chartH = H + 20;
+  const padB = 56;
+  const chartH = H + 28;
   const innerH = chartH - padT - padB;
   const innerW = W - PAD.l - PAD.r;
   const band = innerW / Math.max(1, trend.length);
@@ -57,8 +59,9 @@ export function TsbSektorKarBilesenleriChart({
     const s = p[pool];
     return [
       { key: "safiTeknik", label: "Safi teknik kâr", value: s.safiTeknik },
-      { key: "yatirimGeliri", label: "Yatırım geliri", value: s.yatirimGeliri },
-      { key: "faaliyetGideri", label: "Faaliyet gideri", value: s.faaliyetGideri },
+      { key: "genelGider", label: "Genel gider", value: s.genelGider },
+      { key: "aktarim603", label: "Aktarım (603)", value: s.aktarim603 },
+      { key: "maliNet", label: "Mali net", value: s.maliNet },
     ];
   };
 
@@ -98,6 +101,10 @@ export function TsbSektorKarBilesenleriChart({
                 text: onceki ? tsbChartYoyLabel(bu, onc) : "Önceki dönem artışı: —",
                 accent: true as const,
               },
+              ...partsOf(p).map((part) => ({
+                text: `${part.label}: ${fmtMr(part.value)}`,
+                muted: true as const,
+              })),
             ],
           };
         })()
@@ -108,7 +115,7 @@ export function TsbSektorKarBilesenleriChart({
       viewBox={`0 0 ${W} ${chartH}`}
       className="h-auto min-w-[720px] w-full"
       role="img"
-      aria-label="VÖK bileşenleri — safi teknik kâr, yatırım, faaliyet"
+      aria-label="VÖK bileşenleri — safi teknik, genel gider, aktarım, mali"
       onMouseLeave={() => setHoverIdx(null)}
     >
       <rect width={W} height={chartH} fill="#fff" />
@@ -248,15 +255,16 @@ export function TsbSektorKarBilesenleriChart({
           </g>
         );
       })}
-      <g transform={`translate(${PAD.l}, ${chartH - 4})`}>
+      <g transform={`translate(${PAD.l}, ${chartH - 6})`}>
         {(
           [
-            ["safiTeknik", "Safi teknik kâr"],
-            ["yatirimGeliri", "Yatırım geliri"],
-            ["faaliyetGideri", "Faaliyet gideri"],
+            ["safiTeknik", "Safi teknik"],
+            ["genelGider", "Genel gider"],
+            ["aktarim603", "Aktarım (603)"],
+            ["maliNet", "Mali net"],
           ] as const
         ).map(([key, label], i) => (
-          <g key={key} transform={`translate(${i * 175}, 0)`}>
+          <g key={key} transform={`translate(${i * 155}, 0)`}>
             <rect x={0} y={-11} width={12} height={8} fill={COLORS[key]} rx={1} />
             <text x={17} y={-3} fontSize={10} fill="#475569">
               {label}
@@ -264,7 +272,7 @@ export function TsbSektorKarBilesenleriChart({
           </g>
         ))}
       </g>
-      {tip ? <TsbSvgTooltip x={tip.x} y={tip.y} width={208} lines={tip.lines} /> : null}
+      {tip ? <TsbSvgTooltip x={tip.x} y={tip.y} width={228} lines={tip.lines} /> : null}
     </svg>
   );
 }

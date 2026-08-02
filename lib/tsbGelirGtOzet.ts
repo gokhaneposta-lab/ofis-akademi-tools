@@ -94,6 +94,24 @@ export function genelGiderFromLookup(lookup: GelirTidyDonemLookup, sirketKodu: n
   return sumGtOzetKodlar(lookup, sirketKodu, GENEL_GIDER_HESAP_KODLARI);
 }
 
+/** Safi formülünde düşülen `603` — üç teknik özet sayfa toplamı. */
+export function aktarim603FromLookup(lookup: GelirTidyDonemLookup, sirketKodu: number): number {
+  return (
+    gtCell(lookup, sirketKodu, HAYATDISI, "603") +
+    gtCell(lookup, sirketKodu, HAYAT, "603") +
+    gtCell(lookup, sirketKodu, EMEKLILIK, "603")
+  );
+}
+
+/** VÖK mali bloğu: `66 + 67 + 68` (MALI özet). */
+export function maliNetFromLookup(lookup: GelirTidyDonemLookup, sirketKodu: number): number {
+  return (
+    gtCell(lookup, sirketKodu, MALI, "66") +
+    gtCell(lookup, sirketKodu, MALI, "67") +
+    gtCell(lookup, sirketKodu, MALI, "68")
+  );
+}
+
 export function faaliyetGiderFromLookup(lookup: GelirTidyDonemLookup, sirketKodu: number): number {
   return sumGtOzetKodlar(lookup, sirketKodu, FAALIYET_GIDER_KODLARI);
 }

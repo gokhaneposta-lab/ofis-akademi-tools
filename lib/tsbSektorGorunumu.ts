@@ -34,7 +34,13 @@ export type SektorGorunumuSnapshot = {
   safiTeknik: number;
   yatirimGeliri: number;
   teknikKar: number;
-  /** Faaliyet giderleri (genelde eksi) — VÖK bileşeni */
+  /** Genel gider (personel+yönetim+AR-GE+pazarlama+dış hizmet) — safi formülündeki düşüm */
+  genelGider: number;
+  /** Teknik olmayan bölümden aktarılan yatırım (`603`) */
+  aktarim603: number;
+  /** Mali VÖK payı: 66+67+68 */
+  maliNet: number;
+  /** Faaliyet giderleri (614/636/652 üst) — eski gösterim / referans */
   faaliyetGideri: number;
   /** Vergi öncesi kâr */
   vok: number;
@@ -90,6 +96,8 @@ function emptyHam(): FinansalKiyaslamaHamOlcum {
     faaliyet614: 0,
     personelGider: 0,
     genelGider: 0,
+    aktarim603: 0,
+    maliNet: 0,
     yatirimSegment: 0,
     teknikKarZarar: 0,
     safiTeknikKz: 0,
@@ -128,6 +136,9 @@ function snapshotFrom(
     safiTeknik: h.safiTeknikKz,
     yatirimGeliri: h.yatirimSegment,
     teknikKar: h.teknikKarZarar,
+    genelGider: h.genelGider,
+    aktarim603: h.aktarim603,
+    maliNet: h.maliNet,
     faaliyetGideri: h.faaliyet614,
     vok: h.vok,
     netKar: h.donemNetKar692,

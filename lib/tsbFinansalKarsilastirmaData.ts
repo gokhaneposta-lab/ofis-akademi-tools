@@ -70,6 +70,8 @@ const TRAFIK = "TRAFİK";
 import {
   faaliyetGiderFromLookup,
   genelGiderFromLookup,
+  aktarim603FromLookup,
+  maliNetFromLookup,
   personelGiderFromLookup,
   safiTeknikKzFromLookup,
   teknikKarZararFromLookup,
@@ -129,6 +131,10 @@ export type FinansalKiyaslamaHamOlcum = {
   faaliyet614: number;
   personelGider: number;
   genelGider: number;
+  /** Teknik olmayan bölümden aktarılan yatırım (`603`, üç blok) */
+  aktarim603: number;
+  /** Mali VÖK payı: 66+67+68 */
+  maliNet: number;
   yatirimSegment: number;
   teknikKarZarar: number;
   safiTeknikKz: number;
@@ -202,6 +208,8 @@ export function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): Fi
 
   const personelGider = personelGiderFromLookup(lookup, sk);
   const genelGider = genelGiderFromLookup(lookup, sk);
+  const aktarim603 = aktarim603FromLookup(lookup, sk);
+  const maliNet = maliNetFromLookup(lookup, sk);
   const teknikKarZarar = teknikKarZararFromLookup(lookup, sk);
   const teknikKarsilik3545 = bl(PASIF, "35") + bl(PASIF, "45");
   const faaliyet614 = faaliyetGiderFromLookup(lookup, sk);
@@ -218,6 +226,8 @@ export function hamOlcumFromLookup(lookup: GelirTidyDonemLookup, sk: number): Fi
     faaliyet614,
     personelGider,
     genelGider,
+    aktarim603,
+    maliNet,
     yatirimSegment: h.yatirimGeliriSegment,
     teknikKarZarar,
     safiTeknikKz,
@@ -248,6 +258,8 @@ function aggregateSektorHamOlcumleri(list: FinansalKiyaslamaHamOlcum[]): Finansa
     faaliyet614: s((x) => x.faaliyet614),
     personelGider: s((x) => x.personelGider),
     genelGider: s((x) => x.genelGider),
+    aktarim603: s((x) => x.aktarim603),
+    maliNet: s((x) => x.maliNet),
     yatirimSegment: s((x) => x.yatirimSegment),
     teknikKarZarar: s((x) => x.teknikKarZarar),
     safiTeknikKz: s((x) => x.safiTeknikKz),
@@ -276,6 +288,8 @@ function aggregateOlcekHamOrtalamasi(list: FinansalKiyaslamaHamOlcum[]): Finansa
     faaliyet614: avg((x) => x.faaliyet614),
     personelGider: avg((x) => x.personelGider),
     genelGider: avg((x) => x.genelGider),
+    aktarim603: avg((x) => x.aktarim603),
+    maliNet: avg((x) => x.maliNet),
     yatirimSegment: avg((x) => x.yatirimSegment),
     teknikKarZarar: avg((x) => x.teknikKarZarar),
     safiTeknikKz: avg((x) => x.safiTeknikKz),

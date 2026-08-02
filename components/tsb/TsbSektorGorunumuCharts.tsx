@@ -13,7 +13,7 @@ const W = 860;
 const H = 350;
 const PAD = { l: 78, r: 24, t: 62, b: 48 };
 const COLORS = {
-  teknikKar: "#7c3aed",
+  safiTeknik: "#7c3aed",
   yatirimGeliri: "#2563eb",
   faaliyetGideri: "#ea580c",
   vok: "#0f172a",
@@ -34,9 +34,9 @@ function xAt(i: number, n: number): number {
   return PAD.l + (n <= 1 ? inner / 2 : (i / (n - 1)) * inner);
 }
 
-type VokParca = { key: "teknikKar" | "yatirimGeliri" | "faaliyetGideri"; label: string; value: number };
+type VokParca = { key: "safiTeknik" | "yatirimGeliri" | "faaliyetGideri"; label: string; value: number };
 
-/** Teknik kâr + yatırım geliri + faaliyet gideri → VÖK (yığılmış, işaretli). */
+/** Safi teknik kâr + yatırım geliri + faaliyet gideri → VÖK (yığılmış, işaretli). */
 export function TsbSektorKarBilesenleriChart({
   trend,
   pool,
@@ -56,7 +56,7 @@ export function TsbSektorKarBilesenleriChart({
   const partsOf = (p: SektorGorunumuDonem): VokParca[] => {
     const s = p[pool];
     return [
-      { key: "teknikKar", label: "Teknik kâr", value: s.teknikKar },
+      { key: "safiTeknik", label: "Safi teknik kâr", value: s.safiTeknik },
       { key: "yatirimGeliri", label: "Yatırım geliri", value: s.yatirimGeliri },
       { key: "faaliyetGideri", label: "Faaliyet gideri", value: s.faaliyetGideri },
     ];
@@ -108,7 +108,7 @@ export function TsbSektorKarBilesenleriChart({
       viewBox={`0 0 ${W} ${chartH}`}
       className="h-auto min-w-[720px] w-full"
       role="img"
-      aria-label="VÖK bileşenleri — teknik kâr, yatırım, faaliyet"
+      aria-label="VÖK bileşenleri — safi teknik kâr, yatırım, faaliyet"
       onMouseLeave={() => setHoverIdx(null)}
     >
       <rect width={W} height={chartH} fill="#fff" />
@@ -251,12 +251,12 @@ export function TsbSektorKarBilesenleriChart({
       <g transform={`translate(${PAD.l}, ${chartH - 4})`}>
         {(
           [
-            ["teknikKar", "Teknik kâr"],
+            ["safiTeknik", "Safi teknik kâr"],
             ["yatirimGeliri", "Yatırım geliri"],
             ["faaliyetGideri", "Faaliyet gideri"],
           ] as const
         ).map(([key, label], i) => (
-          <g key={key} transform={`translate(${i * 160}, 0)`}>
+          <g key={key} transform={`translate(${i * 175}, 0)`}>
             <rect x={0} y={-11} width={12} height={8} fill={COLORS[key]} rx={1} />
             <text x={17} y={-3} fontSize={10} fill="#475569">
               {label}

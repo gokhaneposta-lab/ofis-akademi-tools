@@ -5,7 +5,11 @@ import TsbSeoSection from "@/components/tsb/TsbSeoSection";
 import TsbSektorOzeti from "@/components/tsb/TsbSektorOzeti";
 import TsbVeriDurumuBand from "@/components/tsb/TsbVeriDurumuBand";
 import { tsb } from "@/components/tsb/tsbDashboardUi";
-import { TSB_DASHBOARD_GROUPS, TSB_DASHBOARD_PANELS } from "@/lib/tsbDashboardPanels";
+import {
+  TSB_DASHBOARD_GROUPS,
+  TSB_DASHBOARD_PANELS,
+  TSB_OLCEK_DASHBOARD_PANEL,
+} from "@/lib/tsbDashboardPanels";
 import { loadSektorOzeti } from "@/lib/tsbSektorOzeti";
 import { loadOlcekSegmentCache } from "@/lib/tsbOlcekSegmentCache.server";
 import { loadTsbVeriDurumu } from "@/lib/tsbVeriDurumu";
@@ -18,6 +22,7 @@ export default async function SigortaTsbHubPage() {
   const veriDurumu = loadTsbVeriDurumu();
   const sektorOzeti = loadSektorOzeti();
   const olcekSegment = loadOlcekSegmentCache();
+  const olcekHref = TSB_OLCEK_DASHBOARD_PANEL.href;
 
   return (
     <>
@@ -48,50 +53,27 @@ export default async function SigortaTsbHubPage() {
               <li className={tsb.hubLeadItem}>
                 <span className={tsb.hubLeadBullet} aria-hidden />
                 <span>
-                  <strong>Finansal karşılaştırma</strong> — çeyreklik gelir tablosu ve bilanço KPI&apos;ları
+                  <strong>Prim panelleri</strong> — aylık prim üretimi, kanal ve branş kırılımları
                 </span>
               </li>
               <li className={tsb.hubLeadItem}>
                 <span className={tsb.hubLeadBullet} aria-hidden />
                 <span>
-                  <strong>Prim panelleri</strong> — aylık prim üretimi, kanal ve branş kırılımları
+                  <strong>Finansal karşılaştırma</strong> — çeyreklik gelir tablosu ve bilanço KPI&apos;ları
                 </span>
               </li>
             </ul>
             <TsbVeriDurumuBand data={veriDurumu} />
-            <div className="mt-4">
-              <Link
-                href="/sigorta/sirket-karne"
-                className={tsb.hubFeaturedCard}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <span className={tsb.hubPanelBadge}>Öne çıkan</span>
-                    <h2 className="mt-2 text-lg font-bold text-slate-900 sm:text-xl">Şirket karne</h2>
-                    <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-slate-600">
-                      Tek şirket seçin — özet karne, sekmeler ve finansal/teknik/prim panellerine tek tıkla geçin.
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-sm font-bold text-emerald-800 group-hover:underline">
-                    Karneye git →
-                  </span>
-                </div>
-              </Link>
-            </div>
           </div>
         </header>
 
         <main className={tsb.main}>
           <TsbSektorOzeti data={sektorOzeti} />
 
-          {olcekSegment ? (
-            <div className="mt-4">
-              <TsbOlcekSegmentHubKart data={olcekSegment} />
-            </div>
-          ) : null}
-
           {TSB_DASHBOARD_GROUPS.map((group) => {
-            const panels = TSB_DASHBOARD_PANELS.filter((p) => p.group === group.id);
+            const panels = TSB_DASHBOARD_PANELS.filter(
+              (p) => p.group === group.id && p.href !== olcekHref,
+            );
             return (
               <section key={group.id} aria-labelledby={`tsb-group-${group.id}`}>
                 <h2 id={`tsb-group-${group.id}`} className={tsb.hubGroupTitle}>
@@ -118,6 +100,37 @@ export default async function SigortaTsbHubPage() {
               </section>
             );
           })}
+
+          <section aria-labelledby="tsb-group-olcek" className="mt-2">
+            <h2 id="tsb-group-olcek" className={tsb.hubGroupTitle}>
+              Ölçek segmentasyonu
+            </h2>
+            <p className={tsb.hubGroupLead}>
+              Şirketler prim, özsermaye ve aktif büyüklüğüne göre A+…D gruplarına ayrılır — karşılaştırma ve
+              peer seçiminde kullanılır.
+            </p>
+            {olcekSegment ? (
+              <div className="mt-4">
+                <TsbOlcekSegmentHubKart data={olcekSegment} />
+              </div>
+            ) : (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <Link href={TSB_OLCEK_DASHBOARD_PANEL.href} className={tsb.hubPanelCard}>
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl" aria-hidden>
+                      {TSB_OLCEK_DASHBOARD_PANEL.icon}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <span className={tsb.hubPanelBadge}>{TSB_OLCEK_DASHBOARD_PANEL.badge}</span>
+                      <h3 className={tsb.hubPanelTitle}>{TSB_OLCEK_DASHBOARD_PANEL.title}</h3>
+                      <p className={tsb.hubPanelSubtitle}>{TSB_OLCEK_DASHBOARD_PANEL.subtitle}</p>
+                    </div>
+                  </div>
+                  <p className={tsb.hubPanelCta}>Panele git →</p>
+                </Link>
+              </div>
+            )}
+          </section>
 
           <TsbSeoSection pageId="hub" />
 

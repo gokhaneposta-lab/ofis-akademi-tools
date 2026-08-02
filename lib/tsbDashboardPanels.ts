@@ -18,6 +18,12 @@ export type TsbDashboardGroupMeta = {
 
 export const TSB_DASHBOARD_GROUPS: readonly TsbDashboardGroupMeta[] = [
   {
+    id: "prim",
+    title: "Prim ve üretim",
+    description:
+      "Aylık TSB prim istatistikleri — kanal, branş, sıra, trend ve yoğunlaşma tek hub’da sekmelerle.",
+  },
+  {
     id: "finansal",
     title: "Finansal karşılaştırma",
     description:
@@ -27,12 +33,6 @@ export const TSB_DASHBOARD_GROUPS: readonly TsbDashboardGroupMeta[] = [
     id: "teknik",
     title: "Teknik karlılık",
     description: "Gelir tablosu hasar/prim oranları; branş seçimi ve DERK dahil/hariç kırılımı.",
-  },
-  {
-    id: "prim",
-    title: "Prim ve üretim",
-    description:
-      "Aylık TSB prim istatistikleri — kanal, branş, sıra, trend ve yoğunlaşma tek hub’da sekmelerle.",
   },
 ] as const;
 
@@ -61,15 +61,17 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
     icon: "📋",
     group: "finansal",
   },
-  {
-    href: "/sigorta/olcek-segmentasyon",
-    badge: "Ölçek",
-    title: "Ölçek segmentasyonu",
-    subtitle: "A+…D grupları · şirket listesi · sektör/segment sırası",
-    icon: "🏢",
-    group: "finansal",
-  },
 ] as const;
+
+/** Hub’ta grupların altında ayrı gösterilir — katalog grubuna karışmaz. */
+export const TSB_OLCEK_DASHBOARD_PANEL: TsbDashboardPanel = {
+  href: "/sigorta/olcek-segmentasyon",
+  badge: "Ölçek",
+  title: "Ölçek segmentasyonu",
+  subtitle: "A+…D grupları · şirket listesi · sektör/segment sırası",
+  icon: "🏢",
+  group: "finansal",
+};
 
 export const TSB_TEKNIK_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
@@ -166,11 +168,12 @@ export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   },
 ] as const;
 
-/** Tüm paneller (finansal + teknik + prim), hub sırası */
+/** Tüm paneller (prim → finansal → teknik), hub sırası; ölçek en sonda */
 export const TSB_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
+  ...TSB_PRIM_DASHBOARD_PANELS,
   ...TSB_FINANSAL_DASHBOARD_PANELS,
   ...TSB_TEKNIK_DASHBOARD_PANELS,
-  ...TSB_PRIM_DASHBOARD_PANELS,
+  TSB_OLCEK_DASHBOARD_PANEL,
 ] as const;
 
 export function parsePrimPanelId(raw: string | null | undefined): TsbPrimPanelId {

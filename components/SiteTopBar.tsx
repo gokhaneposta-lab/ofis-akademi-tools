@@ -96,13 +96,13 @@ const NAV: NavSection[] = [
     ),
     children: [
       { label: "Dashboard özeti", href: "/sigorta/tsb" },
-      { label: "Sektör görünümü", href: "/sigorta/sektor-gorunumu" },
-      { label: "Finansal karşılaştırma", href: "/sigorta/finansal-karsilastirma" },
-      { label: "Ölçek segmentasyonu", href: "/sigorta/olcek-segmentasyon" },
       { label: "Prim ve üretim", href: "/sigorta/prim" },
       { label: "Branş kıyası", href: "/sigorta/prim?panel=brans" },
       { label: "Satış kanalları", href: "/sigorta/prim?panel=kanal-dagilim" },
       { label: "Pazar yoğunlaşma", href: "/sigorta/prim?panel=pazar-yogunlasma" },
+      { label: "Sektör görünümü", href: "/sigorta/sektor-gorunumu" },
+      { label: "Finansal karşılaştırma", href: "/sigorta/finansal-karsilastirma" },
+      { label: "Ölçek segmentasyonu", href: "/sigorta/olcek-segmentasyon" },
     ],
   },
   {

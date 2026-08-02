@@ -10,6 +10,7 @@ import {
   type KanalTrendNokta,
 } from "@/lib/tsbKanalDagilim";
 import { cn, tsbFormatPrim } from "@/components/tsb/tsbDashboardUi";
+import { TsbSvgTooltip, tsbChartYoyLabel } from "@/components/tsb/TsbChartTooltip";
 
 export const KANAL_HEX: Record<KanalDagilimSatirKey, string> = {
   acente: "#0f766e",
@@ -125,30 +126,30 @@ export function KanalDonutChart({
           })}
           {hover ? (
             <>
-              <text x={cx} y={cy - 6} textAnchor="middle" fontSize={16} fontWeight={800} fill="#0f172a">
+              <text x={cx} y={cy - 8} textAnchor="middle" fontSize={18} fontWeight={800} fill="#0f172a">
                 %{pf.format(hover.pay)}
               </text>
-              <text x={cx} y={cy + 12} textAnchor="middle" fontSize={10} fontWeight={600} fill="#475569">
+              <text x={cx} y={cy + 14} textAnchor="middle" fontSize={12} fontWeight={700} fill="#0f172a">
                 {hover.label}
               </text>
             </>
           ) : (
             <>
-              <text x={cx} y={cy - 4} textAnchor="middle" fontSize={11} fontWeight={700} fill="#0f172a">
+              <text x={cx} y={cy - 4} textAnchor="middle" fontSize={13} fontWeight={800} fill="#0f172a">
                 {fmtMr(kutu.genelToplam)}
               </text>
-              <text x={cx} y={cy + 12} textAnchor="middle" fontSize={9} fill="#64748b">
+              <text x={cx} y={cy + 14} textAnchor="middle" fontSize={11} fontWeight={600} fill="#334155">
                 toplam
               </text>
             </>
           )}
         </svg>
         {hover ? (
-          <p className="mt-1 text-center text-[11px] tabular-nums text-slate-600">
+          <p className="mt-1 text-center text-sm font-semibold tabular-nums text-slate-900">
             {tsbFormatPrim(hover.tutar)}
           </p>
         ) : (
-          <p className="mt-1 text-center text-[11px] text-slate-400">Dilim üzerine gelin → pay %</p>
+          <p className="mt-1 text-center text-xs font-medium text-slate-600">Dilim üzerine gelin → pay %</p>
         )}
       </div>
       <ul className="min-w-0 flex-1 space-y-1.5 text-sm">
@@ -218,8 +219,25 @@ export function KanalStackedTrendChart({
 
   const ticks = Array.from({ length: 4 }, (_, i) => (max * i) / 3);
   const tip = hoverIdx !== null ? trend[hoverIdx] : null;
-  const tipX = tip ? Math.min(W - 190, Math.max(PAD.l, xAt(hoverIdx!) - 70)) : 0;
-  const tipY = PAD.t + 8;
+  const onceki = hoverIdx !== null && hoverIdx > 0 ? trend[hoverIdx - 1] : null;
+  const tipX = tip ? Math.min(W - 230, Math.max(PAD.l, xAt(hoverIdx!) - 40)) : 0;
+  const tipY = PAD.t + 4;
+  const tipLines = tip
+    ? [
+        { text: `${tip.donem} · prim üretimi` },
+        { text: `Toplam ${tsbFormatPrim(tip.kutu.genelToplam)}`, muted: true as const },
+        {
+          text: onceki
+            ? `${tsbChartYoyLabel(tip.kutu.genelToplam, onceki.kutu.genelToplam)} vs ${onceki.donem}`
+            : "YoY: — (önceki yok)",
+          accent: true as const,
+        },
+        ...order.map((key) => ({
+          text: `${KANAL_DAGILIM_SATIRLARI.find((x) => x.key === key)?.label}: ${fmtMr(tip.kutu[key])}`,
+          muted: true as const,
+        })),
+      ]
+    : [];
 
   function nearestIndex(clientX: number, svg: SVGSVGElement): number {
     const rect = svg.getBoundingClientRect();
@@ -299,25 +317,7 @@ export function KanalStackedTrendChart({
           </text>
         </g>
       ))}
-      {tip ? (
-        <g transform={`translate(${tipX}, ${tipY})`} pointerEvents="none">
-          <rect width={178} height={124} rx={8} fill="#0f172a" opacity={0.92} />
-          <text x={10} y={18} fontSize={11} fontWeight={700} fill="#fff">
-            {tip.donem} · prim üretimi
-          </text>
-          <text x={10} y={36} fontSize={12} fontWeight={700} fill="#a7f3d0">
-            Toplam {tsbFormatPrim(tip.kutu.genelToplam)}
-          </text>
-          {order.map((key, i) => (
-            <g key={key} transform={`translate(10, ${50 + i * 13})`}>
-              <rect width={8} height={8} y={-7} rx={1} fill={KANAL_HEX[key]} />
-              <text x={14} y={0} fontSize={10} fill="#e2e8f0">
-                {KANAL_DAGILIM_SATIRLARI.find((x) => x.key === key)?.label}: {fmtMr(tip.kutu[key])}
-              </text>
-            </g>
-          ))}
-        </g>
-      ) : null}
+      {tip ? <TsbSvgTooltip x={tipX} y={tipY} width={220} lines={tipLines} /> : null}
     </svg>
   );
 }

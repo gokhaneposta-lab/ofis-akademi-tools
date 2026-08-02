@@ -4,7 +4,6 @@ import { useState } from "react";
 import type {
   SektorGorunumuDonem,
   SektorGorunumuPool,
-  SektorGorunumuSnapshot,
   SektorPrimSnapshot,
 } from "@/lib/tsbSektorGorunumu";
 import { TsbSvgTooltip, tsbChartYoyLabel } from "@/components/tsb/TsbChartTooltip";
@@ -13,10 +12,10 @@ const W = 860;
 const H = 350;
 const PAD = { l: 78, r: 24, t: 62, b: 48 };
 const COLORS = {
-  safiTeknik: "#0f766e",
-  yatirimGeliri: "#2563eb",
   teknikKar: "#7c3aed",
-  netKar: "#e11d48",
+  yatirimGeliri: "#2563eb",
+  faaliyetGideri: "#ea580c",
+  vok: "#0f172a",
   HD: "#0f766e",
   HAYAT_EMEKLILIK: "#38bdf8",
 };
@@ -32,12 +31,9 @@ function xAt(i: number, n: number): number {
   return PAD.l + (n <= 1 ? inner / 2 : (i / (n - 1)) * inner);
 }
 
-type KarHover = {
-  series: keyof Pick<SektorGorunumuSnapshot, "safiTeknik" | "yatirimGeliri" | "teknikKar" | "netKar">;
-  label: string;
-  i: number;
-} | null;
+type VokParca = { key: "teknikKar" | "yatirimGeliri" | "faaliyetGideri"; label: string; value: number };
 
+/** Teknik kâr + yatırım geliri + faaliyet gideri → VÖK (yığılmış, işaretli). */
 export function TsbSektorKarBilesenleriChart({
   trend,
   pool,
@@ -45,39 +41,58 @@ export function TsbSektorKarBilesenleriChart({
   trend: SektorGorunumuDonem[];
   pool: SektorGorunumuPool;
 }) {
-  const [hover, setHover] = useState<KarHover>(null);
-  const series: {
-    key: keyof Pick<SektorGorunumuSnapshot, "safiTeknik" | "yatirimGeliri" | "teknikKar" | "netKar">;
-    label: string;
-  }[] = [
-    { key: "safiTeknik", label: "Safî teknik" },
-    { key: "yatirimGeliri", label: "Yatırım geliri" },
-    { key: "teknikKar", label: "Teknik kâr" },
-    { key: "netKar", label: "Net kâr" },
-  ];
-  const values = trend.flatMap((p) => series.map((s) => p[pool][s.key]));
-  const min = Math.min(0, ...values);
-  const max = Math.max(1, ...values);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const padT = 48;
+  const padB = 52;
+  const chartH = H + 20;
+  const innerH = chartH - padT - padB;
+  const innerW = W - PAD.l - PAD.r;
+  const band = innerW / Math.max(1, trend.length);
+  const barW = Math.min(64, band * 0.55);
+
+  const partsOf = (p: SektorGorunumuDonem): VokParca[] => {
+    const s = p[pool];
+    return [
+      { key: "teknikKar", label: "Teknik kâr", value: s.teknikKar },
+      { key: "yatirimGeliri", label: "Yatırım geliri", value: s.yatirimGeliri },
+      { key: "faaliyetGideri", label: "Faaliyet gideri", value: s.faaliyetGideri },
+    ];
+  };
+
+  const extremes = trend.flatMap((p) => {
+    const parts = partsOf(p);
+    let pos = 0;
+    let neg = 0;
+    for (const part of parts) {
+      if (part.value >= 0) pos += part.value;
+      else neg += part.value;
+    }
+    return [pos, neg, p[pool].vok];
+  });
+  const max = Math.max(1, ...extremes);
+  const min = Math.min(0, ...extremes);
   const span = max - min || 1;
-  const yAt = (v: number) => PAD.t + ((max - v) / span) * (H - PAD.t - PAD.b);
+  const yAt = (v: number) => padT + ((max - v) / span) * innerH;
+  const y0 = yAt(0);
   const ticks = Array.from({ length: 5 }, (_, i) => min + (span * i) / 4);
 
   const tip =
-    hover !== null
+    hoverIdx !== null
       ? (() => {
-          const p = trend[hover.i];
-          const onceki = hover.i > 0 ? trend[hover.i - 1] : null;
-          const bu = p[pool][hover.series];
-          const onc = onceki ? onceki[pool][hover.series] : null;
+          const p = trend[hoverIdx];
+          const onceki = hoverIdx > 0 ? trend[hoverIdx - 1] : null;
+          const bu = p[pool].vok;
+          const onc = onceki ? onceki[pool].vok : null;
+          const cx = PAD.l + band * hoverIdx + band / 2;
           return {
-            x: Math.min(W - 210, Math.max(PAD.l, xAt(hover.i, trend.length) + 12)),
-            y: Math.max(8, yAt(bu) - 56),
+            x: Math.min(W - 210, Math.max(PAD.l, cx + 14)),
+            y: 8,
             lines: [
-              { text: `${hover.label} · ${p.donem}` },
-              { text: fmtMr(bu), muted: true },
+              { text: `VÖK · ${p.donem}` },
+              { text: fmtMr(bu), muted: true as const },
               {
-                text: onceki ? tsbChartYoyLabel(bu, onc) : "YoY: — (önceki yok)",
-                accent: true,
+                text: onceki ? tsbChartYoyLabel(bu, onc) : "Önceki dönem artışı: —",
+                accent: true as const,
               },
             ],
           };
@@ -86,18 +101,15 @@ export function TsbSektorKarBilesenleriChart({
 
   return (
     <svg
-      viewBox={`0 0 ${W} ${H}`}
+      viewBox={`0 0 ${W} ${chartH}`}
       className="h-auto min-w-[720px] w-full"
       role="img"
-      aria-label="Kâr bileşenleri trendi"
-      onMouseLeave={() => setHover(null)}
+      aria-label="VÖK bileşenleri — teknik kâr, yatırım, faaliyet"
+      onMouseLeave={() => setHoverIdx(null)}
     >
-      <rect width={W} height={H} fill="#fff" />
-      <text x={PAD.l} y={24} fontSize={14} fontWeight={700} fill="#0f172a">
-        Kâr bileşenleri
-      </text>
-      <text x={PAD.l} y={42} fontSize={10} fill="#64748b">
-        Aynı çeyreğin yıllar arası karşılaştırması · milyar TL · hover = YoY
+      <rect width={W} height={chartH} fill="#fff" />
+      <text x={PAD.l} y={28} fontSize={14} fontWeight={700} fill="#0f172a">
+        VÖK bileşenleri
       </text>
       {ticks.map((tick, i) => {
         const y = yAt(tick);
@@ -110,46 +122,119 @@ export function TsbSektorKarBilesenleriChart({
           </g>
         );
       })}
-      {trend.map((p, i) => (
-        <text key={p.donem} x={xAt(i, trend.length)} y={H - 17} textAnchor="middle" fontSize={10} fill="#475569">
-          {p.donem}
-        </text>
-      ))}
-      {series.map((s) => {
-        const points = trend.map((p, i) => `${xAt(i, trend.length)},${yAt(p[pool][s.key])}`).join(" ");
+      {trend.map((p, i) => {
+        const cx = PAD.l + band * i + band / 2;
+        const parts = partsOf(p);
+        const active = hoverIdx === i;
+        let posTop = 0;
+        let negBot = 0;
+        const segs: { key: string; y: number; h: number; fill: string; value: number; label: string }[] = [];
+        for (const part of parts) {
+          const v = part.value;
+          if (v === 0 || !Number.isFinite(v)) continue;
+          if (v > 0) {
+            const yTop = yAt(posTop + v);
+            const yBot = yAt(posTop);
+            segs.push({
+              key: part.key,
+              y: yTop,
+              h: Math.max(1, yBot - yTop),
+              fill: COLORS[part.key],
+              value: v,
+              label: part.label,
+            });
+            posTop += v;
+          } else {
+            const yTop = yAt(negBot);
+            const yBot = yAt(negBot + v);
+            segs.push({
+              key: part.key,
+              y: yTop,
+              h: Math.max(1, yBot - yTop),
+              fill: COLORS[part.key],
+              value: v,
+              label: part.label,
+            });
+            negBot += v;
+          }
+        }
+        const vok = p[pool].vok;
+        const vokY = yAt(vok);
         return (
-          <g key={s.key}>
-            <polyline points={points} fill="none" stroke={COLORS[s.key]} strokeWidth={2.5} strokeLinejoin="round" />
-            {trend.map((p, i) => (
-              <circle
-                key={p.donem}
-                cx={xAt(i, trend.length)}
-                cy={yAt(p[pool][s.key])}
-                r={hover?.series === s.key && hover.i === i ? 6 : 4}
-                fill={COLORS[s.key]}
-                className="cursor-pointer"
-                onMouseEnter={() => setHover({ series: s.key, label: s.label, i })}
-              />
+          <g key={p.donem} className="cursor-pointer" onMouseEnter={() => setHoverIdx(i)}>
+            {segs.map((seg) => (
+              <g key={seg.key}>
+                <rect
+                  x={cx - barW / 2}
+                  y={seg.y}
+                  width={barW}
+                  height={seg.h}
+                  fill={seg.fill}
+                  fillOpacity={active ? 1 : 0.88}
+                  rx={2}
+                />
+                {seg.h >= 14 ? (
+                  <text
+                    x={cx}
+                    y={seg.y + seg.h / 2 + 4}
+                    textAnchor="middle"
+                    fontSize={9}
+                    fontWeight={700}
+                    fill="#fff"
+                  >
+                    {fmtMr(seg.value)}
+                  </text>
+                ) : null}
+              </g>
             ))}
+            <line x1={cx - barW / 2 - 4} x2={cx + barW / 2 + 4} y1={y0} y2={y0} stroke="#94a3b8" strokeWidth={1} />
+            <text
+              x={cx}
+              y={vok >= 0 ? Math.min(vokY, yAt(posTop)) - 8 : Math.max(vokY, yAt(negBot)) + 14}
+              textAnchor="middle"
+              fontSize={10}
+              fontWeight={800}
+              fill={COLORS.vok}
+            >
+              VÖK {fmtMr(vok)}
+            </text>
+            <text
+              x={cx}
+              y={chartH - 18}
+              textAnchor="middle"
+              fontSize={10}
+              fill="#334155"
+              fontWeight={active ? 700 : 500}
+            >
+              {p.donem}
+            </text>
           </g>
         );
       })}
-      {series.map((s, i) => (
-        <g key={`legend-${s.key}`} transform={`translate(${PAD.l + i * 150}, ${H - 2})`}>
-          <line x1={0} x2={16} y1={-4} y2={-4} stroke={COLORS[s.key]} strokeWidth={3} />
-          <text x={22} y={0} fontSize={10} fill="#475569">
-            {s.label}
-          </text>
-        </g>
-      ))}
-      {tip ? <TsbSvgTooltip x={tip.x} y={tip.y} width={200} lines={tip.lines} /> : null}
+      <g transform={`translate(${PAD.l}, ${chartH - 4})`}>
+        {(
+          [
+            ["teknikKar", "Teknik kâr"],
+            ["yatirimGeliri", "Yatırım geliri"],
+            ["faaliyetGideri", "Faaliyet gideri"],
+          ] as const
+        ).map(([key, label], i) => (
+          <g key={key} transform={`translate(${i * 160}, 0)`}>
+            <rect x={0} y={-11} width={12} height={8} fill={COLORS[key]} rx={1} />
+            <text x={17} y={-3} fontSize={10} fill="#475569">
+              {label}
+            </text>
+          </g>
+        ))}
+      </g>
+      {tip ? <TsbSvgTooltip x={tip.x} y={tip.y} width={208} lines={tip.lines} /> : null}
     </svg>
   );
 }
 
 type PrimHover = { i: number; key: "HD" | "HE" } | null;
 
-/** Prim üretimi — yıllar arası gruplu bar (HD | H/E); tüm etiketler + hover YoY. */
+/** Prim üretimi — yıllar arası gruplu bar (HD | H/E); tüm etiketler + hover. */
 export function TsbSektorPrimUretimChart({
   trend,
   seciliDonem,
@@ -178,18 +263,15 @@ export function TsbSektorPrimUretimChart({
           const onceki = hover.i > 0 ? trend[hover.i - 1] : null;
           const bu = hover.key === "HD" ? p.HD : p.HAYAT_EMEKLILIK;
           const onc = onceki ? (hover.key === "HD" ? onceki.HD : onceki.HAYAT_EMEKLILIK) : null;
-          const label = hover.key === "HD" ? "Hayat dışı" : "Hayat / Emeklilik";
           const cx = PAD.l + band * hover.i + band / 2;
           return {
             x: Math.min(W - 210, Math.max(PAD.l, cx + 16)),
             y: padT + 4,
             lines: [
-              { text: `${label} · ${p.donem}` },
+              { text: "Üretim" },
               { text: fmtMr(bu), muted: true },
               {
-                text: onceki
-                  ? `${tsbChartYoyLabel(bu, onc)} vs ${onceki.donem}`
-                  : "YoY: — (önceki yıl yok)",
+                text: onceki ? tsbChartYoyLabel(bu, onc) : "Önceki dönem artışı: —",
                 accent: true,
               },
             ],
@@ -206,11 +288,8 @@ export function TsbSektorPrimUretimChart({
       onMouseLeave={() => setHover(null)}
     >
       <rect width={W} height={chartH} fill="#fff" />
-      <text x={PAD.l} y={25} fontSize={14} fontWeight={700} fill="#0f172a">
+      <text x={PAD.l} y={28} fontSize={14} fontWeight={700} fill="#0f172a">
         Prim üretimi
-      </text>
-      <text x={PAD.l} y={43} fontSize={10} fill="#64748b">
-        Aynı ayın yıllar arası seyri · etiket = tutar · hover = YoY
       </text>
       <g transform={`translate(${W - PAD.r - 220}, 18)`}>
         <rect x={0} y={0} width={12} height={8} fill={COLORS.HD} rx={1} />
@@ -360,12 +439,6 @@ export function TsbSektorBilançoStackedChart({
   const band = innerW / Math.max(1, trend.length);
   const barW = Math.min(72, band * 0.52);
   const ticks = Array.from({ length: 5 }, (_, i) => (max * i) / 4);
-  const altBaslik =
-    pool === "HD"
-      ? "Yalnız hayat dışı · milyar TL · hover = YoY"
-      : pool === "HAYAT_EMEKLILIK"
-        ? "Yalnız hayat / emeklilik · milyar TL · hover = YoY"
-        : "HD + H/E yığılmış · milyar TL · hover = YoY";
 
   const tip =
     hoverIdx !== null
@@ -385,10 +458,10 @@ export function TsbSektorBilançoStackedChart({
             x: Math.min(W - 220, Math.max(PAD.l, cx + 12)),
             y: PAD.t,
             lines: [
-              { text: p.donem },
+              { text: "Üretim" },
               { text: detay, muted: true },
               {
-                text: onceki ? `${tsbChartYoyLabel(bu, onc)} vs ${onceki.donem}` : "YoY: — (önceki yok)",
+                text: onceki ? tsbChartYoyLabel(bu, onc) : "Önceki dönem artışı: —",
                 accent: true,
               },
             ],
@@ -405,11 +478,8 @@ export function TsbSektorBilançoStackedChart({
       onMouseLeave={() => setHoverIdx(null)}
     >
       <rect width={W} height={H} fill="#fff" />
-      <text x={PAD.l} y={25} fontSize={14} fontWeight={700} fill="#0f172a">
+      <text x={PAD.l} y={28} fontSize={14} fontWeight={700} fill="#0f172a">
         {title}
-      </text>
-      <text x={PAD.l} y={43} fontSize={10} fill="#64748b">
-        {altBaslik}
       </text>
       {ticks.map((tick, i) => {
         const y = yAt(tick);

@@ -224,12 +224,12 @@ export function KanalStackedTrendChart({
   const tipY = PAD.t + 4;
   const tipLines = tip
     ? [
-        { text: `${tip.donem} · prim üretimi` },
-        { text: `Toplam ${tsbFormatPrim(tip.kutu.genelToplam)}`, muted: true as const },
+        { text: "Üretim" },
+        { text: tsbFormatPrim(tip.kutu.genelToplam), muted: true as const },
         {
           text: onceki
-            ? `${tsbChartYoyLabel(tip.kutu.genelToplam, onceki.kutu.genelToplam)} vs ${onceki.donem}`
-            : "YoY: — (önceki yok)",
+            ? tsbChartYoyLabel(tip.kutu.genelToplam, onceki.kutu.genelToplam)
+            : "Önceki dönem artışı: —",
           accent: true as const,
         },
         ...order.map((key) => ({

@@ -43,12 +43,12 @@ export function TsbSvgTooltip({
 
 const yoyPf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 1 });
 
-/** Önceki yıla göre yüzde değişim metni (hover). */
+/** Önceki yıla göre yüzde değişim — kısa hover metni. */
 export function tsbChartYoyLabel(bu: number, onceki: number | undefined | null): string {
   if (onceki === undefined || onceki === null || !Number.isFinite(onceki) || onceki === 0) {
-    return "YoY: —";
+    return "Önceki dönem artışı: —";
   }
   const d = ((bu - onceki) / Math.abs(onceki)) * 100;
   const sign = d > 0 ? "+" : "";
-  return `YoY: ${sign}${yoyPf.format(d)}%`;
+  return `Önceki dönem artışı: ${sign}${yoyPf.format(d)}%`;
 }

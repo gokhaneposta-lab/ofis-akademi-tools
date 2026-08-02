@@ -29,6 +29,10 @@ export type SektorGorunumuSnapshot = {
   safiTeknik: number;
   yatirimGeliri: number;
   teknikKar: number;
+  /** Faaliyet giderleri (genelde eksi) — VÖK bileşeni */
+  faaliyetGideri: number;
+  /** Vergi öncesi kâr */
+  vok: number;
   netKar: number;
   ozsermaye: number;
   aktifToplami: number;
@@ -119,6 +123,8 @@ function snapshotFrom(
     safiTeknik: h.safiTeknikKz,
     yatirimGeliri: h.yatirimSegment,
     teknikKar: h.teknikKarZarar,
+    faaliyetGideri: h.faaliyet614,
+    vok: h.vok,
     netKar: h.donemNetKar692,
     ozsermaye: h.ozsermaye,
     aktifToplami: h.toplamAktif,

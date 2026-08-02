@@ -85,14 +85,14 @@ type KpiKey = keyof Pick<
   | "aktifToplami"
 >;
 
-const KPI_LIST: { key: KpiKey; label: string; hint: string }[] = [
-  { key: "brutPrim", label: "Brüt prim (finansal GT)", hint: "Gelir tablosu yazılan prim · çeyrek" },
-  { key: "teknikKar", label: "Teknik kâr / zarar", hint: "Teknik bölüm sonucu" },
-  { key: "safiTeknik", label: "Safî teknik sonuç", hint: "Yatırım etkisi ayrıştırılmış" },
-  { key: "yatirimGeliri", label: "Yatırım geliri", hint: "Karşılaştırılabilir yatırım KPI" },
-  { key: "netKar", label: "Net dönem kârı", hint: "Dönem net sonucu" },
-  { key: "ozsermaye", label: "Özsermaye", hint: "Sektör sermaye tabanı" },
-  { key: "aktifToplami", label: "Aktif toplamı", hint: "Toplam bilanço büyüklüğü" },
+const KPI_LIST: { key: KpiKey; label: string }[] = [
+  { key: "brutPrim", label: "Brüt prim (finansal GT)" },
+  { key: "teknikKar", label: "Teknik kâr / zarar" },
+  { key: "safiTeknik", label: "Safî teknik sonuç" },
+  { key: "yatirimGeliri", label: "Yatırım geliri" },
+  { key: "netKar", label: "Net dönem kârı" },
+  { key: "ozsermaye", label: "Özsermaye" },
+  { key: "aktifToplami", label: "Aktif toplamı" },
 ];
 
 function PrimUretimPanel({
@@ -138,16 +138,18 @@ function KpiTable({
   trend,
   secili,
   onceki,
+  pool,
 }: {
   donem: string;
   trend: SektorGorunumuDonem[];
   secili: SektorGorunumuDonem;
   onceki: SektorGorunumuDonem | null;
+  pool: SektorGorunumuPool;
 }) {
   const yilKolonlari = trend.filter((p) => p.donem !== donem);
   return (
     <TsbTableShell>
-      <table className={cn(tsb.table, "min-w-[980px]")}>
+      <table className={cn(tsb.table, "min-w-[720px]")}>
         <thead className={tsb.thead}>
           <tr>
             <th className={tsb.thSticky}>Gösterge</th>
@@ -156,32 +158,25 @@ function KpiTable({
             ))}
             <th className={tsb.th}>{donem}</th>
             <th className={tsb.th}>Yıllık değişim</th>
-            <th className={tsb.th}>{donem} · HD</th>
-            <th className={tsb.th}>{donem} · H/E</th>
           </tr>
         </thead>
         <tbody>
           {KPI_LIST.map((item) => {
-            const degisim = fmtDegisim(secili.SEKTOR[item.key], onceki?.SEKTOR[item.key]);
+            const degisim = fmtDegisim(secili[pool][item.key], onceki?.[pool][item.key]);
             return (
               <tr key={item.key} className={tsb.tbodyRow}>
-                <th scope="row" className={cn(tsb.tdSticky, "text-left")}>
-                  <span className="block font-semibold text-slate-900">{item.label}</span>
-                  <span className="block text-[11px] font-normal text-slate-400">{item.hint}</span>
+                <th scope="row" className={cn(tsb.tdSticky, "text-left font-semibold text-slate-900")}>
+                  {item.label}
                 </th>
                 {yilKolonlari.map((p) => (
                   <td key={p.donem} className={cn(tsb.td, "text-right text-slate-500")}>
-                    {fmtTl(p.SEKTOR[item.key])}
+                    {fmtTl(p[pool][item.key])}
                   </td>
                 ))}
                 <td className={cn(tsb.td, "bg-emerald-50/40 text-right font-bold")}>
-                  {fmtTl(secili.SEKTOR[item.key])}
+                  {fmtTl(secili[pool][item.key])}
                 </td>
                 <td className={cn(tsb.td, "text-right font-semibold", degisim.className)}>{degisim.text}</td>
-                <td className={cn(tsb.td, "text-right")}>{fmtTl(secili.HD[item.key])}</td>
-                <td className={cn(tsb.td, "text-right text-sky-700")}>
-                  {fmtTl(secili.HAYAT_EMEKLILIK[item.key])}
-                </td>
               </tr>
             );
           })}
@@ -239,6 +234,7 @@ function HavuzKoseFiltre({
 
 export default function TsbSektorGorunumuDashboard() {
   const [karPool, setKarPool] = useState<SektorGorunumuPool>("SEKTOR");
+  const [kpiPool, setKpiPool] = useState<SektorGorunumuPool>("SEKTOR");
   const [aktifPool, setAktifPool] = useState<SektorGorunumuPool>("SEKTOR");
   const [ozsermayePool, setOzsermayePool] = useState<SektorGorunumuPool>("SEKTOR");
 
@@ -382,18 +378,26 @@ export default function TsbSektorGorunumuDashboard() {
           <div>
             <h2 id="sg-kpi" className={tsb.dataPanelTitle}>Finansal ana göstergeler</h2>
             <p className={tsb.sectionLead}>
-              {finansalDonem} · HD + Hayat/Emeklilik toplamı · aynı çeyreğin yıllar arası seyri
+              {finansalDonem} · {POOL_LABEL[kpiPool]} · aynı çeyreğin yıllar arası seyri
             </p>
           </div>
-          <span className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white">
-            {finansalPaket.secili.SEKTOR.sirketSayisi} şirket
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <HavuzKoseFiltre
+              value={kpiPool}
+              onChange={setKpiPool}
+              ariaLabel="Finansal göstergeler sektör havuzu"
+            />
+            <span className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white">
+              {finansalPaket.secili[kpiPool].sirketSayisi} şirket
+            </span>
+          </div>
         </div>
         <KpiTable
           donem={finansalDonem}
           trend={finansalPaket.trend}
           secili={finansalPaket.secili}
           onceki={finansalPaket.onceki}
+          pool={kpiPool}
         />
       </section>
 

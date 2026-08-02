@@ -145,7 +145,7 @@ export default function HomeClient() {
                 href="/excel-araclari"
                 className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
               >
-                Excel Araçları
+                Ofis Araçları
               </a>
               <Link
                 href="/blog"
@@ -417,18 +417,18 @@ export default function HomeClient() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold sm:text-2xl">
-                Excel Araçları
+                Ofis Araçları
               </h2>
               <p className="mt-2 max-w-xl text-base text-slate-700">
-                Eğitimle birlikte gelen hazır dosya ve araçlar; hesaplama, metin,
-                finans ve istatistik araçları günlük işte anında kullanıma hazır.
+                Temizleme, dönüştürücü, finans, formül ve analiz araçları; günlük
+                ofis işlerini tarayıcıda saniyeler içinde çözer.
               </p>
               <p className="mt-2">
                 <Link
                   href="/excel-araclari"
                   className="text-sm font-semibold text-emerald-600 hover:text-emerald-500 underline underline-offset-2"
                 >
-                  Tüm Excel Araçları sayfası →
+                  Tüm ofis araçları →
                 </Link>
               </p>
             </div>

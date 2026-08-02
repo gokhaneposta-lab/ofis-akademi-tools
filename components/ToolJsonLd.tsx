@@ -44,7 +44,7 @@ export default function ToolJsonLd({
 
   const defaultBreadcrumb: BreadcrumbItem[] = [
     { name: "Ofis Akademi", url: `${baseUrl}/` },
-    { name: "Excel Araçları", url: `${baseUrl}/excel-araclari` },
+    { name: "Ofis Araçları", url: `${baseUrl}/excel-araclari` },
     { name, url },
   ];
 

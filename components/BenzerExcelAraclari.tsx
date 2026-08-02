@@ -18,9 +18,9 @@ export default function BenzerExcelAraclari({ currentHref }: Props) {
     <section
       className="rounded-lg border bg-white p-4"
       style={{ borderColor: THEME.gridLine }}
-      aria-label="Benzer Excel araçları"
+      aria-label="Benzer ofis araçları"
     >
-      <h2 className="text-sm font-semibold text-gray-800 mb-3">Benzer Excel Araçları</h2>
+      <h2 className="text-sm font-semibold text-gray-800 mb-3">Benzer Ofis Araçları</h2>
       <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
         {list.map((tool) => (
           <li key={tool.href}>
@@ -35,7 +35,7 @@ export default function BenzerExcelAraclari({ currentHref }: Props) {
       </ul>
       <p className="mt-3 text-xs text-gray-500">
         <Link href="/excel-araclari" className="underline hover:text-gray-700">
-          Tüm Excel araçlarına git →
+          Tüm ofis araçlarına git →
         </Link>
       </p>
     </section>

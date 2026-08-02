@@ -58,7 +58,7 @@ export default function ToolLayout({
           <Link
             href="/excel-araclari"
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 transition hover:border-slate-300 hover:bg-white active:scale-95"
-            aria-label="Excel araçlarına dön"
+            aria-label="Ofis araçlarına dön"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />

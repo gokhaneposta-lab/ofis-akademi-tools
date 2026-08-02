@@ -194,7 +194,7 @@ export default function SiteTopBar() {
   const currentTitle =
     pathTitles[pathname] ??
     (pathname?.startsWith("/blog/") ? "Blog" :
-     pathname?.startsWith("/excel-araclari/") ? "Excel Araçları" :
+     pathname?.startsWith("/excel-araclari/") ? "Ofis Araçları" :
      pathname?.startsWith("/sigorta/") ? "TSB Dashboard" :
      "Ofis Akademi");
 

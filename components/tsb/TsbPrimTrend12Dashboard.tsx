@@ -39,7 +39,6 @@ import {
   TsbSegmentSwitch,
   TsbSelect,
   TsbTableShell,
-  TsbToggleButton,
 } from "@/components/tsb/tsbDashboardUi";
 
 const KANALLAR: { value: TsbKanalField; label: string }[] = [

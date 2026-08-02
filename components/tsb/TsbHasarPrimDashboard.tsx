@@ -45,7 +45,7 @@ import {
   TsbLoading,
   TsbSelect,
   TsbTableShell,
-  TsbToggleButton,
+  TsbSegmentSwitch,
   tsbFormatPp,
   tsbHpDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
@@ -521,13 +521,15 @@ export default function TsbHasarPrimDashboard() {
       <TsbFilterBar>
         <TsbFilterGrid>
           <TsbFilterField label="Havuz">
-            <div className={tsb.btnGroup}>
-              {(["HD", "HAYAT_EMEKLILIK"] as const).map((p) => (
-                <TsbToggleButton key={p} pressed={pool === p} variant="segment" onClick={() => setPool(p)}>
-                  {POOL_LABELS[p]}
-                </TsbToggleButton>
-              ))}
-            </div>
+            <TsbSegmentSwitch
+              aria-label="Sektör havuzu"
+              value={pool}
+              onChange={setPool}
+              options={[
+                { id: "HD", label: POOL_LABELS.HD },
+                { id: "HAYAT_EMEKLILIK", label: POOL_LABELS.HAYAT_EMEKLILIK },
+              ]}
+            />
           </TsbFilterField>
           <TsbFilterField label="Dönem (çeyrek)">
             <TsbSelect value={donem} onChange={(e) => setDonem(e.target.value)}>
@@ -539,14 +541,15 @@ export default function TsbHasarPrimDashboard() {
             </TsbSelect>
           </TsbFilterField>
           <TsbFilterField label="Kırılım">
-            <div className={tsb.btnGroup}>
-              <TsbToggleButton pressed={kirisumModu === "bransAp"} variant="segment" onClick={() => setKirisumModu("bransAp")}>
-                Gelir tablosu branşı
-              </TsbToggleButton>
-              <TsbToggleButton pressed={kirisumModu === "tarifeGrubu"} variant="segment" onClick={() => setKirisumModu("tarifeGrubu")}>
-                Tarife grubu
-              </TsbToggleButton>
-            </div>
+            <TsbSegmentSwitch
+              aria-label="Kırılım türü"
+              value={kirisumModu}
+              onChange={setKirisumModu}
+              options={[
+                { id: "bransAp", label: "Gelir tablosu branşı" },
+                { id: "tarifeGrubu", label: "Tarife grubu" },
+              ]}
+            />
           </TsbFilterField>
           {kirisumModu === "bransAp" ? (
             <TsbFilterField label="Branş (gelir tablosu)">

@@ -26,11 +26,12 @@ import {
   TsbFilterBar,
   TsbFilterField,
   TsbFilterGrid,
+  TsbKpiCard,
+  TsbKpiGrid,
   TsbLoading,
   TsbSegmentSwitch,
   TsbSelect,
   TsbTableShell,
-  TsbToggleButton,
   tsbDeltaRenk,
   tsbFormatDegisimYuzde,
   tsbFormatPrim,
@@ -148,6 +149,8 @@ export default function TsbKanalPrimDashboard() {
     tablo !== null
       ? sektorToplamDegisimYuzde(tablo.sektorToplamOnceki, tablo.sektorToplamBu)
       : null;
+  const liderSatir = tablo?.satirlar[0] ?? null;
+  const kanalLabel = KANALLAR.find((k) => k.value === kanal)?.label ?? "Kanal";
 
   return (
     <div className={tsb.dashboardStack}>
@@ -250,6 +253,62 @@ export default function TsbKanalPrimDashboard() {
 
       {tablo && (
         <>
+          <TsbKpiGrid>
+            <TsbKpiCard
+              accent
+              label="Sektör toplamı"
+              value={tsbFormatPrim(tablo.sektorToplamBu)}
+              delta={`${tsbFormatDegisimYuzde(toplamDegisim)} YoY`}
+              deltaClassName={tsbDeltaRenk(toplamDegisim)}
+              story={
+                toplamDegisim == null
+                  ? "YoY karşılaştırması yok."
+                  : toplamDegisim > 0
+                    ? "Seçili kırılımda pazar büyüyor."
+                    : toplamDegisim < 0
+                      ? "Seçili kırılımda pazar daralıyor."
+                      : "Seçili kırılımda değişim yok."
+              }
+            />
+            <TsbKpiCard
+              label="Lider şirket"
+              value={liderSatir?.sirketAdi ?? "—"}
+              delta={liderSatir ? `%${pf.format(liderSatir.payBuYuzde)} pay` : undefined}
+              story={
+                liderSatir
+                  ? liderSatir.siraOnceki > liderSatir.siraBu
+                    ? "Sıra geçen yıla göre iyileşti."
+                    : liderSatir.siraOnceki < liderSatir.siraBu
+                      ? "Sıra geçen yıla göre geriledi."
+                      : "Sıra geçen yılla aynı."
+                  : "—"
+              }
+            />
+            <TsbKpiCard
+              label="Listelenen şirket"
+              value={tablo.satirlar.length}
+              delta={kanalLabel}
+              story={`${secilenDonem} · seçili filtreye göre.`}
+            />
+            <TsbKpiCard
+              label="Lider prim"
+              value={liderSatir ? tsbFormatPrim(liderSatir.primBu) : "—"}
+              delta={
+                liderSatir ? `${tsbFormatDegisimYuzde(liderSatir.degisimYuzde)} YoY` : undefined
+              }
+              deltaClassName={liderSatir ? tsbDeltaRenk(liderSatir.degisimYuzde) : undefined}
+              story={
+                liderSatir && liderSatir.degisimYuzde != null && toplamDegisim != null
+                  ? liderSatir.degisimYuzde > toplamDegisim
+                    ? "Pazarın üzerinde büyüyor."
+                    : liderSatir.degisimYuzde < toplamDegisim
+                      ? "Pazarın altında büyüyor."
+                      : "Pazarla aynı hızda."
+                  : "—"
+              }
+            />
+          </TsbKpiGrid>
+
           <div className="space-y-2">
             <p className={tsb.caption}>
               Karşılaştırma dönemi: <strong>{secilenDonem}</strong>

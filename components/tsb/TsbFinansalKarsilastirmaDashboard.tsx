@@ -35,13 +35,11 @@ import {
   TsbFilterField,
   TsbFilterGrid,
   TsbLoading,
+  TsbSegmentSwitch,
   TsbSelect,
   TsbTableShell,
-  TsbToggleButton,
   tsbDeltaRenk,
 } from "@/components/tsb/tsbDashboardUi";
-
-const POOL_OPTIONS: readonly FinansalKarsilastirmaPool[] = ["HD", "HAYAT_EMEKLILIK", "SEKTOR"];
 
 function defaultSirketModForPool(pool: FinansalKarsilastirmaPool): "hayatdisi" | "hayat" {
   return pool === "HAYAT_EMEKLILIK" ? "hayat" : "hayatdisi";
@@ -191,22 +189,22 @@ export default function TsbFinansalKarsilastirmaDashboard() {
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
-        <p className={tsb.filterSectionLabel}>Sektör havuzu</p>
-        <div role="tablist" aria-label="Sektör havuzu" className={cn(tsb.btnGroup, "mb-3")}>
-          {POOL_OPTIONS.map((p) => (
-            <TsbToggleButton
-              key={p}
-              pressed={pool === p}
-              variant="segment"
-              onClick={() => {
-                setPool(p);
-                setSirketKodu("");
-                if (p === "SEKTOR") setKiyasModu("sektor");
-              }}
-            >
-              {FINANSAL_KARSILASTIRMA_POOL_LABELS[p]}
-            </TsbToggleButton>
-          ))}
+        <div className="mb-3">
+          <p className={tsb.filterSectionLabel}>Sektör havuzu</p>
+          <TsbSegmentSwitch
+            aria-label="Sektör havuzu"
+            value={pool}
+            onChange={(p) => {
+              setPool(p);
+              setSirketKodu("");
+              if (p === "SEKTOR") setKiyasModu("sektor");
+            }}
+            options={[
+              { id: "HD", label: FINANSAL_KARSILASTIRMA_POOL_LABELS.HD },
+              { id: "HAYAT_EMEKLILIK", label: FINANSAL_KARSILASTIRMA_POOL_LABELS.HAYAT_EMEKLILIK },
+              { id: "SEKTOR", label: FINANSAL_KARSILASTIRMA_POOL_LABELS.SEKTOR },
+            ]}
+          />
         </div>
 
         <TsbFilterGrid>

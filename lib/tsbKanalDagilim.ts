@@ -332,6 +332,29 @@ export function kanalLiderOzeti(kutu: KanalDagilimKutu): KanalLiderOzeti {
   };
 }
 
+/** Trend noktalarında (aynı ay, farklı yıllar) sondan geriye lider kanal streak’i. */
+export function kanalLiderStreakYil(
+  trend: readonly KanalTrendNokta[],
+): { key: KanalDagilimSatirKey; label: string; yilSayisi: number } | null {
+  if (trend.length === 0) return null;
+  let key: KanalDagilimSatirKey | null = null;
+  let label = "";
+  let yilSayisi = 0;
+  for (let i = trend.length - 1; i >= 0; i -= 1) {
+    const lider = kanalLiderOzeti(trend[i].kutu).lider;
+    if (!lider) break;
+    if (key === null) {
+      key = lider.key;
+      label = lider.label;
+      yilSayisi = 1;
+      continue;
+    }
+    if (lider.key !== key) break;
+    yilSayisi += 1;
+  }
+  return key ? { key, label, yilSayisi } : null;
+}
+
 export type KanalLiderSatir = {
   sirketKodu: number;
   sirketAdi: string;

@@ -14,9 +14,9 @@ import {
   TsbFilterField,
   TsbFilterGrid,
   TsbLoading,
+  TsbSegmentSwitch,
   TsbSelect,
   TsbTableShell,
-  TsbToggleButton,
 } from "@/components/tsb/tsbDashboardUi";
 import {
   fetchGelirTidyDonemIndex,
@@ -318,14 +318,17 @@ export default function TsbSektorGorunumuDashboard() {
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
         <div className="mb-3">
-          <span className={tsb.filterLabel}>Sektör havuzu</span>
-          <div className={tsb.btnGroup}>
-            {(["SEKTOR", "HD", "HAYAT_EMEKLILIK"] as const).map((p) => (
-              <TsbToggleButton key={p} variant="segment" pressed={pool === p} onClick={() => setPool(p)}>
-                {POOL_LABEL[p]}
-              </TsbToggleButton>
-            ))}
-          </div>
+          <p className={tsb.filterSectionLabel}>Sektör havuzu</p>
+          <TsbSegmentSwitch
+            aria-label="Sektör havuzu"
+            value={pool}
+            onChange={setPool}
+            options={[
+              { id: "SEKTOR", label: POOL_LABEL.SEKTOR },
+              { id: "HD", label: POOL_LABEL.HD },
+              { id: "HAYAT_EMEKLILIK", label: POOL_LABEL.HAYAT_EMEKLILIK },
+            ]}
+          />
         </div>
         <TsbFilterGrid>
           <TsbFilterField

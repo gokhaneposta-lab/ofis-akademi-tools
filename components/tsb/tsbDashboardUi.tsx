@@ -31,7 +31,7 @@ export const tsb = {
   dashboardStack: "space-y-5 sm:space-y-6",
 
   stickyNavWrap:
-    "sticky top-0 z-30 -mx-4 mb-1 border-b border-slate-200/80 bg-white/95 px-3 py-2.5 shadow-[0_1px_4px_rgba(15,23,42,0.05)] backdrop-blur-md sm:-mx-6 sm:px-5 lg:-mx-8 lg:px-7",
+    "sticky top-14 z-30 -mx-4 mb-1 border-b border-slate-200/80 bg-white/95 px-3 py-2.5 shadow-[0_1px_4px_rgba(15,23,42,0.05)] backdrop-blur-md sm:-mx-6 sm:px-5 lg:-mx-8 lg:px-7",
   stickyNavInner: "flex flex-col gap-2",
   stickyNavTopRow: "flex flex-wrap items-center justify-between gap-2",
   stickyNavGroupLabel: "text-[10px] font-bold uppercase tracking-widest text-slate-400",
@@ -205,6 +205,8 @@ export const tsb = {
     "mt-2 pl-2 text-2xl font-bold tabular-nums tracking-tight text-slate-900 sm:text-[1.65rem] lg:text-3xl",
   kpiValueAccent: "text-emerald-800",
   kpiHint: "mt-1.5 pl-2 text-xs leading-snug text-slate-500",
+  kpiDelta: "mt-1 pl-2 text-xs font-semibold tabular-nums",
+  kpiStory: "mt-1.5 pl-2 text-xs font-medium leading-snug text-slate-600",
 
   karnePerformansEyebrow:
     "mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500",
@@ -554,11 +556,19 @@ export function TsbSegmentSwitch<T extends string>({
 export function TsbKpiCard({
   label,
   value,
+  delta,
+  deltaClassName,
+  story,
   hint,
   accent,
 }: {
   label: string;
   value: ReactNode;
+  /** YoY / pay gibi ikincil metrik */
+  delta?: ReactNode;
+  deltaClassName?: string;
+  /** Kartın “so what” yorumu */
+  story?: ReactNode;
   hint?: ReactNode;
   accent?: boolean;
 }) {
@@ -566,7 +576,11 @@ export function TsbKpiCard({
     <div className={cn(tsb.kpiCard, accent && tsb.kpiCardAccent)}>
       <p className={tsb.kpiLabel}>{label}</p>
       <p className={cn(tsb.kpiValue, accent && tsb.kpiValueAccent)}>{value}</p>
-      {hint ? <p className={tsb.kpiHint}>{hint}</p> : null}
+      {delta != null && delta !== "" ? (
+        <p className={cn(tsb.kpiDelta, deltaClassName)}>{delta}</p>
+      ) : null}
+      {story ? <p className={tsb.kpiStory}>{story}</p> : null}
+      {hint && !story ? <p className={tsb.kpiHint}>{hint}</p> : null}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   parseBransKiyasView,
   parsePrimPanelId,
   primPanelTab,
+  TSB_BRANS_KIYAS_STORY,
   TSB_PRIM_HUB_HREF,
   type TsbPrimPanelId,
 } from "@/lib/tsbDashboardPanels";
@@ -41,6 +42,11 @@ function resolveBransView(panelRaw: string | undefined, viewRaw: string | undefi
   return parseBransKiyasView(viewRaw);
 }
 
+function pageStory(panel: TsbPrimPanelId, bransView: "degisim" | "sira"): string {
+  if (panel === "brans") return TSB_BRANS_KIYAS_STORY[bransView];
+  return primPanelTab(panel).story;
+}
+
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const sp = await searchParams;
   const panel = parsePrimPanelId(sp.panel);
@@ -60,13 +66,8 @@ export default async function SigortaPrimUretimPage({ searchParams }: PageProps)
       seoPageId={seoId}
       currentHref={TSB_PRIM_HUB_HREF}
       activePrimPanel={panel}
-      title="Prim ve üretim"
-      description={
-        <>
-          {tab.title} — {tab.subtitle}. Üst sekmelerden diğer prim panellerine geçin; branş kıyası içinde
-          değişim ve sıra ayrı alt sayfalardır.
-        </>
-      }
+      title={tab.title}
+      description={pageStory(panel, bransView)}
       sourceNote={<TsbSourceNote />}
       helpItems={tsbPanelHelpForHref(helpHrefForPanel(panel, sp.view))}
     >

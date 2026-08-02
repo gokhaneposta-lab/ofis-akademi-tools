@@ -107,6 +107,8 @@ export type TsbPrimViewTab = {
   id: TsbPrimPanelId;
   title: string;
   subtitle: string;
+  /** Sayfa açılınca kullanıcının cevaplaması gereken tek soru */
+  story: string;
   legacyHref: string;
 };
 
@@ -115,33 +117,43 @@ export const TSB_PRIM_VIEW_TABS: readonly TsbPrimViewTab[] = [
     id: "brans",
     title: "Branş kıyası",
     subtitle: "Karşılaştırma ve sıra — değişim/pay veya sıra özeti",
+    story: "Hangi branşlar büyüyor, hangileri küçülüyor — sıra nasıl değişti?",
     legacyHref: "/sigorta/brans-degisim",
   },
   {
     id: "kanal-prim",
     title: "Prim sıralaması",
     subtitle: "Kanal / branş kırılımında şirket sırası · pay · YoY",
+    story: "Seçili kırılımda hangi şirketler önde — pay ve YoY nasıl?",
     legacyHref: "/sigorta/kanal-prim",
   },
   {
     id: "kanal-dagilim",
     title: "Satış kanalları",
     subtitle: "Genel bakış · branş profili · şirket kıyası · liderler",
+    story: "Lider kanal hangisi — dağılım ve yıllar içi değişim nasıl?",
     legacyHref: "/sigorta/kanal-dagilim",
   },
   {
     id: "prim-trend-12",
     title: "Son 12 ay prim",
     subtitle: "Sektör vs şirket çizgisi · aylık üretim",
+    story: "Son 12 ayda şirket üretimi sektöre göre nasıl seyretti?",
     legacyHref: "/sigorta/prim-trend-12",
   },
   {
     id: "pazar-yogunlasma",
     title: "Pazar yoğunlaşması",
     subtitle: "Branş bazında HHI · top-5 pay · 12 ay trend",
+    story: "Pazar ne kadar yoğun — ilk 5’in payı artıyor mu?",
     legacyHref: "/sigorta/pazar-yogunlasma",
   },
 ] as const;
+
+export const TSB_BRANS_KIYAS_STORY: Record<"degisim" | "sira", string> = {
+  degisim: "Hangi branşlar büyüyor, hangileri küçülüyor — pay nasıl kayıyor?",
+  sira: "Branş sıralaması nasıl değişti — kim yükseldi, kim düştü?",
+};
 
 export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {

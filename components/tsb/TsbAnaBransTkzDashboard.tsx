@@ -17,6 +17,7 @@ import {
   TsbFilterField,
   TsbFilterGrid,
   TsbLoading,
+  TsbSegmentSwitch,
   TsbSelect,
   TsbTableShell,
   TsbToggleButton,
@@ -382,22 +383,21 @@ export default function TsbAnaBransTkzDashboard() {
   return (
     <div className={tsb.dashboardStack}>
       <TsbFilterBar>
-        <p className={tsb.filterSectionLabel}>Sektör havuzu</p>
-        <div role="tablist" aria-label="Sektör havuzu" className={cn(tsb.btnGroup, "mb-3")}>
-          {(["HD", "HAYAT_EMEKLILIK"] as const).map((p) => (
-            <TsbToggleButton
-              key={p}
-              pressed={pool === p}
-              variant="segment"
-              onClick={() => {
-                setPool(p);
-                setSirketKodu("");
-                setKiyasModu("sektor");
-              }}
-            >
-              {POOL_LABELS[p]}
-            </TsbToggleButton>
-          ))}
+        <div className="mb-3">
+          <p className={tsb.filterSectionLabel}>Sektör havuzu</p>
+          <TsbSegmentSwitch
+            aria-label="Sektör havuzu"
+            value={pool}
+            onChange={(p) => {
+              setPool(p);
+              setSirketKodu("");
+              setKiyasModu("sektor");
+            }}
+            options={[
+              { id: "HD", label: POOL_LABELS.HD },
+              { id: "HAYAT_EMEKLILIK", label: POOL_LABELS.HAYAT_EMEKLILIK },
+            ]}
+          />
         </div>
 
         <TsbFilterGrid>

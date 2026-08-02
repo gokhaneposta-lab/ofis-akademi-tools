@@ -24,6 +24,7 @@ import {
   TsbFilterField,
   TsbFilterGrid,
   TsbLoading,
+  TsbSegmentSwitch,
   TsbTableShell,
   TsbToggleButton,
 } from "@/components/tsb/tsbDashboardUi";
@@ -78,13 +79,15 @@ export default function TsbOlcekSegmentasyonDashboard() {
       <TsbFilterBar>
         <TsbFilterGrid>
           <TsbFilterField label="Şirket grubu">
-            <div className={tsb.btnGroup}>
-              {(Object.keys(POOL_LABELS) as SegmentSkorPool[]).map((p) => (
-                <TsbToggleButton key={p} pressed={pool === p} variant="segment" onClick={() => setPool(p)}>
-                  {POOL_LABELS[p]}
-                </TsbToggleButton>
-              ))}
-            </div>
+            <TsbSegmentSwitch
+              aria-label="Şirket grubu"
+              value={pool}
+              onChange={setPool}
+              options={[
+                { id: "HD", label: POOL_LABELS.HD },
+                { id: "HAYAT_EMEKLILIK", label: POOL_LABELS.HAYAT_EMEKLILIK },
+              ]}
+            />
           </TsbFilterField>
         </TsbFilterGrid>
         <p className={cn(tsb.caption, "mt-2")}>

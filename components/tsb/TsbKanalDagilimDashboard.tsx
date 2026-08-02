@@ -17,6 +17,7 @@ import {
   buildKanalDagilimKiyas,
   kanalBazindaSirketSektorPayYuzde,
   kanalLiderOzeti,
+  kanalLiderStreakYil,
   kanalTrendDonemleri,
   kanalYuzdeleri,
   KANAL_DAGILIM_SATIRLARI,
@@ -57,6 +58,8 @@ import {
   TsbFilterBar,
   TsbFilterField,
   TsbFilterGrid,
+  TsbKpiCard,
+  TsbKpiGrid,
   TsbLoading,
   TsbSegmentSwitch,
   TsbSelect,
@@ -398,12 +401,38 @@ export default function TsbKanalDagilimDashboard() {
   if (!rows || !secilenDonem || !sektorKutu) return <TsbLoading />;
 
   const liderOzet = kanalLiderOzeti(sektorKutu);
+  const liderStreak = kanalLiderStreakYil(trend);
   const sektorYoy = sektorOnceki
     ? sektorToplamDegisimYuzde(sektorOnceki.genelToplam, sektorKutu.genelToplam)
     : null;
   const tumBransLabel = TSB_TUM_BRANS_LABEL[segment];
   const showSirketSelect = tab === "sirket";
   const showBransFilter = tab === "genel" || tab === "liderler" || tab === "sirket";
+
+  const toplamStory =
+    sektorYoy == null
+      ? "YoY karşılaştırması yok."
+      : sektorYoy > 0
+        ? "Geçen yılın aynı dönemine göre büyüyor."
+        : sektorYoy < 0
+          ? "Geçen yılın aynı dönemine göre geriledi."
+          : "Geçen yıla göre değişim yok.";
+  const liderStory =
+    liderStreak && liderStreak.yilSayisi >= 2 && liderStreak.key === liderOzet.lider?.key
+      ? `Son ${liderStreak.yilSayisi} yıldır lider.`
+      : liderOzet.lider
+        ? "Bu dönemde en yüksek pay."
+        : "—";
+  const ikinciGap =
+    liderOzet.lider && liderOzet.ikinci
+      ? liderOzet.lider.pay - liderOzet.ikinci.pay
+      : null;
+  const ikinciStory =
+    ikinciGap != null ? `Liderden ${pf1.format(ikinciGap)} puan geride.` : "İkinci kanal yok.";
+  const aktifStory =
+    liderOzet.aktifSayisi >= 5
+      ? "Tüm kanallarda üretim var."
+      : `${liderOzet.aktifSayisi} / 5 kanal üretimde.`;
 
   return (
     <div className={tsb.dashboardStack}>
@@ -513,41 +542,48 @@ export default function TsbKanalDagilimDashboard() {
 
       {tab === "genel" && (
         <>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Toplam prim (YTD)</p>
-              <p className="mt-2 text-xl font-bold tabular-nums text-slate-950">{tsbFormatPrim(sektorKutu.genelToplam)}</p>
-              <p className={cn("mt-1 text-xs font-semibold", tsbDeltaRenk(sektorYoy))}>
-                {tsbFormatDegisimYuzde(sektorYoy)} YoY
-              </p>
-            </article>
-            <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Lider kanal</p>
-              <p className="mt-2 text-xl font-bold text-slate-950">{liderOzet.lider?.label ?? "—"}</p>
-              <p className="mt-1 text-xs text-slate-500">
-                {liderOzet.lider ? `%${pf1.format(liderOzet.lider.pay)} pay` : "—"}
-              </p>
-            </article>
-            <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">2. kanal</p>
-              <p className="mt-2 text-xl font-bold text-slate-950">{liderOzet.ikinci?.label ?? "—"}</p>
-              <p className="mt-1 text-xs text-slate-500">
-                {liderOzet.ikinci ? `%${pf1.format(liderOzet.ikinci.pay)} pay` : "—"}
-              </p>
-            </article>
-            <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Aktif kanal</p>
-              <p className="mt-2 text-xl font-bold tabular-nums text-slate-950">{liderOzet.aktifSayisi}</p>
-              <p className="mt-1 text-xs text-slate-500">Üretimi olan kanal sayısı</p>
-            </article>
-          </div>
+          <TsbKpiGrid>
+            <TsbKpiCard
+              accent
+              label="Toplam prim (YTD)"
+              value={tsbFormatPrim(sektorKutu.genelToplam)}
+              delta={`${tsbFormatDegisimYuzde(sektorYoy)} YoY`}
+              deltaClassName={tsbDeltaRenk(sektorYoy)}
+              story={toplamStory}
+            />
+            <TsbKpiCard
+              label="Lider kanal"
+              value={liderOzet.lider?.label ?? "—"}
+              delta={liderOzet.lider ? `%${pf1.format(liderOzet.lider.pay)} pay` : undefined}
+              story={liderStory}
+            />
+            <TsbKpiCard
+              label="2. kanal"
+              value={liderOzet.ikinci?.label ?? "—"}
+              delta={liderOzet.ikinci ? `%${pf1.format(liderOzet.ikinci.pay)} pay` : undefined}
+              story={ikinciStory}
+            />
+            <TsbKpiCard
+              label="Aktif kanal"
+              value={liderOzet.aktifSayisi}
+              delta="Üretimi olan kanal"
+              story={aktifStory}
+            />
+          </TsbKpiGrid>
 
           <section className="grid gap-4 xl:grid-cols-2">
             <div className={tsb.chartPanel}>
-              <h2 className="mb-3 text-sm font-bold text-slate-900">Sektör kanal dağılımı</h2>
+              <h2 className="mb-1 text-sm font-bold text-slate-900">Sektör kanal dağılımı</h2>
+              <p className="mb-3 text-xs text-slate-500">
+                Prim hangi kanallardan geliyor — pay dağılımı tek bakışta.
+              </p>
               <KanalDonutChart kutu={sektorKutu} title="Sektör kanal dağılımı" />
             </div>
             <div className={tsb.chartPanel}>
+              <p className="mb-1 text-sm font-bold text-slate-900">Yıllar arası kanal payı</p>
+              <p className="mb-3 text-xs text-slate-500">
+                Aynı ayın yıllar arası seyri — liderlik kalıcı mı kayıyor mu?
+              </p>
               <div className="min-w-[560px]">
                 <KanalStackedTrendChart trend={trend} />
               </div>

@@ -24,6 +24,8 @@ export type TsbKanalField = "genelToplam" | "acente" | "banka" | "broker" | "dig
 
 /** Dashboard: hayat dışı (HD, kod 3… değil) · hayat-emeklilik (kod 3… veya tip H / E) */
 export type TsbSektorSegment = "hayatdisi" | "hayat";
+/** Kanal vb. panellerde HD+HE birleşik havuz */
+export type TsbSektorHavuz = TsbSektorSegment | "toplam";
 
 /** Zorunlu trafik (MTPL) ana branşı — TSB `anaBransH` */
 export const TSB_ANA_BRANS_TRAFIK_SORUMLULUK = "KARA ARAÇLARI SORUMLULUK";
@@ -83,7 +85,7 @@ export function daraltmaFromUiState(
 export function uniqueTarifeGruplariForSegment(
   rows: TsbPrimRow[],
   donem: string,
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
   lookup: TsbBranchLookupMap | null,
 ): string[] {
   const set = new Set<string>();
@@ -168,8 +170,9 @@ export function isHayatdisiSirket(row: TsbPrimRow): boolean {
   return normalizedSirketTipi(row) === "HD";
 }
 
-/** Segment + alt toplam satırları hariç */
-export function rowMatchesSegment(row: TsbPrimRow, segment: TsbSektorSegment): boolean {
+/** Segment + alt toplam satırları hariç (`toplam` = HD + H/E) */
+export function rowMatchesSegment(row: TsbPrimRow, segment: TsbSektorHavuz): boolean {
+  if (segment === "toplam") return isHayatEmeklilikSirket(row) || isHayatdisiSirket(row);
   return segment === "hayat" ? isHayatEmeklilikSirket(row) : isHayatdisiSirket(row);
 }
 
@@ -353,7 +356,7 @@ export function uniqueSortedPeriods(rows: TsbPrimRow[]): string[] {
 export function uniqueAnaBransForSegment(
   rows: TsbPrimRow[],
   donem: string,
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
 ): string[] {
   const set = new Set<string>();
   for (const r of rows) {

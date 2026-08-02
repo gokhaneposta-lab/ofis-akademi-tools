@@ -8,11 +8,16 @@ import {
   hasarPrimOranlariSektorFromLookup,
   type HasarPrimOranlari,
 } from "./tsbHasarPrimOrani";
+import { HD_ANA_BRANS_SIRASI, HAYAT_ANA_BRANS_SIRASI } from "./tsbBransDegisim";
 import {
   aggregateByCompany,
+  channelPremium,
   countSirketlerSegmentDonem,
+  isTsbToplamSirketKodu,
   prevYearPeriod,
+  rowMatchesSegment,
   type TsbPrimRow,
+  type TsbSektorHavuz,
 } from "./tsbPrimDashboard";
 import {
   buildGelirTidyDonemLookup,
@@ -315,5 +320,83 @@ export function buildSektorPrimPaket(
     secili: buildSektorPrimDonem(rows, seciliDonem),
     onceki: oncekiVar && oncekiDonem ? buildSektorPrimDonem(rows, oncekiDonem) : null,
     trend: sektorPrimTrendDonemleri(tumDonemler, seciliDonem).map((d) => buildSektorPrimDonem(rows, d)),
+  };
+}
+
+export type SektorBransBuyumeSatir = {
+  anaBransH: string;
+  primBu: number;
+  primOnceki: number;
+  yoy: number | null;
+};
+
+function poolToPrimHavuz(pool: SektorGorunumuPool): TsbSektorHavuz {
+  if (pool === "HD") return "hayatdisi";
+  if (pool === "HAYAT_EMEKLILIK") return "hayat";
+  return "toplam";
+}
+
+function sortSektorBransKeys(keys: Iterable<string>, pool: SektorGorunumuPool): string[] {
+  const sabit =
+    pool === "HAYAT_EMEKLILIK"
+      ? HAYAT_ANA_BRANS_SIRASI
+      : pool === "HD"
+        ? HD_ANA_BRANS_SIRASI
+        : [
+            ...HD_ANA_BRANS_SIRASI,
+            ...HAYAT_ANA_BRANS_SIRASI.filter((b) => !HD_ANA_BRANS_SIRASI.includes(b)),
+          ];
+  const set = new Set(keys);
+  const out: string[] = [];
+  for (const s of sabit) {
+    if (set.has(s)) out.push(s);
+  }
+  const diger = [...set].filter((b) => !out.includes(b));
+  diger.sort((a, b) => a.localeCompare(b, "tr"));
+  return [...out, ...diger];
+}
+
+/** Ana branş bazında sektör prim üretimi — seçili dönem vs önceki yıl aynı ay. */
+export function buildSektorBransBuyume(
+  rows: readonly TsbPrimRow[],
+  donem: string,
+  tumDonemler: readonly string[],
+  pool: SektorGorunumuPool,
+): { donem: string; oncekiDonem: string | null; satirlar: SektorBransBuyumeSatir[] } {
+  const oncekiDonem = prevYearPeriod(donem);
+  const oncekiVar = oncekiDonem !== null && tumDonemler.includes(oncekiDonem);
+  const havuz = poolToPrimHavuz(pool);
+  const mapBu = new Map<string, number>();
+  const mapOn = new Map<string, number>();
+
+  for (const r of rows) {
+    if (isTsbToplamSirketKodu(r.sirketKodu)) continue;
+    if (!rowMatchesSegment(r, havuz)) continue;
+    const v = channelPremium(r, "genelToplam");
+    if (v === 0) continue;
+    if (r.donem === donem) {
+      mapBu.set(r.anaBransH, (mapBu.get(r.anaBransH) ?? 0) + v);
+    } else if (oncekiVar && oncekiDonem && r.donem === oncekiDonem) {
+      mapOn.set(r.anaBransH, (mapOn.get(r.anaBransH) ?? 0) + v);
+    }
+  }
+
+  const keys = sortSektorBransKeys(new Set([...mapBu.keys(), ...mapOn.keys()]), pool);
+  const satirlar: SektorBransBuyumeSatir[] = keys
+    .map((anaBransH) => {
+      const primBu = mapBu.get(anaBransH) ?? 0;
+      const primOnceki = mapOn.get(anaBransH) ?? 0;
+      const yoy =
+        primOnceki !== 0 && Number.isFinite(primOnceki)
+          ? (primBu - primOnceki) / Math.abs(primOnceki)
+          : null;
+      return { anaBransH, primBu, primOnceki, yoy };
+    })
+    .filter((s) => s.primBu !== 0 || s.primOnceki !== 0);
+
+  return {
+    donem,
+    oncekiDonem: oncekiVar ? oncekiDonem : null,
+    satirlar,
   };
 }

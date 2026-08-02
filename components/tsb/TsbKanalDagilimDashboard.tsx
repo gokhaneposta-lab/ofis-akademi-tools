@@ -13,6 +13,7 @@ import {
 import {
   aggregateKanalByBrans,
   aggregateKanalBySirket,
+  aggregateKanalDagilim,
   aggregateKanalTrend,
   buildKanalDagilimKiyas,
   kanalBazindaSirketSektorPayYuzde,
@@ -28,7 +29,7 @@ import {
   type KanalDagilimSatirKey,
   type KanalHubTab,
 } from "@/lib/tsbKanalDagilim";
-import type { TsbPrimDaraltmaModu, TsbPrimRow, TsbSektorSegment } from "@/lib/tsbPrimDashboard";
+import type { TsbPrimDaraltmaModu, TsbPrimRow, TsbSektorHavuz } from "@/lib/tsbPrimDashboard";
 import {
   ANA_BRANS_FILTER_TRAFIK_HARIC,
   ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL,
@@ -204,7 +205,7 @@ export default function TsbKanalDagilimDashboard() {
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [donem, setDonem] = useState("");
-  const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
+  const [segment, setSegment] = useState<TsbSektorHavuz>("hayatdisi");
   const [anaBrans, setAnaBrans] = useState("");
   const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
   const [tarifeSecim, setTarifeSecim] = useState("");
@@ -284,7 +285,7 @@ export default function TsbKanalDagilimDashboard() {
   useEffect(() => {
     if (sirketler.length === 0) return;
     if (sirketKodu === "" || !sirketler.some((s) => s.kod === sirketKodu)) {
-      const kod = resolveDefaultSirketKodu(sirketler, segment);
+      const kod = resolveDefaultSirketKodu(sirketler, segment === "toplam" ? "any" : segment);
       if (kod !== null) setSirketKodu(kod);
     }
   }, [sirketler, sirketKodu, segment]);
@@ -292,7 +293,7 @@ export default function TsbKanalDagilimDashboard() {
   const effectiveSirketKodu = useMemo(() => {
     if (sirketler.length === 0) return null;
     if (sirketKodu !== "" && sirketler.some((s) => s.kod === sirketKodu)) return sirketKodu as number;
-    return resolveDefaultSirketKodu(sirketler, segment);
+    return resolveDefaultSirketKodu(sirketler, segment === "toplam" ? "any" : segment);
   }, [sirketler, sirketKodu, segment]);
 
   const kiyas = useMemo(() => {
@@ -326,6 +327,30 @@ export default function TsbKanalDagilimDashboard() {
       effectiveSirketKodu ?? 0,
     ).sektor;
   }, [rows, oncekiDonem, donemler, segment, daraltma, daraltmaTumu, tab, effectiveSirketKodu]);
+
+  const sektorHd = useMemo(() => {
+    if (!rows || !secilenDonem || segment !== "toplam") return null;
+    const d = tab === "genel" || tab === "liderler" ? daraltma : daraltmaTumu;
+    return aggregateKanalDagilim(rows, secilenDonem, "hayatdisi", d, null);
+  }, [rows, secilenDonem, segment, daraltma, daraltmaTumu, tab]);
+
+  const sektorHe = useMemo(() => {
+    if (!rows || !secilenDonem || segment !== "toplam") return null;
+    const d = tab === "genel" || tab === "liderler" ? daraltma : daraltmaTumu;
+    return aggregateKanalDagilim(rows, secilenDonem, "hayat", d, null);
+  }, [rows, secilenDonem, segment, daraltma, daraltmaTumu, tab]);
+
+  const sektorHdOnceki = useMemo(() => {
+    if (!rows || !oncekiDonem || !donemler.includes(oncekiDonem) || segment !== "toplam") return null;
+    const d = tab === "genel" || tab === "liderler" ? daraltma : daraltmaTumu;
+    return aggregateKanalDagilim(rows, oncekiDonem, "hayatdisi", d, null);
+  }, [rows, oncekiDonem, donemler, segment, daraltma, daraltmaTumu, tab]);
+
+  const sektorHeOnceki = useMemo(() => {
+    if (!rows || !oncekiDonem || !donemler.includes(oncekiDonem) || segment !== "toplam") return null;
+    const d = tab === "genel" || tab === "liderler" ? daraltma : daraltmaTumu;
+    return aggregateKanalDagilim(rows, oncekiDonem, "hayat", d, null);
+  }, [rows, oncekiDonem, donemler, segment, daraltma, daraltmaTumu, tab]);
 
   const trend = useMemo(() => {
     if (!rows || !secilenDonem) return [];
@@ -383,7 +408,11 @@ export default function TsbKanalDagilimDashboard() {
 
   const secilenAd = sirketler.find((s) => s.kod === effectiveSirketKodu)?.ad ?? "";
   const primSegment =
-    rows && effectiveSirketKodu !== null ? sirketSegmentFromKodu(rows, effectiveSirketKodu) : segment;
+    rows && effectiveSirketKodu !== null
+      ? sirketSegmentFromKodu(rows, effectiveSirketKodu)
+      : segment === "toplam"
+        ? "hayatdisi"
+        : segment;
   const { kayit: olcekKayit, finDonem: olcekFinDonem, yukleniyor: olcekYukleniyor } = useOlcekSegmentKayit(
     tab === "sirket" && effectiveSirketKodu !== null && secilenDonem
       ? {
@@ -407,6 +436,15 @@ export default function TsbKanalDagilimDashboard() {
   const tumBransLabel = TSB_TUM_BRANS_LABEL[segment];
   const showSirketSelect = tab === "sirket";
   const showBransFilter = tab === "genel" || tab === "liderler" || tab === "sirket";
+
+  const hdYoy =
+    sektorHd && sektorHdOnceki
+      ? sektorToplamDegisimYuzde(sektorHdOnceki.genelToplam, sektorHd.genelToplam)
+      : null;
+  const heYoy =
+    sektorHe && sektorHeOnceki
+      ? sektorToplamDegisimYuzde(sektorHeOnceki.genelToplam, sektorHe.genelToplam)
+      : null;
 
   const toplamStory =
     sektorYoy == null
@@ -433,36 +471,68 @@ export default function TsbKanalDagilimDashboard() {
       ? "Tüm kanallarda üretim var."
       : `${liderOzet.aktifSayisi} / 5 kanal üretimde.`;
 
-  const genelKpi = (
-    <TsbKpiGrid>
-      <TsbKpiCard
-        accent
-        label="Toplam prim (YTD)"
-        value={tsbFormatPrim(sektorKutu.genelToplam)}
-        delta={`${tsbFormatDegisimYuzde(sektorYoy)} YoY`}
-        deltaClassName={tsbDeltaRenk(sektorYoy)}
-        story={toplamStory}
-      />
-      <TsbKpiCard
-        label="Lider kanal"
-        value={liderOzet.lider?.label ?? "—"}
-        delta={liderOzet.lider ? `%${pf1.format(liderOzet.lider.pay)} pay` : undefined}
-        story={liderStory}
-      />
-      <TsbKpiCard
-        label="2. kanal"
-        value={liderOzet.ikinci?.label ?? "—"}
-        delta={liderOzet.ikinci ? `%${pf1.format(liderOzet.ikinci.pay)} pay` : undefined}
-        story={ikinciStory}
-      />
-      <TsbKpiCard
-        label="Aktif kanal"
-        value={liderOzet.aktifSayisi}
-        delta="Üretimi olan kanal"
-        story={aktifStory}
-      />
-    </TsbKpiGrid>
-  );
+  const genelKpi =
+    segment === "toplam" && sektorHd && sektorHe ? (
+      <TsbKpiGrid>
+        <TsbKpiCard
+          accent
+          label="Toplam prim (HD+HE)"
+          value={tsbFormatPrim(sektorKutu.genelToplam)}
+          delta={`${tsbFormatDegisimYuzde(sektorYoy)} YoY`}
+          deltaClassName={tsbDeltaRenk(sektorYoy)}
+          story={toplamStory}
+        />
+        <TsbKpiCard
+          label="HD toplam"
+          value={tsbFormatPrim(sektorHd.genelToplam)}
+          delta={`${tsbFormatDegisimYuzde(hdYoy)} YoY`}
+          deltaClassName={tsbDeltaRenk(hdYoy)}
+          story="Hayat dışı havuz."
+        />
+        <TsbKpiCard
+          label="H/E toplam"
+          value={tsbFormatPrim(sektorHe.genelToplam)}
+          delta={`${tsbFormatDegisimYuzde(heYoy)} YoY`}
+          deltaClassName={tsbDeltaRenk(heYoy)}
+          story="Hayat & emeklilik havuz."
+        />
+        <TsbKpiCard
+          label="Lider kanal"
+          value={liderOzet.lider?.label ?? "—"}
+          delta={liderOzet.lider ? `%${pf1.format(liderOzet.lider.pay)} pay` : undefined}
+          story={liderStory}
+        />
+      </TsbKpiGrid>
+    ) : (
+      <TsbKpiGrid>
+        <TsbKpiCard
+          accent
+          label="Toplam prim (YTD)"
+          value={tsbFormatPrim(sektorKutu.genelToplam)}
+          delta={`${tsbFormatDegisimYuzde(sektorYoy)} YoY`}
+          deltaClassName={tsbDeltaRenk(sektorYoy)}
+          story={toplamStory}
+        />
+        <TsbKpiCard
+          label="Lider kanal"
+          value={liderOzet.lider?.label ?? "—"}
+          delta={liderOzet.lider ? `%${pf1.format(liderOzet.lider.pay)} pay` : undefined}
+          story={liderStory}
+        />
+        <TsbKpiCard
+          label="2. kanal"
+          value={liderOzet.ikinci?.label ?? "—"}
+          delta={liderOzet.ikinci ? `%${pf1.format(liderOzet.ikinci.pay)} pay` : undefined}
+          story={ikinciStory}
+        />
+        <TsbKpiCard
+          label="Aktif kanal"
+          value={liderOzet.aktifSayisi}
+          delta="Üretimi olan kanal"
+          story={aktifStory}
+        />
+      </TsbKpiGrid>
+    );
 
   return (
     <div className={tsb.dashboardStack}>
@@ -484,6 +554,7 @@ export default function TsbKanalDagilimDashboard() {
               value={segment}
               onChange={setSegment}
               options={[
+                { id: "toplam", label: "HD + H/E Toplam" },
                 { id: "hayatdisi", label: "Hayat dışı" },
                 { id: "hayat", label: "Hayat & emeklilik" },
               ]}
@@ -597,6 +668,7 @@ export default function TsbKanalDagilimDashboard() {
                   <tr>
                     <th className={tsb.th}>#</th>
                     <th className={tsb.thSticky}>Şirket</th>
+                    {segment === "toplam" ? <th className={tsb.th}>Havuz</th> : null}
                     <th className={tsb.thRight}>Toplam prim</th>
                     <th className={tsb.thRight}>YoY</th>
                     <th className={tsb.th}>Kanal dağılımı</th>
@@ -607,6 +679,11 @@ export default function TsbKanalDagilimDashboard() {
                     <tr key={row.sirketKodu} className={tsb.tbodyRow}>
                       <td className={cn(tsb.td, "text-slate-500")}>{i + 1}</td>
                       <th scope="row" className={cn(tsb.tdSticky, "text-left font-medium")}>{row.sirketAdi}</th>
+                      {segment === "toplam" ? (
+                        <td className={cn(tsb.td, "text-slate-600")}>
+                          {row.havuz === "hayatdisi" ? "HD" : "H/E"}
+                        </td>
+                      ) : null}
                       <td className={cn(tsb.td, "text-right font-semibold")}>{tsbFormatPrim(row.bu.genelToplam)}</td>
                       <td className={cn(tsb.td, "text-right font-semibold", tsbDeltaRenk(row.yoy))}>
                         {tsbFormatDegisimYuzde(row.yoy)}

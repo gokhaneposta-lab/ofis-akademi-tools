@@ -44,4 +44,5 @@ export const TSB_HAVUZ_ACIKLAMA = {
 export const TSB_TUM_BRANS_LABEL = {
   hayatdisi: "Tüm branşlar (hayat dışı)",
   hayat: "Tüm branşlar (hayat & emeklilik)",
+  toplam: "Tüm branşlar (HD + H/E)",
 } as const;

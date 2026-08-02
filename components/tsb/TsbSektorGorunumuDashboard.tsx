@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   TsbSektorBilançoStackedChart,
+  TsbSektorBransBuyumeChart,
   TsbSektorKarBilesenleriChart,
   TsbSektorPrimUretimChart,
 } from "@/components/tsb/TsbSektorGorunumuCharts";
@@ -31,6 +32,7 @@ import {
   type TsbPrimRow,
 } from "@/lib/tsbPrimDashboard";
 import {
+  buildSektorBransBuyume,
   buildSektorGorunumuPaket,
   buildSektorPrimPaket,
   sektorGorunumuTrendDonemleri,
@@ -234,6 +236,7 @@ function HavuzKoseFiltre({
 
 export default function TsbSektorGorunumuDashboard() {
   const [karPool, setKarPool] = useState<SektorGorunumuPool>("SEKTOR");
+  const [bransPool, setBransPool] = useState<SektorGorunumuPool>("SEKTOR");
   const [kpiPool, setKpiPool] = useState<SektorGorunumuPool>("SEKTOR");
   const [aktifPool, setAktifPool] = useState<SektorGorunumuPool>("SEKTOR");
   const [ozsermayePool, setOzsermayePool] = useState<SektorGorunumuPool>("SEKTOR");
@@ -307,6 +310,11 @@ export default function TsbSektorGorunumuDashboard() {
     return buildSektorPrimPaket(primRows, primDonem, primDonemler);
   }, [primRows, primDonem, primDonemler]);
 
+  const bransBuyume = useMemo(() => {
+    if (!primRows || !primDonem || !primDonemler.includes(primDonem)) return null;
+    return buildSektorBransBuyume(primRows, primDonem, primDonemler, bransPool);
+  }, [primRows, primDonem, primDonemler, bransPool]);
+
   const finansalPaket = useMemo(() => {
     if (!finansalRows || !finansalDonem || !finansalRows.some((row) => row.donem === finansalDonem)) {
       return null;
@@ -371,6 +379,33 @@ export default function TsbSektorGorunumuDashboard() {
           </span>
         </div>
         <PrimUretimPanel donem={primDonem} paket={primPaket} />
+      </section>
+
+      <section className={tsb.dataPanel} aria-labelledby="sg-brans">
+        <div className={cn(tsb.dataPanelHeader, "flex flex-wrap items-end justify-between gap-2")}>
+          <div>
+            <h2 id="sg-brans" className={tsb.dataPanelTitle}>Branş bazlı prim büyümesi</h2>
+            <p className={tsb.sectionLead}>
+              {primDonem}
+              {bransBuyume?.oncekiDonem ? ` · ${bransBuyume.oncekiDonem}` : ""} · {POOL_LABEL[bransPool]} · önceki
+              yıl aynı dönem
+            </p>
+          </div>
+          <HavuzKoseFiltre
+            value={bransPool}
+            onChange={setBransPool}
+            ariaLabel="Branş büyümesi sektör havuzu"
+          />
+        </div>
+        <div className="overflow-x-auto">
+          {bransBuyume ? (
+            <TsbSektorBransBuyumeChart
+              satirlar={bransBuyume.satirlar}
+              donem={bransBuyume.donem}
+              oncekiDonem={bransBuyume.oncekiDonem}
+            />
+          ) : null}
+        </div>
       </section>
 
       <section className={tsb.dataPanel} aria-labelledby="sg-kpi">

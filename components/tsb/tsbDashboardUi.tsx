@@ -204,13 +204,13 @@ export const tsb = {
     "relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r before:bg-emerald-500 before:content-[''] sm:p-5",
   kpiCardAccent:
     "border-emerald-200/80 bg-gradient-to-br from-emerald-50/50 to-white ring-emerald-900/[0.06] before:bg-emerald-600",
-  kpiLabel: "pl-2 text-[11px] font-bold uppercase tracking-widest text-slate-500",
+  kpiLabel: "pl-2 text-[10px] font-bold uppercase tracking-widest text-slate-500",
   kpiValue:
-    "mt-1.5 pl-2 text-2xl font-extrabold tabular-nums tracking-tight text-slate-950 sm:text-[1.75rem] lg:text-[2rem]",
+    "mt-1 pl-2 whitespace-nowrap text-lg font-extrabold tabular-nums tracking-tight text-slate-950 sm:text-xl",
   kpiValueAccent: "text-emerald-800",
-  kpiHint: "mt-1.5 pl-2 text-xs leading-snug text-slate-500",
-  kpiDelta: "mt-1 pl-2 text-xs font-bold tabular-nums",
-  kpiStory: "mt-1 pl-2 text-xs font-medium leading-snug text-slate-600",
+  kpiHint: "mt-1 pl-2 text-[11px] leading-snug text-slate-500",
+  kpiDelta: "mt-1 pl-2 text-[11px] font-bold tabular-nums",
+  kpiStory: "mt-1 pl-2 text-[11px] font-medium leading-snug text-slate-600",
 
   karnePerformansEyebrow:
     "mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500",

@@ -1,11 +1,12 @@
 import { tarifeGrubuFromRow, type TsbBranchLookupMap } from "./tsbBranchLookup";
-import type { TsbPrimDaraltma, TsbPrimRow, TsbSektorSegment } from "./tsbPrimDashboard";
+import type { TsbPrimDaraltma, TsbPrimRow, TsbSektorHavuz, TsbSektorSegment } from "./tsbPrimDashboard";
 import {
   isTsbToplamSirketKodu,
   prevYearPeriod,
   rowMatchesPrimDaraltma,
   rowMatchesSegment,
   sektorToplamDegisimYuzde,
+  sirketSegmentFromKodu,
 } from "./tsbPrimDashboard";
 
 export type KanalDagilimKutu = {
@@ -57,7 +58,7 @@ function finalizeKutu(k: KanalDagilimKutu): KanalDagilimKutu {
 export function aggregateKanalDagilim(
   rows: TsbPrimRow[],
   donem: string,
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
   daraltma: TsbPrimDaraltma,
   sirketKodu: number | null,
 ): KanalDagilimKutu {
@@ -107,7 +108,7 @@ export type KanalDagilimKiyas = {
 export function buildKanalDagilimKiyas(
   rows: TsbPrimRow[],
   donem: string,
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
   daraltma: TsbPrimDaraltma,
   sirketKodu: number,
 ): KanalDagilimKiyas {
@@ -121,7 +122,7 @@ export function buildKanalDagilimKiyas(
 export function listSirketlerKanalDagilim(
   rows: TsbPrimRow[],
   donem: string,
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
   daraltma: TsbPrimDaraltma,
 ): { kod: number; ad: string; toplam: number }[] {
   const m = new Map<number, { ad: string; toplam: number }>();
@@ -147,6 +148,8 @@ export function listSirketlerKanalDagilim(
 export type KanalSirketSatir = {
   sirketKodu: number;
   sirketAdi: string;
+  /** HD / H-E — `toplam` havuzunda ayırt etmek için */
+  havuz: TsbSektorSegment;
   bu: KanalDagilimKutu;
   onceki: KanalDagilimKutu | null;
   yoy: number | null;
@@ -156,7 +159,7 @@ export type KanalSirketSatir = {
 export function aggregateKanalBySirket(
   rows: readonly TsbPrimRow[],
   donem: string,
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
   daraltma: TsbPrimDaraltma,
 ): KanalSirketSatir[] {
   const oncekiDonem = prevYearPeriod(donem);
@@ -193,12 +196,20 @@ export function aggregateKanalBySirket(
     out.push({
       sirketKodu: kod,
       sirketAdi: ad,
+      havuz: sirketSegmentFromKodu(rows, kod),
       bu: kutu,
       onceki,
       yoy: onceki ? sektorToplamDegisimYuzde(onceki.genelToplam, kutu.genelToplam) : null,
     });
   }
-  out.sort((a, b) => b.bu.genelToplam - a.bu.genelToplam);
+  out.sort((a, b) => {
+    if (segment === "toplam") {
+      const ao = a.havuz === "hayatdisi" ? 0 : 1;
+      const bo = b.havuz === "hayatdisi" ? 0 : 1;
+      if (ao !== bo) return ao - bo;
+    }
+    return b.bu.genelToplam - a.bu.genelToplam;
+  });
   return out;
 }
 
@@ -225,7 +236,7 @@ function bransKeyFromRow(
 export function aggregateKanalByBrans(
   rows: readonly TsbPrimRow[],
   donem: string,
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
   kirilim: KanalBransKirilim,
   lookup: TsbBranchLookupMap | null,
   sirketKodu: number | null = null,
@@ -300,7 +311,7 @@ export function kanalTrendDonemleri(
 export function aggregateKanalTrend(
   rows: readonly TsbPrimRow[],
   donemler: readonly string[],
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
   daraltma: TsbPrimDaraltma,
 ): KanalTrendNokta[] {
   return donemler.map((donem) => ({
@@ -369,7 +380,7 @@ export type KanalLiderSatir = {
 export function rankSirketByKanal(
   rows: readonly TsbPrimRow[],
   donem: string,
-  segment: TsbSektorSegment,
+  segment: TsbSektorHavuz,
   daraltma: TsbPrimDaraltma,
   kanal: KanalDagilimSatirKey,
 ): { sektorKanalBu: number; satirlar: KanalLiderSatir[] } {

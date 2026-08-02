@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type {
+  SektorBransBuyumeSatir,
   SektorGorunumuDonem,
   SektorGorunumuPool,
   SektorPrimSnapshot,
@@ -18,6 +19,8 @@ const COLORS = {
   vok: "#0f172a",
   HD: "#0f766e",
   HAYAT_EMEKLILIK: "#38bdf8",
+  bransBu: "#0f766e",
+  bransOnceki: "#94a3b8",
 };
 
 const tl = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
@@ -69,12 +72,13 @@ export function TsbSektorKarBilesenleriChart({
     }
     return [pos, neg, p[pool].vok];
   });
-  const max = Math.max(1, ...extremes);
+  const max = Math.max(1, ...extremes, 0);
   const min = Math.min(0, ...extremes);
   const span = max - min || 1;
   const yAt = (v: number) => padT + ((max - v) / span) * innerH;
   const y0 = yAt(0);
-  const ticks = Array.from({ length: 5 }, (_, i) => min + (span * i) / 4);
+  const tickBase = Array.from({ length: 5 }, (_, i) => min + (span * i) / 4);
+  const ticks = [...new Set([...tickBase.map((t) => Math.round(t / 1e8) * 1e8), 0])].sort((a, b) => a - b);
 
   const tip =
     hoverIdx !== null
@@ -113,15 +117,48 @@ export function TsbSektorKarBilesenleriChart({
       </text>
       {ticks.map((tick, i) => {
         const y = yAt(tick);
+        const isZero = tick === 0;
         return (
           <g key={i}>
-            <line x1={PAD.l} x2={W - PAD.r} y1={y} y2={y} stroke={tick === 0 ? "#94a3b8" : "#e2e8f0"} />
-            <text x={PAD.l - 9} y={y + 3} textAnchor="end" fontSize={9} fill="#64748b">
-              {fmtMr(tick)}
+            <line
+              x1={PAD.l}
+              x2={W - PAD.r}
+              y1={y}
+              y2={y}
+              stroke={isZero ? "#0f172a" : "#e2e8f0"}
+              strokeWidth={isZero ? 1.75 : 1}
+              strokeDasharray={isZero ? "7 5" : undefined}
+            />
+            <text
+              x={PAD.l - 9}
+              y={y + 3}
+              textAnchor="end"
+              fontSize={isZero ? 10 : 9}
+              fontWeight={isZero ? 800 : 400}
+              fill={isZero ? "#0f172a" : "#64748b"}
+            >
+              {isZero ? "0" : fmtMr(tick)}
             </text>
           </g>
         );
       })}
+      {/* Sıfır çizgisi — kâr/zarar ayrımı (tick 0 yoksa da çiz) */}
+      {!ticks.some((t) => t === 0) ? (
+        <g>
+          <line
+            x1={PAD.l}
+            x2={W - PAD.r}
+            y1={y0}
+            y2={y0}
+            stroke="#0f172a"
+            strokeWidth={1.75}
+            strokeDasharray="7 5"
+          />
+          <text x={PAD.l - 9} y={y0 + 3} textAnchor="end" fontSize={10} fontWeight={800} fill="#0f172a">
+            0
+          </text>
+        </g>
+      ) : null}
       {trend.map((p, i) => {
         const cx = PAD.l + band * i + band / 2;
         const parts = partsOf(p);
@@ -187,7 +224,7 @@ export function TsbSektorKarBilesenleriChart({
                 ) : null}
               </g>
             ))}
-            <line x1={cx - barW / 2 - 4} x2={cx + barW / 2 + 4} y1={y0} y2={y0} stroke="#94a3b8" strokeWidth={1} />
+            <line x1={cx - barW / 2 - 2} x2={cx + barW / 2 + 2} y1={y0} y2={y0} stroke="#64748b" strokeWidth={1} />
             <text
               x={cx}
               y={vok >= 0 ? Math.min(vokY, yAt(posTop)) - 8 : Math.max(vokY, yAt(negBot)) + 14}
@@ -549,6 +586,163 @@ export function TsbSektorBilançoStackedChart({
         ) : null}
       </g>
       {tip ? <TsbSvgTooltip x={tip.x} y={tip.y} width={214} lines={tip.lines} /> : null}
+    </svg>
+  );
+}
+
+const pfYoy = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1, signDisplay: "exceptZero" });
+
+function shortBransLabel(s: string): string {
+  if (s.length <= 16) return s;
+  return `${s.slice(0, 14)}…`;
+}
+
+/** Branş bazlı prim — bu dönem vs önceki yıl aynı ay (gruplu sütun). */
+export function TsbSektorBransBuyumeChart({
+  satirlar,
+  donem,
+  oncekiDonem,
+}: {
+  satirlar: SektorBransBuyumeSatir[];
+  donem: string;
+  oncekiDonem: string | null;
+}) {
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const padL = 72;
+  const padR = 20;
+  const padT = 48;
+  const padB = 78;
+  const band = Math.max(44, Math.min(64, Math.floor(780 / Math.max(1, satirlar.length))));
+  const chartW = Math.max(860, padL + padR + satirlar.length * band);
+  const chartH = 340;
+  const innerH = chartH - padT - padB;
+  const max = Math.max(1, ...satirlar.flatMap((s) => [s.primBu, s.primOnceki]));
+  const yAt = (v: number) => padT + innerH - (v / max) * innerH;
+  const ticks = Array.from({ length: 5 }, (_, i) => (max * i) / 4);
+  const gap = 3;
+  const barW = Math.min(16, (band * 0.7 - gap) / 2);
+
+  const tip =
+    hoverIdx !== null
+      ? (() => {
+          const s = satirlar[hoverIdx];
+          const cx = padL + band * hoverIdx + band / 2;
+          return {
+            x: Math.min(chartW - 220, Math.max(padL, cx + 12)),
+            y: 8,
+            lines: [
+              { text: s.anaBransH },
+              { text: `${donem}: ${fmtMr(s.primBu)}`, muted: true as const },
+              {
+                text: oncekiDonem
+                  ? `${oncekiDonem}: ${fmtMr(s.primOnceki)}`
+                  : "Önceki yıl: —",
+                muted: true as const,
+              },
+              {
+                text:
+                  s.yoy !== null
+                    ? `YoY ${pfYoy.format(s.yoy * 100)}%`
+                    : "YoY: —",
+                accent: true as const,
+              },
+            ],
+          };
+        })()
+      : null;
+
+  if (satirlar.length === 0) {
+    return (
+      <p className="px-1 py-6 text-sm text-slate-500">Bu havuz / dönem için branş verisi yok.</p>
+    );
+  }
+
+  return (
+    <svg
+      viewBox={`0 0 ${chartW} ${chartH}`}
+      className="h-auto min-w-[720px] w-full"
+      role="img"
+      aria-label="Branş bazlı prim büyümesi — önceki yıl aynı dönem"
+      onMouseLeave={() => setHoverIdx(null)}
+    >
+      <rect width={chartW} height={chartH} fill="#fff" />
+      <text x={padL} y={26} fontSize={14} fontWeight={700} fill="#0f172a">
+        Branş bazlı prim büyümesi
+      </text>
+      <g transform={`translate(${chartW - padR - 250}, 16)`}>
+        <rect x={0} y={0} width={12} height={8} fill={COLORS.bransBu} rx={1} />
+        <text x={16} y={8} fontSize={10} fill="#475569">
+          {donem}
+        </text>
+        <rect x={90} y={0} width={12} height={8} fill={COLORS.bransOnceki} rx={1} />
+        <text x={106} y={8} fontSize={10} fill="#475569">
+          {oncekiDonem ?? "önceki yıl"}
+        </text>
+      </g>
+      {ticks.map((tick, i) => {
+        const y = yAt(tick);
+        return (
+          <g key={i}>
+            <line x1={padL} x2={chartW - padR} y1={y} y2={y} stroke="#e2e8f0" />
+            <text x={padL - 8} y={y + 3} textAnchor="end" fontSize={9} fill="#64748b">
+              {fmtMr(tick)}
+            </text>
+          </g>
+        );
+      })}
+      {satirlar.map((s, i) => {
+        const cx = padL + band * i + band / 2;
+        const base = padT + innerH;
+        const hBu = Math.max(0, base - yAt(s.primBu));
+        const hOn = Math.max(0, base - yAt(s.primOnceki));
+        const active = hoverIdx === i;
+        return (
+          <g key={s.anaBransH} className="cursor-pointer" onMouseEnter={() => setHoverIdx(i)}>
+            <rect
+              x={cx - barW - gap / 2}
+              y={base - hOn}
+              width={barW}
+              height={hOn}
+              fill={COLORS.bransOnceki}
+              fillOpacity={active ? 1 : 0.85}
+              rx={2}
+            />
+            <rect
+              x={cx + gap / 2}
+              y={base - hBu}
+              width={barW}
+              height={hBu}
+              fill={COLORS.bransBu}
+              fillOpacity={active ? 1 : 0.92}
+              rx={2}
+            />
+            {s.yoy !== null && hBu >= 18 ? (
+              <text
+                x={cx}
+                y={base - hBu - 6}
+                textAnchor="middle"
+                fontSize={8}
+                fontWeight={700}
+                fill={s.yoy >= 0 ? "#047857" : "#b91c1c"}
+              >
+                {pfYoy.format(s.yoy * 100)}%
+              </text>
+            ) : null}
+            <text
+              x={cx}
+              y={chartH - 14}
+              textAnchor="end"
+              fontSize={9}
+              fill="#334155"
+              fontWeight={active ? 700 : 500}
+              transform={`rotate(-38 ${cx} ${chartH - 14})`}
+            >
+              {shortBransLabel(s.anaBransH)}
+            </text>
+          </g>
+        );
+      })}
+      {tip ? <TsbSvgTooltip x={tip.x} y={tip.y} width={210} lines={tip.lines} /> : null}
     </svg>
   );
 }

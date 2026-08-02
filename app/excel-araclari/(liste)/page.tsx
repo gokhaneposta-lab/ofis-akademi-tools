@@ -38,6 +38,16 @@ const temizleme: Tool[] = [
     description: "A.Ş., Ltd. Şti., Anonim Şirket eklerini kaldırır.",
   },
   {
+    name: "Türkçe → Slugify",
+    href: "/excel-araclari/turkce-slugify",
+    description: "Şaziye Çeşme → saziye-cesme; URL ve e-posta için.",
+  },
+  {
+    name: "Veri Ayıklayıcı",
+    href: "/excel-araclari/veri-ayikla",
+    description: "Metinden e-posta, web adresi veya IP’leri preset ile çeker.",
+  },
+  {
     name: "E-posta Liste Temizleme",
     href: "/excel-araclari/email-liste-temizleme",
     description: "Geçersiz ve tekrarlayan e-posta adreslerini ayıklar.",
@@ -71,9 +81,14 @@ const donusturuculer: Tool[] = [
     description: "Virgül, noktalı virgül veya sekme ile kolonlara ayırır.",
   },
   {
-    name: "Liste Birleştirici",
+    name: "Liste Birleştir / Ayır",
     href: "/excel-araclari/liste-birlestir",
-    description: "Satırları seçilen ayraçla tek satırda birleştirir.",
+    description: "Dikey↔yatay: satırları birleştir veya virgüllü listeyi alt alta ayır.",
+  },
+  {
+    name: "Excel → Markdown Tablo",
+    href: "/excel-araclari/excel-markdown",
+    description: "Excel tablosunu Notion / GitHub Markdown tablosuna çevirir.",
   },
   {
     name: "Satır / Sütun Döndür",

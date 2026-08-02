@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Liste Birleştirici",
+  title: "Liste Birleştir / Ayır | Yatay ↔ Dikey Liste",
   description:
-    "Birden fazla satırdaki değerleri ayraç ile tek satırda birleştirin.",
+    "Satırları ayraçla birleştirin veya virgüllü / yan yana listeyi Excel sütununa ayırın. SQL IN desteği. Ücretsiz. Ofis Akademi.",
   alternates: {
     canonical: canonicalUrl("/excel-araclari/liste-birlestir"),
   },

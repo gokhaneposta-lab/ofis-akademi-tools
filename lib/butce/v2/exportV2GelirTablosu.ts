@@ -1,90 +1,108 @@
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
-import { bransHesapForSatir, mizanHesapForSatir } from "./gtSatirHesap";
+import {
+  FORMAT7_SATIRLAR,
+  FORMAT_GRUP_SATIRLAR,
+  GRUP_SIRA,
+  bransGrubu,
+  buildGtFormatTidy,
+  yilToplamByBrans,
+} from "./buildGtFormatGrid";
+import type { GtCocukPay } from "./gtFormatCocukPay";
 
-const AY_ADLARI = [
-  "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-  "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
-] as const;
-
-function gorunenSatirlar(gt: GelirTablosuSonuc) {
-  return gt.satirlar.filter((satir) => !satir.gizli);
+function aktifBransKodlari(gt: GelirTablosuSonuc): string[] {
+  return gt.branslar.filter((b) => /^7\d{2}$/.test(b.bransKodu)).map((b) => b.bransKodu);
 }
 
-function aktifBranslar(gt: GelirTablosuSonuc) {
-  return gt.branslar.filter((brans) => /^7\d{2}$/.test(brans.bransKodu));
-}
-
-/** V2 GT'yi ay × 7xx branş bazında, pivot-dostu ve aylık matris sayfalarıyla indirir. */
-export async function downloadV2GelirTablosuExcel(gt: GelirTablosuSonuc): Promise<void> {
+/** V2 GT — şirket formatı: tidy (ay × branş × hesap) + format_7 + Format_Grup. */
+export async function downloadV2GelirTablosuExcel(
+  gt: GelirTablosuSonuc,
+  cocukPay: GtCocukPay = {},
+): Promise<void> {
   const XLSX = await import("xlsx");
   const workbook = XLSX.utils.book_new();
-  const satirlar = gorunenSatirlar(gt);
-  const branslar = aktifBranslar(gt);
+  const tidy = buildGtFormatTidy(gt, cocukPay);
+  const yil = yilToplamByBrans(tidy);
+  const branslar = aktifBransKodlari(gt);
 
   const uzun: Array<Array<string | number>> = [
-    ["Bütçe Yılı", "Ay No", "Ay", "Branş Kodu", "Branş Adı", "Hesap", "Branş Hesap", "Kalem", "Tutar"],
+    [
+      "Bütçe Yılı", "Ay No", "Ay", "Branş Kodu", "Branş Adı", "Grup",
+      "GT Kod", "Hesap", "Branş Hesap", "Hesap Adı", "Tutar",
+    ],
   ];
-  for (let ay = 0; ay < 12; ay++) {
-    for (const brans of branslar) {
-      const aylik = gt.aylikBrans[brans.bransKodu] ?? {};
-      for (const satir of satirlar) {
-        uzun.push([
-          gt.butceYili,
-          ay + 1,
-          AY_ADLARI[ay]!,
-          brans.bransKodu,
-          brans.bransAdi,
-          mizanHesapForSatir(satir.satir),
-          bransHesapForSatir(brans.bransKodu, satir.satir),
-          satir.ad,
-          aylik[satir.satir]?.[ay] ?? 0,
-        ]);
-      }
-    }
+  for (const r of tidy) {
+    uzun.push([
+      r.yil, r.ay, r.ayAd, r.bransKodu, r.bransAdi, r.grup,
+      r.gtKod, r.hesapKodu, r.bransHesap, r.hesapAdi, r.tutar,
+    ]);
   }
   const uzunSheet = XLSX.utils.aoa_to_sheet(uzun);
   uzunSheet["!cols"] = [
-    { wch: 12 }, { wch: 8 }, { wch: 12 }, { wch: 12 },
-    { wch: 28 }, { wch: 12 }, { wch: 14 }, { wch: 42 }, { wch: 18 },
+    { wch: 10 }, { wch: 8 }, { wch: 10 }, { wch: 10 }, { wch: 24 }, { wch: 18 },
+    { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 52 }, { wch: 16 },
   ];
-  uzunSheet["!autofilter"] = { ref: `A1:I${uzun.length}` };
-  XLSX.utils.book_append_sheet(workbook, uzunSheet, "Aylik_Brans_Uzun");
+  uzunSheet["!autofilter"] = { ref: `A1:K${uzun.length}` };
+  XLSX.utils.book_append_sheet(workbook, uzunSheet, "Tidy_Aylik");
 
-  for (let ay = 0; ay < 12; ay++) {
-    const matris: Array<Array<string | number>> = [
-      [
-        "Hesap",
-        "Kalem",
-        ...branslar.map((brans) => `${brans.bransKodu} ${brans.bransAdi}`),
-        "Şirket Toplam",
-      ],
-    ];
-    for (const satir of satirlar) {
-      matris.push([
-        mizanHesapForSatir(satir.satir),
-        satir.ad,
-        ...branslar.map(
-          (brans) => gt.aylikBrans[brans.bransKodu]?.[satir.satir]?.[ay] ?? 0,
-        ),
-        gt.aylikToplam[satir.satir]?.[ay] ?? 0,
-      ]);
+  const f7: Array<Array<string | number>> = [
+    [
+      "Branş Hesap", "HESAP KODU", "HESAP ADI", "TOPLAM",
+      ...branslar.map((k) => Number(k) || k),
+    ],
+  ];
+  FORMAT7_SATIRLAR.forEach((satir, idx) => {
+    const cols = branslar.map((k) => yil.get(k)?.get(idx) ?? 0);
+    const toplam = cols.reduce((a, b) => a + b, 0);
+    f7.push([satir.gtKod, satir.hesapKodu, satir.hesapAdi, toplam, ...cols]);
+  });
+  const f7Sheet = XLSX.utils.aoa_to_sheet(f7);
+  f7Sheet["!cols"] = [
+    { wch: 12 }, { wch: 12 }, { wch: 52 }, { wch: 16 },
+    ...branslar.map(() => ({ wch: 14 })),
+  ];
+  f7Sheet["!autofilter"] = {
+    ref: `A1:${XLSX.utils.encode_col(branslar.length + 3)}${f7.length}`,
+  };
+  XLSX.utils.book_append_sheet(workbook, f7Sheet, "format_7");
+
+  const grupKolon = GRUP_SIRA;
+  const grupToplam = new Map<string, number[]>();
+  for (const g of grupKolon) grupToplam.set(g, FORMAT7_SATIRLAR.map(() => 0));
+  for (const kod of branslar) {
+    const g = bransGrubu(kod);
+    const acc = grupToplam.get(g) ?? FORMAT7_SATIRLAR.map(() => 0);
+    const byIdx = yil.get(kod);
+    if (byIdx) {
+      for (const [idx, v] of byIdx) acc[idx] = (acc[idx] ?? 0) + v;
     }
-    const sheet = XLSX.utils.aoa_to_sheet(matris);
-    sheet["!cols"] = [
-      { wch: 10 },
-      { wch: 42 },
-      ...branslar.map(() => ({ wch: 18 })),
-      { wch: 18 },
-    ];
-    sheet["!autofilter"] = { ref: `A1:${XLSX.utils.encode_col(branslar.length + 2)}${matris.length}` };
-    XLSX.utils.book_append_sheet(
-      workbook,
-      sheet,
-      `${String(ay + 1).padStart(2, "0")}_${AY_ADLARI[ay]}`.slice(0, 31),
-    );
+    grupToplam.set(g, acc);
   }
 
-  XLSX.writeFile(workbook, `Butce_V2_GT_${gt.butceYili}_Aylik_Brans.xlsx`, {
+  const hesapToIdx = new Map<string, number>();
+  FORMAT7_SATIRLAR.forEach((s, i) => {
+    if (s.hesapKodu && !hesapToIdx.has(s.hesapKodu)) hesapToIdx.set(s.hesapKodu, i);
+  });
+
+  const fg: Array<Array<string | number>> = [
+    ["HESAP KODU", "HESAP ADI", "TOPLAM", ...grupKolon],
+  ];
+  for (const satir of FORMAT_GRUP_SATIRLAR) {
+    const idx = satir.hesapKodu ? hesapToIdx.get(satir.hesapKodu) : undefined;
+    const grupVals = grupKolon.map((g) => (idx == null ? 0 : grupToplam.get(g)?.[idx] ?? 0));
+    const toplam = grupVals.reduce((a, b) => a + b, 0);
+    fg.push([satir.hesapKodu, satir.hesapAdi, toplam, ...grupVals]);
+  }
+  const fgSheet = XLSX.utils.aoa_to_sheet(fg);
+  fgSheet["!cols"] = [
+    { wch: 12 }, { wch: 62 }, { wch: 16 },
+    ...grupKolon.map(() => ({ wch: 16 })),
+  ];
+  fgSheet["!autofilter"] = {
+    ref: `A1:${XLSX.utils.encode_col(grupKolon.length + 2)}${fg.length}`,
+  };
+  XLSX.utils.book_append_sheet(workbook, fgSheet, "Format_Grup");
+
+  XLSX.writeFile(workbook, `Butce_V2_GT_${gt.butceYili}_Sirket_Format.xlsx`, {
     compression: true,
   });
 }

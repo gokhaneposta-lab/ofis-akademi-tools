@@ -15,6 +15,7 @@ import {
   loadV2Varsayimlar,
 } from "@/lib/butce/loadData";
 import { buildV2GelirTablosu } from "@/lib/butce/v2/buildV2GelirTablosu";
+import { buildGtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 import {
   V2_AYLIK_GETIRI_VARSAYILAN,
   V2_MALI_GELIR_DISCLAIMER,
@@ -114,6 +115,7 @@ export async function POST(request: Request) {
       ok: true,
       disclaimer: V2_MALI_GELIR_DISCLAIMER,
       vergiNotu: V2_VERGI_DISCLAIMER,
+      formatCocukPay: buildGtCocukPay(mizanAylikFull, varsayimlar.butceYili),
       ...sonuc,
     });
   } catch (e) {

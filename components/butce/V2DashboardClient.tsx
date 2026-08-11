@@ -16,6 +16,7 @@ import {
 import type { V2MaliGelirProxySonuc } from "@/lib/butce/v2/types";
 import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
 import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu";
+import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 
 type TarifeOzet = {
   tarifeGrubu: string;
@@ -61,6 +62,7 @@ export default function V2DashboardClient() {
   const [err, setErr] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [gt, setGt] = useState<GelirTablosuSonuc | null>(null);
+  const [formatCocukPay, setFormatCocukPay] = useState<GtCocukPay>({});
   const [proxy, setProxy] = useState<V2MaliGelirProxySonuc | null>(null);
   const [uyarilar, setUyarilar] = useState<string[]>([]);
   const [ozetAy, setOzetAy] = useState(12);
@@ -171,10 +173,12 @@ export default function V2DashboardClient() {
       if (!res.ok) {
         setErr(data.error ?? data.detail ?? "Hesaplama başarısız");
         setGt(null);
+        setFormatCocukPay({});
         setProxy(null);
         return;
       }
       setGt(data.gt);
+      setFormatCocukPay(data.formatCocukPay ?? {});
       setProxy(data.proxy);
       setUyarilar(data.uyarilar ?? []);
       setMsg("V2 GT hesaplandı");
@@ -219,6 +223,7 @@ export default function V2DashboardClient() {
               setErr(null);
               setMsg(null);
               setGt(null);
+              setFormatCocukPay({});
               setProxy(null);
               try {
                 await load(yil);
@@ -563,7 +568,7 @@ export default function V2DashboardClient() {
                   setExcelBusy(true);
                   setErr(null);
                   try {
-                    await downloadV2GelirTablosuExcel(gt);
+                    await downloadV2GelirTablosuExcel(gt, formatCocukPay);
                   } catch (e) {
                     setErr(e instanceof Error ? e.message : "Excel oluşturulamadı");
                   } finally {
@@ -572,7 +577,7 @@ export default function V2DashboardClient() {
                 }}
                 className="rounded border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900 disabled:opacity-50"
               >
-                {excelBusy ? "Excel hazırlanıyor…" : "Aylık branş Excel indir"}
+                {excelBusy ? "Excel hazırlanıyor…" : "Şirket formatı Excel indir"}
               </button>
             </div>
           </div>

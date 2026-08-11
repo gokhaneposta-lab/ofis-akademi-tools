@@ -1,0 +1,1716 @@
+{
+  "format7": [
+    {
+      "gtKod": "",
+      "hesapKodu": "6",
+      "hesapAdi": "TEKNİK KAR ZARAR"
+    },
+    {
+      "gtKod": "01",
+      "hesapKodu": "60",
+      "hesapAdi": "HAYAT DIŞI TEKNİK GELİR"
+    },
+    {
+      "gtKod": "011",
+      "hesapKodu": "600",
+      "hesapAdi": "YAZILAN PRİMLER (REASÜRANS PAYI DÜŞÜLMÜŞ OLARAK)"
+    },
+    {
+      "gtKod": "0111",
+      "hesapKodu": "60001",
+      "hesapAdi": "YAZILAN PRİMLER (BRÜT)"
+    },
+    {
+      "gtKod": "01111",
+      "hesapKodu": "600011",
+      "hesapAdi": "DİREK"
+    },
+    {
+      "gtKod": "0111101",
+      "hesapKodu": "60001101",
+      "hesapAdi": "YURTİÇİ"
+    },
+    {
+      "gtKod": "0111102",
+      "hesapKodu": "60001102",
+      "hesapAdi": "YURTDIŞI"
+    },
+    {
+      "gtKod": "01112",
+      "hesapKodu": "600012",
+      "hesapAdi": "ENDİREK"
+    },
+    {
+      "gtKod": "0111201",
+      "hesapKodu": "60001201",
+      "hesapAdi": "YURTİÇİ"
+    },
+    {
+      "gtKod": "0111202",
+      "hesapKodu": "60001202",
+      "hesapAdi": "YURTDIŞI"
+    },
+    {
+      "gtKod": "01113",
+      "hesapKodu": "600013",
+      "hesapAdi": "SGK'YA AKTARILMAK ÜZERE YAZILAN PRİMLER"
+    },
+    {
+      "gtKod": "0112",
+      "hesapKodu": "60002",
+      "hesapAdi": "REASÜRANSA DEVREDİLEN PRİMLER ( - )"
+    },
+    {
+      "gtKod": "0113",
+      "hesapKodu": "60003",
+      "hesapAdi": "SGK'YA AKTARILAN PRİMLER"
+    },
+    {
+      "gtKod": "012",
+      "hesapKodu": "601",
+      "hesapAdi": "KAZANILMAMIŞ PRİM KARŞILIĞINDA DEĞİŞİM"
+    },
+    {
+      "gtKod": "0121",
+      "hesapKodu": "60101",
+      "hesapAdi": "BRÜT KAZANILMAMIŞ PRİM KARŞILIĞI (DEVREDEN DÜŞÜLMÜŞ)"
+    },
+    {
+      "gtKod": "01211",
+      "hesapKodu": "601011",
+      "hesapAdi": "KAZANILMAMIŞ PRİM KARŞILIĞI"
+    },
+    {
+      "gtKod": "01212",
+      "hesapKodu": "601012",
+      "hesapAdi": "DEVREDEN KAZANILMAMIŞ PRİM KARŞILIĞI"
+    },
+    {
+      "gtKod": "0122",
+      "hesapKodu": "60102",
+      "hesapAdi": "KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRÖR PAYI"
+    },
+    {
+      "gtKod": "01221",
+      "hesapKodu": "601021",
+      "hesapAdi": "KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRANSPAYI"
+    },
+    {
+      "gtKod": "01222",
+      "hesapKodu": "601022",
+      "hesapAdi": "DEVREDEN KAZANILMAMIŞ PRİM KARŞILIĞI REASÜRANSPAYI"
+    },
+    {
+      "gtKod": "0123",
+      "hesapKodu": "60103",
+      "hesapAdi": "BRÜT KPK SGK PAYI"
+    },
+    {
+      "gtKod": "01231",
+      "hesapKodu": "601031",
+      "hesapAdi": "KPK SGK PAYI"
+    },
+    {
+      "gtKod": "01232",
+      "hesapKodu": "601032",
+      "hesapAdi": "DEVREDEN KPK SGK PAYI"
+    },
+    {
+      "gtKod": "013",
+      "hesapKodu": "602",
+      "hesapAdi": "DEVAM EDEN RİSKLER KARŞILIĞI"
+    },
+    {
+      "gtKod": "0131",
+      "hesapKodu": "60201",
+      "hesapAdi": "BRÜT DEVAM EDEN RİSKLER KARŞILIĞI"
+    },
+    {
+      "gtKod": "01311",
+      "hesapKodu": "602011",
+      "hesapAdi": "DEVAM EDEN RİSKLER KARŞILIĞI"
+    },
+    {
+      "gtKod": "01312",
+      "hesapKodu": "602012",
+      "hesapAdi": "DEVREDEN DEVAM EDEN RİSKLER KARŞILIĞI"
+    },
+    {
+      "gtKod": "0132",
+      "hesapKodu": "60202",
+      "hesapAdi": "DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI"
+    },
+    {
+      "gtKod": "01321",
+      "hesapKodu": "602021",
+      "hesapAdi": "DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI"
+    },
+    {
+      "gtKod": "01322",
+      "hesapKodu": "602022",
+      "hesapAdi": "DEVREDEN DEVAM EDEN RİSKLER KARŞILIĞI RE PAYI"
+    },
+    {
+      "gtKod": "014",
+      "hesapKodu": "603",
+      "hesapAdi": "TEKNİK OLMAYAN YATIRIM GELİRLERİ"
+    },
+    {
+      "gtKod": "0141",
+      "hesapKodu": "60301",
+      "hesapAdi": "FİNANSAL YATIRIM GELİRLERİ"
+    },
+    {
+      "gtKod": "01411",
+      "hesapKodu": "603011",
+      "hesapAdi": "HİSSE SENETLERİ VE DİĞER"
+    },
+    {
+      "gtKod": "01412",
+      "hesapKodu": "603012",
+      "hesapAdi": "HAZİNE BONOSU"
+    },
+    {
+      "gtKod": "01413",
+      "hesapKodu": "603013",
+      "hesapAdi": "DEVLET TAHVİLİ"
+    },
+    {
+      "gtKod": "01414",
+      "hesapKodu": "603014",
+      "hesapAdi": "ÖZEL SEKTÖR BONO"
+    },
+    {
+      "gtKod": "01415",
+      "hesapKodu": "603015",
+      "hesapAdi": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER"
+    },
+    {
+      "gtKod": "01416",
+      "hesapKodu": "603016",
+      "hesapAdi": "YATIRIM FONU"
+    },
+    {
+      "gtKod": "01417",
+      "hesapKodu": "603017",
+      "hesapAdi": "REPO"
+    },
+    {
+      "gtKod": "01418",
+      "hesapKodu": "603018",
+      "hesapAdi": "VADELİ MEVDUAT"
+    },
+    {
+      "gtKod": "01419",
+      "hesapKodu": "603019",
+      "hesapAdi": "DİĞER FİNANSAL"
+    },
+    {
+      "gtKod": "0142",
+      "hesapKodu": "60302",
+      "hesapAdi": "FİNANSAL YAT.NAKTE ÇEV.KAY.KARLAR"
+    },
+    {
+      "gtKod": "01421",
+      "hesapKodu": "603021",
+      "hesapAdi": "HİSSE SENETLERİ VE DİĞER"
+    },
+    {
+      "gtKod": "01422",
+      "hesapKodu": "603022",
+      "hesapAdi": "HAZİNE BONOSU"
+    },
+    {
+      "gtKod": "01423",
+      "hesapKodu": "603023",
+      "hesapAdi": "DEVLET TAHVİLİ"
+    },
+    {
+      "gtKod": "01424",
+      "hesapKodu": "603024",
+      "hesapAdi": "ÖZEL SEKTÖR BONO"
+    },
+    {
+      "gtKod": "01425",
+      "hesapKodu": "603025",
+      "hesapAdi": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER"
+    },
+    {
+      "gtKod": "01426",
+      "hesapKodu": "603026",
+      "hesapAdi": "YATIRIM FONU"
+    },
+    {
+      "gtKod": "01427",
+      "hesapKodu": "603027",
+      "hesapAdi": "REPO"
+    },
+    {
+      "gtKod": "01429",
+      "hesapKodu": "603029",
+      "hesapAdi": "DİĞER FİNANSAL"
+    },
+    {
+      "gtKod": "0143",
+      "hesapKodu": "60303",
+      "hesapAdi": "FİNANSAL YATIRIMLARIN DEĞERLEMESİ"
+    },
+    {
+      "gtKod": "01431",
+      "hesapKodu": "603031",
+      "hesapAdi": "HİSSE SENETLERİ VE DİĞER"
+    },
+    {
+      "gtKod": "01432",
+      "hesapKodu": "603032",
+      "hesapAdi": "HAZİNE BONOSU"
+    },
+    {
+      "gtKod": "01433",
+      "hesapKodu": "603033",
+      "hesapAdi": "DEVLET TAHVİLİ"
+    },
+    {
+      "gtKod": "01434",
+      "hesapKodu": "603034",
+      "hesapAdi": "ÖZEL SEKTÖR BONO"
+    },
+    {
+      "gtKod": "01435",
+      "hesapKodu": "603035",
+      "hesapAdi": "DİĞER SABİT GETİRİLİ MENKUL KIYMETLER"
+    },
+    {
+      "gtKod": "01436",
+      "hesapKodu": "603036",
+      "hesapAdi": "YATIRIM FONU"
+    },
+    {
+      "gtKod": "01437",
+      "hesapKodu": "603037",
+      "hesapAdi": "REPO"
+    },
+    {
+      "gtKod": "01439",
+      "hesapKodu": "603039",
+      "hesapAdi": "DİĞER FİNANSAL"
+    },
+    {
+      "gtKod": "0144",
+      "hesapKodu": "60304",
+      "hesapAdi": "KAMBİYO KARLARI"
+    },
+    {
+      "gtKod": "0145",
+      "hesapKodu": "60305",
+      "hesapAdi": "İŞTİRAKLERDEN GELİRLER"
+    },
+    {
+      "gtKod": "01451",
+      "hesapKodu": "603051",
+      "hesapAdi": "TEMETTÜ"
+    },
+    {
+      "gtKod": "01452",
+      "hesapKodu": "603052",
+      "hesapAdi": "DİĞER"
+    },
+    {
+      "gtKod": "0146",
+      "hesapKodu": "60306",
+      "hesapAdi": "BAĞLI ORT.VE MÜŞT.YÖN.TEŞ.GELİRLER"
+    },
+    {
+      "gtKod": "01461",
+      "hesapKodu": "603061",
+      "hesapAdi": "TEMETTÜ"
+    },
+    {
+      "gtKod": "01462",
+      "hesapKodu": "603062",
+      "hesapAdi": "DİĞER"
+    },
+    {
+      "gtKod": "0147",
+      "hesapKodu": "60307",
+      "hesapAdi": "ARAZİ, ARSA BİNALARDAN ELDE EDİLEN GELİRLER"
+    },
+    {
+      "gtKod": "01471",
+      "hesapKodu": "603071",
+      "hesapAdi": "KİRA"
+    },
+    {
+      "gtKod": "01472",
+      "hesapKodu": "603072",
+      "hesapAdi": "SATIŞ KARI"
+    },
+    {
+      "gtKod": "01473",
+      "hesapKodu": "603073",
+      "hesapAdi": "DEĞERLEME ARTIŞLARI"
+    },
+    {
+      "gtKod": "0148",
+      "hesapKodu": "60308",
+      "hesapAdi": "TÜREV ÜRÜNLERİNDEN ELDE EDİLEN GELİRLER"
+    },
+    {
+      "gtKod": "0149",
+      "hesapKodu": "60309",
+      "hesapAdi": "DİĞER YATIRIMLARDAN ELDE EDİLEN GELİRLER"
+    },
+    {
+      "gtKod": "01491",
+      "hesapKodu": "603091",
+      "hesapAdi": "DÜZENLİ GELİRLER"
+    },
+    {
+      "gtKod": "01492",
+      "hesapKodu": "603092",
+      "hesapAdi": "NAKDE ÇEVRİMDEN ELDE EDİLEN GELİRLER"
+    },
+    {
+      "gtKod": "01493",
+      "hesapKodu": "603093",
+      "hesapAdi": "DEĞERLEME ARTIŞLARI"
+    },
+    {
+      "gtKod": "015",
+      "hesapKodu": "604",
+      "hesapAdi": "DİĞER TEKNİK GELİRLER"
+    },
+    {
+      "gtKod": "0151",
+      "hesapKodu": "60401",
+      "hesapAdi": "BRÜT DİĞER TEKNİK GELİRLER"
+    },
+    {
+      "gtKod": "0152",
+      "hesapKodu": "60402",
+      "hesapAdi": "BRÜT DİĞER TEKNİK GELİRLERDE REASÜRÖR PAYI"
+    },
+    {
+      "gtKod": "016",
+      "hesapKodu": "605",
+      "hesapAdi": "TAHAKKUK EDEN RÜCU VE SOVTAJ GELİRLERİ (  + )"
+    },
+    {
+      "gtKod": "0161",
+      "hesapKodu": "60501",
+      "hesapAdi": "TAHAKKUK EDEN RÜCU GELİRİ"
+    },
+    {
+      "gtKod": "0162",
+      "hesapKodu": "60502",
+      "hesapAdi": "TAHAKKUK EDEN RÜCU GELİRİ REAS PAYI"
+    },
+    {
+      "gtKod": "0163",
+      "hesapKodu": "60503",
+      "hesapAdi": "TAHAKKUK EDEN SOVTAJ GELİRİ"
+    },
+    {
+      "gtKod": "0164",
+      "hesapKodu": "60504",
+      "hesapAdi": "TAHAKKUK ENE SOVTAJ GELİRİ RE PAYI"
+    },
+    {
+      "gtKod": "0165",
+      "hesapKodu": "60505",
+      "hesapAdi": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI"
+    },
+    {
+      "gtKod": "01651",
+      "hesapKodu": "605051",
+      "hesapAdi": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI BRÜT"
+    },
+    {
+      "gtKod": "01652",
+      "hesapKodu": "605052",
+      "hesapAdi": "RÜCU VE SOVTAJ FAALİYETLERİNDEN ALACAK KARŞILIĞI RE PAYI"
+    },
+    {
+      "gtKod": "02",
+      "hesapKodu": "61",
+      "hesapAdi": "HAYAT DIŞI TEKNİK GİDER"
+    },
+    {
+      "gtKod": "021",
+      "hesapKodu": "610",
+      "hesapAdi": "ÖDENEN HASARLAR"
+    },
+    {
+      "gtKod": "0211",
+      "hesapKodu": "61001",
+      "hesapAdi": "BRÜT ÖDENEN HASARLAR"
+    },
+    {
+      "gtKod": "02111",
+      "hesapKodu": "610011",
+      "hesapAdi": "Fiili Tazminat Ödemeleri (-)"
+    },
+    {
+      "gtKod": "0211101",
+      "hesapKodu": "61001101",
+      "hesapAdi": "Sigortalılara Ödemeler (Sigortalılara / 3. Şahıslara Tazminat Ödemeleri)"
+    },
+    {
+      "gtKod": "0211102",
+      "hesapKodu": "61001102",
+      "hesapAdi": "Eksper Ödemeleri"
+    },
+    {
+      "gtKod": "0211199",
+      "hesapKodu": "61001199",
+      "hesapAdi": "Diğer Ödemeler (Masraf Ödemeleri)"
+    },
+    {
+      "gtKod": "02112",
+      "hesapKodu": "610012",
+      "hesapAdi": "Tahsil Edilen Rücu Gelirleri (+)"
+    },
+    {
+      "gtKod": "02113",
+      "hesapKodu": "610013",
+      "hesapAdi": "Tahsil Edilen Sovtaj Gelirleri (+)"
+    },
+    {
+      "gtKod": "02114",
+      "hesapKodu": "610014",
+      "hesapAdi": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumlu Farkları (+)"
+    },
+    {
+      "gtKod": "02115",
+      "hesapKodu": "610015",
+      "hesapAdi": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumsuz Farkları (-)"
+    },
+    {
+      "gtKod": "0212",
+      "hesapKodu": "61002",
+      "hesapAdi": "ÖDENEN HASARLARDA REASÜRANSPAYI"
+    },
+    {
+      "gtKod": "02121",
+      "hesapKodu": "610021",
+      "hesapAdi": "Fiilen Ödenen Tazminatlarda Reasürör Payı (+)"
+    },
+    {
+      "gtKod": "0212101",
+      "hesapKodu": "61002101",
+      "hesapAdi": "Sigortalılara Ödemeler (Sigortalılara / 3. Şahıslara Tazminat Ödemeleri)"
+    },
+    {
+      "gtKod": "0212102",
+      "hesapKodu": "61002102",
+      "hesapAdi": "Eksper Ödemeleri"
+    },
+    {
+      "gtKod": "0212199",
+      "hesapKodu": "61002199",
+      "hesapAdi": "Diğer Ödemeler (Masraf Ödemeleri)"
+    },
+    {
+      "gtKod": "02122",
+      "hesapKodu": "610022",
+      "hesapAdi": "Tahsil Edilen Rücu Gelirleri Reasürör Payı(-)"
+    },
+    {
+      "gtKod": "02123",
+      "hesapKodu": "610023",
+      "hesapAdi": "Tahsil Edilen Sovtaj Gelirleri Reasürör Payı(-)"
+    },
+    {
+      "gtKod": "02124",
+      "hesapKodu": "610024",
+      "hesapAdi": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumlu Farkları Reasürör Payı (-)"
+    },
+    {
+      "gtKod": "02125",
+      "hesapKodu": "610025",
+      "hesapAdi": "Tahsil Edilen Rücu ve Sovtaj Tutarları Olumsuz Farkları Reasürör Payı (+)"
+    },
+    {
+      "gtKod": "022",
+      "hesapKodu": "611",
+      "hesapAdi": "MUALLAK HASARLAR KARŞILIĞINDA DEĞİŞİM"
+    },
+    {
+      "gtKod": "0221",
+      "hesapKodu": "61101",
+      "hesapAdi": "BRÜT MUALLAK HASAR KARŞILIĞINDA DEĞİŞİM"
+    },
+    {
+      "gtKod": "02211",
+      "hesapKodu": "611011",
+      "hesapAdi": "BRÜT MUALLAK HASAR KARŞILIĞI"
+    },
+    {
+      "gtKod": "0221101",
+      "hesapKodu": "61101101",
+      "hesapAdi": "Tahakkuk Eden"
+    },
+    {
+      "gtKod": "022110101",
+      "hesapKodu": "611011011",
+      "hesapAdi": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)"
+    },
+    {
+      "gtKod": "022110102",
+      "hesapKodu": "611011012",
+      "hesapAdi": "Eksper"
+    },
+    {
+      "gtKod": "022110103",
+      "hesapKodu": "611011013",
+      "hesapAdi": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)"
+    },
+    {
+      "gtKod": "022111040",
+      "hesapKodu": "6110110140",
+      "hesapAdi": "İstatistiki Hesaplamalara Göre Yapılan İndirimler"
+    },
+    {
+      "gtKod": "022110199",
+      "hesapKodu": "611011019",
+      "hesapAdi": "Diğer (Masraf Muallakları)"
+    },
+    {
+      "gtKod": "0221102",
+      "hesapKodu": "61101102",
+      "hesapAdi": "Raporlanmayan"
+    },
+    {
+      "gtKod": "0221104",
+      "hesapKodu": "61101104",
+      "hesapAdi": "Muallak Tazminat Karşılığı Yeterlilik Farkı"
+    },
+    {
+      "gtKod": "0221108",
+      "hesapKodu": "61101108",
+      "hesapAdi": "Nakit Akışlarından Kaynaklanan İskonto"
+    },
+    {
+      "gtKod": "02212",
+      "hesapKodu": "611012",
+      "hesapAdi": "DEVREDEN MUALLAK HASAR KARŞILIĞI"
+    },
+    {
+      "gtKod": "0221201",
+      "hesapKodu": "61101201",
+      "hesapAdi": "DEVREDEN MHK TAHAKKUK"
+    },
+    {
+      "gtKod": "022120101",
+      "hesapKodu": "611012011",
+      "hesapAdi": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)"
+    },
+    {
+      "gtKod": "022120102",
+      "hesapKodu": "611012012",
+      "hesapAdi": "Eksper"
+    },
+    {
+      "gtKod": "022120103",
+      "hesapKodu": "611012013",
+      "hesapAdi": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (+)"
+    },
+    {
+      "gtKod": "022121040",
+      "hesapKodu": "6110120140",
+      "hesapAdi": "İstatistiki Hesaplamalara Göre Yapılan İndirimler"
+    },
+    {
+      "gtKod": "022120199",
+      "hesapKodu": "611012019",
+      "hesapAdi": "Diğer (Masraf Muallakları)"
+    },
+    {
+      "gtKod": "0221202",
+      "hesapKodu": "61101202",
+      "hesapAdi": "DEVREDEN MHK IBNR"
+    },
+    {
+      "gtKod": "0221204",
+      "hesapKodu": "61101204",
+      "hesapAdi": "MUALLAK TAZMİNAT KARŞILIĞI YETERLİLİK FARKI"
+    },
+    {
+      "gtKod": "0221208",
+      "hesapKodu": "61101208",
+      "hesapAdi": "NAKİT AKIŞLARINDAN KAYNAKLANAN İSKONTO"
+    },
+    {
+      "gtKod": "0222",
+      "hesapKodu": "61102",
+      "hesapAdi": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYINDA DEĞİŞİM"
+    },
+    {
+      "gtKod": "02221",
+      "hesapKodu": "611021",
+      "hesapAdi": "MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI"
+    },
+    {
+      "gtKod": "0222101",
+      "hesapKodu": "61102101",
+      "hesapAdi": "Tahakkuk Eden"
+    },
+    {
+      "gtKod": "022210101",
+      "hesapKodu": "611021011",
+      "hesapAdi": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)"
+    },
+    {
+      "gtKod": "022210102",
+      "hesapKodu": "611021012",
+      "hesapAdi": "Eksper"
+    },
+    {
+      "gtKod": "022210103",
+      "hesapKodu": "611021013",
+      "hesapAdi": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (-)"
+    },
+    {
+      "gtKod": "022211040",
+      "hesapKodu": "6110210140",
+      "hesapAdi": "İstatistiki Hesaplamalara Göre Yapılan İndirimler"
+    },
+    {
+      "gtKod": "022210199",
+      "hesapKodu": "611021019",
+      "hesapAdi": "Diğer (Masraf Muallakları)"
+    },
+    {
+      "gtKod": "0222102",
+      "hesapKodu": "61102102",
+      "hesapAdi": "Raporlanmayan"
+    },
+    {
+      "gtKod": "0222104",
+      "hesapKodu": "61102104",
+      "hesapAdi": "Muallak Tazminat Karşılığı Yeterlilik Farkı"
+    },
+    {
+      "gtKod": "0222108",
+      "hesapKodu": "61102108",
+      "hesapAdi": "Nakit Akışlarından Kaynaklanan İskontoda Reasürör Payı"
+    },
+    {
+      "gtKod": "02222",
+      "hesapKodu": "611022",
+      "hesapAdi": "DEVREDEN MUALLAK HASAR KARŞILIĞI REASÜRANS PAYI"
+    },
+    {
+      "gtKod": "0222201",
+      "hesapKodu": "61102201",
+      "hesapAdi": "DEVREDEN MHK RE PAYI TAHAKKUK"
+    },
+    {
+      "gtKod": "022220101",
+      "hesapKodu": "611022011",
+      "hesapAdi": "Sigortalı (Sigortalı / 3. Şahıs Tazminat Muallağı)"
+    },
+    {
+      "gtKod": "022220102",
+      "hesapKodu": "611022012",
+      "hesapAdi": "Eksper"
+    },
+    {
+      "gtKod": "022220103",
+      "hesapKodu": "611022013",
+      "hesapAdi": "Dava Sürecindeki Dosyalardan Elde Edilen Gelirler (-)"
+    },
+    {
+      "gtKod": "022221040",
+      "hesapKodu": "6110220140",
+      "hesapAdi": "İstatistiki Hesaplamalara Göre Yapılan İndirimler"
+    },
+    {
+      "gtKod": "022220199",
+      "hesapKodu": "611022019",
+      "hesapAdi": "Diğer (Masraf Muallakları)"
+    },
+    {
+      "gtKod": "0222202",
+      "hesapKodu": "61102202",
+      "hesapAdi": "DEVREDEN MHK RE PAYI IBNR"
+    },
+    {
+      "gtKod": "0222204",
+      "hesapKodu": "61102204",
+      "hesapAdi": "MUALLAK TAZMİNAT KARŞILIĞI YETERLİLİK FARKI RE PAYI"
+    },
+    {
+      "gtKod": "0222208",
+      "hesapKodu": "61102208",
+      "hesapAdi": "NAKİT AKIŞLARINDAN KAYNAKLANAN İSKONTODA REASÜRÖR PAYI"
+    },
+    {
+      "gtKod": "023",
+      "hesapKodu": "612",
+      "hesapAdi": "İKRAMİYE VE İND.KARŞILIĞINDA DEĞİŞİM"
+    },
+    {
+      "gtKod": "0231",
+      "hesapKodu": "61201",
+      "hesapAdi": "BRÜT İKRAMİYE VE İND.KARŞILIĞI"
+    },
+    {
+      "gtKod": "02311",
+      "hesapKodu": "612011",
+      "hesapAdi": "İKRAMİYE VE İNDİRİMLER KARŞILIĞI"
+    },
+    {
+      "gtKod": "02312",
+      "hesapKodu": "612012",
+      "hesapAdi": "DEVREDEN İKRAMİYE VE İNDİRİMLER KARŞILIĞI"
+    },
+    {
+      "gtKod": "0232",
+      "hesapKodu": "61202",
+      "hesapAdi": "BRÜT İKRAMİYE VE İND.KARŞILIĞI REAS PAYI"
+    },
+    {
+      "gtKod": "02321",
+      "hesapKodu": "612021",
+      "hesapAdi": "İKRAMİYE VE İNDİRİMLER KARŞILIĞI REAS PAYI"
+    },
+    {
+      "gtKod": "02322",
+      "hesapKodu": "612022",
+      "hesapAdi": "DEVREDEN İKRAMİYE VE İNDİRİMLER KARŞILIĞI REAS PAYI"
+    },
+    {
+      "gtKod": "024",
+      "hesapKodu": "613",
+      "hesapAdi": "DİĞER TEKNİK KARŞILIĞI"
+    },
+    {
+      "gtKod": "0241",
+      "hesapKodu": "61301",
+      "hesapAdi": "DENGELEME KARŞILIĞI"
+    },
+    {
+      "gtKod": "02411",
+      "hesapKodu": "613011",
+      "hesapAdi": "DENGELEME KARŞILIĞI"
+    },
+    {
+      "gtKod": "0241101",
+      "hesapKodu": "61301101",
+      "hesapAdi": "Dengeleme Karşılığı (-)"
+    },
+    {
+      "gtKod": "0241102",
+      "hesapKodu": "61301102",
+      "hesapAdi": "Devreden Dengeleme Karşılığı (+)"
+    },
+    {
+      "gtKod": "02412",
+      "hesapKodu": "613012",
+      "hesapAdi": "DENGELEME KARŞILIĞI RE PAYI"
+    },
+    {
+      "gtKod": "0242",
+      "hesapKodu": "61302",
+      "hesapAdi": "MALİ RİSKLER KARŞILIĞI"
+    },
+    {
+      "gtKod": "02421",
+      "hesapKodu": "613021",
+      "hesapAdi": "MALİ RİSKLER KARŞILIĞI"
+    },
+    {
+      "gtKod": "02422",
+      "hesapKodu": "613022",
+      "hesapAdi": "MALİ RİSKLER KARŞILIĞI RE PAYI"
+    },
+    {
+      "gtKod": "0249",
+      "hesapKodu": "61399",
+      "hesapAdi": "DİĞER KARŞILIĞI"
+    },
+    {
+      "gtKod": "02491",
+      "hesapKodu": "613991",
+      "hesapAdi": "DİĞER TEKNİK KARŞILIKLAR"
+    },
+    {
+      "gtKod": "02492",
+      "hesapKodu": "613992",
+      "hesapAdi": "DİĞER TEKNİK KARŞILIKLAR RE PAYI"
+    },
+    {
+      "gtKod": "025",
+      "hesapKodu": "614",
+      "hesapAdi": "FAALİYET GİDERLERİ"
+    },
+    {
+      "gtKod": "0251",
+      "hesapKodu": "61401",
+      "hesapAdi": "ÜRETİM KOMİSYON GİD.(-)"
+    },
+    {
+      "gtKod": "02511",
+      "hesapKodu": "614011",
+      "hesapAdi": "Üretim Komisyonu Giderleri (-)"
+    },
+    {
+      "gtKod": "0251101",
+      "hesapKodu": "61401101",
+      "hesapAdi": "Bankalar Üretim Komisyonu Giderleri (-)"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "Üretim Komisyon Gideri"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "Ertelenmiş Komisyon Giderleri (+)"
+    },
+    {
+      "gtKod": "0251102",
+      "hesapKodu": "61401102",
+      "hesapAdi": "Acenteler Üretim Komisyonu Giderleri (-)"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "Üretim Komisyon Gideri"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "Ertelenmiş Komisyon Giderleri (+)"
+    },
+    {
+      "gtKod": "0251103",
+      "hesapKodu": "61401103",
+      "hesapAdi": "Doğrudan Satış Personeli Üretim Komisyonu Giderleri (-)"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "Üretim Komisyon Gideri"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "Ertelenmiş Komisyon Giderleri (+)"
+    },
+    {
+      "gtKod": "0251199",
+      "hesapKodu": "61401199",
+      "hesapAdi": "Diğer Üretim Komisyonu Giderleri (-)"
+    },
+    {
+      "gtKod": "02512",
+      "hesapKodu": "614012",
+      "hesapAdi": "Diğer Üretim Giderleri (-)"
+    },
+    {
+      "gtKod": "0252",
+      "hesapKodu": "61402",
+      "hesapAdi": "PERSONEL GİDERLERİ"
+    },
+    {
+      "gtKod": "0253",
+      "hesapKodu": "61403",
+      "hesapAdi": "YÖNETİM GİDERLERİ"
+    },
+    {
+      "gtKod": "0254",
+      "hesapKodu": "61404",
+      "hesapAdi": "AR-GE GİDERLERİ"
+    },
+    {
+      "gtKod": "0255",
+      "hesapKodu": "61405",
+      "hesapAdi": "PAZARLAMA SATIŞ DAĞITIM GİDERLERİ"
+    },
+    {
+      "gtKod": "0256",
+      "hesapKodu": "61406",
+      "hesapAdi": "DIŞARDAN SAĞLANAN FAYDA VE HİZMET GİDERLERİ"
+    },
+    {
+      "gtKod": "0257",
+      "hesapKodu": "61407",
+      "hesapAdi": "REASÜRANS KOMİSYONLARI GELİRLERİ"
+    },
+    {
+      "gtKod": "02571",
+      "hesapKodu": "614071",
+      "hesapAdi": "Alınan Reasürans Komisyonları (+)"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "Alınan Komisyon Geliri"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "Ertelenmiş Komisyon Geliri (-)"
+    },
+    {
+      "gtKod": "02572",
+      "hesapKodu": "614072",
+      "hesapAdi": "Verilen Reasürans Komisyonları (-)"
+    },
+    {
+      "gtKod": "0258",
+      "hesapKodu": "61408",
+      "hesapAdi": "DİĞER FAALİYET GİDERLERİ"
+    },
+    {
+      "gtKod": "0259",
+      "hesapKodu": "61409",
+      "hesapAdi": "DİĞER FAALİYET GİDERLERİ 2"
+    },
+    {
+      "gtKod": "026",
+      "hesapKodu": "615",
+      "hesapAdi": "Matematik Karş.Değ. (Reas. Payı ve Devr. Kısım Düşülmüş Olarak) (+/-)"
+    },
+    {
+      "gtKod": "0261",
+      "hesapKodu": "61501",
+      "hesapAdi": "Brüt Matematik Karşılıklarda Değişim (Devreden Kısım Düşülmüş)"
+    },
+    {
+      "gtKod": "02611",
+      "hesapKodu": "615011",
+      "hesapAdi": "Matematik Karşılıklar (-)"
+    },
+    {
+      "gtKod": "0261101",
+      "hesapKodu": "61501101",
+      "hesapAdi": "Aktüeryal Matematik Karşılık"
+    },
+    {
+      "gtKod": "0261130",
+      "hesapKodu": "61501103",
+      "hesapAdi": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim"
+    },
+    {
+      "gtKod": "02612",
+      "hesapKodu": "615012",
+      "hesapAdi": "Devreden Matematik Karşılık (+)"
+    },
+    {
+      "gtKod": "0261201",
+      "hesapKodu": "61501201",
+      "hesapAdi": "Aktüeryal Matematik Karşılık"
+    },
+    {
+      "gtKod": "0261230",
+      "hesapKodu": "61501203",
+      "hesapAdi": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim"
+    },
+    {
+      "gtKod": "0262",
+      "hesapKodu": "61502",
+      "hesapAdi": "Brüt Matematik Karşılıklarda Değişim Reasürör Payı (Devreden Kısım Düşülmüş)"
+    },
+    {
+      "gtKod": "02621",
+      "hesapKodu": "615021",
+      "hesapAdi": "Matematik Karşılıklarda Reasürör Payı (+)"
+    },
+    {
+      "gtKod": "0262101",
+      "hesapKodu": "61502101",
+      "hesapAdi": "Aktüeryal Matematik Karşılık"
+    },
+    {
+      "gtKod": "0262130",
+      "hesapKodu": "61502103",
+      "hesapAdi": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim"
+    },
+    {
+      "gtKod": "02622",
+      "hesapKodu": "615022",
+      "hesapAdi": "Devreden Matematik Karşılıklarda Reasürör Payı (-)"
+    },
+    {
+      "gtKod": "0262201",
+      "hesapKodu": "61502201",
+      "hesapAdi": "Aktüeryal Matematik Karşılık"
+    },
+    {
+      "gtKod": "0262230",
+      "hesapKodu": "61502203",
+      "hesapAdi": "Aktüeryal Matematik Karşılıklardan Yapılan İndirim"
+    },
+    {
+      "gtKod": "029",
+      "hesapKodu": "619",
+      "hesapAdi": "DİĞER TEKNİK GİDERLER"
+    },
+    {
+      "gtKod": "0291",
+      "hesapKodu": "61901",
+      "hesapAdi": "BRÜT DİĞER TEKNİK GİDERLER"
+    },
+    {
+      "gtKod": "0292",
+      "hesapKodu": "61902",
+      "hesapAdi": "DİĞER TEKNİK GİDERLER REASÜRANS PAYI"
+    },
+    {
+      "gtKod": "",
+      "hesapKodu": "",
+      "hesapAdi": "TEKNİK KAR ZARAR"
+    }
+  ],
+  "formatGrup": [
+    {
+      "hesapKodu": "60",
+      "hesapAdi": "Hayat Dışı Teknik Gelir"
+    },
+    {
+      "hesapKodu": "600",
+      "hesapAdi": "Yazılan Primler  (Reasürör Payı Düşülmüş Olarak)"
+    },
+    {
+      "hesapKodu": "60001",
+      "hesapAdi": "Brüt Yazılan Primler (+/-)"
+    },
+    {
+      "hesapKodu": "60002",
+      "hesapAdi": "Reasüröre Devredilen Primler (+/-)"
+    },
+    {
+      "hesapKodu": "60003",
+      "hesapAdi": "SGK'ya Aktarılan Primler"
+    },
+    {
+      "hesapKodu": "601",
+      "hesapAdi": "Kaz. Primler Kar. Değ. (Reasürör Payı Ve Devreden Kısım Düşülmüş Olarak) (+/-)"
+    },
+    {
+      "hesapKodu": "60101",
+      "hesapAdi": "Brüt Kaz. Primler Kar. Değ. (Devreden Kısım Düşülmüş)"
+    },
+    {
+      "hesapKodu": "601011",
+      "hesapAdi": "Kazanılmamış Primler Karşılığı (+/-)"
+    },
+    {
+      "hesapKodu": "601012",
+      "hesapAdi": "Devreden Kazanılmamış Primler Karşılığı (+/-)"
+    },
+    {
+      "hesapKodu": "60102",
+      "hesapAdi": "Brüt Kaz.Primler Kar. Değ. Reasürör Payı (Devreden Kısım Düşülmüş)"
+    },
+    {
+      "hesapKodu": "601021",
+      "hesapAdi": "Kazanılmamış Prımler Karşılığında Reasürör Payı (+/-)"
+    },
+    {
+      "hesapKodu": "601022",
+      "hesapAdi": "Devreden Kazanılmamış Primler Karşılığında Reasürör Payı (+/-)"
+    },
+    {
+      "hesapKodu": "60103",
+      "hesapAdi": "Brüt KPK SGK Payı"
+    },
+    {
+      "hesapKodu": "601031",
+      "hesapAdi": "KPK SGK Payı"
+    },
+    {
+      "hesapKodu": "601032",
+      "hesapAdi": "Devreden KPK SGK Payı"
+    },
+    {
+      "hesapKodu": "602",
+      "hesapAdi": "Devam Eden Riskler Kar. Değ. (Rea.Payı Ve Dev. Kısım Düş.Olarak) (+/-)"
+    },
+    {
+      "hesapKodu": "603",
+      "hesapAdi": "Teknik Olmayan Bölümden Aktarılan Yatırım Gelirleri"
+    },
+    {
+      "hesapKodu": "604",
+      "hesapAdi": "Diğer Teknik Gelirler (Reasürör Payı Düşülmüş Olarak)"
+    },
+    {
+      "hesapKodu": "605",
+      "hesapAdi": "Tahakkuk Eden Rücu Ve Sovtaj Gelirleri (  + )"
+    },
+    {
+      "hesapKodu": "61",
+      "hesapAdi": "Hayat Dışı Teknik Gider (-)"
+    },
+    {
+      "hesapKodu": "610",
+      "hesapAdi": "Ödenen Hasarlar (Reasürör Payı Düşülmüş Olarak)"
+    },
+    {
+      "hesapKodu": "61001",
+      "hesapAdi": "Brüt Ödenen Hasarlar (+/-)"
+    },
+    {
+      "hesapKodu": "61002",
+      "hesapAdi": "Ödenen Hasarlarda Reasürör Payı (+/-)"
+    },
+    {
+      "hesapKodu": "611",
+      "hesapAdi": "Muallak Has.Karşılığında Değ. (Rea. Payı Ve Dev. Kısım Düş. Olarak) (+/-)"
+    },
+    {
+      "hesapKodu": "61101",
+      "hesapAdi": "Brüt Muallak Hasarlar Karşılığında Değişim (Devreden Kısım Düşülmüş)"
+    },
+    {
+      "hesapKodu": "611011",
+      "hesapAdi": "Muallak Hasarlar Karşılığı (+/-)"
+    },
+    {
+      "hesapKodu": "611012",
+      "hesapAdi": "Devreden Muallak Hasarlar Karşılığı (+/-)"
+    },
+    {
+      "hesapKodu": "61102",
+      "hesapAdi": "Brüt Muallak Has. Kar. Değişim Reasürör Payı (Dev. Kısım Düşülmüş)"
+    },
+    {
+      "hesapKodu": "611021",
+      "hesapAdi": "Muallak Hasarlar Karşılığında Reasürör Payı (+/-)"
+    },
+    {
+      "hesapKodu": "611022",
+      "hesapAdi": "Devreden Muallak Hasarlar Karşılığında Reasürör Payı (+/-)"
+    },
+    {
+      "hesapKodu": "612",
+      "hesapAdi": "İkramiye Ve İndirimler Kar. Değ. (Rea.Payı Ve Dev. Kısım Düş. Olarak) (+/-)"
+    },
+    {
+      "hesapKodu": "613",
+      "hesapAdi": "Diğer Teknik Kar. Değişim (Rea.Payı Ve Dev. Kısım Düşülmüş Olarak) (+/-)"
+    },
+    {
+      "hesapKodu": "614",
+      "hesapAdi": "Faaliyet Giderleri (-)"
+    },
+    {
+      "hesapKodu": "61401",
+      "hesapAdi": "Üretim Komisyonu Giderleri (+/-)"
+    },
+    {
+      "hesapKodu": "",
+      "hesapAdi": "Üretim Komisyon Gideri"
+    },
+    {
+      "hesapKodu": "",
+      "hesapAdi": "Ertelenmiş Komisyon Giderleri (+)"
+    },
+    {
+      "hesapKodu": "61402",
+      "hesapAdi": "Personele İlişkin Giderler(-)"
+    },
+    {
+      "hesapKodu": "61403",
+      "hesapAdi": "Yönetim Giderleri (-)"
+    },
+    {
+      "hesapKodu": "61404",
+      "hesapAdi": "Araştırma Ve Geliştirme Giderleri (-)"
+    },
+    {
+      "hesapKodu": "61405",
+      "hesapAdi": "Pazarlama Ve Satış Giderleri (-)"
+    },
+    {
+      "hesapKodu": "61406",
+      "hesapAdi": "Dışarıdan Sağlanan Fayda Ve Hizmet Giderleri(-)"
+    },
+    {
+      "hesapKodu": "61407",
+      "hesapAdi": "Reasürans Komisyonları (+/-)"
+    },
+    {
+      "hesapKodu": "614071",
+      "hesapAdi": "Alınan Reasürans Komisyonları (+)"
+    },
+    {
+      "hesapKodu": "",
+      "hesapAdi": "Alınan Komisyon Geliri"
+    },
+    {
+      "hesapKodu": "",
+      "hesapAdi": "Ertelenmiş Komisyon Geliri (-)"
+    },
+    {
+      "hesapKodu": "614072",
+      "hesapAdi": "Verilen Reasürans Komisyonları (-)"
+    },
+    {
+      "hesapKodu": "61408",
+      "hesapAdi": "Diğer Faaliyet Giderleri (+/-)"
+    },
+    {
+      "hesapKodu": "61409",
+      "hesapAdi": "Diğer Faaliyet Giderleri 2 (+/-)"
+    },
+    {
+      "hesapKodu": "615",
+      "hesapAdi": "Matematik Karş.Değ. (Reas. Payı ve Devr. Kısım Düşülmüş Olarak) (+/-)"
+    },
+    {
+      "hesapKodu": "61501",
+      "hesapAdi": "Brüt Matematik Karşılıklarda Değişim (Devreden Kısım Düşülmüş)"
+    },
+    {
+      "hesapKodu": "61502",
+      "hesapAdi": "Brüt Matematik Karşılıklarda Değişim Reasürör Payı (Devreden Kısım Düşülmüş)"
+    },
+    {
+      "hesapKodu": "619",
+      "hesapAdi": "Diğer Teknik Giderler"
+    },
+    {
+      "hesapKodu": "6",
+      "hesapAdi": "TEKNİK KAR ZARAR"
+    }
+  ],
+  "bransGrup": [
+    {
+      "bransKodu": "701",
+      "grup": "YANGIN",
+      "hazine": "YANGIN VE DOĞAL AFETLER"
+    },
+    {
+      "bransKodu": "702",
+      "grup": "YANGIN",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "703",
+      "grup": "DASK",
+      "hazine": "YANGIN VE DOĞAL AFETLER"
+    },
+    {
+      "bransKodu": "704",
+      "grup": "FERDİ KAZA",
+      "hazine": "KAZA"
+    },
+    {
+      "bransKodu": "705",
+      "grup": "DİĞER KAZA",
+      "hazine": "KEFALET"
+    },
+    {
+      "bransKodu": "706",
+      "grup": "DİĞER KAZA",
+      "hazine": "KEFALET"
+    },
+    {
+      "bransKodu": "707",
+      "grup": "KREDİ",
+      "hazine": "KREDİ"
+    },
+    {
+      "bransKodu": "708",
+      "grup": "DİĞER KAZA",
+      "hazine": "KEFALET"
+    },
+    {
+      "bransKodu": "710",
+      "grup": "NAKLİYAT",
+      "hazine": "NAKLİYAT"
+    },
+    {
+      "bransKodu": "711",
+      "grup": "NAKLİYAT",
+      "hazine": "NAKLİYAT"
+    },
+    {
+      "bransKodu": "712",
+      "grup": "NAKLİYAT",
+      "hazine": "SU ARAÇLARI"
+    },
+    {
+      "bransKodu": "713",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "RAYLI ARAÇLAR"
+    },
+    {
+      "bransKodu": "714",
+      "grup": "TRAFİK",
+      "hazine": "KARA ARAÇLARI SORUMLULUK"
+    },
+    {
+      "bransKodu": "715",
+      "grup": "TRAFİK",
+      "hazine": "KARA ARAÇLARI SORUMLULUK"
+    },
+    {
+      "bransKodu": "716",
+      "grup": "TRAFİK",
+      "hazine": "KARA ARAÇLARI SORUMLULUK"
+    },
+    {
+      "bransKodu": "717",
+      "grup": "KASKO",
+      "hazine": "KARA ARAÇLARI"
+    },
+    {
+      "bransKodu": "718",
+      "grup": "FERDİ KAZA",
+      "hazine": "KAZA"
+    },
+    {
+      "bransKodu": "719",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "720",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "721",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "722",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "723",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "724",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "725",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "726",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "727",
+      "grup": "DİĞER KAZA",
+      "hazine": "HAVA ARAÇLARI"
+    },
+    {
+      "bransKodu": "728",
+      "grup": "DİĞER KAZA",
+      "hazine": "HAVA ARAÇLARI SORUMLULUK"
+    },
+    {
+      "bransKodu": "729",
+      "grup": "DİĞER KAZA",
+      "hazine": "KAZA"
+    },
+    {
+      "bransKodu": "730",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "731",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "732",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "733",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "734",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "735",
+      "grup": "DİĞER KAZA",
+      "hazine": "SU ARAÇLARI SORUMLULUK"
+    },
+    {
+      "bransKodu": "736",
+      "grup": "DİĞER KAZA",
+      "hazine": "KEFALET"
+    },
+    {
+      "bransKodu": "737",
+      "grup": "DİĞER KAZA",
+      "hazine": "KARA ARAÇLARI"
+    },
+    {
+      "bransKodu": "738",
+      "grup": "DİĞER KAZA",
+      "hazine": "SU ARAÇLARI"
+    },
+    {
+      "bransKodu": "739",
+      "grup": "DİĞER KAZA",
+      "hazine": "SU ARAÇLARI"
+    },
+    {
+      "bransKodu": "740",
+      "grup": "YANGIN",
+      "hazine": "YANGIN VE DOĞAL AFETLER"
+    },
+    {
+      "bransKodu": "741",
+      "grup": "YANGIN",
+      "hazine": "YANGIN VE DOĞAL AFETLER"
+    },
+    {
+      "bransKodu": "742",
+      "grup": "YANGIN",
+      "hazine": "YANGIN VE DOĞAL AFETLER"
+    },
+    {
+      "bransKodu": "743",
+      "grup": "YANGIN",
+      "hazine": "YANGIN VE DOĞAL AFETLER"
+    },
+    {
+      "bransKodu": "744",
+      "grup": "YANGIN",
+      "hazine": "YANGIN VE DOĞAL AFETLER"
+    },
+    {
+      "bransKodu": "745",
+      "grup": "KREDİ",
+      "hazine": "KREDİ"
+    },
+    {
+      "bransKodu": "746",
+      "grup": "KREDİ",
+      "hazine": "KREDİ"
+    },
+    {
+      "bransKodu": "747",
+      "grup": "KREDİ",
+      "hazine": "KREDİ"
+    },
+    {
+      "bransKodu": "748",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "749",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "750",
+      "grup": "FERDİ KAZA",
+      "hazine": "KAZA"
+    },
+    {
+      "bransKodu": "752",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "753",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "754",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "755",
+      "grup": "KREDİ",
+      "hazine": "KREDİ"
+    },
+    {
+      "bransKodu": "756",
+      "grup": "KREDİ",
+      "hazine": "KREDİ"
+    },
+    {
+      "bransKodu": "757",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "758",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "759",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "FİNANSAL KAYIPLAR"
+    },
+    {
+      "bransKodu": "760",
+      "grup": "HUKUKSAL KORUMA",
+      "hazine": "HUKUKSAL KORUMA"
+    },
+    {
+      "bransKodu": "761",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "YANGIN VE DOĞAL AFETLER"
+    },
+    {
+      "bransKodu": "765",
+      "grup": "MÜHENDİSLİK",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "766",
+      "grup": "MÜHENDİSLİK",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "767",
+      "grup": "MÜHENDİSLİK",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "768",
+      "grup": "MÜHENDİSLİK",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "769",
+      "grup": "FİNANSAL KAYIPLAR",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "770",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "771",
+      "grup": "DİĞER KAZA",
+      "hazine": "GENEL SORUMLULUK"
+    },
+    {
+      "bransKodu": "773",
+      "grup": "TARSİM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "774",
+      "grup": "TARIM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "775",
+      "grup": "TARIM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "776",
+      "grup": "TARSİM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "777",
+      "grup": "TARSİM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "778",
+      "grup": "TARSİM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "779",
+      "grup": "TARSİM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "780",
+      "grup": "TARIM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "781",
+      "grup": "TARIM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "782",
+      "grup": "TARSİM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "783",
+      "grup": "TARSİM",
+      "hazine": "GENEL ZARARLAR"
+    },
+    {
+      "bransKodu": "784",
+      "grup": "SAĞLIK",
+      "hazine": "HASTALIK / SAĞLIK"
+    },
+    {
+      "bransKodu": "785",
+      "grup": "SAĞLIK",
+      "hazine": "HASTALIK / SAĞLIK"
+    },
+    {
+      "bransKodu": "786",
+      "grup": "SAĞLIK",
+      "hazine": "HASTALIK / SAĞLIK"
+    },
+    {
+      "bransKodu": "789",
+      "grup": "YANGIN",
+      "hazine": "DESTEK"
+    },
+    {
+      "bransKodu": "798",
+      "grup": "YANGIN",
+      "hazine": "DESTEK"
+    },
+    {
+      "bransKodu": "751",
+      "grup": "FERDİ KAZA",
+      "hazine": "KAZA"
+    }
+  ],
+  "grupSira": [
+    "YANGIN",
+    "DASK",
+    "FERDİ KAZA",
+    "DİĞER KAZA",
+    "KREDİ",
+    "NAKLİYAT",
+    "FİNANSAL KAYIPLAR",
+    "TRAFİK",
+    "KASKO",
+    "HUKUKSAL KORUMA",
+    "MÜHENDİSLİK",
+    "TARSİM",
+    "TARIM",
+    "SAĞLIK"
+  ]
+}

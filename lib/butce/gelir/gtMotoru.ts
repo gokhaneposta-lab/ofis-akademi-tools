@@ -62,8 +62,8 @@ export type GtEksikGirdi = { satir: number; kod: string | null; ad: string };
 
 export class GelirTablosuMotoru {
   private readonly oranServisi: MizanOranServisi;
-  /** oran_hucre → brans → oran */
-  private readonly oranByHucreByBrans = new Map<string, Map<string, number>>();
+  /** ay (1–12) → oran_hucre → brans → oran. ay=12 = YE (mevcut davranış). */
+  private readonly oranByAyHucreBrans = new Map<number, Map<string, Map<string, number>>>();
   /** Hesaplama sırasında dış-girdi (0 alınan) hücreler — şeffaflık için. */
   readonly eksikGirdiler = new Map<number, GtEksikGirdi>();
 
@@ -74,38 +74,48 @@ export class GelirTablosuMotoru {
     mizanAylikFull: MizanAylikRow[] = [],
   ) {
     this.oranServisi = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
-    for (const [hucre, kalem] of ORAN_HUCRE_TO_KALEM) {
-      const tablo = this.oranServisi.tumBranslarTablosu(kalem, oranAyar[kalem] ?? {});
-      const map = new Map<string, number>();
-      for (const r of tablo) map.set(r.bransKodu, r.oran);
-      this.oranByHucreByBrans.set(hucre, map);
+    for (let ay = 1; ay <= 12; ay++) {
+      const byHucre = new Map<string, Map<string, number>>();
+      for (const [hucre, kalem] of ORAN_HUCRE_TO_KALEM) {
+        const tablo = this.oranServisi.tumBranslarTablosu(kalem, oranAyar[kalem] ?? {}, { ay });
+        const map = new Map<string, number>();
+        for (const r of tablo) map.set(r.bransKodu, r.oran);
+        byHucre.set(hucre, map);
+      }
+      this.oranByAyHucreBrans.set(ay, byHucre);
     }
   }
 
-  private oranDeger(hucre: string, brans: string): number {
+  private oranDeger(hucre: string, brans: string, ay = 12): number {
     const norm = hucre.replace("$", "");
-    const map = this.oranByHucreByBrans.get(norm);
+    const byHucre = this.oranByAyHucreBrans.get(ay) ?? this.oranByAyHucreBrans.get(12);
+    const map = byHucre?.get(norm);
     if (!map) return 0;
     return map.get(brans) ?? 0;
   }
 
-  /** satir no → tutar (KPK vb. dış girdiler) */
+  /**
+   * Branş GT hesapla.
+   * `ay` (1–12): o ayın kümülatif teknik oranları; 12 = YE (varsayılan).
+   * YTD prim/KPK ile çağrılıp aylık delta alınırsa nakit profili kümülatif oran yolunu izler.
+   */
   hesaplaBrans(
     brans: string,
     brutPrim: number,
     endirektPrim: number,
     disHucreler: Record<number, number> = {},
+    ay = 12,
   ): Map<number, number> {
     const self = this;
     const memo = new Map<number, number>();
     const zincir = new Set<number>();
+    const oranAy = ay >= 1 && ay <= 12 ? ay : 12;
 
     function resolve(ref: string): number {
       const satir = hucreSatir(ref);
       if (satir == null) return 0;
       if (CELL_BY_ROW.has(satir) || satir === 11 || satir === 15) return cellValue(satir);
-      // GT satır listesinde yoksa oran hücresidir (F295, F320, F436 …)
-      return self.oranDeger(ref, brans);
+      return self.oranDeger(ref, brans, oranAy);
     }
 
     function cellValue(satir: number): number {
@@ -127,7 +137,7 @@ export class GelirTablosuMotoru {
       } else if (def.carpim) {
         const bazIfade = def.carpim.baz_ifade ?? def.carpim.baz_hucre ?? "0";
         const baz = evalExpr(bazIfade, resolve);
-        val = baz * self.oranDeger(def.carpim.oran_hucre, brans);
+        val = baz * self.oranDeger(def.carpim.oran_hucre, brans, oranAy);
       } else if (typeof def.formul === "number") {
         val = def.formul;
       } else if (def.formul == null) {
@@ -144,11 +154,8 @@ export class GelirTablosuMotoru {
       return val;
     }
 
-    // F105 (ödenen hasarda reasürör payı) Excel'de F399–F405 manuel split'lerine
-    // bağlı; 3 dosyalı modelde yok → doğrudan 0212 oranıyla F96 üzerinden türet.
-    // Bu yüzden F105 ve onu kapsayan zincir (F95→F94→F8) memo'ya elle yazılır.
     const f96 = cellValue(96);
-    const f105 = f96 * this.oranDeger("F436", brans);
+    const f105 = f96 * this.oranDeger("F436", brans, oranAy);
     memo.set(105, f105);
     memo.delete(95);
     memo.delete(94);

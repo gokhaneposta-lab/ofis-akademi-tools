@@ -10,6 +10,7 @@ import { ORAN_BAZLI_KALEMLER, ORAN_KALEM_MIZAN } from "./oranKalemLoader";
 import { exportNormSpec, hesaplaEtkinOran } from "./oranMotoru";
 import { MizanIndex } from "./mizanIndex";
 import { mergeMizanYillikVeAylik } from "./mizanAylikYilsonu";
+import { aylikKumulatifMizanSnapshot } from "./aylikMizanBridge";
 
 const MIN_BAZ_TUTAR = 1;
 
@@ -17,6 +18,9 @@ export class MizanOranServisi {
   readonly butceYili: number;
   readonly yillar: number[];
   private readonly index: MizanIndex;
+  /** yil|ay → kümülatif ay-sonu mizan indeksi (ay=12 yok; YE için `index` kullanılır). */
+  private readonly ayIndex = new Map<string, MizanIndex>();
+  private readonly aylikYillar: number[];
 
   constructor(mizan: MizanRow[], butceYili = 2027, mizanAylikFull: MizanAylikRow[] = []) {
     this.butceYili = butceYili;
@@ -26,15 +30,32 @@ export class MizanOranServisi {
     this.yillar = [...new Set(filtered.map((r) => r.yil))]
       .filter((y) => y < butceYili)
       .sort((a, b) => a - b);
+
+    const ayYillar = new Set<number>();
+    for (let ay = 1; ay <= 11; ay++) {
+      for (const y of this.yillar) {
+        const snap = aylikKumulatifMizanSnapshot(mizanAylikFull, y, ay);
+        if (snap.length === 0) continue;
+        this.ayIndex.set(`${y}|${ay}`, new MizanIndex(snap));
+        ayYillar.add(y);
+      }
+    }
+    this.aylikYillar = [...ayYillar].sort((a, b) => a - b);
   }
 
   private hesapTutar(
     yil: number,
     brans: string,
     hesaplar: string[],
-    opts: { prefix?: boolean; tumSirket?: boolean } = {},
+    opts: { prefix?: boolean; tumSirket?: boolean; ay?: number } = {},
   ): number {
-    return this.index.hesapTutar(yil, brans, hesaplar, opts);
+    const ay = opts.ay ?? 12;
+    if (ay === 12) {
+      return this.index.hesapTutar(yil, brans, hesaplar, opts);
+    }
+    const idx = this.ayIndex.get(`${yil}|${ay}`);
+    if (!idx) return 0;
+    return idx.hesapTutar(yil, brans, hesaplar, opts);
   }
 
   private hesapEslesmeOpts(bilesen: BilesenSpec) {
@@ -44,25 +65,40 @@ export class MizanOranServisi {
     };
   }
 
-  private bilesenYilOrani(brans: string, yil: number, bilesen: BilesenSpec): number | null {
+  private bilesenYilOrani(
+    brans: string,
+    yil: number,
+    bilesen: BilesenSpec,
+    ay = 12,
+  ): number | null {
+    if (ay < 12 && !this.ayIndex.has(`${yil}|${ay}`)) return null;
     const eslesme = this.hesapEslesmeOpts(bilesen);
     const tumSirketBaz = bilesen.baz_toplam_sirket ?? false;
-    const pay = this.hesapTutar(yil, brans, bilesen.pay, eslesme);
-    const baz = this.hesapTutar(yil, brans, bilesen.baz, { ...eslesme, tumSirket: tumSirketBaz });
+    const pay = this.hesapTutar(yil, brans, bilesen.pay, { ...eslesme, ay });
+    const baz = this.hesapTutar(yil, brans, bilesen.baz, {
+      ...eslesme,
+      tumSirket: tumSirketBaz,
+      ay,
+    });
     if (Math.abs(baz) < MIN_BAZ_TUTAR) return null;
     return pay / baz;
   }
 
-  private etkinOranHesapla(kalemKodu: string, brans: string) {
+  private etkinOranHesapla(kalemKodu: string, brans: string, ay = 12) {
+    const yillar = ay === 12 ? this.yillar : this.aylikYillar;
     return hesaplaEtkinOran(
       kalemKodu,
       brans,
-      (b, y, bil) => this.bilesenYilOrani(b, y, bil),
-      this.yillar,
+      (b, y, bil) => this.bilesenYilOrani(b, y, bil, ay),
+      yillar,
     );
   }
 
-  bransOrani(kalemKodu: string, brans: string, referans: string): number {
+  /**
+   * Teknik oran — `ay` verilirse aynı ay kümülatif geçmiş yılların ağırlıklı ortalaması.
+   * ay=12 (varsayılan) = mevcut YE davranışı.
+   */
+  bransOrani(kalemKodu: string, brans: string, referans: string, ay = 12): number {
     if (!(kalemKodu in ORAN_KALEM_MIZAN)) {
       return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
     }
@@ -70,28 +106,31 @@ export class MizanOranServisi {
       return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
     }
     if (referans === ORAN_REFERANS_VARSAYILAN || referans === "excel_gt") {
-      return this.etkinOranHesapla(kalemKodu, brans).etkinOran;
+      return this.etkinOranHesapla(kalemKodu, brans, ay).etkinOran;
     }
     if (referans === "son_yil") {
-      if (this.yillar.length === 0) return 0;
+      const yillar = ay === 12 ? this.yillar : this.aylikYillar;
+      if (yillar.length === 0) return 0;
       const b0 = exportNormSpec(kalemKodu).bilesenler[0];
-      const o = this.bilesenYilOrani(brans, this.yillar[this.yillar.length - 1], b0);
+      const o = this.bilesenYilOrani(brans, yillar[yillar.length - 1], b0, ay);
       return o ?? 0;
     }
     if (/^\d+$/.test(referans)) {
       const y = parseInt(referans, 10);
-      if (this.yillar.includes(y)) {
+      const yillar = ay === 12 ? this.yillar : this.aylikYillar;
+      if (yillar.includes(y)) {
         const b0 = exportNormSpec(kalemKodu).bilesenler[0];
-        const o = this.bilesenYilOrani(brans, y, b0);
+        const o = this.bilesenYilOrani(brans, y, b0, ay);
         return o ?? 0;
       }
       return 0;
     }
     if (referans === "son_3_yil_ort") {
       const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+      const yillar = ay === 12 ? this.yillar : this.aylikYillar;
       const oranlar: number[] = [];
-      for (const y of this.yillar.slice(-3)) {
-        const o = this.bilesenYilOrani(brans, y, b0);
+      for (const y of yillar.slice(-3)) {
+        const o = this.bilesenYilOrani(brans, y, b0, ay);
         if (o != null) oranlar.push(o);
       }
       if (oranlar.length) return oranlar.reduce((a, b) => a + b, 0) / oranlar.length;
@@ -108,9 +147,9 @@ export class MizanOranServisi {
   tumBranslarTablosu(
     kalemKodu: string,
     bransAyar: Record<string, BransOranAyar> = {},
-    opts: { mizanHesapla?: boolean } = {},
+    opts: { mizanHesapla?: boolean; ay?: number } = {},
   ): BransOranSatir[] {
-    const { mizanHesapla = true } = opts;
+    const { mizanHesapla = true, ay = 12 } = opts;
 
     if (!mizanHesapla && Object.keys(bransAyar).length > 0) {
       return this.tabloFromBransAyar(kalemKodu, bransAyar);
@@ -123,7 +162,7 @@ export class MizanOranServisi {
       const manuel = ayar.manuel ?? false;
       const oran = manuel && ayar.oran != null
         ? ayar.oran
-        : this.bransOrani(kalemKodu, kod, referans);
+        : this.bransOrani(kalemKodu, kod, referans, ay);
 
       return {
         bransKodu: kod,
@@ -194,17 +233,20 @@ export class MizanOranServisi {
     return out;
   }
 
-  kalemDetay(kalemKodu: string, brans: string) {
-    return this.etkinOranHesapla(kalemKodu, brans);
+  kalemDetay(kalemKodu: string, brans: string, ay = 12) {
+    return this.etkinOranHesapla(kalemKodu, brans, ay);
   }
 
-  /** Tek yıl için pay/baz/oran (backtest veya diagnostik). */
+  /** Tek yıl (veya yıl×ay kümülatif) için pay/baz/oran. */
   yilOlcum(
     kalemKodu: string,
     brans: string,
     yil: number,
+    ay = 12,
   ): { pay: number; baz: number; oran: number | null } | null {
-    if (!this.yillar.includes(yil)) return null;
+    const yillar = ay === 12 ? this.yillar : this.aylikYillar;
+    if (!yillar.includes(yil)) return null;
+    if (ay < 12 && !this.ayIndex.has(`${yil}|${ay}`)) return null;
     const b0 = exportNormSpec(kalemKodu).bilesenler[0];
     if (!b0) return null;
     const eslesme = {
@@ -212,8 +254,8 @@ export class MizanOranServisi {
       bransGt: b0.hesap_eslesme === "brans_gt",
     };
     const tumSirketBaz = b0.baz_toplam_sirket ?? false;
-    const pay = this.hesapTutar(yil, brans, b0.pay, eslesme);
-    const baz = this.hesapTutar(yil, brans, b0.baz, { ...eslesme, tumSirket: tumSirketBaz });
+    const pay = this.hesapTutar(yil, brans, b0.pay, { ...eslesme, ay });
+    const baz = this.hesapTutar(yil, brans, b0.baz, { ...eslesme, tumSirket: tumSirketBaz, ay });
     if (Math.abs(baz) < MIN_BAZ_TUTAR) return { pay, baz, oran: null };
     return { pay, baz, oran: pay / baz };
   }

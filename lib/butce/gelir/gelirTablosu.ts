@@ -1,12 +1,11 @@
 import { HAZINE_BRANS_KODLARI, HAZINE_BRANS_SIRASI } from "../config/brans";
 import { AYLAR } from "../config/constants";
 import { normalizeBransKodu } from "../textUtils";
-import { buildKpkSonuc, kpkHucreOverride } from "../kpk/buildKpkSonuc";
+import { buildKpkSonuc } from "../kpk/buildKpkSonuc";
 import { KPK_GT_SATIRLARI } from "../kpk/kpkMotoru";
 import type { AylikPrimStore, FaaliyetGiderRow, KpkVadeRow, MizanAylikRow, MizanRow, OranAyarStore, TarifeBransPayRow, KpkKapanisTahminStore } from "../types";
 import {
   buildFaaliyetGiderSonuc,
-  faaliyetGiderHucreOverride,
   FAALIYET_GT_SATIRLARI,
 } from "./faaliyetGiderGt";
 import { GelirTablosuMotoru, type GtEksikGirdi } from "./gtMotoru";
@@ -163,39 +162,73 @@ export function buildGelirTablosu(opts: {
     const endirekt = endirektPrim[kod] ?? 0;
     const kpkBrans = kpkByBrans.get(kod);
     const fgBrans = faaliyetByBrans.get(kod);
-    const disHucreler = {
-      ...(kpkBrans ? kpkHucreOverride(kpkBrans) : {}),
-      ...(fgBrans ? faaliyetGiderHucreOverride(fgBrans) : {}),
-      ...(disHucrelerByBrans[kod] ?? {}),
-    };
-    const tumDegerler = motor.hesaplaBrans(kod, brut, endirekt, disHucreler);
+    const paylar = aylikPaylar[kod] ?? null;
+    const paySerie = paylar ?? Array.from({ length: 12 }, () => 1 / 12);
+
+    const bransAylik: Record<number, number[]> = {};
+    for (const s of gosterimNolari) bransAylik[s] = Array.from({ length: 12 }, () => 0);
+
+    let cumPay = 0;
+    const prevYtd = new Map<number, number>();
+    for (let i = 0; i < 12; i++) {
+      cumPay += paySerie[i] ?? 0;
+      const ytdBrut = brut * cumPay;
+      const ytdEndirekt = endirekt * cumPay;
+      const disHucreler: Record<number, number> = {};
+      // V2 mali gelir vb. yıllık override → YTD payı ile ölçekle
+      for (const [satirStr, v] of Object.entries(disHucrelerByBrans[kod] ?? {})) {
+        disHucreler[Number(satirStr)] = (Number(v) || 0) * cumPay;
+      }
+      // KPK / faaliyet: ay sonuna kadar kümülatif (YTD) override
+      if (kpkBrans) {
+        for (const s of KPK_GT_SATIRLARI as unknown as number[]) {
+          const ser = kpkBrans.gtAylik[s];
+          if (!ser) continue;
+          disHucreler[s] = ser.slice(0, i + 1).reduce((a, b) => a + b, 0);
+        }
+      }
+      if (fgBrans) {
+        for (const s of FAALIYET_GT_SATIRLARI) {
+          const ser = fgBrans.gtAylik[s];
+          if (!ser) continue;
+          disHucreler[s] = ser.slice(0, i + 1).reduce((a, b) => a + b, 0);
+        }
+      }
+
+      const ytdVals = motor.hesaplaBrans(kod, ytdBrut, ytdEndirekt, disHucreler, i + 1);
+      for (const s of gosterimNolari) {
+        const ytd = ytdVals.get(s) ?? 0;
+        const once = prevYtd.get(s) ?? 0;
+        bransAylik[s]![i] = ytd - once;
+        prevYtd.set(s, ytd);
+      }
+    }
+
+    // KPK / faaliyet satırları kendi motorlarının aylık serisini korur
+    const kpkAylikSatirlar = new Set<number>(KPK_GT_SATIRLARI as unknown as number[]);
+    const faaliyetAylikSatirlar = new Set<number>(FAALIYET_GT_SATIRLARI);
+    if (kpkBrans) {
+      for (const s of kpkAylikSatirlar) {
+        if (kpkBrans.gtAylik[s]) bransAylik[s] = [...kpkBrans.gtAylik[s]!];
+      }
+    }
+    if (fgBrans) {
+      for (const s of faaliyetAylikSatirlar) {
+        if (fgBrans.gtAylik[s]) bransAylik[s] = [...fgBrans.gtAylik[s]!];
+      }
+    }
 
     const degerler: Record<number, number> = {};
-    for (const s of gosterimNolari) degerler[s] = tumDegerler.get(s) ?? 0;
+    for (const s of gosterimNolari) {
+      degerler[s] = (bransAylik[s] ?? []).reduce((a, b) => a + b, 0);
+    }
 
     const info = HAZINE_BRANS_KODLARI[kod] ?? ["", kod, ""];
     branslar.push({ bransKodu: kod, bransAdi: info[1], brutPrim: brut, degerler });
 
-    for (const s of gosterimNolari) toplam[s] += degerler[s];
-
-    // Aylık: tüm satırları branşın prim mevsimselliğine göre dağıt.
-    const paylar = aylikPaylar[kod] ?? null;
-    const bransAylik: Record<number, number[]> = {};
-    const kpkAylikSatirlar = new Set<number>(KPK_GT_SATIRLARI as unknown as number[]);
-    const faaliyetAylikSatirlar = new Set<number>(FAALIYET_GT_SATIRLARI);
     for (const s of gosterimNolari) {
-      const yillik = degerler[s];
-      if (kpkBrans && kpkAylikSatirlar.has(s) && kpkBrans.gtAylik[s]) {
-        bransAylik[s] = [...kpkBrans.gtAylik[s]!];
-      } else if (fgBrans && faaliyetAylikSatirlar.has(s) && fgBrans.gtAylik[s]) {
-        bransAylik[s] = [...fgBrans.gtAylik[s]!];
-      } else {
-        const paylarLocal = paylar;
-        bransAylik[s] = paylarLocal
-          ? paylarLocal.map((p) => yillik * p)
-          : Array.from({ length: 12 }, () => yillik / 12);
-      }
-      for (let i = 0; i < 12; i++) aylikToplam[s][i] += bransAylik[s]![i] ?? 0;
+      toplam[s] = (toplam[s] ?? 0) + (degerler[s] ?? 0);
+      for (let i = 0; i < 12; i++) aylikToplam[s]![i] += bransAylik[s]![i] ?? 0;
     }
     aylikBrans[kod] = bransAylik;
   }

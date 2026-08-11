@@ -1,4 +1,5 @@
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
+import { bransHesapForSatir, mizanHesapForSatir } from "./gtSatirHesap";
 
 const AY_ADLARI = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -21,7 +22,7 @@ export async function downloadV2GelirTablosuExcel(gt: GelirTablosuSonuc): Promis
   const branslar = aktifBranslar(gt);
 
   const uzun: Array<Array<string | number>> = [
-    ["Bütçe Yılı", "Ay No", "Ay", "Branş Kodu", "Branş Adı", "Satır", "Kalem", "Tutar"],
+    ["Bütçe Yılı", "Ay No", "Ay", "Branş Kodu", "Branş Adı", "Hesap", "Branş Hesap", "Kalem", "Tutar"],
   ];
   for (let ay = 0; ay < 12; ay++) {
     for (const brans of branslar) {
@@ -33,7 +34,8 @@ export async function downloadV2GelirTablosuExcel(gt: GelirTablosuSonuc): Promis
           AY_ADLARI[ay]!,
           brans.bransKodu,
           brans.bransAdi,
-          satir.kod ?? `F${satir.satir}`,
+          mizanHesapForSatir(satir.satir),
+          bransHesapForSatir(brans.bransKodu, satir.satir),
           satir.ad,
           aylik[satir.satir]?.[ay] ?? 0,
         ]);
@@ -43,15 +45,15 @@ export async function downloadV2GelirTablosuExcel(gt: GelirTablosuSonuc): Promis
   const uzunSheet = XLSX.utils.aoa_to_sheet(uzun);
   uzunSheet["!cols"] = [
     { wch: 12 }, { wch: 8 }, { wch: 12 }, { wch: 12 },
-    { wch: 28 }, { wch: 10 }, { wch: 42 }, { wch: 18 },
+    { wch: 28 }, { wch: 12 }, { wch: 14 }, { wch: 42 }, { wch: 18 },
   ];
-  uzunSheet["!autofilter"] = { ref: `A1:H${uzun.length}` };
+  uzunSheet["!autofilter"] = { ref: `A1:I${uzun.length}` };
   XLSX.utils.book_append_sheet(workbook, uzunSheet, "Aylik_Brans_Uzun");
 
   for (let ay = 0; ay < 12; ay++) {
     const matris: Array<Array<string | number>> = [
       [
-        "Satır",
+        "Hesap",
         "Kalem",
         ...branslar.map((brans) => `${brans.bransKodu} ${brans.bransAdi}`),
         "Şirket Toplam",
@@ -59,7 +61,7 @@ export async function downloadV2GelirTablosuExcel(gt: GelirTablosuSonuc): Promis
     ];
     for (const satir of satirlar) {
       matris.push([
-        satir.kod ?? `F${satir.satir}`,
+        mizanHesapForSatir(satir.satir),
         satir.ad,
         ...branslar.map(
           (brans) => gt.aylikBrans[brans.bransKodu]?.[satir.satir]?.[ay] ?? 0,

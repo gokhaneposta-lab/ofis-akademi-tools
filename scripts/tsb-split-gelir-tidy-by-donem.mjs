@@ -63,9 +63,16 @@ export function splitGelirTidyByDonem(inPath = DEFAULT_IN, outDir = DEFAULT_OUT_
     console.log(`  ${d}.json  ${chunk.length} satır  ${mb} MB`);
   }
 
+  const diskDonemler = fs
+    .readdirSync(outDir)
+    .map((f) => f.match(/^(\d{4}-[1-4])\.json$/)?.[1])
+    .filter(Boolean)
+    .sort((a, b) => donemSortKey(a) - donemSortKey(b));
   const indexPath = path.join(outDir, "index.json");
-  fs.writeFileSync(indexPath, JSON.stringify(donemler), "utf8");
-  console.log(`\nindex.json: ${donemler.length} dönem → ${indexPath}`);
+  fs.writeFileSync(indexPath, JSON.stringify(diskDonemler), "utf8");
+  console.log(
+    `\nindex.json: ${diskDonemler.length} dönem (bu import: ${donemler.join(", ")}) → ${indexPath}`,
+  );
 
   import("./tsb-refresh-meta.mjs").then(({ refreshTsbMeta }) => refreshTsbMeta());
 

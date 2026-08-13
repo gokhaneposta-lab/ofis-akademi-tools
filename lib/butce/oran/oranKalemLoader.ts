@@ -77,7 +77,7 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
   F353: { pay: ["6140110101"], baz: ["614011"], carpim: CARPIM_DIREKT_PRIM },
   F358: { pay: ["6140110102"], baz: ["614011"], carpim: CARPIM_DIREKT_PRIM },
   F348: { pay: ["61301101"], baz: ["60001"], carpim: CARPIM_BRUT_PRIM },
-  F349: { pay: ["60201"], baz: ["60001"], carpim: CARPIM_BRUT_PRIM },
+  F349: { pay: ["013"], baz: ["0111"], carpim: CARPIM_BRUT_PRIM },
   F441: { pay: ["611"], baz: ["60001"] },
   /** GT F197 = F19×F300 — branş GT: 70102571 / 7010112 (devredilen prim). */
   F300: {

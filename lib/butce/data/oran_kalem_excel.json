@@ -245,12 +245,12 @@
       "kalem_kodu": "F349",
       "oran_hucre": "F349",
       "oran_satir": 349,
-      "ad": "DERK Payı (empirik)",
+      "ad": "DERK Payı (net 013 / prim, YE)",
       "pay": [
-        "60201"
+        "013"
       ],
       "baz": [
-        "60001"
+        "0111"
       ],
       "yil_birlestirme": [
         [

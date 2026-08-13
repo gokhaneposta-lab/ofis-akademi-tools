@@ -88,7 +88,10 @@ export class GelirTablosuMotoru {
 
   private oranDeger(hucre: string, brans: string, ay = 12): number {
     const norm = hucre.replace("$", "");
-    const byHucre = this.oranByAyHucreBrans.get(ay) ?? this.oranByAyHucreBrans.get(12);
+    // DERK (F349): H1 kümülatif 0131 oranı 2025 gibi ağır yıllarda şişer.
+    // YE net 013/prim; aylara prim mevsimiyle yayılır.
+    const oranAy = norm === "F349" ? 12 : ay;
+    const byHucre = this.oranByAyHucreBrans.get(oranAy) ?? this.oranByAyHucreBrans.get(12);
     const map = byHucre?.get(norm);
     if (!map) return 0;
     return map.get(brans) ?? 0;

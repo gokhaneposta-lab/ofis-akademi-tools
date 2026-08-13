@@ -90,6 +90,15 @@ function hesaplaV2SentetikSatirlar(gt: GelirTablosuSonuc): GelirTablosuSonuc {
 /** V2 özeti: 61402–06 ve teknik olmayan yatırım geliri Safi TKZ'nin altında gösterilir. */
 export const V2_GT_GOSTERIM: GtGosterimSatir[] = [
   { satir: 9, ad: "HAYAT DIŞI TEKNİK GELİR", seviye: 0, gizli: true },
+  { satir: 10, ad: "Yazılan primler (net)", seviye: 0, gizli: true },
+  { satir: 20, ad: "SGK'ya aktarılan primler", seviye: 1, gizli: true },
+  { satir: 32, ad: "Brüt DERK", seviye: 2, gizli: true },
+  { satir: 33, ad: "DERK cari", seviye: 2, gizli: true },
+  { satir: 34, ad: "DERK devreden", seviye: 2, gizli: true },
+  { satir: 35, ad: "DERK re payı", seviye: 2, gizli: true },
+  { satir: 36, ad: "DERK re cari", seviye: 2, gizli: true },
+  { satir: 37, ad: "DERK re devreden", seviye: 2, gizli: true },
+  { satir: 167, ad: "Dengeleme karşılığı (-)", seviye: 2, gizli: true },
   { satir: 94, ad: "HAYAT DIŞI TEKNİK GİDER", seviye: 0, gizli: true },
   { satir: 176, ad: "FAALİYET GİDERLERİ", seviye: 0, gizli: true },
   { satir: V2_SENTETIK.teknikGelirSafi, kod: "", ad: "TEKNİK GELİR", seviye: 0, kalin: true },

@@ -17,6 +17,7 @@ import type { V2MaliGelirProxySonuc } from "@/lib/butce/v2/types";
 import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
 import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu";
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
+import V2GtHesapTablo from "@/components/butce/V2GtHesapTablo";
 
 type TarifeOzet = {
   tarifeGrubu: string;
@@ -585,36 +586,14 @@ export default function V2DashboardClient() {
             Brüt prim: {tl(ozetDeger(11))} · Safi TKZ: {tl(ozetDeger(9003))} · TKZ:{" "}
             {tl(ozetDeger(9005))}
           </p>
+          <p className="mt-1 text-[11px] text-slate-400">
+            3 haneli hesap; + ile alt hesap. İsimler şirket hesap planından.
+          </p>
           <div className="mt-3 max-h-[480px] overflow-auto">
-            <table className="min-w-full text-sm">
-              <thead className="sticky top-0 bg-slate-50 text-xs text-slate-500">
-                <tr>
-                  <th className="px-2 py-1 text-left">Satır</th>
-                  <th className="px-2 py-1 text-left">Kalem</th>
-                  <th className="px-2 py-1 text-right">{AY_ADLARI[ozetAy - 1]} sonu</th>
-                </tr>
-              </thead>
-              <tbody>
-                {gt.satirlar.filter((s) => !s.gizli).map((s) => (
-                  <tr
-                    key={s.satir}
-                    className={`border-b border-slate-100 ${s.kalin ? "font-semibold" : ""} ${
-                      s.vurgu ? "bg-emerald-50/50" : ""
-                    }`}
-                  >
-                    <td className="px-2 py-1 font-mono text-xs text-slate-500">
-                      {s.kod ?? `F${s.satir}`}
-                    </td>
-                    <td className="px-2 py-1" style={{ paddingLeft: `${s.seviye * 12 + 8}px` }}>
-                      {s.ad}
-                    </td>
-                    <td className="px-2 py-1 text-right tabular-nums">
-                      {tl(ozetDeger(s.satir))}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <V2GtHesapTablo
+              ozetDeger={ozetDeger}
+              donemEtiket={`${AY_ADLARI[ozetAy - 1]} sonu`}
+            />
           </div>
         </section>
       )}

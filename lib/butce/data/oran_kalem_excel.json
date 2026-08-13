@@ -218,7 +218,7 @@
         "61301101"
       ],
       "baz": [
-        "600"
+        "60001"
       ],
       "yil_birlestirme": [
         [
@@ -240,6 +240,38 @@
       ],
       "tahmin": null,
       "gt_hucre": "F348"
+    },
+    {
+      "kalem_kodu": "F349",
+      "oran_hucre": "F349",
+      "oran_satir": 349,
+      "ad": "DERK Payı (empirik)",
+      "pay": [
+        "60201"
+      ],
+      "baz": [
+        "60001"
+      ],
+      "yil_birlestirme": [
+        [
+          1,
+          0.5
+        ],
+        [
+          2,
+          0.25
+        ],
+        [
+          3,
+          0.15
+        ],
+        [
+          4,
+          0.1
+        ]
+      ],
+      "tahmin": null,
+      "gt_hucre": "F349"
     },
     {
       "kalem_kodu": "F353",

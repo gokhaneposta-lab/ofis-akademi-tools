@@ -28,7 +28,7 @@ export const GT_GOSTERIM_SATIRLARI: GtGosterimSatir[] = [
   { satir: 11, ad: "Brüt yazılan prim", seviye: 0, kalin: true },
   { satir: 19, ad: "Reasüransa devredilen prim (-)", seviye: 1 },
   { satir: 21, ad: "Kazanılmamış prim karş. değişim", seviye: 1 },
-  { satir: 31, ad: "Devam eden riskler karş.", seviye: 1, disGirdi: true },
+  { satir: 31, ad: "Devam eden riskler karş.", seviye: 1 },
   { satir: 86, ad: "Rücu ve sovtaj gelirleri (+)", seviye: 1 },
   { satir: 9, ad: "HAYAT DIŞI TEKNİK GELİR", seviye: 0, kalin: true },
   { satir: 96, ad: "Brüt ödenen hasar (-)", seviye: 1 },

@@ -641,8 +641,13 @@
       "satir": 33,
       "kod": "01311",
       "ad": "DEVAM EDEN RİSKLER KARŞILIĞI",
-      "formul": null,
-      "tip": "deger"
+      "formul": "=F11*F349",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F349",
+        "tip": "carpim"
+      }
     },
     {
       "satir": 34,
@@ -1614,8 +1619,13 @@
       "satir": 167,
       "kod": "0241101",
       "ad": "Dengeleme Karşılığı (-)",
-      "formul": null,
-      "tip": "deger"
+      "formul": "=F11*F348",
+      "tip": "carpim",
+      "carpim": {
+        "baz_hucre": "F11",
+        "oran_hucre": "F348",
+        "tip": "carpim"
+      }
     },
     {
       "satir": 168,

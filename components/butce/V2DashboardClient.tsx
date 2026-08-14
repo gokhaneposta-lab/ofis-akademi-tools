@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   REFERANS_YIL_SECENEKLERI,
   normalizeYilAgirliklari,
@@ -18,6 +18,14 @@ import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
 import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu";
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 import V2GtHesapTablo from "@/components/butce/V2GtHesapTablo";
+import V2GtFiltreBar from "@/components/butce/V2GtFiltreBar";
+import {
+  v2FiltreBransKodlari,
+  v2FiltreEtiket,
+  v2OzetDeger,
+  v2YediliSecenekler,
+  type V2GtFiltreModu,
+} from "@/lib/butce/v2/v2GtFiltre";
 
 type TarifeOzet = {
   tarifeGrubu: string;
@@ -68,6 +76,8 @@ export default function V2DashboardClient() {
   const [uyarilar, setUyarilar] = useState<string[]>([]);
   const [ozetAy, setOzetAy] = useState(12);
   const [excelBusy, setExcelBusy] = useState(false);
+  const [filtreMod, setFiltreMod] = useState<V2GtFiltreModu>("tarife");
+  const [filtreSecim, setFiltreSecim] = useState<Set<string>>(() => new Set());
 
   const load = useCallback(async (hedefYil?: number) => {
     const query = hedefYil ? `?butceYili=${hedefYil}` : "";
@@ -191,10 +201,14 @@ export default function V2DashboardClient() {
   }
 
   const refYears = REFERANS_YIL_SECENEKLERI[referans] ?? [2024];
+  const yediliSecenekler = useMemo(() => (gt ? v2YediliSecenekler(gt) : []), [gt]);
+  const filtreBranslar = useMemo(
+    () => (gt ? v2FiltreBransKodlari(gt, filtreMod, filtreSecim) : null),
+    [gt, filtreMod, filtreSecim],
+  );
   const ozetDeger = (satir: number) =>
-    gt?.aylikToplam[satir]?.slice(0, ozetAy).reduce((toplam, tutar) => toplam + tutar, 0) ??
-    gt?.toplam[satir] ??
-    0;
+    gt ? v2OzetDeger(gt, satir, ozetAy, filtreBranslar) : 0;
+  const filtreEtiket = v2FiltreEtiket(filtreMod, filtreSecim, yediliSecenekler);
 
   return (
     <div className="space-y-5">
@@ -545,7 +559,7 @@ export default function V2DashboardClient() {
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-sm font-semibold text-slate-900">
-              V2 Gelir tablosu özeti (şirket toplam)
+              V2 Gelir tablosu özeti ({filtreEtiket})
             </h2>
             <div className="flex flex-wrap items-center gap-2">
               <label className="text-xs text-slate-600">
@@ -587,8 +601,27 @@ export default function V2DashboardClient() {
             {tl(ozetDeger(9005))}
           </p>
           <p className="mt-1 text-[11px] text-slate-400">
-            3 haneli hesap; + ile alt hesap. İsimler şirket hesap planından.
+            3 haneli hesap; + ile alt hesap. İsimler şirket hesap planından. Filtre 7xx
+            kolonlarını toplar (tarife grubu = şirket Excel grupları).
           </p>
+          <V2GtFiltreBar
+            mod={filtreMod}
+            secim={filtreSecim}
+            yedili={yediliSecenekler}
+            onMod={(m) => {
+              setFiltreMod(m);
+              setFiltreSecim(new Set());
+            }}
+            onToggle={(id) => {
+              setFiltreSecim((once) => {
+                const next = new Set(once);
+                if (next.has(id)) next.delete(id);
+                else next.add(id);
+                return next;
+              });
+            }}
+            onTumu={() => setFiltreSecim(new Set())}
+          />
           <div className="mt-3 max-h-[480px] overflow-auto">
             <V2GtHesapTablo
               ozetDeger={ozetDeger}

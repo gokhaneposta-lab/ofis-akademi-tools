@@ -19,6 +19,7 @@ import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 import V2GtHesapTablo from "@/components/butce/V2GtHesapTablo";
 import V2GtFiltreBar from "@/components/butce/V2GtFiltreBar";
+import V2GtTeknikOranTablo from "@/components/butce/V2GtTeknikOranTablo";
 import {
   v2FiltreBransKodlari,
   v2FiltreEtiket,
@@ -628,6 +629,12 @@ export default function V2DashboardClient() {
               donemEtiket={`${AY_ADLARI[ozetAy - 1]} sonu`}
             />
           </div>
+          <V2GtTeknikOranTablo
+            bransKodlari={filtreBranslar}
+            ozetAy={ozetAy}
+            busy={busy}
+            onUygula={hesapla}
+          />
         </section>
       )}
     </div>

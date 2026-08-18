@@ -30,8 +30,12 @@ import {
 } from "@/lib/butce/storage";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 export const dynamic = "force-dynamic";
+
+// Büyük Aylık GT dosyaları için body limit 50 MB
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
 const KINDS = new Set([
   "mizan",

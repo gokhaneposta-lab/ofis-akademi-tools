@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // Büyük Aylık GT ve Bilanço dosyası için body limit 50 MB
+    serverBodySizeLimit: "50mb",
+  },
   /** TSB hub önbellek kullanır; büyük tidy dosyaları lambda bundle'a girmesin. */
   outputFileTracingExcludes: {
     "*": ["./public/data/tsb/gelir-tidy/**", "./public/data/tsb/prim-tidy.json"],

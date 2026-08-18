@@ -50,7 +50,7 @@ export function aylikKumulatifMizanSnapshot(
 ): MizanRow[] {
   const out: MizanRow[] = [];
   for (const r of aylik) {
-    if (r.yil !== yil || r.ay !== ay) continue;
+    if (Number(r.yil) !== yil || Number(r.ay) !== ay) continue;
     const br = normalizeBransKodu(r.bransKodu);
     if (!br || br === "TOPLAM") continue;
     const gt = String(r.hesap);

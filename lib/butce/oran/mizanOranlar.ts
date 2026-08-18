@@ -31,16 +31,20 @@ export class MizanOranServisi {
       .filter((y) => y < butceYili)
       .sort((a, b) => a - b);
 
+    const aylikKaynakYillar = [...new Set(mizanAylikFull.map((r) => Number(r.yil)))]
+      .filter((y) => Number.isFinite(y) && y <= butceYili)
+      .sort((a, b) => a - b);
     const ayYillar = new Set<number>();
     for (let ay = 1; ay <= 11; ay++) {
-      for (const y of this.yillar) {
+      for (const y of aylikKaynakYillar) {
         const snap = aylikKumulatifMizanSnapshot(mizanAylikFull, y, ay);
         if (snap.length === 0) continue;
         this.ayIndex.set(`${y}|${ay}`, new MizanIndex(snap));
         ayYillar.add(y);
       }
     }
-    this.aylikYillar = [...ayYillar].sort((a, b) => a - b);
+    // Sistem/ortalama hesaplari kapali yillari kullanir; guncel yil YTD ayIndex'te durur.
+    this.aylikYillar = [...ayYillar].filter((y) => y < butceYili).sort((a, b) => a - b);
   }
 
   private hesapTutar(
@@ -181,9 +185,11 @@ export class MizanOranServisi {
     if (kodlar.length === 0) return null;
     if (kodlar.length === 1) return this.yilOlcum(kalemKodu, kodlar[0]!, yil, ay);
 
-    const yillar = ay === 12 ? this.yillar : this.aylikYillar;
-    if (!yillar.includes(yil)) return null;
-    if (ay < 12 && !this.ayIndex.has(`${yil}|${ay}`)) return null;
+    if (ay === 12) {
+      if (!this.yillar.includes(yil)) return null;
+    } else if (!this.ayIndex.has(`${yil}|${ay}`)) {
+      return null;
+    }
     const b0 = exportNormSpec(kalemKodu).bilesenler[0];
     if (!b0) return null;
     const tumSirketBaz = b0.baz_toplam_sirket ?? false;
@@ -364,9 +370,11 @@ export class MizanOranServisi {
     yil: number,
     ay = 12,
   ): { pay: number; baz: number; oran: number | null } | null {
-    const yillar = ay === 12 ? this.yillar : this.aylikYillar;
-    if (!yillar.includes(yil)) return null;
-    if (ay < 12 && !this.ayIndex.has(`${yil}|${ay}`)) return null;
+    if (ay === 12) {
+      if (!this.yillar.includes(yil)) return null;
+    } else if (!this.ayIndex.has(`${yil}|${ay}`)) {
+      return null;
+    }
     const b0 = exportNormSpec(kalemKodu).bilesenler[0];
     if (!b0) return null;
     const eslesme = {

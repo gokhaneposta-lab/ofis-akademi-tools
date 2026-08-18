@@ -28,6 +28,9 @@ export const CARPIM_NET_PRIM = "net_prim";
 /** Net kazanılmış prim = yazılan net (F10) + KPK değişimi (F21). */
 export const CARPIM_NET_KAZANILMIS_PRIM = "net_kazanilmis_prim";
 
+/** Dengeleme (F348): mizanda 613 gideri olan branşlarda net kazanılmış prim oranı. */
+export const DENGELEME_NET_KAZANILMIS_ORAN = -0.12;
+
 export const AYLAR = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
   "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",

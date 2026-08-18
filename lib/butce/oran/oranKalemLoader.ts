@@ -5,6 +5,7 @@ import {
   CARPIM_ENDIREKT_PRIM,
   CARPIM_HASAR_BAZ,
   CARPIM_NET_KAZANILMIS_PRIM,
+  DENGELEME_NET_KAZANILMIS_ORAN,
 } from "../config/constants";
 
 type KalemRaw = {
@@ -28,6 +29,9 @@ type OranKalemSpec = {
   hesap_eslesme?: string;
   baz_toplam_sirket?: boolean;
   torpu?: { yil_disi_max?: number; oran_min?: number; oran_max?: number };
+  /** Pay gideri geçmişi olan branşlara bu oran; diğerleri 0 (F348 dengeleme). */
+  sabit_oran?: number;
+  sadece_pay_gideri?: boolean;
   excel_kalem_kodu?: string;
   bilesenler?: BilesenSpec[];
 };
@@ -77,12 +81,14 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
   },
   F353: { pay: ["6140110101"], baz: ["614011"], carpim: CARPIM_DIREKT_PRIM },
   F358: { pay: ["6140110102"], baz: ["614011"], carpim: CARPIM_DIREKT_PRIM },
-  /** Dengeleme: mevzuat net kazanılmış prim × ~%12. Payda GWP (60001) olursa 702 gibi yüksek reasüranslı branş şişer. */
+  /** Dengeleme: yalnızca mizanda 61301101 gideri olan branşlarda net kazanılmış × %12. */
   F348: {
     pay: ["61301101"],
     baz: ["600", "60101", "60102", "60103"],
     carpim: CARPIM_NET_KAZANILMIS_PRIM,
     excel_carpim: "(F10+F21)*F348",
+    sabit_oran: DENGELEME_NET_KAZANILMIS_ORAN,
+    sadece_pay_gideri: true,
   },
   F349: { pay: ["013"], baz: ["0111"], carpim: CARPIM_BRUT_PRIM },
   F441: { pay: ["611"], baz: ["60001"] },
@@ -142,7 +148,7 @@ const VARSAYILAN_ORAN: Record<string, number> = {
   "0259": -0.012,
   "014": 0.08,
   F300: -0.12,
-  F348: -0.12,
+  F348: DENGELEME_NET_KAZANILMIS_ORAN,
 };
 
 function carpimFor(kod: string, tahmin?: { formul?: string }): string {
@@ -185,6 +191,8 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
     };
 
     if (man.hesap_eslesme) spec.hesap_eslesme = man.hesap_eslesme;
+    if (man.sabit_oran != null) spec.sabit_oran = man.sabit_oran;
+    if (man.sadece_pay_gideri) spec.sadece_pay_gideri = true;
     if (man.baz_toplam_sirket) spec.baz_toplam_sirket = true;
     else if (kod === "014" || kod === "F398" || kod === "F368" || (JSON.stringify(pay) === JSON.stringify(baz) && pay[0] === "60301")) {
       spec.baz_toplam_sirket = true;
@@ -195,9 +203,6 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
     }
     if (kod.startsWith("0222") || kod === "F461") {
       spec.torpu = { yil_disi_max: 2, oran_min: -0.5, oran_max: 0.5 };
-    }
-    if (kod === "F348") {
-      spec.torpu = { yil_disi_max: 0.25, oran_min: -0.12, oran_max: -0.12 };
     }
     if (kod === "0211") spec.yil_birlestirme = [[1, 0.8], [2, 0.005], [3, 0.15]];
     if (kod === "0212") spec.yil_birlestirme = [[1, 0.95], [2, 0.05]];

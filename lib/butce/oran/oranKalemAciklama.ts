@@ -124,6 +124,12 @@ export function oranKalemAciklama(kalemKodu: string): OranKalemAciklama | null {
   if (spec.baz_toplam_sirket && spec.pay.join() === spec.baz.join()) {
     notlar.push("Bu kalem branş payıdır: aynı hesabın branş tutarı, şirket genelindeki toplama bölünür.");
   }
+  if (spec.sabit_oran != null && spec.sadece_pay_gideri) {
+    const pct = new Intl.NumberFormat("tr-TR", { style: "percent", maximumFractionDigits: 1 }).format(spec.sabit_oran);
+    notlar.push(
+      `Sistem oranı sabit ${pct}: yalnızca YE mizanda pay hesabında gider (karşılık ayırma) olan branşlara uygulanır; diğer branşlar 0.`,
+    );
+  }
 
   let tahminAciklama: string | undefined;
   if (spec.carpim) {

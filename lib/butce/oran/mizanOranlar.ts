@@ -13,6 +13,8 @@ import { mergeMizanYillikVeAylik } from "./mizanAylikYilsonu";
 import { aylikKumulatifMizanSnapshot } from "./aylikMizanBridge";
 
 const MIN_BAZ_TUTAR = 1;
+/** 613 gideri (karşılık ayırma) eşiği — yuvarlama gürültüsünü ele. */
+const MIN_PAY_GIDERI = 1;
 
 export class MizanOranServisi {
   readonly butceYili: number;
@@ -21,6 +23,8 @@ export class MizanOranServisi {
   /** yil|ay → kümülatif ay-sonu mizan indeksi (ay=12 yok; YE için `index` kullanılır). */
   private readonly ayIndex = new Map<string, MizanIndex>();
   private readonly aylikYillar: number[];
+  /** kalem|brans → YE mizanda pay gideri (negatif) var mı */
+  private readonly payGideriCache = new Map<string, boolean>();
 
   constructor(mizan: MizanRow[], butceYili = 2027, mizanAylikFull: MizanAylikRow[] = []) {
     this.butceYili = butceYili;
@@ -99,6 +103,38 @@ export class MizanOranServisi {
   }
 
   /**
+   * Mizanda pay hesabı gideri (negatif tutar) geçmişi olan branşlara sabit oran.
+   * F348: yalnızca daha önce dengeleme ayırılan branşlarda −%12.
+   */
+  private payGideriGecmisiVar(kalemKodu: string, brans: string): boolean {
+    const key = `${kalemKodu}|${brans}`;
+    const cached = this.payGideriCache.get(key);
+    if (cached != null) return cached;
+    const spec = ORAN_KALEM_MIZAN[kalemKodu];
+    if (!spec?.pay.length) {
+      this.payGideriCache.set(key, false);
+      return false;
+    }
+    let varMi = false;
+    for (const yil of this.yillar) {
+      const pay = this.hesapTutar(yil, brans, spec.pay);
+      if (pay < -MIN_PAY_GIDERI) {
+        varMi = true;
+        break;
+      }
+    }
+    this.payGideriCache.set(key, varMi);
+    return varMi;
+  }
+
+  /** `sadece_pay_gideri` kaleminde sistem oranı; değilse null (klasik motor). */
+  private sabitOranSistem(kalemKodu: string, brans: string): number | null {
+    const spec = ORAN_KALEM_MIZAN[kalemKodu];
+    if (spec?.sabit_oran == null || !spec.sadece_pay_gideri) return null;
+    return this.payGideriGecmisiVar(kalemKodu, brans) ? spec.sabit_oran : 0;
+  }
+
+  /**
    * Birden fazla 7xx: pay ve paydayı branşlarda toplayıp oran.
    * `baz_toplam_sirket` kalemlerinde payda şirket geneli kalır (çift sayılmaz).
    */
@@ -144,6 +180,29 @@ export class MizanOranServisi {
     }
     if (referans === "manuel") {
       return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+    }
+    const spec = ORAN_KALEM_MIZAN[kalemKodu];
+    if (spec?.sabit_oran != null && spec.sadece_pay_gideri) {
+      const yillarSabit = ay === 12 ? this.yillar : this.aylikYillar;
+      const refYil = yillarSabit[yillarSabit.length - 1];
+      const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+      if (!b0 || refYil == null) {
+        const herhangi = kodlar.some((k) => this.payGideriGecmisiVar(kalemKodu, k));
+        return herhangi ? spec.sabit_oran : 0;
+      }
+      let pay = 0;
+      let baz = 0;
+      for (const br of kodlar) {
+        const olc = this.bilesenPayBaz(br, refYil, b0, ay);
+        const oran = this.sabitOranSistem(kalemKodu, br) ?? 0;
+        baz += olc.baz;
+        pay += olc.baz * oran;
+      }
+      if (Math.abs(baz) < MIN_BAZ_TUTAR) {
+        const herhangi = kodlar.some((k) => this.payGideriGecmisiVar(kalemKodu, k));
+        return herhangi ? spec.sabit_oran : 0;
+      }
+      return pay / baz;
     }
     const yillar = ay === 12 ? this.yillar : this.aylikYillar;
     const yilFn = (_b: string, y: number, bil: BilesenSpec) =>
@@ -231,6 +290,8 @@ export class MizanOranServisi {
     if (referans === "manuel") {
       return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
     }
+    const sabit = this.sabitOranSistem(kalemKodu, brans);
+    if (sabit != null) return sabit;
     if (referans === ORAN_REFERANS_VARSAYILAN || referans === "excel_gt") {
       return this.etkinOranHesapla(kalemKodu, brans, ay).etkinOran;
     }

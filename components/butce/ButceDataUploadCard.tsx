@@ -47,9 +47,21 @@ export default function ButceDataUploadCard({
 
     try {
       const res = await fetch("/api/butce/upload", { method: "POST", body: fd });
-      const data = await res.json().catch(() => ({}));
+      const raw = await res.text();
+      let data: { detail?: string; error?: string; log?: string } = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        /* HTML / boş gövde (413, timeout vb.) */
+      }
       if (!res.ok) {
-        setErr(data.detail ?? data.error ?? "Yükleme başarısız");
+        const hint =
+          res.status === 413 || res.status === 502 || res.status === 504
+            ? "\nDosya çok büyük veya sunucu zaman aşımı olabilir. Büyük Aylık GT için CLI kullanın: npm run butce:import-aylik-gt"
+            : "";
+        setErr(
+          `${data.detail ?? data.error ?? "Yükleme başarısız"} (HTTP ${res.status})${hint}`,
+        );
         return;
       }
       setMsg(data.log ?? "Yüklendi");

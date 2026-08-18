@@ -33,6 +33,14 @@ export async function GET(request: Request) {
   const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
   let ayarlar = await loadOranAyarlar();
   ayarlar = servis.migrateLegacyBransAyarlar(ayarlar);
+  const guncelDonem = mizanAylikFull.reduce<{ yil: number; ay: number } | null>((acc, row) => {
+    if (!Number.isFinite(row.yil) || !Number.isFinite(row.ay)) return acc;
+    if (acc == null) return { yil: row.yil, ay: row.ay };
+    if (row.yil > acc.yil || (row.yil === acc.yil && row.ay > acc.ay)) {
+      return { yil: row.yil, ay: row.ay };
+    }
+    return acc;
+  }, null);
 
-  return NextResponse.json(buildV2TeknikOranTablo(servis, kodlar, ayarlar, ay));
+  return NextResponse.json(buildV2TeknikOranTablo(servis, kodlar, ayarlar, ay, guncelDonem));
 }

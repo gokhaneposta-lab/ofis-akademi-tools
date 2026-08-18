@@ -137,7 +137,9 @@ export default function V2GtTeknikOranTablo({
           {kodlar.length > 1
             ? `Pay ve payda ${kodlar.join(" + ")} toplanır, oran toplam pay ÷ toplam payda.`
             : "Tek 7xx branş oranı."}{" "}
-          Yıl kolonları gösterim döneminin kümülatif ay-sonu. Müdahale gruptaki tüm 7xx&apos;e yazılır.
+          Kapanış kolonları yıl sonudur; güncel kolon içerideki son aylık dönemi gösterir.
+          Sistem kolonu seçili GT ayı {String(ozetAy).padStart(2, "0")} için hesaplanır.
+          Müdahale gruptaki tüm 7xx&apos;e yazılır.
         </p>
       </div>
 
@@ -157,10 +159,13 @@ export default function V2GtTeknikOranTablo({
                 <th className="px-2 py-1 text-left">Kalem</th>
                 {tablo.yillar.map((y) => (
                   <th key={y} className="px-2 py-1 text-right">
-                    {y}
+                    {y}-12
                   </th>
                 ))}
-                <th className="px-2 py-1 text-right">Sistem</th>
+                {tablo.guncelDonem && (
+                  <th className="px-2 py-1 text-right">{tablo.guncelDonem.etiket}</th>
+                )}
+                <th className="px-2 py-1 text-right">Sistem ({String(ozetAy).padStart(2, "0")})</th>
                 <th className="px-2 py-1 text-right">Uygulanan %</th>
                 <th className="px-2 py-1 text-left">Müdahale</th>
               </tr>
@@ -176,12 +181,24 @@ export default function V2GtTeknikOranTablo({
                     <div className="max-w-[220px] truncate text-slate-800" title={s.ad}>
                       {s.ad}
                     </div>
+                    {s.hesapAciklamaSatirlari.length > 0 && (
+                      <div className="mt-1 space-y-0.5 text-[10px] leading-4 text-slate-500">
+                        {s.hesapAciklamaSatirlari.map((satir) => (
+                          <div key={`${s.kalem}-${satir}`}>{satir}</div>
+                        ))}
+                      </div>
+                    )}
                   </td>
                   {tablo.yillar.map((y) => (
                     <td key={y} className="px-2 py-1 text-right tabular-nums text-slate-600">
                       {pct(s.yilOran[String(y)] ?? null)}
                     </td>
                   ))}
+                  {tablo.guncelDonem && (
+                    <td className="px-2 py-1 text-right tabular-nums font-medium text-slate-700">
+                      {pct(s.guncelDonemOran)}
+                    </td>
+                  )}
                   <td className="px-2 py-1 text-right tabular-nums text-slate-500">
                     {pct(s.sistemOran)}
                   </td>

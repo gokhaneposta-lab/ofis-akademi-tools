@@ -632,6 +632,7 @@ export default function V2DashboardClient() {
           <V2GtTeknikOranTablo
             bransKodlari={filtreBranslar}
             ozetAy={ozetAy}
+            etiket={filtreEtiket}
             busy={busy}
             onUygula={hesapla}
           />

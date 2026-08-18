@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { bransAdi } from "@/lib/butce/config/brans";
 import type { V2TeknikOranTablo } from "@/lib/butce/v2/v2GtOranTablo";
 
 const pct = (n: number | null) =>
@@ -20,6 +19,7 @@ function oranToPctInput(oran: number) {
 type Props = {
   bransKodlari: string[] | null;
   ozetAy: number;
+  etiket: string;
   busy: boolean;
   onUygula: () => Promise<void>;
 };
@@ -27,6 +27,7 @@ type Props = {
 export default function V2GtTeknikOranTablo({
   bransKodlari,
   ozetAy,
+  etiket,
   busy,
   onUygula,
 }: Props) {
@@ -34,27 +35,21 @@ export default function V2GtTeknikOranTablo({
     () => (bransKodlari ?? []).filter((k) => /^7\d{2}$/.test(k)),
     [bransKodlari],
   );
-  const [secili, setSecili] = useState(kodlar[0] ?? "");
   const [tablo, setTablo] = useState<V2TeknikOranTablo | null>(null);
   const [yukleniyor, setYukleniyor] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (kodlar.length === 0) {
-      setSecili("");
-      setTablo(null);
-      return;
-    }
-    if (!kodlar.includes(secili)) setSecili(kodlar[0]!);
-  }, [kodlar, secili]);
+  const bransKey = kodlar.join(",");
 
-  const load = useCallback(async (brans: string, ay: number) => {
-    if (!brans) return;
+  const load = useCallback(async (kod: string[], ay: number) => {
+    if (kod.length === 0) return;
     setYukleniyor(true);
     setErr(null);
     try {
-      const res = await fetch(`/api/butce/v2/oranlar?brans=${brans}&ay=${ay}`);
+      const res = await fetch(
+        `/api/butce/v2/oranlar?brans=${encodeURIComponent(kod.join(","))}&ay=${ay}`,
+      );
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setErr(data.error ?? "Teknik oranlar yüklenemedi");
@@ -70,8 +65,12 @@ export default function V2GtTeknikOranTablo({
   }, []);
 
   useEffect(() => {
-    if (secili) void load(secili, ozetAy);
-  }, [secili, ozetAy, load]);
+    if (kodlar.length === 0) {
+      setTablo(null);
+      return;
+    }
+    void load(kodlar, ozetAy);
+  }, [bransKey, ozetAy, load, kodlar]);
 
   function patchLocal(kalem: string, oran: number, manuel: boolean) {
     setTablo((once) => {
@@ -88,7 +87,7 @@ export default function V2GtTeknikOranTablo({
   }
 
   async function uygula(kalem: string, oran: number, manuel: boolean) {
-    if (!secili) return;
+    if (kodlar.length === 0) return;
     setMsg(null);
     setErr(null);
     patchLocal(kalem, oran, manuel);
@@ -96,15 +95,13 @@ export default function V2GtTeknikOranTablo({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        patch: [
-          {
-            kalem,
-            bransKodu: secili,
-            oran,
-            manuel,
-            referans: manuel ? "manuel" : "excel_gt",
-          },
-        ],
+        patch: kodlar.map((bransKodu) => ({
+          kalem,
+          bransKodu,
+          oran,
+          manuel,
+          referans: manuel ? "manuel" : "excel_gt",
+        })),
       }),
     });
     if (!res.ok) {
@@ -112,8 +109,12 @@ export default function V2GtTeknikOranTablo({
       return;
     }
     await onUygula();
-    await load(secili, ozetAy);
-    setMsg(manuel ? `${kalem} uygulandı — GT yenilendi` : `${kalem} MIZAN oranına döndü`);
+    await load(kodlar, ozetAy);
+    setMsg(
+      manuel
+        ? `${kalem} gruptaki ${kodlar.length} branşa yazıldı — GT yenilendi`
+        : `${kalem} MIZAN oranına döndü`,
+    );
   }
 
   if (kodlar.length === 0) {
@@ -121,8 +122,8 @@ export default function V2GtTeknikOranTablo({
       <section className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3">
         <h3 className="text-sm font-semibold text-slate-900">Teknik oranlar</h3>
         <p className="mt-1 text-xs text-slate-500">
-          Yukarıdan tarife grubu veya 7&apos;li branş seçince o 7xx&apos;in geçmiş yıl oranları ve
-          uygulanan oran burada açılır.
+          Yukarıdan tarife grubu veya 7&apos;li branş seçince oranlar burada açılır. Tarife
+          grubunda pay/payda ilgili 7xx&apos;lerin toplamıdır.
         </p>
       </section>
     );
@@ -130,28 +131,14 @@ export default function V2GtTeknikOranTablo({
 
   return (
     <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h3 className="text-sm font-semibold text-slate-900">Teknik oranlar</h3>
-          <p className="mt-0.5 text-[11px] text-slate-400">
-            Yıl kolonları gösterim döneminin kümülatif ay-sonu oranı. Uygulanan GT&apos;ye yazar
-            (Teknik oranlar paneliyle aynı kayıt).
-          </p>
-        </div>
-        <label className="text-xs text-slate-600">
-          7&apos;li branş
-          <select
-            className="ml-2 rounded border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900"
-            value={secili}
-            onChange={(e) => setSecili(e.target.value)}
-          >
-            {kodlar.map((k) => (
-              <option key={k} value={k}>
-                {k} {bransAdi(k)}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div>
+        <h3 className="text-sm font-semibold text-slate-900">Teknik oranlar — {etiket}</h3>
+        <p className="mt-0.5 text-[11px] text-slate-400">
+          {kodlar.length > 1
+            ? `Pay ve payda ${kodlar.join(" + ")} toplanır, oran toplam pay ÷ toplam payda.`
+            : "Tek 7xx branş oranı."}{" "}
+          Yıl kolonları gösterim döneminin kümülatif ay-sonu. Müdahale gruptaki tüm 7xx&apos;e yazılır.
+        </p>
       </div>
 
       {msg && <p className="mt-2 text-xs text-emerald-700">{msg}</p>}

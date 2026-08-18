@@ -65,13 +65,12 @@ export class MizanOranServisi {
     };
   }
 
-  private bilesenYilOrani(
+  private bilesenPayBaz(
     brans: string,
     yil: number,
     bilesen: BilesenSpec,
     ay = 12,
-  ): number | null {
-    if (ay < 12 && !this.ayIndex.has(`${yil}|${ay}`)) return null;
+  ): { pay: number; baz: number } {
     const eslesme = this.hesapEslesmeOpts(bilesen);
     const tumSirketBaz = bilesen.baz_toplam_sirket ?? false;
     const pay = this.hesapTutar(yil, brans, bilesen.pay, { ...eslesme, ay });
@@ -80,8 +79,129 @@ export class MizanOranServisi {
       tumSirket: tumSirketBaz,
       ay,
     });
+    return { pay, baz };
+  }
+
+  private bilesenYilOrani(
+    brans: string,
+    yil: number,
+    bilesen: BilesenSpec,
+    ay = 12,
+  ): number | null {
+    if (ay < 12 && !this.ayIndex.has(`${yil}|${ay}`)) return null;
+    const { pay, baz } = this.bilesenPayBaz(brans, yil, bilesen, ay);
     if (Math.abs(baz) < MIN_BAZ_TUTAR) return null;
     return pay / baz;
+  }
+
+  /**
+   * Birden fazla 7xx: pay ve paydayı branşlarda toplayıp oran.
+   * `baz_toplam_sirket` kalemlerinde payda şirket geneli kalır (çift sayılmaz).
+   */
+  grupBilesenYilOrani(
+    branslar: readonly string[],
+    yil: number,
+    bilesen: BilesenSpec,
+    ay = 12,
+  ): number | null {
+    if (branslar.length === 0) return null;
+    if (ay < 12 && !this.ayIndex.has(`${yil}|${ay}`)) return null;
+    if (branslar.length === 1) return this.bilesenYilOrani(branslar[0]!, yil, bilesen, ay);
+
+    let pay = 0;
+    let baz = 0;
+    let sirketBaz: number | null = null;
+    const tumSirketBaz = bilesen.baz_toplam_sirket ?? false;
+    for (const br of branslar) {
+      const olc = this.bilesenPayBaz(br, yil, bilesen, ay);
+      pay += olc.pay;
+      if (tumSirketBaz) {
+        if (sirketBaz == null) sirketBaz = olc.baz;
+      } else {
+        baz += olc.baz;
+      }
+    }
+    const payda = tumSirketBaz ? (sirketBaz ?? 0) : baz;
+    if (Math.abs(payda) < MIN_BAZ_TUTAR) return null;
+    return pay / payda;
+  }
+
+  grupOrani(
+    kalemKodu: string,
+    branslar: readonly string[],
+    referans: string,
+    ay = 12,
+  ): number {
+    const kodlar = [...new Set(branslar.filter((k) => /^7\d{2}$/.test(k)))];
+    if (kodlar.length === 0) return 0;
+    if (kodlar.length === 1) return this.bransOrani(kalemKodu, kodlar[0]!, referans, ay);
+    if (!(kalemKodu in ORAN_KALEM_MIZAN)) {
+      return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+    }
+    if (referans === "manuel") {
+      return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+    }
+    const yillar = ay === 12 ? this.yillar : this.aylikYillar;
+    const yilFn = (_b: string, y: number, bil: BilesenSpec) =>
+      this.grupBilesenYilOrani(kodlar, y, bil, ay);
+
+    if (referans === ORAN_REFERANS_VARSAYILAN || referans === "excel_gt") {
+      return hesaplaEtkinOran(kalemKodu, kodlar.join("+"), yilFn, yillar).etkinOran;
+    }
+    if (referans === "son_yil") {
+      if (yillar.length === 0) return 0;
+      const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+      return this.grupBilesenYilOrani(kodlar, yillar[yillar.length - 1]!, b0, ay) ?? 0;
+    }
+    if (/^\d+$/.test(referans)) {
+      const y = parseInt(referans, 10);
+      if (!yillar.includes(y)) return 0;
+      const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+      return this.grupBilesenYilOrani(kodlar, y, b0, ay) ?? 0;
+    }
+    if (referans === "son_3_yil_ort") {
+      const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+      const oranlar: number[] = [];
+      for (const y of yillar.slice(-3)) {
+        const o = this.grupBilesenYilOrani(kodlar, y, b0, ay);
+        if (o != null) oranlar.push(o);
+      }
+      if (oranlar.length) return oranlar.reduce((a, b) => a + b, 0) / oranlar.length;
+    }
+    return 0;
+  }
+
+  grupYilOlcum(
+    kalemKodu: string,
+    branslar: readonly string[],
+    yil: number,
+    ay = 12,
+  ): { pay: number; baz: number; oran: number | null } | null {
+    const kodlar = [...new Set(branslar.filter((k) => /^7\d{2}$/.test(k)))];
+    if (kodlar.length === 0) return null;
+    if (kodlar.length === 1) return this.yilOlcum(kalemKodu, kodlar[0]!, yil, ay);
+
+    const yillar = ay === 12 ? this.yillar : this.aylikYillar;
+    if (!yillar.includes(yil)) return null;
+    if (ay < 12 && !this.ayIndex.has(`${yil}|${ay}`)) return null;
+    const b0 = exportNormSpec(kalemKodu).bilesenler[0];
+    if (!b0) return null;
+    const tumSirketBaz = b0.baz_toplam_sirket ?? false;
+    let pay = 0;
+    let baz = 0;
+    let sirketBaz: number | null = null;
+    for (const br of kodlar) {
+      const olc = this.bilesenPayBaz(br, yil, b0, ay);
+      pay += olc.pay;
+      if (tumSirketBaz) {
+        if (sirketBaz == null) sirketBaz = olc.baz;
+      } else {
+        baz += olc.baz;
+      }
+    }
+    const payda = tumSirketBaz ? (sirketBaz ?? 0) : baz;
+    if (Math.abs(payda) < MIN_BAZ_TUTAR) return { pay, baz: payda, oran: null };
+    return { pay, baz: payda, oran: pay / payda };
   }
 
   private etkinOranHesapla(kalemKodu: string, brans: string, ay = 12) {

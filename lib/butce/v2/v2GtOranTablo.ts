@@ -3,7 +3,6 @@ import { ORAN_REFERANS_VARSAYILAN } from "../config/constants";
 import { oranKalemAciklama } from "../oran/oranKalemAciklama";
 import { MizanOranServisi, oranKalemListesi } from "../oran/mizanOranlar";
 import type { OranAyarStore } from "../types";
-import { V2_GT_GOSTERIM } from "./buildV2GelirTablosu";
 
 export type V2TeknikOranSatir = {
   kalem: string;
@@ -40,27 +39,30 @@ function normalizeKodlar(branslar: readonly string[]): string[] {
   return [...new Set(branslar.filter((k) => /^7\d{2}$/.test(k)))];
 }
 
-function hucreSatiri(hucre?: string): number | null {
-  if (!hucre) return null;
-  const eslesme = /^F(\d+)$/i.exec(hucre.trim());
-  return eslesme ? Number(eslesme[1]) : null;
-}
-
-function kullanilanOranKodlari(): Set<string> {
-  const gorunenSatirlar = new Set(
-    V2_GT_GOSTERIM.filter((satir) => !satir.gizli).map((satir) => satir.satir),
-  );
-  const kodlar = oranKalemListesi()
-    .filter(({ kod }) => {
-      const aciklama = oranKalemAciklama(kod);
-      const satir = hucreSatiri(aciklama?.gtHucre);
-      return satir != null && gorunenSatirlar.has(satir);
-    })
-    .map(({ kod }) => kod);
-  return new Set(kodlar);
-}
-
-const KULLANILAN_ORAN_KODLARI = kullanilanOranKodlari();
+/**
+ * V2 ozet tablosunda fiilen gosterilen / hesapta etkili kalan teknik oranlar.
+ * Dinamik hucre eslestirmesi gizli/ara satirlarda tum oranlari eleyebildigi icin
+ * burada V2 gosterime ait kullanilan kalemleri acikca tutuyoruz.
+ */
+const KULLANILAN_ORAN_KODLARI = new Set([
+  "0112",
+  "016",
+  "0211",
+  "0212",
+  "02211",
+  "02212",
+  "02221",
+  "02222",
+  "014",
+  "0251",
+  "0251199",
+  "0258",
+  "0259",
+  "F300",
+  "F348",
+  "F349",
+  "F368",
+]);
 
 function grupAyar(
   ayarlar: OranAyarStore,

@@ -1619,10 +1619,10 @@
       "satir": 167,
       "kod": "0241101",
       "ad": "Dengeleme Karşılığı (-)",
-      "formul": "=F11*F348",
+      "formul": "=(F10+F21)*F348",
       "tip": "carpim",
       "carpim": {
-        "baz_hucre": "F11",
+        "baz_ifade": "F10+F21",
         "oran_hucre": "F348",
         "tip": "carpim"
       }

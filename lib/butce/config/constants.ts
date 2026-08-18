@@ -25,6 +25,8 @@ export const CARPIM_DIREKT_PRIM = "direkt_prim";
 export const CARPIM_ENDIREKT_PRIM = "endirekt_prim";
 export const CARPIM_HASAR_BAZ = "hasar_baz";
 export const CARPIM_NET_PRIM = "net_prim";
+/** Net kazanılmış prim = yazılan net (F10) + KPK değişimi (F21). */
+export const CARPIM_NET_KAZANILMIS_PRIM = "net_kazanilmis_prim";
 
 export const AYLAR = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",

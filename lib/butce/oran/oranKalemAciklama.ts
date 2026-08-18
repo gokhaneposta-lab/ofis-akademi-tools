@@ -4,6 +4,7 @@ import {
   CARPIM_ENDIREKT_PRIM,
   CARPIM_HASAR_BAZ,
   CARPIM_NET_PRIM,
+  CARPIM_NET_KAZANILMIS_PRIM,
 } from "../config/constants";
 import type { BilesenSpec, OranKalemSpec } from "./oranKalemLoader";
 import { ORAN_BAZLI_KALEMLER, ORAN_KALEM_MIZAN } from "./oranKalemLoader";
@@ -31,6 +32,7 @@ const CARPIM_LABEL: Record<string, string> = {
   [CARPIM_ENDIREKT_PRIM]: "Endirekt prim (GT F15)",
   [CARPIM_HASAR_BAZ]: "Hasar bazı (F11 + F22 + F32)",
   [CARPIM_NET_PRIM]: "Net prim",
+  [CARPIM_NET_KAZANILMIS_PRIM]: "Net kazanılmış prim (GT F10+F21 / 600+601 net)",
 };
 
 function fmtHesaplar(hesaplar: string[], prefix?: boolean): string {

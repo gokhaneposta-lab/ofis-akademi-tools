@@ -1,5 +1,6 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ButceUploadGuide from "@/components/butce/ButceUploadGuide";
@@ -30,23 +31,65 @@ export default function ButceDataUploadCard({
 }: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<number | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   const loaded = status === "loaded";
 
+  function safeFileName(name: string) {
+    return name
+      .normalize("NFKD")
+      .replace(/[^\w.\-]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "upload.xlsx";
+  }
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
+    setProgress(null);
     setMsg(null);
     setErr(null);
 
     const fd = new FormData(e.currentTarget);
-    fd.set("kind", kind);
-    fd.set("butceYili", String(butceYili));
+    const file = fd.get("file");
+    if (!(file instanceof File)) {
+      setErr("Dosya gerekli");
+      setBusy(false);
+      return;
+    }
 
     try {
-      const res = await fetch("/api/butce/upload", { method: "POST", body: fd });
+      const blob = await upload(
+        `butce-uploads/${kind}/${Date.now()}-${safeFileName(file.name)}`,
+        file,
+        {
+          access: "private",
+          handleUploadUrl: "/api/butce/upload/blob",
+          clientPayload: JSON.stringify({
+            kind,
+            butceYili,
+            originalName: file.name,
+          }),
+          multipart: file.size > 20 * 1024 * 1024,
+          onUploadProgress: ({ percentage }) => {
+            setProgress(Math.round(percentage));
+            setMsg(`Dosya Blob'a yükleniyor… %${Math.round(percentage)}`);
+          },
+        },
+      );
+
+      setMsg("Dosya yüklendi, içe aktarılıyor…");
+      const res = await fetch("/api/butce/upload/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind,
+          butceYili,
+          pathname: blob.pathname,
+        }),
+      });
       const raw = await res.text();
       let data: { detail?: string; error?: string; log?: string } = {};
       try {
@@ -55,10 +98,9 @@ export default function ButceDataUploadCard({
         /* HTML / boş gövde (413, timeout vb.) */
       }
       if (!res.ok) {
-        const hint =
-          res.status === 413 || res.status === 502 || res.status === 504
-            ? "\nDosya çok büyük veya sunucu zaman aşımı olabilir. Büyük Aylık GT için CLI kullanın: npm run butce:import-aylik-gt"
-            : "";
+        const hint = res.status === 413 || res.status === 502 || res.status === 504
+          ? "\nDosya çok büyükse tekrar deneyin; sorun sürerse CLI ile de içeri alınabilir: npm run butce:import-aylik-gt"
+          : "";
         setErr(
           `${data.detail ?? data.error ?? "Yükleme başarısız"} (HTTP ${res.status})${hint}`,
         );
@@ -69,6 +111,7 @@ export default function ButceDataUploadCard({
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Bağlantı hatası");
     } finally {
+      setProgress(null);
       setBusy(false);
     }
   }
@@ -126,7 +169,7 @@ export default function ButceDataUploadCard({
           disabled={busy}
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
-          {busy ? "Yükleniyor..." : "Yükle"}
+          {busy ? (progress != null ? `Yükleniyor %${progress}` : "Yükleniyor...") : "Yükle"}
         </button>
       </form>
 

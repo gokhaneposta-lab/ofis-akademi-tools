@@ -19,8 +19,9 @@ function reasurOranlari(
   butceYili: number,
   oranAyar: OranAyarStore,
   mizanAylikFull: MizanAylikRow[] = [],
+  v2Metodoloji = false,
 ): Record<string, number> {
-  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
+  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull, v2Metodoloji);
   const tablo = servis.tumBranslarTablosu("0112", oranAyar["0112"] ?? {});
   const out: Record<string, number> = {};
   for (const r of tablo) {
@@ -34,8 +35,9 @@ function sgkPrimOranlari(
   butceYili: number,
   oranAyar: OranAyarStore,
   mizanAylikFull: MizanAylikRow[] = [],
+  v2Metodoloji = false,
 ): Record<string, number> {
-  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
+  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull, v2Metodoloji);
   const tablo = servis.tumBranslarTablosu("0113", oranAyar["0113"] ?? {});
   const out: Record<string, number> = {};
   for (const r of tablo) {
@@ -54,6 +56,7 @@ export function buildKpkSonuc(opts: {
   oranAyar?: OranAyarStore;
   kapanisTahmin?: KpkKapanisTahminStore | null;
   mizanAylikFull?: MizanAylikRow[];
+  v2Metodoloji?: boolean;
 }): KpkSonuc {
   // Tek kapanış store'u farklı bütçe yılına ait olabilir. Örneğin 2027 için
   // kaydedilmiş 2026/04 tahmini, 2026 bütçesinin tam 2025 serisini kesmemeli.
@@ -76,8 +79,20 @@ export function buildKpkSonuc(opts: {
     }
   }
 
-  const reas = reasurOranlari(opts.mizan, opts.butceYili, opts.oranAyar ?? {}, opts.mizanAylikFull ?? []);
-  const sgk = sgkPrimOranlari(opts.mizan, opts.butceYili, opts.oranAyar ?? {}, opts.mizanAylikFull ?? []);
+  const reas = reasurOranlari(
+    opts.mizan,
+    opts.butceYili,
+    opts.oranAyar ?? {},
+    opts.mizanAylikFull ?? [],
+    opts.v2Metodoloji ?? false,
+  );
+  const sgk = sgkPrimOranlari(
+    opts.mizan,
+    opts.butceYili,
+    opts.oranAyar ?? {},
+    opts.mizanAylikFull ?? [],
+    opts.v2Metodoloji ?? false,
+  );
 
   const branslar = hesaplaKpkPortfoy({
     butceYili: opts.butceYili,

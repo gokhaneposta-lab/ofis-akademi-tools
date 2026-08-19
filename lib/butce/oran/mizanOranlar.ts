@@ -4,10 +4,25 @@ import {
   ORAN_REFERANS_SECENEKLERI,
   ORAN_REFERANS_VARSAYILAN,
 } from "../config/constants";
+import { bransGrubu } from "../v2/buildGtFormatGrid";
 import type { BransOranAyar, BransOranSatir, MizanAylikRow, MizanRow, OranAyarStore } from "../types";
 import type { BilesenSpec } from "./oranKalemLoader";
 import { ORAN_BAZLI_KALEMLER, ORAN_KALEM_MIZAN } from "./oranKalemLoader";
+import type { OranDuzenleme } from "./oranMetodoloji";
+import {
+  birlestirDuzenlemeler,
+  oranDuzenleme,
+  V2_GRUP_FALLBACK_KALEMLER,
+  V2_HASAR_BLOK_KALEMLER,
+} from "./oranMetodoloji";
 import { exportNormSpec, hesaplaEtkinOran } from "./oranMotoru";
+import {
+  duzenlemelerFromEtkinDetay,
+  grupFallbackDuzenlemesi,
+  kucukBazMi,
+  kuralDuzenlemeleri,
+  tarifeGrupUyeleri,
+} from "./oranV2Duzenleme";
 import { MizanIndex } from "./mizanIndex";
 import { mergeMizanYillikVeAylik } from "./mizanAylikYilsonu";
 import { aylikKumulatifMizanSnapshot } from "./aylikMizanBridge";
@@ -25,8 +40,20 @@ export class MizanOranServisi {
   private readonly aylikYillar: number[];
   /** kalem|brans → YE mizanda pay gideri (negatif) var mı */
   private readonly payGideriCache = new Map<string, boolean>();
+  /** Bütçe V2: küçük baz / hasar bloğu grup fallback + audit */
+  readonly v2Metodoloji: boolean;
+  private readonly oranCache = new Map<string, number>();
+  private readonly duzenlemeCache = new Map<string, OranDuzenleme[]>();
+  private readonly sonBazCache = new Map<string, number>();
+  private readonly hasarBlokCache = new Map<string, boolean>();
 
-  constructor(mizan: MizanRow[], butceYili = 2027, mizanAylikFull: MizanAylikRow[] = []) {
+  constructor(
+    mizan: MizanRow[],
+    butceYili = 2027,
+    mizanAylikFull: MizanAylikRow[] = [],
+    v2Metodoloji = false,
+  ) {
+    this.v2Metodoloji = v2Metodoloji;
     this.butceYili = butceYili;
     const merged = mergeMizanYillikVeAylik(mizan, mizanAylikFull);
     const filtered = merged.filter((r) => r.bransKodu !== "TOPLAM");
@@ -166,6 +193,60 @@ export class MizanOranServisi {
     return pay / payda;
   }
 
+  /** V2 audit: branş×kalem düzenleme notları (son bransOrani çağrısından). */
+  bransOranDuzenlemeleri(
+    kalemKodu: string,
+    brans: string,
+    referans: string,
+    ay = 12,
+  ): OranDuzenleme[] {
+    if (!this.v2Metodoloji) return [];
+    const key = `${kalemKodu}|${brans}|${ay}|${referans}`;
+    if (!this.duzenlemeCache.has(key)) {
+      void this.bransOrani(kalemKodu, brans, referans, ay);
+    }
+    return this.duzenlemeCache.get(key) ?? [];
+  }
+
+  private sonYilBaz(kalemKodu: string, brans: string, ay: number): number {
+    const key = `${kalemKodu}|${brans}|${ay}`;
+    const cached = this.sonBazCache.get(key);
+    if (cached != null) return cached;
+    const yillar = ay === 12 ? this.yillar : this.aylikYillar;
+    const y = yillar[yillar.length - 1];
+    let baz = 0;
+    if (y != null && kalemKodu in ORAN_KALEM_MIZAN) {
+      baz = this.yilOlcum(kalemKodu, brans, y, ay)?.baz ?? 0;
+    }
+    this.sonBazCache.set(key, baz);
+    return baz;
+  }
+
+  private hasarBlokGrupModu(brans: string, ay: number): boolean {
+    const key = `${brans}|${ay}`;
+    const cached = this.hasarBlokCache.get(key);
+    if (cached != null) return cached;
+    let mod = false;
+    for (const k of V2_HASAR_BLOK_KALEMLER) {
+      if (kucukBazMi(this.sonYilBaz(k, brans, ay), k)) {
+        mod = true;
+        break;
+      }
+    }
+    this.hasarBlokCache.set(key, mod);
+    return mod;
+  }
+
+  private v2GrupFallbackGerekli(kalemKodu: string, brans: string, ay: number): boolean {
+    if (V2_HASAR_BLOK_KALEMLER.has(kalemKodu) && this.hasarBlokGrupModu(brans, ay)) {
+      return true;
+    }
+    if (V2_GRUP_FALLBACK_KALEMLER.has(kalemKodu)) {
+      return kucukBazMi(this.sonYilBaz(kalemKodu, brans, ay), kalemKodu);
+    }
+    return false;
+  }
+
   grupOrani(
     kalemKodu: string,
     branslar: readonly string[],
@@ -181,6 +262,16 @@ export class MizanOranServisi {
     if (referans === "manuel") {
       return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
     }
+    return this.grupOraniStandart(kalemKodu, kodlar, referans, ay);
+  }
+
+  /** Çoklu 7xx: toplam pay ÷ toplam payda (V2 grup fallback burayı kullanır). */
+  private grupOraniStandart(
+    kalemKodu: string,
+    kodlar: readonly string[],
+    referans: string,
+    ay: number,
+  ): number {
     const spec = ORAN_KALEM_MIZAN[kalemKodu];
     if (spec?.sabit_oran != null && spec.sadece_pay_gideri) {
       const yillarSabit = ay === 12 ? this.yillar : this.aylikYillar;
@@ -282,16 +373,64 @@ export class MizanOranServisi {
   /**
    * Teknik oran — `ay` verilirse aynı ay kümülatif geçmiş yılların ağırlıklı ortalaması.
    * ay=12 (varsayılan) = mevcut YE davranışı.
+   * V2: küçük baz / hasar bloğu grup fallback + duzenlemeCache.
    */
   bransOrani(kalemKodu: string, brans: string, referans: string, ay = 12): number {
+    const cacheKey = `${kalemKodu}|${brans}|${ay}|${referans}`;
+    if (this.oranCache.has(cacheKey)) return this.oranCache.get(cacheKey)!;
+
+    let oran: number;
+    let duzenlemeler: OranDuzenleme[] = [];
+
     if (!(kalemKodu in ORAN_KALEM_MIZAN)) {
-      return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+      oran = ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+    } else if (referans === "manuel") {
+      oran = ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+      duzenlemeler = [oranDuzenleme("manuel")];
+    } else {
+      const sabit = this.sabitOranSistem(kalemKodu, brans);
+      if (sabit != null) {
+        oran = sabit;
+        duzenlemeler = kuralDuzenlemeleri(kalemKodu);
+        if (duzenlemeler.length === 0) duzenlemeler = [oranDuzenleme("kural_sabit")];
+      } else {
+        oran = this.bransOraniStandart(kalemKodu, brans, referans, ay);
+        if (referans === ORAN_REFERANS_VARSAYILAN || referans === "excel_gt") {
+          duzenlemeler = duzenlemelerFromEtkinDetay(
+            this.etkinOranHesapla(kalemKodu, brans, ay),
+          );
+        } else {
+          duzenlemeler = [oranDuzenleme("standart")];
+        }
+        if (this.v2Metodoloji && this.v2GrupFallbackGerekli(kalemKodu, brans, ay)) {
+          const grupAd = bransGrubu(brans);
+          const hasarMod =
+            V2_HASAR_BLOK_KALEMLER.has(kalemKodu) && this.hasarBlokGrupModu(brans, ay);
+          oran = this.grupOraniStandart(
+            kalemKodu,
+            tarifeGrupUyeleri(brans),
+            referans,
+            ay,
+          );
+          duzenlemeler.push(grupFallbackDuzenlemesi(grupAd, hasarMod));
+        }
+      }
     }
-    if (referans === "manuel") {
-      return ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
+
+    if (this.v2Metodoloji) {
+      this.duzenlemeCache.set(cacheKey, birlestirDuzenlemeler(duzenlemeler));
     }
-    const sabit = this.sabitOranSistem(kalemKodu, brans);
-    if (sabit != null) return sabit;
+    this.oranCache.set(cacheKey, oran);
+    return oran;
+  }
+
+  /** Mizan ağırlıklı ortalama (V2 öncesi standart). */
+  private bransOraniStandart(
+    kalemKodu: string,
+    brans: string,
+    referans: string,
+    ay: number,
+  ): number {
     if (referans === ORAN_REFERANS_VARSAYILAN || referans === "excel_gt") {
       return this.etkinOranHesapla(kalemKodu, brans, ay).etkinOran;
     }

@@ -21,9 +21,10 @@ function branchShares(
   oranAyar: OranAyarStore,
   aktifBransKodlari: readonly string[],
   mizanAylikFull: MizanAylikRow[] = [],
+  v2Metodoloji = false,
 ): Record<string, number> {
   const aktifSet = new Set(aktifBransKodlari.map(normalizeBransKodu));
-  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
+  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull, v2Metodoloji);
   const tablo = servis.tumBranslarTablosu("F368", oranAyar["F368"] ?? {});
   const out: Record<string, number> = {};
   let toplam = 0;
@@ -55,6 +56,7 @@ export function buildFaaliyetGiderSonuc(opts: {
   oranAyar?: OranAyarStore;
   aktifBransKodlari: readonly string[];
   mizanAylikFull?: MizanAylikRow[];
+  v2Metodoloji?: boolean;
 }): FaaliyetGiderBransSonuc[] | null {
   const filtered = opts.rows.filter((r) => r.butceYili === opts.butceYili);
   if (filtered.length === 0) return null;
@@ -68,6 +70,7 @@ export function buildFaaliyetGiderSonuc(opts: {
     opts.oranAyar ?? {},
     aktifBrans,
     opts.mizanAylikFull ?? [],
+    opts.v2Metodoloji ?? false,
   );
 
   const byBrans = new Map<string, FaaliyetGiderBransSonuc>();

@@ -1,5 +1,6 @@
 import { bransAdi } from "../config/brans";
 import { ORAN_REFERANS_VARSAYILAN } from "../config/constants";
+import { birlestirDuzenlemeler, oranDuzenleme, V2_KUCUK_BAZ_ESIK_TL, V2_ORAN_METODOLOJI_OZET } from "../oran/oranMetodoloji";
 import { oranKalemAciklama } from "../oran/oranKalemAciklama";
 import { MizanOranServisi, oranKalemListesi } from "../oran/mizanOranlar";
 import type { OranAyarStore } from "../types";
@@ -8,6 +9,9 @@ export type V2TeknikOranSatir = {
   kalem: string;
   ad: string;
   hesapAciklamaSatirlari: string[];
+  /** Standart dışı düzeltme açıklamaları (audit). */
+  duzenlemeNotlari: string[];
+  duzenlemeEtiketleri: string[];
   yilOran: Record<string, number | null>;
   guncelDonemOran: number | null;
   sistemOran: number;
@@ -25,6 +29,8 @@ export type V2TeknikOranTablo = {
   yillar: number[];
   guncelDonem: { yil: number; ay: number; etiket: string } | null;
   satirlar: V2TeknikOranSatir[];
+  metodolojiOzet: string;
+  kucukBazEsikTl: number;
 };
 
 function round6(n: number): number {
@@ -124,12 +130,29 @@ export function buildV2TeknikOranTablo(
       ? servis.grupYilOlcum(kod, kodlar, guncelDonem.yil, kalemAy(kod, guncelDonem.ay))
       : null;
 
+    const referansOran = ayar.referans ?? ORAN_REFERANS_VARSAYILAN;
+    const duzenlemeler = birlestirDuzenlemeler([
+      ...(ayar.manuel ? [oranDuzenleme("manuel")] : []),
+      ...kodlar.flatMap((br) =>
+        servis.bransOranDuzenlemeleri(kod, br, referansOran, oranAy),
+      ),
+      ...(agregasyon && kodlar.length > 1
+        ? [
+            oranDuzenleme("standart", {
+              detay: "Birden fazla 7xx seçili → Σpay÷Σpayda (branş ortalaması değil).",
+            }),
+          ]
+        : []),
+    ]);
+
     satirlar.push({
       kalem: kod,
       ad,
       hesapAciklamaSatirlari:
         aciklama?.mizanSatirlar.map((satir) => `${satir.etiket}: ${satir.formul}`) ??
         (aciklama?.mizanOranFormul ? [aciklama.mizanOranFormul] : []),
+      duzenlemeNotlari: duzenlemeler.map((d) => d.aciklama),
+      duzenlemeEtiketleri: [...new Set(duzenlemeler.map((d) => d.etiket))],
       yilOran,
       guncelDonemOran:
         guncelDonemOlcum?.oran == null ? null : round6(guncelDonemOlcum.oran),
@@ -153,5 +176,7 @@ export function buildV2TeknikOranTablo(
       ? { ...guncelDonem!, etiket: guncelDonemEtiket }
       : null,
     satirlar,
+    metodolojiOzet: V2_ORAN_METODOLOJI_OZET,
+    kucukBazEsikTl: V2_KUCUK_BAZ_ESIK_TL,
   };
 }

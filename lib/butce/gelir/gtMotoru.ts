@@ -72,8 +72,9 @@ export class GelirTablosuMotoru {
     butceYili: number,
     oranAyar: OranAyarStore = {},
     mizanAylikFull: MizanAylikRow[] = [],
+    v2Metodoloji = false,
   ) {
-    this.oranServisi = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
+    this.oranServisi = new MizanOranServisi(mizan, butceYili, mizanAylikFull, v2Metodoloji);
     for (let ay = 1; ay <= 12; ay++) {
       const byHucre = new Map<string, Map<string, number>>();
       for (const [hucre, kalem] of ORAN_HUCRE_TO_KALEM) {

@@ -21,6 +21,7 @@ import type {
 } from "../types";
 import { buildFaaliyetGiderFromMizanArtis } from "./faaliyetGiderFromMizanArtis";
 import { buildMaliGelirProxy, resolveAcilisBanka } from "./maliGelirProxy";
+import { primMixUyarilari } from "./primMixUyari";
 import type { V2MaliGelirProxySonuc, V2VarsayimlarStore } from "./types";
 
 const V2_SENTETIK = {
@@ -199,6 +200,8 @@ export function buildV2GelirTablosu(opts: {
     uyarilar.push("Prim dağıtımı 0 — tarife hedefleri veya pay tablosunu kontrol edin.");
   }
 
+  uyarilar.push(...primMixUyarilari(primHedefleri, opts.mizan, butceYili));
+
   const uygunRefYillar = [...new Set(opts.mizanAylik.map((r) => r.yil))]
     .filter((yil) => yil <= butceYili - 1);
   const refYil = uygunRefYillar.length > 0 ? Math.max(...uygunRefYillar) : butceYili - 1;
@@ -242,6 +245,7 @@ export function buildV2GelirTablosu(opts: {
     faaliyetGider: fg.rows,
     gosterimSatirlari: V2_GT_GOSTERIM,
     mizanAylikFull: opts.mizanAylikFull,
+    v2Metodoloji: true,
   });
 
   const acilis = resolveAcilisBanka({

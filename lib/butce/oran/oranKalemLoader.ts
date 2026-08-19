@@ -7,6 +7,7 @@ import {
   CARPIM_NET_KAZANILMIS_PRIM,
   DENGELEME_NET_KAZANILMIS_ORAN,
 } from "../config/constants";
+import { HASAR_YIL_DISI_MAX } from "./oranMetodoloji";
 
 type KalemRaw = {
   kalem_kodu: string;
@@ -199,7 +200,7 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
     }
 
     if (kod.startsWith("022") || kod === "0211" || kod === "016") {
-      spec.torpu = { yil_disi_max: 1.2, oran_min: -1, oran_max: 0.5 };
+      spec.torpu = { yil_disi_max: HASAR_YIL_DISI_MAX, oran_min: -1, oran_max: 0.5 };
     }
     if (kod.startsWith("0222") || kod === "F461") {
       spec.torpu = { yil_disi_max: 2, oran_min: -0.5, oran_max: 0.5 };

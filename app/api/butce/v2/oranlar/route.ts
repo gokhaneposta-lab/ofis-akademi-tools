@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 
   const { butceYili } = await butceDataDurumu();
   const mizanAylikFull = await loadMizanAylikFullRows();
-  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
+  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull, true);
   let ayarlar = await loadOranAyarlar();
   ayarlar = servis.migrateLegacyBransAyarlar(ayarlar);
   const guncelDonem = mizanAylikFull.reduce<{ yil: number; ay: number } | null>((acc, row) => {

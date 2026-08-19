@@ -141,6 +141,12 @@ export default function V2GtTeknikOranTablo({
           Sistem kolonu seçili GT ayı {String(ozetAy).padStart(2, "0")} için hesaplanır.
           Müdahale gruptaki tüm 7xx&apos;e yazılır.
         </p>
+        {tablo && (
+          <p className="mt-1 text-[11px] text-sky-800 bg-sky-50 rounded px-2 py-1 border border-sky-100">
+            {tablo.metodolojiOzet} Küçük baz eşiği:{" "}
+            {new Intl.NumberFormat("tr-TR").format(tablo.kucukBazEsikTl)} TL (son referans yılı).
+          </p>
+        )}
       </div>
 
       {msg && <p className="mt-2 text-xs text-emerald-700">{msg}</p>}
@@ -187,6 +193,31 @@ export default function V2GtTeknikOranTablo({
                           <div key={`${s.kalem}-${satir}`}>{satir}</div>
                         ))}
                       </div>
+                    )}
+                    {s.duzenlemeEtiketleri.length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {s.duzenlemeEtiketleri.map((etiket) => (
+                          <span
+                            key={`${s.kalem}-${etiket}`}
+                            className="rounded bg-amber-50 px-1 py-0.5 text-[9px] font-medium text-amber-900 ring-1 ring-amber-200"
+                            title={s.duzenlemeNotlari.join(" ")}
+                          >
+                            {etiket}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {s.duzenlemeNotlari.length > 0 && (
+                      <details className="mt-1 text-[10px] text-slate-600">
+                        <summary className="cursor-pointer text-sky-700 hover:underline">
+                          Düzenleme notları ({s.duzenlemeNotlari.length})
+                        </summary>
+                        <ul className="mt-0.5 list-disc pl-3 space-y-0.5">
+                          {s.duzenlemeNotlari.map((n, i) => (
+                            <li key={`${s.kalem}-dn-${i}`}>{n}</li>
+                          ))}
+                        </ul>
+                      </details>
                     )}
                   </td>
                   {tablo.yillar.map((y) => (

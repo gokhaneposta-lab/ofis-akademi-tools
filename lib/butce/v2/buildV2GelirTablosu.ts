@@ -21,6 +21,7 @@ import type {
 } from "../types";
 import { buildFaaliyetGiderFromMizanArtis } from "./faaliyetGiderFromMizanArtis";
 import { buildMaliGelirProxy, resolveAcilisBanka } from "./maliGelirProxy";
+import { NET_NAK_GT_SATIRLARI, payFromNetNakitMap } from "./netNakitPay";
 import { primMixUyarilari } from "./primMixUyari";
 import type { V2MaliGelirProxySonuc, V2VarsayimlarStore } from "./types";
 
@@ -37,58 +38,42 @@ const GENEL_GIDER_SATIRLARI = [190, 191, 192, 193, 194] as const;
 
 type V2Formul = Array<{ satir: number; carpan: number }>;
 
-/**
- * F10 = net yazılan prim satırı, F95 = net ödenen hasar satırı.
- * Net nakit = F10 + F95  (F95 negatiftir; hasarı yoksa F95=0).
- * Toplam pozitif olduğunda her branş kendi payı kadar 603 alır.
- * Toplam ≤0 ise brüt prim payına geri düşülür.
- */
 const MALI_GELIR_SATIRI = 38;
-const NET_NAK_PAY_SATIRLARI = [10, 95] as const; // F10 + F95
 
 /**
  * 603 (F38) dağılımını net nakit akışı payıyla ezer.
  * gelirTablosu'nda prim payıyla yazılan 38. satır bu fonksiyonla düzeltilir.
+ * 014 teknik oranı da aynı net nakit tanımını kullanır (mizan tarafı).
  */
 function dagitMaliGelirNetNakit(
   gt: GelirTablosuSonuc,
   maliGelirAylik: number[],
 ): void {
-  // Her branş için yıllık net nakit toplamı
-  const netNakitByBrans = new Map<string, number>();
-  let toplamNetNakit = 0;
+  const netByBrans = new Map<string, number>();
   for (const b of gt.branslar) {
     let net = 0;
-    for (const s of NET_NAK_PAY_SATIRLARI) net += b.degerler[s] ?? 0;
-    // Negatif net nakit (hasar > prim) olan branşlar mali gelirden pay almaz → 0 olarak kayıt
-    const pozitif = net > 0 ? net : 0;
-    netNakitByBrans.set(b.bransKodu, pozitif);
-    toplamNetNakit += pozitif;
+    for (const s of NET_NAK_GT_SATIRLARI) net += b.degerler[s] ?? 0;
+    netByBrans.set(b.bransKodu, net);
   }
-
+  const paylar = payFromNetNakitMap(netByBrans);
+  const payToplam = [...paylar.values()].reduce((a, p) => a + p, 0);
   const maliGelirYillik = maliGelirAylik.reduce((a, b) => a + b, 0);
+  const brutToplam = gt.branslar.reduce((a, b) => a + b.brutPrim, 0);
 
-  // Toplam sıfırsa (örn. tüm branşlar hasar+prim=0) prim payına geri düş
-  const kullanimPayi = (bransKodu: string, brutPrim: number): number => {
-    if (toplamNetNakit > 0) {
-      return Math.abs(netNakitByBrans.get(bransKodu) ?? 0) / toplamNetNakit;
-    }
-    const brutToplam = gt.branslar.reduce((a, b) => a + b.brutPrim, 0);
-    return brutToplam > 0 ? brutPrim / brutToplam : 0;
-  };
-
-  // Branş degerlerini güncelle
   for (const b of gt.branslar) {
-    const pay = kullanimPayi(b.bransKodu, b.brutPrim);
-    const yillikTutar = maliGelirYillik * pay;
-    b.degerler[MALI_GELIR_SATIRI] = yillikTutar;
+    const pay =
+      payToplam > 0
+        ? (paylar.get(b.bransKodu) ?? 0)
+        : brutToplam > 0
+          ? b.brutPrim / brutToplam
+          : 0;
+    b.degerler[MALI_GELIR_SATIRI] = maliGelirYillik * pay;
     const aylik = maliGelirAylik.map((v) => v * pay);
     if (gt.aylikBrans[b.bransKodu]) {
       gt.aylikBrans[b.bransKodu]![MALI_GELIR_SATIRI] = aylik;
     }
   }
 
-  // Toplam satırı (zaten doğru, ama tutarlılık için)
   gt.toplam[MALI_GELIR_SATIRI] = maliGelirYillik;
   gt.aylikToplam[MALI_GELIR_SATIRI] = [...maliGelirAylik];
 }

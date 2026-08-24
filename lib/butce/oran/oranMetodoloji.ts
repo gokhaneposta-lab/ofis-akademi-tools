@@ -82,6 +82,8 @@ export const V2_KURAL_KALEMLER: Readonly<Record<string, string>> = {
   F348:
     "Dengeleme: mizanda 61301101 gideri olan branşlarda net kazanılmış prim × −%12; diğer branş 0.",
   F349: "DERK: yıl sonu, brüt prim bazlı — ayrı kural (V2 tabloda gösterilir, YE oranı).",
+  "014":
+    "Teknik olmayan yatırım geliri payı: max(0, net yazılan prim − net ödenen hasar) / Σ pozitif net nakit; negatif net nakitli branş 0. V2 F38 proxy dağılımı ile aynı mantık.",
 };
 
 /** Prim mix uyarı eşiği (puan = yüzde puan). */
@@ -92,7 +94,7 @@ export const HASAR_YIL_DISI_MAX = 1.1;
 
 /** V2 teknik oran tablosu üst bilgi metni. */
 export const V2_ORAN_METODOLOJI_OZET =
-  "V2 oranları: (1) Excel GT ağırlıklı yıl birleştirme + torpu, (2) küçük bazda tarife grubu Σpay÷Σbaz, (3) hasar bloğu tutarlılığı, (4) kural kalemleri (F348). Sapma etiketleri satır altında.";
+  "V2 oranları: (1) Excel GT ağırlıklı yıl birleştirme + torpu, (2) küçük bazda tarife grubu Σpay÷Σbaz, (3) hasar bloğu tutarlılığı, (4) kural kalemleri (F348, 014 net nakit payı). Sapma etiketleri satır altında.";
 
 export function oranDuzenleme(
   kod: OranDuzenlemeKodu,

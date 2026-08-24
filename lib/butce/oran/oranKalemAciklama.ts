@@ -121,7 +121,11 @@ export function oranKalemAciklama(kalemKodu: string): OranKalemAciklama | null {
       ? ana.formul
       : mizanSatirlar.map((s) => `${s.etiket}: ${s.formul}`).join(" · ");
 
-  if (spec.baz_toplam_sirket && spec.pay.join() === spec.baz.join()) {
+  if (spec.net_nakit_pay) {
+    notlar.push(
+      "Net nakit akışı payı: max(0, net yazılan prim + net ödenen hasar) ÷ Σ pozitif net nakit. Negatif net nakitli branşlar 0 pay alır (603/F38 dağılımı ile aynı).",
+    );
+  } else if (spec.baz_toplam_sirket && spec.pay.join() === spec.baz.join()) {
     notlar.push("Bu kalem branş payıdır: aynı hesabın branş tutarı, şirket genelindeki toplama bölünür.");
   }
   if (spec.sabit_oran != null && spec.sadece_pay_gideri) {

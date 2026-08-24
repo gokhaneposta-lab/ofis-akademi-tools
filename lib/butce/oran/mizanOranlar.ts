@@ -5,6 +5,7 @@ import {
   ORAN_REFERANS_VARSAYILAN,
 } from "../config/constants";
 import { bransGrubu } from "../v2/buildGtFormatGrid";
+import { NET_NAK_MIZAN_HESAPLARI, pozitifNetNakit } from "../v2/netNakitPay";
 import type { BransOranAyar, BransOranSatir, MizanAylikRow, MizanRow, OranAyarStore } from "../types";
 import type { BilesenSpec } from "./oranKalemLoader";
 import { ORAN_BAZLI_KALEMLER, ORAN_KALEM_MIZAN } from "./oranKalemLoader";
@@ -40,6 +41,8 @@ export class MizanOranServisi {
   private readonly aylikYillar: number[];
   /** kalem|brans → YE mizanda pay gideri (negatif) var mı */
   private readonly payGideriCache = new Map<string, boolean>();
+  /** yil|ay → Σ max(0, net nakit) tüm 7xx */
+  private readonly netNakitBazCache = new Map<string, number>();
   /** Bütçe V2: küçük baz / hasar bloğu grup fallback + audit */
   readonly v2Metodoloji: boolean;
   private readonly oranCache = new Map<string, number>();
@@ -106,6 +109,13 @@ export class MizanOranServisi {
     bilesen: BilesenSpec,
     ay = 12,
   ): { pay: number; baz: number } {
+    if (bilesen.net_nakit_pay) {
+      const ham = this.hesapTutar(yil, brans, [...NET_NAK_MIZAN_HESAPLARI], { ay });
+      return {
+        pay: pozitifNetNakit(ham),
+        baz: this.toplamPozitifNetNakit(yil, ay),
+      };
+    }
     const eslesme = this.hesapEslesmeOpts(bilesen);
     const tumSirketBaz = bilesen.baz_toplam_sirket ?? false;
     const pay = this.hesapTutar(yil, brans, bilesen.pay, { ...eslesme, ay });
@@ -115,6 +125,21 @@ export class MizanOranServisi {
       ay,
     });
     return { pay, baz };
+  }
+
+  /** Şirket geneli: yalnızca pozitif net nakitli branşların toplamı (014 paydası). */
+  private toplamPozitifNetNakit(yil: number, ay: number): number {
+    const key = `${yil}|${ay}`;
+    const cached = this.netNakitBazCache.get(key);
+    if (cached != null) return cached;
+    let toplam = 0;
+    for (const kod of HAZINE_BRANS_SIRASI) {
+      if (!(kod in HAZINE_BRANS_KODLARI)) continue;
+      const ham = this.hesapTutar(yil, kod, [...NET_NAK_MIZAN_HESAPLARI], { ay });
+      toplam += pozitifNetNakit(ham);
+    }
+    this.netNakitBazCache.set(key, toplam);
+    return toplam;
   }
 
   private bilesenYilOrani(
@@ -577,15 +602,9 @@ export class MizanOranServisi {
     }
     const b0 = exportNormSpec(kalemKodu).bilesenler[0];
     if (!b0) return null;
-    const eslesme = {
-      prefix: b0.hesap_eslesme === "prefix",
-      bransGt: b0.hesap_eslesme === "brans_gt",
-    };
-    const tumSirketBaz = b0.baz_toplam_sirket ?? false;
-    const pay = this.hesapTutar(yil, brans, b0.pay, { ...eslesme, ay });
-    const baz = this.hesapTutar(yil, brans, b0.baz, { ...eslesme, tumSirket: tumSirketBaz, ay });
-    if (Math.abs(baz) < MIN_BAZ_TUTAR) return { pay, baz, oran: null };
-    return { pay, baz, oran: pay / baz };
+    const olc = this.bilesenPayBaz(brans, yil, b0, ay);
+    if (Math.abs(olc.baz) < MIN_BAZ_TUTAR) return { pay: olc.pay, baz: olc.baz, oran: null };
+    return { pay: olc.pay, baz: olc.baz, oran: olc.pay / olc.baz };
   }
 }
 

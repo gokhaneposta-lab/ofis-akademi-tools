@@ -29,6 +29,8 @@ type OranKalemSpec = {
   carpim?: string;
   hesap_eslesme?: string;
   baz_toplam_sirket?: boolean;
+  /** 014: pay = max(0, net nakit); baz = Σ pozitif net nakit (şirket). */
+  net_nakit_pay?: boolean;
   torpu?: { yil_disi_max?: number; oran_min?: number; oran_max?: number };
   /** Pay gideri geçmişi olan branşlara bu oran; diğerleri 0 (F348 dengeleme). */
   sabit_oran?: number;
@@ -45,6 +47,7 @@ type BilesenSpec = {
   agirlik: number;
   hesap_eslesme?: string;
   baz_toplam_sirket?: boolean;
+  net_nakit_pay?: boolean;
 };
 
 export type OranBazliKalem = {
@@ -107,10 +110,16 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
     baz: ["61402"],
     baz_toplam_sirket: true,
   },
+  /**
+   * Teknik olmayan yatırım geliri payı (F398):
+   * max(0, net yazılan prim − net ödenen hasar) / Σ pozitif net nakit.
+   * Negatif net nakitli branş pay almaz. (Eski: 60301 branş/şirket.)
+   */
   "014": {
-    pay: ["60301"],
-    baz: ["60301"],
+    pay: ["60001", "60002", "61001", "61002"],
+    baz: ["60001", "60002", "61001", "61002"],
     baz_toplam_sirket: true,
+    net_nakit_pay: true,
     gt_hucre: "F398",
     carpim: CARPIM_BRUT_PRIM,
   },
@@ -199,8 +208,15 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
     if (man.hesap_eslesme) spec.hesap_eslesme = man.hesap_eslesme;
     if (man.sabit_oran != null) spec.sabit_oran = man.sabit_oran;
     if (man.sadece_pay_gideri) spec.sadece_pay_gideri = true;
-    if (man.baz_toplam_sirket) spec.baz_toplam_sirket = true;
-    else if (kod === "014" || kod === "F398" || kod === "F368" || (JSON.stringify(pay) === JSON.stringify(baz) && pay[0] === "60301")) {
+    if (man.net_nakit_pay) {
+      spec.net_nakit_pay = true;
+      spec.baz_toplam_sirket = true;
+    } else if (man.baz_toplam_sirket) {
+      spec.baz_toplam_sirket = true;
+    } else if (
+      kod === "F368" ||
+      (JSON.stringify(pay) === JSON.stringify(baz) && pay[0] === "60301")
+    ) {
       spec.baz_toplam_sirket = true;
     }
 

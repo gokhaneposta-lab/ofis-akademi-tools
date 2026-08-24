@@ -48,6 +48,7 @@ function normSpec(kalemKodu: string): OranKalemSpec & { bilesenler: BilesenSpec[
       agirlik: 1,
       hesap_eslesme: spec.hesap_eslesme,
       baz_toplam_sirket: spec.baz_toplam_sirket,
+      net_nakit_pay: spec.net_nakit_pay,
     }],
   };
 }

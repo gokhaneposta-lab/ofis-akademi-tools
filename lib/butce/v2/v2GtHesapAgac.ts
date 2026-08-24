@@ -143,7 +143,7 @@ export const V2_HESAP_AGAC: V2HesapDugum[] = [
         satir: 9006,
         kalin: true,
         children: [
-          { id: "61401199", hesap: "61401199", satir: 177 },
+          { id: "61401", hesap: "61401", satir: 177 },
           { id: "614071", hesap: "614071", satir: 196 },
           { id: "61408", hesap: "61408", satir: 200 },
           { id: "61409", hesap: "61409", satir: 201 },

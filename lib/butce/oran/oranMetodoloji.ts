@@ -60,6 +60,7 @@ export const V2_GRUP_FALLBACK_KALEMLER = new Set([
   "0211",
   "0212",
   "0251",
+  "F300",
   "02211",
   "02212",
   "02221",

@@ -102,13 +102,8 @@
       "satir": 188,
       "kod": "0251199",
       "ad": "Diğer Üretim Komisyonu Giderleri (-)",
-      "formul": "=F15*F431",
-      "tip": "carpim",
-      "carpim": {
-        "baz_hucre": "F15",
-        "oran_hucre": "F431",
-        "tip": "carpim"
-      }
+      "formul": 0,
+      "tip": "deger"
     },
     {
       "satir": 200,
@@ -1715,10 +1710,10 @@
       "satir": 180,
       "kod": null,
       "ad": "Üretim Komisyon Gideri",
-      "formul": "=F12*F275",
+      "formul": "=F11*F275",
       "tip": "carpim",
       "carpim": {
-        "baz_hucre": "F12",
+        "baz_hucre": "F11",
         "oran_hucre": "F275",
         "tip": "carpim"
       }
@@ -1748,13 +1743,8 @@
       "satir": 188,
       "kod": "0251199",
       "ad": "Diğer Üretim Komisyonu Giderleri (-)",
-      "formul": "=F15*F431",
-      "tip": "carpim",
-      "carpim": {
-        "baz_hucre": "F15",
-        "oran_hucre": "F431",
-        "tip": "carpim"
-      }
+      "formul": 0,
+      "tip": "deger"
     },
     {
       "satir": 189,
@@ -1816,10 +1806,10 @@
       "satir": 197,
       "kod": null,
       "ad": "Alınan Komisyon Geliri",
-      "formul": "=F19*F300",
+      "formul": "=F11*F300",
       "tip": "carpim",
       "carpim": {
-        "baz_hucre": "F19",
+        "baz_hucre": "F11",
         "oran_hucre": "F300",
         "tip": "carpim"
       }

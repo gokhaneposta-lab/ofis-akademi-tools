@@ -1,6 +1,10 @@
+import { GT_TO_MIZAN_HESAP } from "./aylikMizanBridge";
 import { normHesapKodu } from "./hesapAgregasyon";
 import { normalizeBransKodu } from "../textUtils";
 import type { MizanAylikRow, MizanRow } from "../types";
+
+/** YE oran pay/baz'ı mizan hesabı bekler; aylık GT'de 0251/02571 olarak gelir. */
+const YE_GT_OVERLAY = new Set(["0251", "02571"]);
 
 /**
  * MIZAN_AY (kümülatif) → yılsonu snapshot: her yıl×branş×hesap için en son ay.
@@ -15,12 +19,20 @@ export function yilsonuMizanFromAylik(rows: MizanAylikRow[]): MizanRow[] {
     const cur = best.get(k);
     if (!cur || r.ay > cur.ay) best.set(k, r);
   }
-  return [...best.values()].map(({ yil, hesap, bransKodu, tutar }) => ({
-    yil,
-    hesap: String(hesap).replace(/\.0$/, ""),
-    bransKodu: normalizeBransKodu(bransKodu),
-    tutar,
-  }));
+  const out: MizanRow[] = [];
+  for (const r of best.values()) {
+    const hesap = String(r.hesap).replace(/\.0$/, "");
+    const bransKodu = normalizeBransKodu(r.bransKodu);
+    const row: MizanRow = { yil: r.yil, hesap, bransKodu, tutar: r.tutar };
+    out.push(row);
+    if (YE_GT_OVERLAY.has(hesap)) {
+      const mapped = GT_TO_MIZAN_HESAP[hesap];
+      if (mapped && mapped !== hesap) {
+        out.push({ ...row, hesap: mapped });
+      }
+    }
+  }
+  return out;
 }
 
 /** Yıllık MIZAN + aylık GT yılsonu; aynı anahtarda aylık satır öncelikli (02571 vb.). */

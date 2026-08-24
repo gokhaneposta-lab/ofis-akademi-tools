@@ -24,7 +24,7 @@ export function bransGrubu(kod: string): string {
   return BRANS_GRUP[kod] ?? "DİĞER KAZA";
 }
 
-/** GT gösterim satırı → format GT kodu. Komisyon 0251199'a yığılır. */
+/** GT gösterim satırı → format GT kodu. Komisyon 0251 (61401) toplamına yığılır. */
 const GT_SATIR_KOD: Readonly<Record<number, string>> = {
   11: "0111",
   19: "0112",
@@ -47,7 +47,7 @@ const GT_SATIR_KOD: Readonly<Record<number, string>> = {
   96: "0211",
   105: "0212",
   114: "022",
-  177: "0251199",
+  177: "0251",
   190: "0252",
   191: "0253",
   192: "0254",

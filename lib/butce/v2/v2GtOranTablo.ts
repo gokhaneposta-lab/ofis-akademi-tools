@@ -61,7 +61,6 @@ const KULLANILAN_ORAN_KODLARI = new Set([
   "02222",
   "014",
   "0251",
-  "0251199",
   "0258",
   "0259",
   "F300",

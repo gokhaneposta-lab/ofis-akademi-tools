@@ -33,6 +33,8 @@ export const GT_TO_MIZAN_HESAP: Readonly<Record<string, string>> = {
   "0252": "61402",
   "0258": "61408",
   "0259": "61409",
+  "0251": "61401",
+  "02571": "614071",
   // YE recon ile doğrulanmış komisyon yaprakları
   "0251101010101": "6140110101",
   "0251101010102": "6140110102",

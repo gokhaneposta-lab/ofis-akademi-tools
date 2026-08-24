@@ -6,7 +6,7 @@ type Harita = { tum_satirlar: Array<{ satir: number; kod?: string | null }> };
 /** GT satır kodunun mizan karşılığı (haritada olmayan yaygın kodlar). */
 const EK_GT_TO_MIZAN: Readonly<Record<string, string>> = {
   "014": "60301",
-  "0251": "614011",
+  "0251": "61401",
   "0253": "61403",
   "0254": "61404",
   "0255": "61405",

@@ -93,12 +93,14 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
   },
   F349: { pay: ["013"], baz: ["0111"], carpim: CARPIM_BRUT_PRIM },
   F441: { pay: ["611"], baz: ["60001"] },
-  /** GT F197 = F19×F300 — branş GT: 70102571 / 7010112 (devredilen prim). */
+  /** GT F197 = F11×F300 — alınan reasürans komisyonu / GWP (614071). */
   F300: {
-    pay: ["02571"],
-    baz: ["0112"],
+    pay: ["614071"],
+    baz: ["60001"],
     gt_hucre: "F300",
-    hesap_eslesme: "brans_gt",
+    carpim: CARPIM_BRUT_PRIM,
+    excel_carpim: "F11*F300",
+    hesap_eslesme: "prefix",
   },
   F368: {
     pay: ["61402"],
@@ -112,11 +114,13 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
     gt_hucre: "F398",
     carpim: CARPIM_BRUT_PRIM,
   },
+  /** GT F180 = F11×F275 — ödenen komisyon / GWP (tüm 61401, kanal ayrımı yok). */
   "0251": {
-    pay: ["6140110101", "61401199"],
+    pay: ["61401"],
     baz: ["60001"],
-    carpim: CARPIM_DIREKT_PRIM,
-    excel_carpim: "F12*F275",
+    carpim: CARPIM_BRUT_PRIM,
+    excel_carpim: "F11*F275",
+    hesap_eslesme: "prefix",
   },
 };
 
@@ -124,7 +128,8 @@ const CARPIM_MAP: Record<string, string> = {
   "0112": CARPIM_BRUT_PRIM,
   "0211": CARPIM_HASAR_BAZ,
   "016": CARPIM_HASAR_BAZ,
-  "0251": CARPIM_DIREKT_PRIM,
+  "0251": CARPIM_BRUT_PRIM,
+  F300: CARPIM_BRUT_PRIM,
   "0251199": CARPIM_ENDIREKT_PRIM,
   "0258": CARPIM_BRUT_PRIM,
   "0259": CARPIM_BRUT_PRIM,
@@ -148,7 +153,7 @@ const VARSAYILAN_ORAN: Record<string, number> = {
   "0258": -0.005,
   "0259": -0.012,
   "014": 0.08,
-  F300: -0.12,
+  F300: 0.12,
   F348: DENGELEME_NET_KAZANILMIS_ORAN,
 };
 
@@ -222,11 +227,13 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
   if (!out.F300) {
     out.F300 = {
       ad: "Alınan reasürans komisyon oranı (A.Komisyon)",
-      pay: ["02571"],
-      baz: ["0112"],
+      pay: ["614071"],
+      baz: ["60001"],
       yil_birlestirme: [[1, 0.5], [2, 0.25], [3, 0.15], [4, 0.1]],
       gt_hucre: "F300",
-      hesap_eslesme: "brans_gt",
+      carpim: CARPIM_BRUT_PRIM,
+      excel_carpim: "F11*F300",
+      hesap_eslesme: "prefix",
     };
   }
 

@@ -37,8 +37,15 @@ const GENEL_GIDER_SATIRLARI = [190, 191, 192, 193, 194] as const;
 
 type V2Formul = Array<{ satir: number; carpan: number }>;
 
+/**
+ * V2 katmanları (bilinçli ayrım):
+ * 1) TEKNİK GELİR  = F9 (603/F38 mali gelir YOK — F9 motorunda F38 gömülmez)
+ * 2) TEKNİK GİDER  = F94 − genel gider (61402–06); komisyon vb. teknik faaliyet kalır
+ * 3) SAFİ TKZ      = teknik gelir + teknik gider
+ * 4) TKZ           = safi + F38 (603) + genel giderler  → en altta eklenir
+ */
 const V2_SENTETIK_FORMULLER: Array<[number, V2Formul]> = [
-  [V2_SENTETIK.teknikGelirSafi, [{ satir: 9, carpan: 1 }, { satir: 38, carpan: -1 }]],
+  [V2_SENTETIK.teknikGelirSafi, [{ satir: 9, carpan: 1 }]],
   [
     V2_SENTETIK.teknikFaaliyetGideri,
     [{ satir: 176, carpan: 1 }, ...GENEL_GIDER_SATIRLARI.map((satir) => ({ satir, carpan: -1 }))],
@@ -266,15 +273,10 @@ export function buildV2GelirTablosu(opts: {
   });
   uyarilar.push(...proxy.uyarilar);
 
-  const brutToplam = gtPass1.brutPrimToplam || 1;
-  const disHucrelerByBrans: Record<string, Record<number, number>> = {};
-  for (const b of gtPass1.branslar) {
-    disHucrelerByBrans[b.bransKodu] = {
-      38: proxy.maliGelirYillik * (b.brutPrim / brutToplam),
-    };
-  }
-
-  const gt = hesaplaV2SentetikSatirlar(buildGelirTablosu({
+  // F38 (603) yalnızca aylık override ile yazılır — F9 motoruna gömülmez.
+  // Eski yol (disHucreler + override) Temmuz YTD'de iki farklı F38 profili üretip
+  // TEKNİK GELİR'e sahte eksi bırakıyordu.
+  const gtHam = buildGelirTablosu({
     mizan: opts.mizan,
     butceYili,
     primHedefleri,
@@ -287,10 +289,11 @@ export function buildV2GelirTablosu(opts: {
     kapanisTahmin: opts.kapanisTahmin,
     faaliyetGider: fg.rows,
     gosterimSatirlari: V2_GT_GOSTERIM,
-    disHucrelerByBrans,
     aylikSatirOverride: { 38: proxy.maliGelirAylik },
     mizanAylikFull: opts.mizanAylikFull,
-  }));
+    v2Metodoloji: true,
+  });
+  const gt = hesaplaV2SentetikSatirlar(gtHam);
 
   return {
     gt,

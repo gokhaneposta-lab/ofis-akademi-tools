@@ -34,6 +34,12 @@ const nextConfig: NextConfig = {
         destination: "/excel-araclari/kisayol-formul-kartlari",
         permanent: true,
       },
+      // Pivot duplicate slug birleştirme: kısa TR slug → zengin hub içeriği (Ağustos 2026 SEO).
+      {
+        source: "/blog/excel-pivot-tablo-nasil-yapilir",
+        destination: "/blog/excel-pivot-table-nasil-yapilir",
+        permanent: true,
+      },
     ];
   },
 };

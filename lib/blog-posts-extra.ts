@@ -525,45 +525,6 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
      SEO Blog Posts — Yüksek arama hacimli, araçsız rehberler
      ──────────────────────────────────────────────────── */
   {
-    slug: "excel-pivot-tablo-nasil-yapilir",
-    title: "Excel'de Pivot Tablo Nasıl Yapılır: Adım Adım Rehber (Başlangıçtan İleriye)",
-    description: "Excel'de PivotTable oluşturma, veri özetleme, gruplama ve dilimleyici kullanımı. Sıfırdan adım adım anlatım.",
-    date: "2026-03-24",
-    guideHref: "/egitimler/ileri",
-    guideName: "İleri Seviye Eğitim",
-    content: [
-      { type: "p", text: "Pivot tablo, Excel'deki en güçlü özetleme aracıdır. Binlerce satırlık veriyi birkaç tıkla kategoriye, aya veya bölgeye göre özetleyebilirsiniz — formül yazmadan." },
-      { type: "h3", text: "Pivot tablo ne zaman kullanılır?" },
-      { type: "ul", items: [
-        "Satış verilerini aya veya ürüne göre toplamak istediğinizde.",
-        "Büyük listede hangi kategorinin en yüksek olduğunu görmek istediğinizde.",
-        "Aynı veriyi farklı açılardan (bölge, tarih, ürün) hızlıca analiz etmek istediğinizde.",
-      ] },
-      { type: "h3", text: "Adım 1: Veriyi hazırlayın" },
-      { type: "p", text: "Her sütunun bir başlığı olmalı (Tarih, Ürün, Tutar gibi). Boş satır veya sütun olmamalı. Veriyi Ctrl+T ile tabloya çevirmek iyi bir pratiktir — yeni satır eklediğinizde pivot otomatik güncellenir." },
-      { type: "h3", text: "Adım 2: Pivot tablo oluşturun" },
-      { type: "ul", items: [
-        "Tablonun herhangi bir hücresine tıklayın.",
-        "Ekle sekmesi → PivotTable'a tıklayın.",
-        "Yeni çalışma sayfası veya mevcut sayfada konum seçin.",
-        "Tamam deyin.",
-      ] },
-      { type: "h3", text: "Adım 3: Alanları sürükleyin" },
-      { type: "p", text: "Sağ tarafta PivotTable Alanları paneli açılır. Sütun başlıklarını Satırlar, Sütunlar, Değerler ve Filtreler kutularına sürükleyin. Örneğin: 'Ürün' → Satırlar, 'Tutar' → Değerler. Otomatik olarak ürün bazlı toplam görürsünüz." },
-      { type: "h3", text: "Adım 4: Veriyi gruplayın" },
-      { type: "p", text: "Tarih alanına sağ tıklayıp Grupla seçeneğiyle aylara veya yıllara göre gruplama yapabilirsiniz. Sayısal alanlarda belirli aralıklara göre gruplama da mümkün." },
-      { type: "h3", text: "Adım 5: Dilimleyici (Slicer) ekleyin" },
-      { type: "p", text: "Pivot tablo seçiliyken PivotTable Analiz → Dilimleyici Ekle ile görsel filtre butonları eklersiniz. Dilimleyiciye tıklayarak veriyi filtrelemek çok daha kolay ve görsel olur." },
-      { type: "h3", text: "Sık yapılan hatalar" },
-      { type: "ul", items: [
-        "Başlıksız sütun bırakmak — pivot tablo hata verir.",
-        "Boş satırlar — veri aralığının yanlış algılanmasına neden olur.",
-        "Veri güncellendikten sonra pivotu yenilememek — sağ tık → Yenile veya Ctrl+Alt+F5.",
-      ] },
-      { type: "p", text: "Özet: Pivot tablo formül yazmadan veriyi özetlemenin en hızlı yoludur. Veriyi tabloya çevirin, Ekle → PivotTable deyin, alanları sürükleyin — bittiğinizde dilimleyiciyle etkileşimli bir rapor elde edersiniz." },
-    ],
-  },
-  {
     slug: "excel-grafik-olusturma-rehberi",
     title: "Excel'de Grafik Oluşturma: Çubuk, Pasta, Çizgi — Adım Adım Rehber",
     description: "Excel'de grafik türleri, oluşturma adımları, biçimlendirme ve en iyi uygulamalar. Başlangıçtan ileriye rehber.",

@@ -361,8 +361,8 @@ export default function TsbSektorGorunumuDashboard() {
         </TsbFilterGrid>
         <p className={tsb.filterHint}>
           Prim üretimi aylık, finansallar çeyrekliktir; dönemleri ayrı seçebilirsiniz.
-          Tablolar HD + H/E kırılımını birlikte gösterir. Havuz seçici yalnız ilgili grafiklerin köşesinde
-          vardır.
+          Finansal sağlık oranları tablosu HD + H/E + toplamı birlikte gösterir; diğer
+          bölümlerde havuz seçici yalnız o grafiğin/tablounun köşesindedir.
         </p>
       </TsbFilterBar>
 

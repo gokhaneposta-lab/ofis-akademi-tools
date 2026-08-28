@@ -5,22 +5,17 @@
  * Örn.: npx --yes tsx scripts/tsb-segment-skor-rapor.ts 2025-4 HE
  */
 
-import { readFileSync } from "fs";
-import { join } from "path";
+import {
+  latestDonemFromList,
+  readGelirDonem,
+  readGelirIndex,
+  readMeta,
+} from "./lib/tsb-readonly-helpers";
 import {
   segmentPeerSirketKodlari,
   sirketSegmentSkoruFromRows,
   type SegmentSkorPool,
 } from "../lib/tsbSirketSegmentSkor";
-import type { TsbGelirTidyRowLike } from "../lib/tsbYatirimGeliriKpi";
-
-function latestDonem(rows: TsbGelirTidyRowLike[]): string {
-  let max = "";
-  for (const r of rows) {
-    if (typeof r.donem === "string" && r.donem > max) max = r.donem;
-  }
-  return max;
-}
 
 function parsePool(arg: string | undefined): SegmentSkorPool {
   const u = String(arg ?? "")
@@ -33,15 +28,19 @@ function parsePool(arg: string | undefined): SegmentSkorPool {
 }
 
 function main() {
-  const root = process.cwd();
-  const pathJson = join(root, "public", "data", "tsb", "gelir-tidy.json");
-  const rows = JSON.parse(readFileSync(pathJson, "utf8")) as TsbGelirTidyRowLike[];
-
-  let donem = latestDonem(rows);
+  const index = readGelirIndex();
+  const meta = readMeta();
+  let donem = meta?.sonFinansalDonem ?? latestDonemFromList(index);
   let pool: SegmentSkorPool = "HD";
   for (const a of process.argv.slice(2)) {
     if (/^\d{4}-\d$/.test(a)) donem = a;
     else pool = parsePool(a);
+  }
+
+  const rows = readGelirDonem(donem);
+  if (rows.length === 0) {
+    console.error(`gelir-tidy/${donem}.json yok veya boş`);
+    process.exit(1);
   }
 
   const peers = segmentPeerSirketKodlari(rows, donem, pool);

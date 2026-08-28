@@ -1,0 +1,27 @@
+{
+  "terminalAllowlist": [
+    "git status",
+    "git diff",
+    "git log",
+    "git show",
+    "git branch",
+    "npx tsc --noEmit",
+    "npm run lint",
+    "npx --yes tsx scripts/tsb-read-meta.ts",
+    "npx --yes tsx scripts/tsb-golden-smoke.ts",
+    "npx --yes tsx scripts/tsb-validate.ts",
+    "npx --yes tsx scripts/inspect-excel.ts",
+    "npx --yes tsx scripts/tsb-segment-skor-rapor.ts"
+  ],
+  "autoRun": {
+    "allow_instructions": [
+      "Read-only git inspection, TypeScript check, lint, and the fixed TSB scripts under scripts/ are fine without asking."
+    ],
+    "block_instructions": [
+      "Block git push, commit, add, pull, merge, rebase, reset, checkout, and clean.",
+      "Block TSB import or meta regeneration: npm run tsb:import-*, tsb:meta, tsb:split-*, tsb:export-*.",
+      "Block budget private data, .env files, deploy commands, file deletion, and paths outside the workspace.",
+      "Block arbitrary node -e one-liners and npm run build unless the user explicitly asked for a build this turn."
+    ]
+  }
+}

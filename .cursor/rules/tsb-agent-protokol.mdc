@@ -1,0 +1,122 @@
+---
+description: "TSB agent protokolü" — dashboard geliştirme, doğrulama, proaktif raporlama (bütçe hariç)
+alwaysApply: false
+---
+
+# TSB Agent Çalışma Protokolü (Ofis Akademi)
+
+Bu kural **yalnızca** sohbette **`@tsb-agent-protokol`** ile eklendiğinde uygulanır.
+
+**Kapsam:** TSB dashboardları, `lib/tsb*`, `components/tsb/`, `app/sigorta/*`, TSB veri pipeline (`scripts/tsb-*`, `public/data/tsb/`, `data/tsb/`).  
+**Kapsam dışı:** Bütçe modülü (`app/butce/*`, `lib/butce/*`) — kullanıcı açıkça istemedikçe dokunma.
+
+İlgili kurallar: **`@tsb-veri-yukle`** (prim import), **`@tsb-gelir-tidy`** (gelir/bilanço tidy). Veri yükleme görevlerinde bu protokolle birlikte kullan.
+
+---
+
+## 1. Görev öncesi inceleme (zorunlu)
+
+Değişiklik veya rapor görevine başlamadan önce:
+
+1. **Veri akışını** belirle: ham Excel → import script → tidy JSON → meta/cache → UI.
+2. **Hesaplama mantığını** bul: önce `docs/tsb-kpi-tanimlari.md`, sonra `lib/tsbGelirGtOzet.ts`, `lib/tsbSirketSegmentSkor.ts`, ilgili dashboard `lib/tsb*.ts`.
+3. **Etkilenecek dosyaları** listele (route, component, lib, script, `public/data/tsb/`).
+4. **Prim vs gelir** ayrımını doğrula: prim = aylık `prim-tidy.json`; finansal = çeyreklik `gelir-tidy/{donem}.json`.
+5. **Havuz** (HD / H-E / SEKTOR) ve TSB toplam satırları (`9000`, `9001`, `9003`) kurallarını göz önünde bulundur.
+
+Kod yazmadan önce kısa bir “ne anladım / neye dokunacağım” özeti ver.
+
+---
+
+## 2. Proaktiflik (zorunlu)
+
+Verilen görevi yaparken **yalnızca isteneni değil**, görev kapsamında gördüklerini de raporla:
+
+- Tutarsızlıklar (UI etiketi ↔ lib hesabı ↔ doküman)
+- Legacy / çelişkili mantık (eski route, deprecated fonksiyon, yanlış KPI adı)
+- Beklenmeyen sonuçlar (sıfır, NaN, işaret tersi, toplam kapanmıyor)
+- Veri anomalileri (eksik dönem, boş havuz, meta ↔ tidy uyumsuzluğu)
+- Tekrarlayan veya çift sayım riski (ör. genel gider + teknik gider)
+
+Kullanıcı sormadan “görev bitti” deme; bulguları **Bulduğum sorunlar** bölümünde listele. Kritik bulgu varsa görevi durdurup önce raporla.
+
+---
+
+## 3. Kaynak disiplini (zorunlu)
+
+Formül, KPI, SEDDK/TSB yorumu veya düzenleyici mantık gerektiren konularda:
+
+1. Önce **proje dokümanı**: `docs/tsb-kpi-tanimlari.md` ve ilgili `lib/tsb*.ts` uygulaması.
+2. Doküman yeterli değilse **araştır** (web, resmî TSB/SEDDK kaynakları — erişim varsa).
+3. **Kaynak ile yorumu ayır**: “Kaynak şunu diyor” / “Benim yorumum”.
+4. **Yeterli kanıt yoksa tahmin etme** — kod yazma, iş kuralı uydurma.
+5. Erişim veya kanıt yoksa açıkça yaz: “Bu konuda yeterli kanıt bulamadım.”
+
+Örnek hassas konular: `603` aktarımı, SAFİ teknik tanımı, VÖK bileşenleri, segment yatırım KPI vs mali `66+67+68`.
+
+---
+
+## 4. Doğrulama — iş mantığı (zorunlu)
+
+`tsc` ve `build` başarılı olması **iş mantığının doğru** olduğu anlamına gelmez.
+
+Uygun olduğunda:
+
+- **Golden / referans sayılar** ile doğrula (ör. belirli `donem` + havuz için VÖK bileşen toplamı).
+- Bağımsız hesaplama veya mevcut smoke script çıktısı ile karşılaştır.
+- Değişiklik öncesi/sonrası sonuç farkını not et.
+
+Golden test henüz yoksa: “golden test eksik” diye raporla; mümkünse `scripts/` altında minimal smoke öner (bu görevde kullanıcı sadece protokol istediyse yazma).
+
+---
+
+## 5. Değişiklik sonrası (zorunlu)
+
+Kod veya veri değiştiyse sırayla:
+
+1. `npx tsc --noEmit`
+2. `npm run build` (veya göreve özel script)
+3. Varsa TSB smoke / golden script
+4. Etkilenen dashboard veya import çıktısının mantıksal kontrolü
+
+Commit/push **yalnızca kullanıcı açıkça isterse**. `data/tsb/incoming/*.xlsx` ve `data/tsb/out/` genelde commit edilmez.
+
+---
+
+## 6. Belirsizlik (zorunlu)
+
+Emin olunmayan iş kuralını sessizce varsayma.
+
+1. Mevcut kod + doküman + veri örneklerini tara.
+2. Çözülemiyorsa **Belirsizlik** olarak raporla; seçenekleri ve riski yaz.
+3. Tahmine dayalı “düzeltme” yapma — kullanıcı kararı bekle (görev “sadece rapor” ise kod değiştirme).
+
+---
+
+## 7. Raporlama formatı (zorunlu)
+
+Her TSB agent görevinin sonunda:
+
+### Ne yaptım?
+### Neleri kontrol / test ettim?
+### Sonuç nedir?
+### Bulduğum sorunlar veya şüpheler
+### Önerdiğim sonraki adım
+
+“Sadece incele” görevlerinde **Ne yaptım?** = “Kod değiştirmedim; inceleme yaptım.”
+
+---
+
+## Hızlı referans
+
+| Konu | Kaynak |
+|------|--------|
+| KPI / VÖK / SAFİ | `docs/tsb-kpi-tanimlari.md` |
+| GT özet hesapları | `lib/tsbGelirGtOzet.ts` |
+| Panel listesi | `lib/tsbDashboardPanels.ts` |
+| Veri meta | `public/data/tsb/meta.json` |
+| Prim import | `@tsb-veri-yukle` |
+| Gelir/BL tidy | `@tsb-gelir-tidy` |
+
+**VÖK bileşen grafiği (sektör görünümü):**  
+`VÖK = safi teknik + genel gider + aktarım (603) + mali net (66+67+68)` — dört dilim toplamı VÖK’e kapanmalı.

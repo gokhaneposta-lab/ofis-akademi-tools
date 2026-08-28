@@ -1,0 +1,137 @@
+---
+description: "Ofis agent protokolü" — Excel araçları, blog, formül kütüphanesi, SEO fırsat taraması (bütçe ve TSB hesap hariç)
+alwaysApply: false
+---
+
+# Ofis Agent Çalışma Protokolü (Excel / Blog / Formül / SEO)
+
+Bu kural **yalnızca** sohbette **`@ofis-agent-protokol`** ile eklendiğinde uygulanır.
+
+**Kapsam:**
+- `app/excel-araclari/*`
+- `app/blog/*`, `lib/blog-posts*.ts`, `lib/blog-posts-*.ts`
+- `app/formul-kutuphanesi/*`
+- `app/finans-sigorta/*` (metrik sözlüğü, TSB deep link)
+- Ana sayfa, hub, kaynaklar (küçük SEO / iç link düzeltmeleri)
+
+**Kapsam dışı:**
+- Bütçe modülü (`app/butce/*`, `lib/butce/*`)
+- TSB veri pipeline, KPI hesapları, dashboard mantığı → **`@tsb-agent-protokol`**
+
+**İki protokol birlikte:** Normalde ayrı çalışır. Yalnızca görev **her iki alanı gerçekten etkiliyorsa** ikisi birlikte uygulanır (ör. yeni TSB metrik sayfası + `finans-sigorta` içeriği + hub linki). Saf TSB hesaplama veya saf Excel aracı görevlerinde tek protokol yeterlidir.
+
+---
+
+## 1. Görev öncesi inceleme (zorunlu)
+
+1. Mevcut araç envanteri: `app/excel-araclari/` (tekrar yaratma).
+2. İlgili blog cluster: `lib/blog-posts.ts`, `lib/blog-posts-excel-hub.ts`, `lib/blog-posts-tsb.ts`, vb.
+3. Formül kütüphanesi karşılığı var mı: `app/formul-kutuphanesi/`.
+4. Finans/sigorta metrik linkleri: `lib/tsbMetricDashboardLinks.ts` (TSB köprüsü gerekiyorsa).
+5. Yeni sayfa ekleniyorsa: metadata, hub listesi, ilgili index/registry dosyaları (projede mevcut pattern).
+
+Kod yazmadan önce kısa “ne yapacağım / neye dokunmayacağım” özeti ver.
+
+---
+
+## 2. Proaktiflik (zorunlu)
+
+Verilen görevi yaparken yalnızca isteneni değil, kapsam içinde gördüklerini de raporla:
+
+- Blog trafiği çekiyor ama karşılık araç yok (veya tersi)
+- Aynı intent’e iki araç / iki yazı (birleştirme önerisi)
+- Kırık veya eksik internal link
+- Formül sayfası ↔ blog ↔ araç üçgeninde boşluk
+- Eski / duplicate içerik, zayıf başlık veya meta
+
+Kullanıcı sormadan “bitti” deme; bulguları raporun **Bulduğum sorunlar** bölümünde listele.
+
+---
+
+## 3. Site sağlığı / fırsat taraması (yalnızca kullanıcı tetikler)
+
+**Önemli:** Bu kural dosyası Cursor’un kendi kendine periyodik uyanmasını sağlamaz. Otonom zamanlayıcı / background agent / CI ayrı bir aşamadır.
+
+**“Site sağlığı taraması”**, **“SEO fırsat avı”**, **“yeni araç öner”** gibi görevler yalnızca **kullanıcı açıkça istediğinde** çalıştırılır.
+
+Tarama sırasında:
+
+1. Önce kullanıcının paylaştığı veri (Search Console ekran görüntüsü, export, Analytics özeti).
+2. Repo içi sinyaller: mevcut sayfa listesi, blog slug’ları, araç rotaları.
+3. Web araştırması — **yalnızca agent’ın gerçekten erişimi varsa** (web search / fetch araçları kullanılabiliyorsa).
+
+**Öneri çıktısı (implementasyon öncesi):**
+
+| İhtiyaç | Mevcut karşılık | Öneri (araç/blog) | Gerekçe | Zorluk |
+|---------|-----------------|-------------------|---------|--------|
+
+Otomatik kod yazma yok — önce öneri listesi; kullanıcı onayından sonra implementasyon.
+
+---
+
+## 4. Erişim ve veri disiplini (zorunlu)
+
+- **Search Console / Analytics:** Kullanıcı veri paylaşmadıysa ve agent’ın yetkili API erişimi yoksa → “erişimim yok” de; tahmini trafik uydurma.
+- **Web araştırması:** Erişim yoksa veya sonuç yetersizse açıkça raporla; erişimi varmış gibi davranma.
+- **İçerik / formül:** Finans veya sigorta metriklerinde TSB tanımı gerekiyorsa → `@tsb-agent-protokol` ve `docs/tsb-kpi-tanimlari.md`; Ofis protokolü tek başına KPI icat etmez.
+
+---
+
+## 5. İçerik ve araç disiplini
+
+- Blog tonu ve yapı: mevcut `lib/blog-posts*.ts` pattern’ine uy.
+- Yeni Excel aracı: `app/excel-araclari/` altındaki mevcut araçların UI/UX ve dosya yapısına uy.
+- Finans/sigorta sayfaları: TSB dashboard’a link gerekiyorsa `lib/tsbMetricDashboardLinks.ts` kullan.
+- Gereksiz yeni sayfa / duplicate araç üretme.
+
+---
+
+## 6. Doğrulama (değişiklik yapıldıysa)
+
+1. `npx tsc --noEmit`
+2. `npm run build`
+3. Yeni sayfa: metadata, hub/registry’ye eklendi mi kontrol et
+4. Araç: temel input → output smoke (manuel veya kısa script)
+
+`tsc` + build başarılı olması içerik kalitesi veya SEO doğruluğu anlamına gelmez.
+
+---
+
+## 7. Belirsizlik (zorunlu)
+
+Ürün kararı (hangi araç öncelikli, hangi blog konusu, marka tonu) için tahmin yürütme. Seçenekleri ve önerini yaz; kullanıcı onayı bekle (görev “sadece öneri” ise kod yazma).
+
+---
+
+## 8. Raporlama formatı (zorunlu)
+
+### Ne yaptım?
+### Neleri kontrol / test ettim?
+### Sonuç nedir?
+### Bulduğum sorunlar veya şüpheler
+### Önerdiğim sonraki adım
+
+“Sadece tarama / öneri” görevlerinde: **Ne yaptım?** = “Kod değiştirmedim; analiz ve öneri listesi ürettim.”
+
+---
+
+## Hızlı referans — SEO sinyali (örnek, kullanıcı paylaştığında güncellenir)
+
+Son bilinen Search Console eğilimi (7 gün): Excel blog rehberleri yüksek gösterim (kelime sayısı, koşullu biçimlendirme, pivot, grafik, tarih farkı). Agent bu veriyi **kullanıcı sağlamadıkça** güncel kabul etmez.
+
+| Öncelik alanı | Örnek intent |
+|---------------|--------------|
+| Excel rehber + araç eşleşmesi | Kelime sayısı, tarih farkı, liste birleştirme |
+| CTR iyileştirme | Yüksek gösterim / düşük tıklama yazılar |
+| Finans köprüsü | `finans-sigorta` ↔ TSB dashboard linkleri |
+
+---
+
+## Protokol eşlemesi
+
+| Görev türü | Rule |
+|------------|------|
+| Excel aracı, blog, formül, SEO fırsat avı | `@ofis-agent-protokol` |
+| TSB dashboard, veri, KPI, golden test | `@tsb-agent-protokol` |
+| TSB Excel import | `@tsb-veri-yukle`, `@tsb-gelir-tidy` |
+| Her iki alan (ör. metrik sayfası + TSB link + blog) | İlgili protokoller birlikte |

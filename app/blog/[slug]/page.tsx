@@ -202,6 +202,7 @@ export default async function BlogPostPage({ params }: Props) {
   const mid = Math.max(3, Math.ceil(post.content.length / 2));
   const firstHalf = post.content.slice(0, mid);
   const secondHalf = post.content.slice(mid);
+  const isEducationalCta = post.ctaStyle === "educational";
 
   const plain = getPostPlainText(post);
   const wordCount = plain.split(/\s+/).filter(Boolean).length;
@@ -278,6 +279,7 @@ export default async function BlogPostPage({ params }: Props) {
 
       <main className="mx-auto max-w-3xl px-4 py-5 sm:px-6 sm:py-8">
         {/* Top CTA */}
+        {!isEducationalCta ? (
         <div className="mb-6 rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-4 sm:p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[14px] font-semibold text-gray-900">
@@ -295,6 +297,7 @@ export default async function BlogPostPage({ params }: Props) {
             {getBenefitLine(post)}
           </p>
         </div>
+        ) : null}
 
         {/* Date + description */}
         <p className="text-[13px] text-gray-400 mb-1">
@@ -314,6 +317,7 @@ export default async function BlogPostPage({ params }: Props) {
         </article>
 
         {/* Mid CTA */}
+        {!isEducationalCta ? (
         <div className="my-8 rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-5 text-center">
           <p className="text-[14px] font-semibold text-gray-900 mb-1">
             {post.toolHref ? "En hızlı çözüm: ücretsiz aracımızı kullanın" : "Bu konuyu uygulamalı öğrenin"}
@@ -339,6 +343,7 @@ export default async function BlogPostPage({ params }: Props) {
             </Link>
           </div>
         </div>
+        ) : null}
 
         {/* Second half content */}
         <article className="max-w-none">
@@ -368,18 +373,45 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Bottom CTA */}
         <div className="mt-8 rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-5 text-center">
-          <p className="text-[14px] font-medium text-gray-800 mb-3">
-            {post.toolHref
-              ? "Bu işlemi saniyeler içinde yapmak için ücretsiz aracımızı deneyin:"
-              : "Bu konuyu adım adım öğrenmek için eğitimimize göz atın:"}
-          </p>
-          <Link
-            href={post.toolHref || post.guideHref || "/egitimler"}
-            className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white transition hover:opacity-90 shadow-sm"
-            style={{ background: ACCENT }}
-          >
-            {post.toolHref ? `${post.toolName} aracına git` : `${post.guideName || "Eğitime"} git`}
-          </Link>
+          {isEducationalCta && post.toolHref ? (
+            <>
+              <p className="text-[14px] font-medium text-gray-800 mb-1">İlgili araç</p>
+              <p className="text-[13px] text-gray-600 mb-4">
+                Hücre formülü yerine metni doğrudan yapıştırarak kelime ve karakter sayısını görmek
+                isterseniz {post.toolName} kullanılabilir.
+              </p>
+              <Link
+                href={post.toolHref}
+                className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white transition hover:opacity-90 shadow-sm"
+                style={{ background: ACCENT }}
+              >
+                Sayacı aç
+              </Link>
+              <p className="mt-3">
+                <Link
+                  href="/formul-kutuphanesi/uzunluk"
+                  className="text-[13px] font-medium text-emerald-600 hover:underline"
+                >
+                  UZUNLUK formül sayfası →
+                </Link>
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-[14px] font-medium text-gray-800 mb-3">
+                {post.toolHref
+                  ? "Bu işlemi saniyeler içinde yapmak için ücretsiz aracımızı deneyin:"
+                  : "Bu konuyu adım adım öğrenmek için eğitimimize göz atın:"}
+              </p>
+              <Link
+                href={post.toolHref || post.guideHref || "/egitimler"}
+                className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white transition hover:opacity-90 shadow-sm"
+                style={{ background: ACCENT }}
+              >
+                {post.toolHref ? `${post.toolName} aracına git` : `${post.guideName || "Eğitime"} git`}
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Navigation links */}

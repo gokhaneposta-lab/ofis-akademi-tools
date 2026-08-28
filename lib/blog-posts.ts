@@ -47,6 +47,8 @@ export type BlogPost = {
   guideName?: string;
   /** SEO / JSON-LD için anahtar kelimeler */
   keywords?: string[];
+  /** Üst/orta agresif araç CTA'sı yerine öğretici akış (varsayılan: tool). */
+  ctaStyle?: "tool" | "educational";
   /** Sayfa altında FAQ + FAQPage şeması */
   faqs?: Array<{ question: string; answer: string }>;
   /** Sosyal paylaşım / OG görseli URL'si (opsiyonel; yoksa site varsayılanı kullanılır). */
@@ -125,7 +127,12 @@ export function getCategoryLabelForPost(post: Pick<BlogPost, "slug" | "toolHref"
   return getCategoryBySlug(cat)?.label || "Excel";
 }
 
-export function getBenefitLine(post: Pick<BlogPost, "title" | "toolName" | "slug" | "guideName">): string {
+export function getBenefitLine(
+  post: Pick<BlogPost, "title" | "toolName" | "slug" | "guideName" | "ctaStyle">,
+): string {
+  if (post.ctaStyle === "educational") {
+    return "Formülleri adım adım öğrenin; metin analizi için araç sayfanın sonunda.";
+  }
   const t = post.title.toLowerCase();
   if (t.includes("1000") || t.includes("saniy")) return "1000 satırı saniyeler içinde çözün.";
   if (t.includes("tek tık") || t.includes("tek tıkla")) return "Tek tıkla sonucu alıp Excel'e yapıştırın.";
@@ -204,19 +211,121 @@ const BLOG_POSTS_CORE: BlogPost[] = [
   },
   {
     slug: "excelde-kelime-ve-karakter-sayisi",
-    title: "Excel'de Kelime ve Karakter Sayısı: Anında Sonuç (Formül + Ücretsiz Araç)",
-    description: "Excel'de UZUNLUK ile karakter sayısı, kelime sayısı formülü. Metni yapıştır, anında say—ücretsiz araç.",
+    title: "Excel'de Karakter Sayma: UZUNLUK Formülü ve Örnekler",
+    description:
+      "Excel'de hücredeki karakter sayısını UZUNLUK formülüyle nasıl sayacağınızı öğrenin. Boşluklu ve boşluksuz karakter sayımı, kelime sayma formülleri ve örnekler.",
     date: "2025-03-15",
     toolHref: "/excel-araclari/kelime-karakter-sayaci",
     toolName: "Kelime & Karakter Sayacı",
+    ctaStyle: "educational",
+    keywords: [
+      "excel karakter sayma",
+      "excelde karakter sayma",
+      "uzunluk formülü",
+      "excel kelime sayma",
+      "hücrede karakter sayısı",
+      "excel karakter sayma formülü",
+      "len excel türkçe",
+    ],
+    faqs: [
+      {
+        question: "Excel'de hücredeki karakter sayısı nasıl bulunur?",
+        answer:
+          "UZUNLUK fonksiyonunu kullanın. Örneğin A1 hücresindeki metnin karakter sayısı için =UZUNLUK(A1) yazıp Enter'a basın. İngilizce Excel'de aynı işlev LEN olarak geçer.",
+      },
+      {
+        question: "UZUNLUK boşlukları sayar mı?",
+        answer:
+          "Evet. UZUNLUK, hücredeki tüm karakterleri — harf, rakam, noktalama ve boşluklar dahil — sayar. Boşluksuz sayım için YERİNEKOY ile boşlukları kaldırıp sonra UZUNLUK uygulayın.",
+      },
+      {
+        question: "Boşluksuz karakter sayısı nasıl hesaplanır?",
+        answer:
+          "=UZUNLUK(YERİNEKOY(A1;\" \";\"\")) formülü metindeki boşlukları çıkarır ve kalan karakter sayısını verir.",
+      },
+      {
+        question: "Excel'de kelime sayısı nasıl hesaplanır?",
+        answer:
+          "Hazır bir kelime sayma fonksiyonu yoktur. KIRP ile baş/son boşlukları temizler ve ardışık normal boşlukları tek boşluğa indirir; ardından boşluk sayısına dayalı formül kullanılır. Tab, satır sonu veya görünmeyen karakterler varsa önce TEMİZ ile metni normalize etmek gerekebilir.",
+      },
+      {
+        question: "Birden fazla hücrede toplam karakter sayısı nasıl alınır?",
+        answer:
+          "Her hücre için UZUNLUK uygulayıp TOPLA ile toplayın: =TOPLA(UZUNLUK(A1);UZUNLUK(A2);UZUNLUK(A3)). Aralık için =TOPLA(UZUNLUK(A1:A10)) da kullanılabilir.",
+      },
+    ],
     content: [
-      { type: "p", text: "Hücredeki metnin karakter veya kelime sayısını Excel'de formülle alabilir veya hızlı sonuç için bir araca yapıştırabilirsiniz." },
-      { type: "h3", text: "Karakter sayısı" },
-      { type: "p", text: "UZUNLUK (İngilizce: LEN) fonksiyonu tüm karakterleri sayar; boşluklar dahil. A1 hücresi için: =UZUNLUK(A1). Boşluksuz karakter sayısı için önce boşlukları DEĞİŞTİR ile kaldırıp sonra UZUNLUK alabilirsiniz." },
-      { type: "h3", text: "Kelime sayısı (yaklaşık)" },
-      { type: "p", text: "En basit yöntem boşluk sayısına dayanır: metinde kaç boşluk varsa yaklaşık kelime sayısı 'boşluk sayısı + 1' olur. TEMİZLE ile baş/son boşlukları alıp, toplam UZUNLUK ile boşluksuz UZUNLUK farkına 1 ekleyen formüller kullanılabilir. Çoklu boşluklar hata verebilir; metni normalize etmek iyi olur." },
-      { type: "h3", text: "Hızlı sonuç" },
-      { type: "p", text: "Metni veya paragrafı kopyalayıp kelime ve karakter sayısını anında gösteren bir araca yapıştırabilirsiniz; sonucu Excel'e taşımak isterseniz sayıları kopyalayıp yapıştırmanız yeterli." },
+      {
+        type: "snippet",
+        question: "Excel'de karakter nasıl sayılır?",
+        answer:
+          "Hücredeki karakter sayısı için =UZUNLUK(A1) yazın (İngilizce Excel: =LEN(A1)). Boşluklar dahil tüm karakterler sayılır.",
+      },
+      {
+        type: "p",
+        text:
+          "Excel'de bir hücredeki metnin kaç karakter veya kelime içerdiğini bilmek; karakter sınırı kontrolü, veri doğrulama ve metin temizliği gibi işlerde sık gereklidir. Aşağıda boşluklu karakter, boşluksuz karakter ve kelime sayısı için kullanabileceğiniz formülleri adım adım bulacaksınız.",
+      },
+      { type: "h3", text: "1. Boşluklu karakter sayısı" },
+      {
+        type: "formula",
+        label: "Tek hücre (boşluklar dahil)",
+        formula: "=UZUNLUK(A1)",
+      },
+      {
+        type: "p",
+        text:
+          "UZUNLUK (İngilizce Excel'de LEN) fonksiyonu hücredeki tüm karakterleri sayar: harfler, rakamlar, noktalama işaretleri ve boşluklar. Formülü aşağı sürükleyerek aynı sütundaki diğer hücrelere de uygulayabilirsiniz.",
+      },
+      { type: "h3", text: "2. Boşluksuz karakter sayısı" },
+      {
+        type: "formula",
+        label: "Boşlukları hariç tut",
+        formula: '=UZUNLUK(YERİNEKOY(A1;" ";""))',
+      },
+      {
+        type: "p",
+        text:
+          "YERİNEKOY (SUBSTITUTE) metindeki boşlukları boş metinle değiştirir; ardından UZUNLUK kalan karakterleri sayar. Sadece baştaki ve sondaki boşlukları temizlemek için önce KIRP(A1) kullanabilirsiniz.",
+      },
+      { type: "h3", text: "3. Kelime sayısı" },
+      {
+        type: "formula",
+        label: "Kelime sayısı (KIRP ile)",
+        formula: '=EĞER(UZUNLUK(KIRP(A1))=0;0;UZUNLUK(KIRP(A1))-UZUNLUK(YERİNEKOY(A1;" ";""))+1)',
+      },
+      {
+        type: "p",
+        text:
+          "Excel'de doğrudan kelime sayan bir fonksiyon yoktur. Formül normal boşluklarla düzgün çalışır; KIRP fazla boşlukları tek boşluğa indirir. Tab, satır sonu veya görünmeyen karakterler varsa sonuç sapabilir — bu durumda önce TEMİZ ile metni temizlemeyi düşünün.",
+      },
+      {
+        type: "table",
+        caption: "Hangi formül ne zaman?",
+        headers: ["Senaryo", "Formül", "Ne zaman kullanılır?"],
+        rows: [
+          ["Tek hücre — boşluklu", "=UZUNLUK(A1)", "Karakter limiti, TC kimlik uzunluğu kontrolü"],
+          ["Tek hücre — boşluksuz", '=UZUNLUK(YERİNEKOY(A1;" ";""))', "Boşluk hariç karakter sayısı"],
+          ["Kelime sayısı", "=EĞER(UZUNLUK(KIRP(A1))=0;0;…)", "Paragraf veya hücre metninde kelime adedi"],
+          ["Aralık toplamı", "=TOPLA(UZUNLUK(A1:A10))", "Birden fazla hücredeki toplam karakter"],
+        ],
+      },
+      {
+        type: "callout",
+        variant: "info",
+        title: "İpucu",
+        text:
+          "DÜŞEYARA veya eşleştirme sorunlarının bir kısmı görünmeyen boşluklardan kaynaklanır. Sayımdan önce =KIRP(TEMİZ(A1)) ile metni temizlemek hem formül hem eşleşme için faydalıdır.",
+      },
+      {
+        type: "links",
+        title: "İlgili kaynaklar",
+        items: [
+          { label: "UZUNLUK — Formül Kütüphanesi", href: "/formul-kutuphanesi/uzunluk" },
+          { label: "Kelime & Karakter Sayacı (metin yapıştırma)", href: "/excel-araclari/kelime-karakter-sayaci" },
+          { label: "Orta Seviye Excel Eğitimi", href: "/egitimler/orta" },
+        ],
+      },
     ],
   },
   {

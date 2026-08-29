@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useTsbDashboardUrlPrefs } from "@/components/tsb/useTsbDashboardUrlPrefs";
+import {
+  applyUrlDonemIfEmpty,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
 import {
   anaBransSecenekleri,
   buildPazarYogunlasmaPaket,
@@ -15,6 +18,7 @@ import {
   cn,
   tsb,
   TsbError,
+  TsbDashboardIntro,
   TsbFilterBar,
   TsbFilterField,
   TsbFilterGrid,
@@ -112,10 +116,7 @@ export default function TsbPazarYogunlasmaDashboard() {
   const secilenDonem = donem || sonDonem;
 
   useEffect(() => {
-    if (donemler.length === 0 || donem) return;
-    if (urlPrefs.donem && donemler.includes(urlPrefs.donem)) {
-      setDonem(urlPrefs.donem);
-    }
+    applyUrlDonemIfEmpty(donemler, urlPrefs.donem, donem, setDonem);
   }, [donemler, donem, urlPrefs.donem]);
 
   const bransSecenekleri = useMemo(
@@ -143,7 +144,8 @@ export default function TsbPazarYogunlasmaDashboard() {
 
   return (
     <div className={tsb.dashboardStack}>
-      <TsbFilterBar>
+      <TsbDashboardIntro>
+        <TsbFilterBar className={tsb.filterBarInset}>
         <p className={tsb.filterSectionLabel}>Şirket grubu</p>
         <div className={cn(tsb.btnGroup, "mb-3")}>
           <TsbToggleButton pressed={segment === "hayatdisi"} variant="segment" onClick={() => setSegment("hayatdisi")}>
@@ -182,12 +184,9 @@ export default function TsbPazarYogunlasmaDashboard() {
             </TsbSelect>
           </TsbFilterField>
         </TsbFilterGrid>
-      </TsbFilterBar>
+        </TsbFilterBar>
 
-      {!paket ? (
-        <p className={tsb.filterHint}>Seçili filtreler için pazar yoğunlaşması hesaplanamadı.</p>
-      ) : (
-        <>
+        {paket ? (
           <TsbKpiGrid>
             <TsbKpiCard label="HHI" value={hhiFmt.format(paket.hhi)} hint={yorumDetay?.etiket} accent />
             <TsbKpiCard label="Katılımcı şirket" value={paket.katilimci} hint={`${secilenDonem} aylık üretim`} />
@@ -202,7 +201,13 @@ export default function TsbPazarYogunlasmaDashboard() {
               hint="İlk 5 şirketin toplam payı"
             />
           </TsbKpiGrid>
+        ) : null}
+      </TsbDashboardIntro>
 
+      {!paket ? (
+        <p className={tsb.filterHint}>Seçili filtreler için pazar yoğunlaşması hesaplanamadı.</p>
+      ) : (
+        <>
           {yorumDetay ? (
             <p className="rounded-lg border border-slate-200/80 bg-slate-50/80 px-3 py-2.5 text-sm text-slate-700">
               {yorumDetay.aciklama}

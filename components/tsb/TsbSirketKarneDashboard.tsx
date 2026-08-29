@@ -50,6 +50,7 @@ import {
   TSB_SIRKET_KARNE_SEKMELER,
   type TsbSirketKarneSekme,
 } from "@/lib/tsbSirketKarneSekmeler";
+import { tsbPanelPageTitle } from "@/lib/tsbDashboardPanels";
 
 const SEGMENT_LABEL: Record<TsbSektorSegment, string> = {
   hayatdisi: "Hayat dışı",
@@ -331,7 +332,7 @@ export default function TsbSirketKarneDashboard() {
           <div className={tsb.heroCard}>
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <p className={tsb.heroEyebrow}>Şirket karne</p>
+                <p className={tsb.heroEyebrow}>{tsbPanelPageTitle("/sigorta/sirket-karne")}</p>
                 <h2 className={tsb.heroTitle}>{secilenAd}</h2>
                 <p className={tsb.heroMeta}>
                   {SEGMENT_LABEL[segment]} · Kod {sirketKodu}

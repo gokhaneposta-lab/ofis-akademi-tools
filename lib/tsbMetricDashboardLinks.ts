@@ -14,12 +14,12 @@ export const METRIC_TSB_DASHBOARD: Partial<Record<string, TsbMetricDashboardLink
       "Branş bazlı brüt/net H/P, sektör sıralaması ve çeyreklik trend — TSB gelir tablosu verisiyle canlı karşılaştırma.",
   },
   "kazanilmis-prim": {
-    href: "/sigorta/prim?panel=prim-trend-12",
+    href: "/sigorta/prim-trend-12",
     title: "TSB son 12 ay prim trendi",
     description: "Aylık prim üretimi trendi; şirket ve sektör çizgisi, branş/kanal filtresi.",
   },
   "yenileme-orani": {
-    href: "/sigorta/prim?panel=brans&view=degisim",
+    href: "/sigorta/brans-degisim",
     title: "TSB branş kıyası — değişim",
     description: "Branş bazında yıllık prim değişimi ve pazar payı — portföy kayması analizi.",
   },
@@ -44,7 +44,7 @@ export const METRIC_TSB_DASHBOARD: Partial<Record<string, TsbMetricDashboardLink
     description: "Hasar tarafı performansını sektör branş dağılımıyla kıyaslayın.",
   },
   "prim-tahsilat-orani": {
-    href: "/sigorta/prim?panel=kanal-prim",
+    href: "/sigorta/kanal-prim",
     title: "TSB prim sıralaması",
     description: "Kanal ve branş bazında aylık prim üretimi, sıra ve pay.",
   },
@@ -79,7 +79,7 @@ export const METRIC_TSB_DASHBOARD: Partial<Record<string, TsbMetricDashboardLink
     description: "Kaldıraç ve öz kaynak yapısı sektör kıyaslaması.",
   },
   "iptal-orani": {
-    href: "/sigorta/prim?panel=brans&view=degisim",
+    href: "/sigorta/brans-degisim",
     title: "TSB branş kıyası — değişim",
     description: "Branş bazında üretim kaybı ve pay değişimini izleyin.",
   },

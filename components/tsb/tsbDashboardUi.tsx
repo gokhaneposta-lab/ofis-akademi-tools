@@ -103,7 +103,7 @@ export const tsb = {
   sektorOzetiWrap: "rounded-xl border border-slate-200/80 bg-white p-3 shadow-[0_1px_4px_rgba(15,23,42,0.06)] sm:p-4",
   sektorOzetiBaslikWrap: "mb-3",
   sektorOzetiBaslikRow: "flex items-center justify-between gap-2",
-  sektorOzetiBaslik: "text-base font-semibold text-slate-900",
+  sektorOzetiBaslik: "text-lg font-semibold tracking-tight text-slate-900 sm:text-xl",
   sektorOzetiMetodolojiWrap:
     "relative shrink-0 [&_summary::-webkit-details-marker]:hidden [&[open]_summary]:border-sky-400 [&[open]_summary]:bg-sky-100/90 [&[open]_summary]:text-sky-950",
   sektorOzetiMetodolojiBtn:
@@ -163,16 +163,22 @@ export const tsb = {
   dataPanel:
     "rounded-2xl border border-slate-200/70 bg-white shadow-sm ring-1 ring-slate-900/[0.03]",
   dataPanelHeader: "border-b border-slate-100 px-4 py-3 sm:px-5",
-  dataPanelTitle: "text-lg font-extrabold tracking-tight text-slate-950 sm:text-xl",
+  dataPanelTitle: "text-lg font-semibold tracking-tight text-slate-900 sm:text-xl",
   dataPanelBody: "p-3.5 sm:p-4",
   chartPanel:
     "overflow-x-auto rounded-2xl border border-slate-200/70 bg-white p-3.5 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-4",
-  sectionTitle: "text-lg font-extrabold tracking-tight text-slate-950 sm:text-xl",
+  sectionTitle: "text-lg font-semibold tracking-tight text-slate-900 sm:text-xl",
   sectionLead: "mt-0.5 text-xs font-medium leading-snug text-slate-500 sm:text-sm",
+
+  /** KPI + filtre tek panelde — dış kutu yorgunluğunu azaltır */
+  dashboardIntro: "rounded-2xl border border-slate-200/70 bg-white shadow-sm ring-1 ring-slate-900/[0.03]",
+  dashboardIntroBody: "space-y-4 p-3.5 sm:space-y-5 sm:p-4",
+  filterBarInset:
+    "rounded-xl bg-slate-50/70 px-3 py-2.5 sm:px-4 sm:py-3",
 
   heroCard:
     "overflow-hidden rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-white via-emerald-50/40 to-slate-50 p-4 shadow-sm ring-1 ring-emerald-900/[0.04] sm:p-5",
-  heroEyebrow: "text-[11px] font-bold uppercase tracking-widest text-emerald-700",
+  heroEyebrow: "text-xs font-medium text-slate-500",
   heroTitle: "mt-1 text-xl font-bold leading-tight text-slate-900 sm:text-2xl",
   heroMeta: "mt-1.5 text-sm text-slate-600",
   heroBadge:
@@ -180,7 +186,7 @@ export const tsb = {
 
   hubFeaturedCard:
     "group block rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/50 p-4 shadow-sm ring-1 ring-emerald-900/[0.05] transition hover:border-emerald-300 hover:shadow-md sm:p-5",
-  hubGroupTitle: "text-lg font-bold text-slate-900 sm:text-xl",
+  hubGroupTitle: "text-lg font-semibold tracking-tight text-slate-900 sm:text-xl",
   hubGroupLead: "mt-1 max-w-2xl text-sm leading-relaxed text-slate-600",
   hubPanelCard:
     "group rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-emerald-300/80 hover:shadow-md sm:p-4",
@@ -612,6 +618,15 @@ export function TsbKpiCard({
 
 export function TsbKpiGrid({ children, className }: { children: ReactNode; className?: string }) {
   return <div className={cn(tsb.kpiGrid, className)}>{children}</div>;
+}
+
+/** Üst özet: KPI + filtre tek beyaz panel içinde. */
+export function TsbDashboardIntro({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <section className={cn(tsb.dashboardIntro, className)}>
+      <div className={cn(tsb.dashboardIntroBody)}>{children}</div>
+    </section>
+  );
 }
 
 export function TsbDataPanel({

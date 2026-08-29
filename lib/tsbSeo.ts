@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
+import { TSB_HUB_PAGE_TITLE, tsbPanelPageTitle } from "@/lib/tsbDashboardPanels";
 
 /** Ortak TSB arama ifadeleri — sayfa metadata ve JSON-LD (ekranda görünmez). */
 export const TSB_SEO_KEYWORDS_CORE = [
@@ -64,7 +65,7 @@ export const TSB_SEO = {
       "TSB prim istatistikleri ve finansal veriler: Türkiye Sigortalar Birliği kaynaklı aylık prim üretimi, branş/kanal panelleri ile çeyreklik gelir tablosu ve bilanço karşılaştırmaları.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, TSB_SEO_KEYWORDS_FINANSAL),
     jsonLdName: "TSB Prim ve Finansal İstatistikleri",
-    breadcrumbLabel: "TSB Sektör Verileri",
+    breadcrumbLabel: TSB_HUB_PAGE_TITLE,
   },
   sektorGorunumu: {
     path: "/sigorta/sektor-gorunumu",
@@ -78,7 +79,7 @@ export const TSB_SEO = {
       "sigorta sektörü karlılık",
     ]),
     jsonLdName: "Sigorta Sektörü Görünümü",
-    breadcrumbLabel: "Sektör görünümü",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/sektor-gorunumu"),
   },
   finansalKarsilastirma: {
     path: "/sigorta/finansal-karsilastirma",
@@ -87,7 +88,7 @@ export const TSB_SEO = {
       "TSB finansal veriler: çeyreklik gelir tablosu ve bilanço KPI'ları; hayat dışı, hayat–emeklilik veya HD+H/E toplam havuzunda şirket ile sektör toplamı veya ikinci şirket yan yana, dönemsel değişimle.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_FINANSAL),
     jsonLdName: "TSB Finansal Karşılaştırma",
-    breadcrumbLabel: "Finansal karşılaştırma",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/finansal-karsilastirma"),
   },
   anaBransTkz: {
     path: "/sigorta/ana-brans-tkz",
@@ -100,7 +101,7 @@ export const TSB_SEO = {
       "sigorta teknik gelir gider",
     ]),
     jsonLdName: "TSB Ana Branş TKZ",
-    breadcrumbLabel: "Ana branş TKZ",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/ana-brans-tkz"),
   },
   olcekSegmentasyon: {
     path: "/sigorta/olcek-segmentasyon",
@@ -113,7 +114,7 @@ export const TSB_SEO = {
       "sigorta sektör segment",
     ]),
     jsonLdName: "TSB Ölçek Segmentasyonu",
-    breadcrumbLabel: "Ölçek segmentasyonu",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/olcek-segmentasyon"),
   },
   sirketKarne: {
     path: "/sigorta/sirket-karne",
@@ -126,7 +127,7 @@ export const TSB_SEO = {
       "sigorta şirket analizi",
     ]),
     jsonLdName: "TSB Şirket Karne",
-    breadcrumbLabel: "Şirket karne",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/sirket-karne"),
   },
   hasarPrimOrani: {
     path: "/sigorta/hasar-prim-orani",
@@ -135,7 +136,7 @@ export const TSB_SEO = {
       "TSB istatistikleri: brüt ve net hasar/prim oranı, branş veya tarife grubu kırılımı, sektör sıralaması ve çeyreklik H/P trendi.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_FINANSAL, ["hasar prim oranı", "TSB hasar prim"]),
     jsonLdName: "TSB Hasar / Prim Oranı",
-    breadcrumbLabel: "Hasar / Prim oranı",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/hasar-prim-orani"),
   },
   kanalPrim: {
     path: "/sigorta/kanal-prim",
@@ -144,7 +145,7 @@ export const TSB_SEO = {
       "TSB prim sıralaması: hayat dışı ve hayat–emeklilikte kanal veya branş kırılımında şirket sırası, pay ve yıllık değişim.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB prim sıralaması", "kanal prim"]),
     jsonLdName: "TSB Prim Sıralaması",
-    breadcrumbLabel: "Prim sıralaması",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/kanal-prim"),
   },
   kanalDagilim: {
     path: "/sigorta/kanal-dagilim",
@@ -153,7 +154,7 @@ export const TSB_SEO = {
       "TSB prim: sektör kanal dağılımı, branş kanal profili, şirket–sektör kıyası ve kanal liderleri; hayat dışı / hayat–emeklilik.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB kanal dağılımı", "satış kanalları"]),
     jsonLdName: "TSB Satış Kanalları",
-    breadcrumbLabel: "Satış kanalları",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/kanal-dagilim"),
   },
   bransDegisim: {
     path: "/sigorta/brans-degisim",
@@ -162,7 +163,7 @@ export const TSB_SEO = {
       "TSB prim: branş kıyası altında değişim ve pazar payı; şirket–sektör karşılaştırması (hayat dışı / hayat–emeklilik).",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB branş prim", "branş değişim", "branş kıyası"]),
     jsonLdName: "TSB Branş Kıyası — Değişim",
-    breadcrumbLabel: "Branş kıyası",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/brans-degisim"),
   },
   bransSira: {
     path: "/sigorta/brans-sira",
@@ -171,7 +172,7 @@ export const TSB_SEO = {
       "TSB prim: branş kıyası altında sıra özeti; sektör içi sıra ve önceki yılın aynı ayına göre sıra değişimi.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB branş sıra", "branş kıyası"]),
     jsonLdName: "TSB Branş Kıyası — Sıra",
-    breadcrumbLabel: "Branş kıyası",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/brans-sira"),
   },
   primTrend12: {
     path: "/sigorta/prim-trend-12",
@@ -180,7 +181,7 @@ export const TSB_SEO = {
       "TSB prim istatistikleri: son 12 ay sektör toplamı ile tek şirket prim trendi; hayat dışı / hayat–emeklilik, branş/tarife ve kanal filtresi.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB prim trend", "aylık prim trendi"]),
     jsonLdName: "TSB Son 12 Ay Prim Trendi",
-    breadcrumbLabel: "Son 12 ay prim trendi",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/prim-trend-12"),
   },
   pazarYogunlasma: {
     path: "/sigorta/pazar-yogunlasma",
@@ -189,7 +190,7 @@ export const TSB_SEO = {
       "TSB prim istatistikleri: ana branş bazında HHI (Herfindahl–Hirschman) endeksi, ilk 5 şirket payı ve son 12 ay yoğunlaşma trendi.",
     keywords: kw(TSB_SEO_KEYWORDS_CORE, TSB_SEO_KEYWORDS_PRIM, ["TSB pazar payı", "HHI sigorta", "pazar yoğunlaşması"]),
     jsonLdName: "TSB Pazar Yoğunlaşması",
-    breadcrumbLabel: "Pazar yoğunlaşması",
+    breadcrumbLabel: tsbPanelPageTitle("/sigorta/pazar-yogunlasma"),
   },
 } as const satisfies Record<string, TsbSeoPage>;
 

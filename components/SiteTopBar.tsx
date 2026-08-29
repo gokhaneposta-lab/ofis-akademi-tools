@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import BrandLogo from "@/components/BrandLogo";
 import { EXCEL_TOOLS } from "@/lib/excel-tools";
+import { TSB_HUB_PAGE_TITLE, tsbPathTitleMap, tsbTopBarNavItems } from "@/lib/tsbDashboardPanels";
 
 type NavItem = {
   label: string;
@@ -87,23 +88,14 @@ const NAV: NavSection[] = [
     ),
   },
   {
-    label: "Sektör verileri (TSB)",
+    label: TSB_HUB_PAGE_TITLE,
     href: "/sigorta/tsb",
     icon: (
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
       </svg>
     ),
-    children: [
-      { label: "Dashboard özeti", href: "/sigorta/tsb" },
-      { label: "Prim ve üretim", href: "/sigorta/prim" },
-      { label: "Branş kıyası", href: "/sigorta/prim?panel=brans" },
-      { label: "Satış kanalları", href: "/sigorta/prim?panel=kanal-dagilim" },
-      { label: "Pazar yoğunlaşma", href: "/sigorta/prim?panel=pazar-yogunlasma" },
-      { label: "Sektör görünümü", href: "/sigorta/sektor-gorunumu" },
-      { label: "Finansal karşılaştırma", href: "/sigorta/finansal-karsilastirma" },
-      { label: "Ölçek segmentasyonu", href: "/sigorta/olcek-segmentasyon" },
-    ],
+    children: [...tsbTopBarNavItems()],
   },
   {
     label: "Finans & Sigorta",
@@ -115,7 +107,7 @@ const NAV: NavSection[] = [
     ),
     children: [
       { label: "Tüm Metrikler", href: "/finans-sigorta" },
-      { label: "Prim ve üretim (TSB)", href: "/sigorta/prim" },
+      { label: "Prim ve Üretim (TSB)", href: "/sigorta/kanal-prim" },
       { label: "Hasar/Prim Oranı", href: "/finans-sigorta/hasar-prim-orani" },
       { label: "Kayıp Oranı (EP)", href: "/finans-sigorta/kayip-orani" },
       { label: "Birleşik Oran", href: "/finans-sigorta/birlesik-oran" },
@@ -148,6 +140,7 @@ const NAV: NavSection[] = [
 const pathTitles: Record<string, string> = {
   "/": "Ana Sayfa",
   "/excel-araclari": "Ofis araçları",
+  ...tsbPathTitleMap(),
   "/blog": "Blog",
   "/egitimler": "Eğitimler",
   "/kaynaklar": "Ücretsiz Kaynaklar",
@@ -156,14 +149,6 @@ const pathTitles: Record<string, string> = {
   "/egitimler/orta": "Seviye 2 · Orta",
   "/egitimler/ileri": "Seviye 3 · İleri",
   "/formul-kutuphanesi": "Formül Kütüphanesi",
-  "/sigorta/tsb": "Sektör verileri (TSB)",
-  "/sigorta/sektor-gorunumu": "Sektör görünümü",
-  "/sigorta/prim": "Prim ve üretim",
-  "/sigorta/kanal-prim": "Prim sıralaması",
-  "/sigorta/brans-degisim": "Branş değişim tablosu",
-  "/sigorta/pazar-yogunlasma": "Pazar yoğunlaşması",
-  "/sigorta/brans-sira": "Branş sıra özeti",
-  "/sigorta/kanal-dagilim": "Satış kanalları",
   "/finans-sigorta": "Finans & Sigorta",
   ...Object.fromEntries(EXCEL_TOOLS.map((t) => [t.href, t.name])),
 };

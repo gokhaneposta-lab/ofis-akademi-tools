@@ -50,7 +50,7 @@ export function TsbSubPageNav<T extends string>({
                 active ? "text-slate-950" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
               )}
             >
-              <span className={cn("block text-[0.95rem] sm:text-base", active ? "font-extrabold" : "font-semibold")}>
+              <span className={cn("block text-[0.95rem] sm:text-base", active ? "font-semibold" : "font-medium")}>
                 {item.label}
               </span>
               {item.hint ? (

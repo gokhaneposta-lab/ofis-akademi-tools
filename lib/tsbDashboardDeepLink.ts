@@ -1,4 +1,9 @@
 import type { FinansalKarsilastirmaPool } from "./tsbFinansalKarsilastirmaData";
+import {
+  parseBransKiyasView,
+  parsePrimPanelId,
+  primPanelHref,
+} from "./tsbDashboardPanels";
 import type { TsbSektorSegment } from "./tsbPrimDashboard";
 import type { TsbSirketKarneSekme } from "./tsbSirketKarneSekmeler";
 
@@ -11,10 +16,25 @@ export type TsbDashboardUrlPrefs = {
   sekme?: TsbSirketKarneSekme;
 };
 
-export function buildTsbDashboardHref(path: string, prefs: TsbDashboardUrlPrefs): string {
+/** Eski /sigorta/prim?panel=… → standalone panel URL. */
+export function normalizeTsbDashboardPath(path: string): string {
   const qIdx = path.indexOf("?");
   const base = qIdx >= 0 ? path.slice(0, qIdx) : path;
-  const q = new URLSearchParams(qIdx >= 0 ? path.slice(qIdx + 1) : "");
+  if (base !== "/sigorta/prim") return base;
+  if (qIdx < 0) return "/sigorta/kanal-prim";
+  const sp = new URLSearchParams(path.slice(qIdx + 1));
+  const panelRaw = sp.get("panel");
+  if (panelRaw === "brans-sira") return "/sigorta/brans-sira";
+  const panel = parsePrimPanelId(panelRaw);
+  if (panel === "brans") return primPanelHref("brans", parseBransKiyasView(sp.get("view")));
+  return primPanelHref(panel);
+}
+
+export function buildTsbDashboardHref(path: string, prefs: TsbDashboardUrlPrefs): string {
+  const normalized = normalizeTsbDashboardPath(path);
+  const qIdx = normalized.indexOf("?");
+  const base = qIdx >= 0 ? normalized.slice(0, qIdx) : normalized;
+  const q = new URLSearchParams(qIdx >= 0 ? normalized.slice(qIdx + 1) : "");
   if (prefs.sirket != null) q.set("sirket", String(prefs.sirket));
   if (prefs.donem) q.set("donem", prefs.donem);
   if (prefs.pool) q.set("pool", prefs.pool);

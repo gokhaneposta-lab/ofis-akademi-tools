@@ -20,12 +20,16 @@ import {
 import { buildSektorPrimPaket } from "@/lib/tsbSektorGorunumu";
 import { TsbRenkAciklama } from "@/components/tsb/TsbRenkAciklama";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
-import { useTsbDashboardUrlPrefs } from "@/components/tsb/useTsbDashboardUrlPrefs";
+import {
+  applyUrlDonemIfEmpty,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
 import { TSB_TUM_BRANS_LABEL } from "@/lib/tsbKirilimSozluk";
 import {
   cn,
   tsb,
   TsbError,
+  TsbDashboardIntro,
   TsbFilterBar,
   TsbFilterField,
   TsbKpiCard,
@@ -125,11 +129,10 @@ export default function TsbKanalPrimDashboard() {
   }, [urlPrefs.segment]);
 
   useEffect(() => {
-    if (donemler.length === 0 || donem) return;
-    if (urlPrefs.donem && donemler.includes(urlPrefs.donem)) {
-      setDonem(urlPrefs.donem);
-    }
+    applyUrlDonemIfEmpty(donemler, urlPrefs.donem, donem, setDonem);
   }, [donemler, donem, urlPrefs.donem]);
+
+  const vurguSirket = urlPrefs.sirket;
 
   const anaBransSecenekleri = useMemo(() => {
     if (!rows || !secilenDonem) return [];
@@ -205,8 +208,9 @@ export default function TsbKanalPrimDashboard() {
 
   return (
     <div className={tsb.dashboardStack}>
-      {sektorBuyume ? (
-        <TsbKpiGrid>
+      <TsbDashboardIntro>
+        {sektorBuyume ? (
+          <TsbKpiGrid>
           <TsbKpiCard
             label="Hayat dışı · YoY"
             value={tsbFormatDegisimYuzde(hdDegisim)}
@@ -269,9 +273,9 @@ export default function TsbKanalPrimDashboard() {
             }
           />
         </TsbKpiGrid>
-      ) : null}
+        ) : null}
 
-      <TsbFilterBar>
+        <TsbFilterBar className={tsb.filterBarInset}>
         <div className={tsb.filterCompactRow}>
           <div>
             <p className={tsb.filterSectionLabel}>Havuz</p>
@@ -354,7 +358,8 @@ export default function TsbKanalPrimDashboard() {
             </TsbSelect>
           </TsbFilterField>
         </div>
-      </TsbFilterBar>
+        </TsbFilterBar>
+      </TsbDashboardIntro>
 
       {tablo && (
         <>
@@ -428,8 +433,13 @@ export default function TsbKanalPrimDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {tablo.satirlar.map((s) => (
-                  <tr key={s.sirketKodu} className={tsb.tbodyRowDense}>
+                {tablo.satirlar.map((s) => {
+                  const vurgu = vurguSirket != null && s.sirketKodu === vurguSirket;
+                  return (
+                  <tr
+                    key={s.sirketKodu}
+                    className={cn(tsb.tbodyRowDense, vurgu && "bg-emerald-50/70 font-medium")}
+                  >
                     <td className={cn(tsb.td, "text-center text-slate-600")}>{s.siraOnceki}</td>
                     <td className={cn(tsb.td, "text-center", tsbSiraIyilestirmeRenk(s.siraOnceki, s.siraBu))}>{s.siraBu}</td>
                     <td className={cn(tsb.td, "text-center whitespace-nowrap")}>{s.sirketKodu}</td>
@@ -448,7 +458,8 @@ export default function TsbKanalPrimDashboard() {
                       {tsbFormatDegisimYuzde(s.degisimYuzde)}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
               <tfoot className={tsb.tfoot}>
                 <tr className={tsb.tbodyRowDense}>

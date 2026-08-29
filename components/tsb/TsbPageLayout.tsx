@@ -60,7 +60,6 @@ export function TsbPageLayout({
             </Link>
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className={tsb.pageTitle}>{pageTitle}</h1>
-              <span className={tsb.pageBadge}>TSB</span>
             </div>
             <p className={tsb.pageLead}>{description}</p>
             {sourceNote ? <aside className={tsb.sourceNote}>{sourceNote}</aside> : null}

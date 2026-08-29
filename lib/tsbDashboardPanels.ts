@@ -266,3 +266,32 @@ export function tsbPanelPageTitle(href: string): string {
   if (prim) return prim.title;
   return "TSB Panel";
 }
+
+/** Breadcrumb / TopBar / JSON-LD — UI’da H1 ile aynı. */
+export const tsbPanelBreadcrumbLabel = tsbPanelPageTitle;
+
+export type TsbNavItem = { label: string; href: string };
+
+/** SiteTopBar → Sektör verileri alt menüsü. */
+export function tsbTopBarNavItems(): readonly TsbNavItem[] {
+  return [
+    { label: "Dashboard Özeti", href: "/sigorta/tsb" },
+    ...TSB_PRIM_VIEW_TABS.map((t) => ({ label: t.title, href: t.legacyHref })),
+    ...TSB_FINANSAL_DASHBOARD_PANELS.map((p) => ({ label: p.title, href: p.href })),
+    { label: TSB_OLCEK_DASHBOARD_PANEL.title, href: TSB_OLCEK_DASHBOARD_PANEL.href },
+    ...TSB_TEKNIK_DASHBOARD_PANELS.map((p) => ({ label: p.title, href: p.href })),
+  ];
+}
+
+/** Mobil başlık çubuğu ve path → Title Case eşlemesi. */
+export function tsbPathTitleMap(): Record<string, string> {
+  const map: Record<string, string> = {
+    "/sigorta/tsb": TSB_HUB_PAGE_TITLE,
+    "/sigorta/prim": tsbPanelPageTitle("/sigorta/kanal-prim"),
+    "/sigorta/brans-sira": tsbPanelPageTitle("/sigorta/brans-sira"),
+  };
+  for (const p of TSB_DASHBOARD_PANELS) {
+    map[p.href] = p.title;
+  }
+  return map;
+}

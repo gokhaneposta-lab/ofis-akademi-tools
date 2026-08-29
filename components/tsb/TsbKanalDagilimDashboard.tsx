@@ -49,6 +49,11 @@ import { TsbSirketSektorGrafikLegend } from "@/components/tsb/TsbRenkAciklama";
 import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
 import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
+import {
+  applyUrlDonemIfEmpty,
+  applyUrlSirketOrDefault,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
 import { formatPrimYtdAralik } from "@/lib/tsbPrimDonemEtiket";
 import { TSB_TUM_BRANS_LABEL } from "@/lib/tsbKirilimSozluk";
 import { TsbSubPageNav } from "@/components/tsb/TsbSubPageNav";
@@ -56,6 +61,7 @@ import {
   cn,
   tsb,
   TsbError,
+  TsbDashboardIntro,
   TsbFilterBar,
   TsbFilterField,
   TsbKpiCard,
@@ -185,11 +191,15 @@ function KanalLegendChips() {
 
 export default function TsbKanalDagilimDashboard() {
   const pathname = usePathname();
+  const urlPrefs = useTsbDashboardUrlPrefs();
   const [tab, setTabState] = useState<KanalHubTab>("genel");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setTabState(parseKanalHubTab(new URLSearchParams(window.location.search).get("tab")));
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    if (tabParam) setTabState(parseKanalHubTab(tabParam));
+    else if (params.get("sirket")) setTabState("sirket");
   }, []);
 
   const setTab = (next: KanalHubTab) => {
@@ -205,12 +215,11 @@ export default function TsbKanalDagilimDashboard() {
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [donem, setDonem] = useState("");
-  const [segment, setSegment] = useState<TsbSektorHavuz>("hayatdisi");
+  const [segment, setSegment] = useState<TsbSektorHavuz>(urlPrefs.segment ?? "hayatdisi");
   const [anaBrans, setAnaBrans] = useState("");
   const [filtreModu, setFiltreModu] = useState<TsbPrimDaraltmaModu>("anaBransH");
   const [tarifeSecim, setTarifeSecim] = useState("");
   const [sirketKodu, setSirketKodu] = useState<number | "">("");
-  const [profilBrans, setProfilBrans] = useState("");
   const [liderKanal, setLiderKanal] = useState<KanalDagilimSatirKey>("acente");
 
   const branchLookup = useTsbBranchLookupFetch();
@@ -239,6 +248,16 @@ export default function TsbKanalDagilimDashboard() {
   const sonDonem = donemler.length ? donemler[donemler.length - 1] : "";
   const secilenDonem = donem || sonDonem;
 
+  useEffect(() => {
+    if (urlPrefs.segment === "hayatdisi" || urlPrefs.segment === "hayat") {
+      setSegment(urlPrefs.segment);
+    }
+  }, [urlPrefs.segment]);
+
+  useEffect(() => {
+    applyUrlDonemIfEmpty(donemler, urlPrefs.donem, donem, setDonem);
+  }, [donemler, donem, urlPrefs.donem]);
+
   const anaBransSecenekleri = useMemo(() => {
     if (!rows || !secilenDonem) return [];
     return uniqueAnaBransForSegment(rows, secilenDonem, segment);
@@ -262,13 +281,11 @@ export default function TsbKanalDagilimDashboard() {
   useEffect(() => {
     setAnaBrans("");
     setTarifeSecim("");
-    setProfilBrans("");
   }, [segment]);
 
   useEffect(() => {
     setAnaBrans("");
     setTarifeSecim("");
-    setProfilBrans("");
   }, [filtreModu]);
 
   useEffect(() => {
@@ -284,11 +301,14 @@ export default function TsbKanalDagilimDashboard() {
 
   useEffect(() => {
     if (sirketler.length === 0) return;
-    if (sirketKodu === "" || !sirketler.some((s) => s.kod === sirketKodu)) {
-      const kod = resolveDefaultSirketKodu(sirketler, segment === "toplam" ? "any" : segment);
-      if (kod !== null) setSirketKodu(kod);
-    }
-  }, [sirketler, sirketKodu, segment]);
+    applyUrlSirketOrDefault(
+      sirketler,
+      urlPrefs.sirket,
+      sirketKodu,
+      setSirketKodu,
+      segment === "toplam" ? "any" : segment,
+    );
+  }, [sirketler, sirketKodu, urlPrefs.sirket, segment]);
 
   const effectiveSirketKodu = useMemo(() => {
     if (sirketler.length === 0) return null;
@@ -380,14 +400,23 @@ export default function TsbKanalDagilimDashboard() {
     );
   }, [rows, secilenDonem, segment, filtreModu, branchLookup]);
 
-  useEffect(() => {
-    if (bransSatirlari.length === 0) return;
-    if (!profilBrans || !bransSatirlari.some((b) => b.bransKey === profilBrans)) {
-      setProfilBrans(bransSatirlari[0].bransKey);
-    }
-  }, [bransSatirlari, profilBrans]);
+  const secilenBransKey = filtreModu === "anaBransH" ? anaBrans : tarifeSecim;
 
-  const profilSatir = bransSatirlari.find((b) => b.bransKey === profilBrans) ?? bransSatirlari[0] ?? null;
+  useEffect(() => {
+    if (tab !== "brans" || bransSatirlari.length === 0) return;
+    if (secilenBransKey && bransSatirlari.some((b) => b.bransKey === secilenBransKey)) return;
+    const ilk = bransSatirlari[0].bransKey;
+    if (filtreModu === "anaBransH") setAnaBrans(ilk);
+    else setTarifeSecim(ilk);
+  }, [tab, bransSatirlari, secilenBransKey, filtreModu]);
+
+  const profilSatir =
+    bransSatirlari.find((b) => b.bransKey === secilenBransKey) ?? bransSatirlari[0] ?? null;
+
+  const setSecilenBransKey = (key: string) => {
+    if (filtreModu === "anaBransH") setAnaBrans(key);
+    else setTarifeSecim(key);
+  };
 
   const sirketBransSatirlari = useMemo(() => {
     if (!rows || !secilenDonem || effectiveSirketKodu === null) return [];
@@ -435,7 +464,8 @@ export default function TsbKanalDagilimDashboard() {
     : null;
   const tumBransLabel = TSB_TUM_BRANS_LABEL[segment];
   const showSirketSelect = tab === "sirket";
-  const showBransFilter = tab === "genel" || tab === "liderler" || tab === "sirket";
+  const showBransFilter = tab === "genel" || tab === "liderler" || tab === "sirket" || tab === "brans";
+  const bransFilterZorunlu = tab === "brans";
 
   const hdYoy =
     sektorHd && sektorHdOnceki
@@ -543,9 +573,10 @@ export default function TsbKanalDagilimDashboard() {
         onChange={setTab}
       />
 
-      {tab === "genel" ? genelKpi : null}
+      <TsbDashboardIntro>
+        {tab === "genel" ? genelKpi : null}
 
-      <TsbFilterBar>
+        <TsbFilterBar className={tsb.filterBarInset}>
         <div className={tsb.filterCompactRow}>
           <div>
             <p className={tsb.filterSectionLabel}>Havuz</p>
@@ -590,27 +621,50 @@ export default function TsbKanalDagilimDashboard() {
           </TsbFilterField>
           {showBransFilter ? (
             <TsbFilterField
-              label={filtreModu === "anaBransH" ? "Branş (opsiyonel)" : "Tarife (opsiyonel)"}
+              label={
+                filtreModu === "anaBransH"
+                  ? bransFilterZorunlu
+                    ? "Branş"
+                    : "Branş (opsiyonel)"
+                  : bransFilterZorunlu
+                    ? "Tarife grubu"
+                    : "Tarife (opsiyonel)"
+              }
             >
               {filtreModu === "anaBransH" ? (
-                <TsbSelect value={anaBrans} onChange={(e) => setAnaBrans(e.target.value)}>
-                  <option value="">{tumBransLabel}</option>
-                  {segment === "hayatdisi" && (
+                <TsbSelect
+                  value={anaBrans}
+                  onChange={(e) => setAnaBrans(e.target.value)}
+                >
+                  {!bransFilterZorunlu ? <option value="">{tumBransLabel}</option> : null}
+                  {segment === "hayatdisi" && !bransFilterZorunlu && (
                     <option value={ANA_BRANS_FILTER_TRAFIK_HARIC}>{ANA_BRANS_FILTER_TRAFIK_HARIC_LABEL}</option>
                   )}
-                  {anaBransSecenekleri.map((a) => (
-                    <option key={a} value={a}>{a}</option>
-                  ))}
+                  {bransFilterZorunlu
+                    ? bransSatirlari.map((b) => (
+                        <option key={b.bransKey} value={b.bransKey}>
+                          {b.label} · {tsbFormatPrim(b.bu.genelToplam)}
+                        </option>
+                      ))
+                    : anaBransSecenekleri.map((a) => (
+                        <option key={a} value={a}>{a}</option>
+                      ))}
                 </TsbSelect>
               ) : (
                 <TsbSelect value={tarifeSecim} onChange={(e) => setTarifeSecim(e.target.value)}>
-                  <option value="">Tüm tarife grupları</option>
-                  {segment === "hayatdisi" && (
+                  {!bransFilterZorunlu ? <option value="">Tüm tarife grupları</option> : null}
+                  {segment === "hayatdisi" && !bransFilterZorunlu && (
                     <option value={TARIFE_GRUBU_FILTER_TRAFIK_HARIC}>{TARIFE_GRUBU_FILTER_TRAFIK_HARIC_LABEL}</option>
                   )}
-                  {tarifeSecenekleri.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
+                  {bransFilterZorunlu
+                    ? bransSatirlari.map((b) => (
+                        <option key={b.bransKey} value={b.bransKey}>
+                          {b.label} · {tsbFormatPrim(b.bu.genelToplam)}
+                        </option>
+                      ))
+                    : tarifeSecenekleri.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
                 </TsbSelect>
               )}
             </TsbFilterField>
@@ -631,7 +685,8 @@ export default function TsbKanalDagilimDashboard() {
             </TsbFilterField>
           ) : null}
         </div>
-      </TsbFilterBar>
+        </TsbFilterBar>
+      </TsbDashboardIntro>
 
       {tab === "genel" && (
         <>
@@ -717,18 +772,6 @@ export default function TsbKanalDagilimDashboard() {
 
       {tab === "brans" && (
         <>
-          <TsbFilterBar>
-            <TsbFilterField label={filtreModu === "tarifeGrubu" ? "Tarife grubu" : "Branş"}>
-              <TsbSelect value={profilBrans} onChange={(e) => setProfilBrans(e.target.value)}>
-                {bransSatirlari.map((b) => (
-                  <option key={b.bransKey} value={b.bransKey}>
-                    {b.label} · {tsbFormatPrim(b.bu.genelToplam)}
-                  </option>
-                ))}
-              </TsbSelect>
-            </TsbFilterField>
-          </TsbFilterBar>
-
           {profilSatir ? (
             <section className={tsb.chartPanel}>
               <h2 className={tsb.sectionTitle}>
@@ -772,13 +815,13 @@ export default function TsbKanalDagilimDashboard() {
                   {bransSatirlari.map((row) => (
                     <tr
                       key={row.bransKey}
-                      className={cn(tsb.tbodyRow, row.bransKey === profilBrans && "bg-emerald-50/40")}
+                      className={cn(tsb.tbodyRow, row.bransKey === secilenBransKey && "bg-emerald-50/40")}
                     >
                       <th scope="row" className={cn(tsb.tdSticky, "text-left font-medium")}>
                         <button
                           type="button"
                           className="text-left text-teal-800 hover:underline"
-                          onClick={() => setProfilBrans(row.bransKey)}
+                          onClick={() => setSecilenBransKey(row.bransKey)}
                         >
                           {row.label}
                         </button>
@@ -1010,7 +1053,7 @@ export default function TsbKanalDagilimDashboard() {
                 </p>
               </div>
               <Link
-                href={`/sigorta/prim?panel=kanal-prim&donem=${encodeURIComponent(secilenDonem)}&segment=${segment}`}
+                href={`/sigorta/kanal-prim?donem=${encodeURIComponent(secilenDonem)}&segment=${segment}`}
                 className={tsb.pillLink}
               >
                 Prim sıralaması detayı →

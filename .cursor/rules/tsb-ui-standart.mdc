@@ -1,0 +1,41 @@
+---
+description: "TSB UI standartları" — panel isimlendirme, tipografi, layout ve link kuralları
+alwaysApply: false
+---
+
+# TSB Dashboard UI Standartları
+
+Bu kural **yalnızca** TSB dashboard arayüzü (`components/tsb/`, `app/sigorta/*`, `lib/tsbDashboardPanels.ts`) geliştirilirken uygulanır.
+
+## İsimlendirme (tek kaynak)
+
+- Panel başlıkları (H1, breadcrumb, TopBar, hero eyebrow, JSON-LD): `tsbPanelPageTitle(href)` veya `TSB_HUB_PAGE_TITLE` (`lib/tsbDashboardPanels.ts`).
+- Title Case: örn. "Şirket Karne", "Prim Sıralaması", "Sektör Verileri (TSB)".
+- Lead / açıklama metinleri cümle düzeninde kalabilir.
+
+## Tipografi
+
+- Sayfa H1: `tsb.pageTitle` → `text-xl font-semibold` (hub ile aynı).
+- Panel H2 / bölüm başlığı: `tsb.dataPanelTitle` veya `tsb.sectionTitle` → `font-semibold` (extrabold kullanma).
+- KPI etiket: `tsb.kpiLabel` (11px uppercase, medium).
+- Aktif sekme: semibold.
+
+## Layout
+
+- H1 satırında TSB badge pill **yok**.
+- Üst özet: KPI + filtre tek panelde → `TsbDashboardIntro`; filtre `className={tsb.filterBarInset}`.
+- Alt sekme / sekme değişiminde filtre state paylaşılır — ayrı `profilBrans` gibi paralel state kullanma.
+- Şirket seçimi: geçerli kullanıcı seçimi `applyUrlSirketOrDefault` ile ezilmez.
+- Paneller arası geçiş: `buildTsbDashboardHref` / hazır sorgu linkleri `?sirket=&donem=&segment=` taşır; her dashboard mount’ta `useTsbDashboardUrlPrefs` + `applyUrlDonemIfEmpty` + `applyUrlSirketOrDefault` ile okumalı.
+- Prim panelleri standalone URL: `/sigorta/kanal-prim`, `/sigorta/brans-degisim`, vb. — `?panel=` yeni linklerde kullanma (`normalizeTsbDashboardPath` eski URL’leri yönlendirir).
+
+## Navigasyon
+
+- SiteTopBar TSB alt menüsü: `tsbTopBarNavItems()` registry’den.
+- Mobil başlık: `tsbPathTitleMap()` ile birleştir.
+
+## Yapılmaması gerekenler
+
+- Panel adını dosyada hardcode etmek (SEO, TopBar, H1 tutarsızlığı).
+- Her KPI ve filtreyi ayrı beyaz kutu yapmak (üst yorgunluk).
+- `app/butce/*` dosyalarına dokunmak.

@@ -24,6 +24,11 @@ import {
   uniqueTarifeGruplariForSegment,
 } from "@/lib/tsbPrimDashboard";
 import { useTsbBranchLookupFetch } from "@/components/tsb/useTsbBranchLookup";
+import {
+  applyUrlDonemIfEmpty,
+  applyUrlSirketOrDefault,
+  useTsbDashboardUrlPrefs,
+} from "@/components/tsb/useTsbDashboardUrlPrefs";
 import TsbOlcekSegmentRozeti from "@/components/tsb/TsbOlcekSegmentRozeti";
 import { TsbPrimSirketSektorLegend } from "@/components/tsb/TsbRenkAciklama";
 import { useOlcekSegmentKayit } from "@/components/tsb/useOlcekSegmentKayit";
@@ -316,9 +321,10 @@ function AylikUretimBarSvg({ seri, sirketAdi }: { seri: PrimTrendAylikNokta[]; s
 }
 
 export default function TsbPrimTrend12Dashboard() {
+  const urlPrefs = useTsbDashboardUrlPrefs();
   const [rows, setRows] = useState<TsbPrimRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [segment, setSegment] = useState<TsbSektorSegment>("hayatdisi");
+  const [segment, setSegment] = useState<TsbSektorSegment>(urlPrefs.segment ?? "hayatdisi");
   const [donemBitis, setDonemBitis] = useState("");
   const [kanal, setKanal] = useState<TsbKanalField>("genelToplam");
   const [anaBrans, setAnaBrans] = useState("");
@@ -351,6 +357,16 @@ export default function TsbPrimTrend12Dashboard() {
   const donemler = useMemo(() => (rows ? uniqueSortedPeriods(rows) : []), [rows]);
   const sonDonem = donemler.length ? donemler[donemler.length - 1] : "";
   const secilenBitis = donemBitis || sonDonem;
+
+  useEffect(() => {
+    if (urlPrefs.segment === "hayatdisi" || urlPrefs.segment === "hayat") {
+      setSegment(urlPrefs.segment);
+    }
+  }, [urlPrefs.segment]);
+
+  useEffect(() => {
+    applyUrlDonemIfEmpty(donemler, urlPrefs.donem, donemBitis, setDonemBitis);
+  }, [donemler, donemBitis, urlPrefs.donem]);
 
   useEffect(() => {
     setAnaBrans("");
@@ -392,11 +408,8 @@ export default function TsbPrimTrend12Dashboard() {
 
   useEffect(() => {
     if (sirketler.length === 0) return;
-    if (sirketKodu === "" || !sirketler.some((s) => s.kod === sirketKodu)) {
-      const kod = resolveDefaultSirketKodu(sirketler, segment);
-      if (kod !== null) setSirketKodu(kod);
-    }
-  }, [sirketler, sirketKodu, segment]);
+    applyUrlSirketOrDefault(sirketler, urlPrefs.sirket, sirketKodu, setSirketKodu, segment);
+  }, [sirketler, sirketKodu, urlPrefs.sirket, segment]);
 
   const effectiveSirket = useMemo(() => {
     if (sirketler.length === 0) return null;

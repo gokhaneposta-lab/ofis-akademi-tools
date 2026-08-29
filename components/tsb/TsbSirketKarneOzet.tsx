@@ -49,6 +49,7 @@ import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
 import TsbPrimTrendAylikBarChart from "@/components/tsb/TsbPrimTrendAylikBarChart";
 import { TsbPrimSirketSektorLegend } from "@/components/tsb/TsbRenkAciklama";
+import { tsbPanelPageTitle } from "@/lib/tsbDashboardPanels";
 
 const pf = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 
@@ -724,7 +725,7 @@ export default function TsbSirketKarneOzet({
           <div className={tsb.heroCard}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className={tsb.heroEyebrow}>Şirket karne</p>
+                <p className={tsb.heroEyebrow}>{tsbPanelPageTitle("/sigorta/sirket-karne")}</p>
                 <h2 className={tsb.heroTitle}>{secilenAd}</h2>
                 <p className={tsb.heroMeta}>
                   {SEGMENT_LABEL[segment]} · Prim {donem} vs {primPaket.donemOnceki}

@@ -6,6 +6,7 @@ export {
   normalizePagePath,
   normalizeReason,
 } from "./rules";
+export { newsletterCopyForPath } from "./newsletterCopy";
 export {
   importLegacySubscriber,
   subscribe,

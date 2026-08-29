@@ -12,7 +12,6 @@ export default function SigortaSirketKarnePage() {
     <TsbPageLayout
       seoPageId="sirketKarne"
       currentHref="/sigorta/sirket-karne"
-      title="Şirket karne"
       description="Bu şirket sektörün neresinde — prim, finans, kanal ve trend tek bakışta."
       sourceNote={<TsbSourceNote />}
     >

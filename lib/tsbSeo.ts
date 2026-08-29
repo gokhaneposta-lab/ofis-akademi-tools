@@ -138,7 +138,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Hasar / Prim oranı",
   },
   kanalPrim: {
-    path: "/sigorta/prim?panel=kanal-prim",
+    path: "/sigorta/kanal-prim",
     title: "TSB Prim — Prim Sıralaması (Kanal / Branş)",
     description:
       "TSB prim sıralaması: hayat dışı ve hayat–emeklilikte kanal veya branş kırılımında şirket sırası, pay ve yıllık değişim.",
@@ -147,7 +147,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Prim sıralaması",
   },
   kanalDagilim: {
-    path: "/sigorta/prim?panel=kanal-dagilim",
+    path: "/sigorta/kanal-dagilim",
     title: "TSB Prim — Satış Kanalları (Dağılım, Branş, Liderler)",
     description:
       "TSB prim: sektör kanal dağılımı, branş kanal profili, şirket–sektör kıyası ve kanal liderleri; hayat dışı / hayat–emeklilik.",
@@ -156,7 +156,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Satış kanalları",
   },
   bransDegisim: {
-    path: "/sigorta/prim?panel=brans&view=degisim",
+    path: "/sigorta/brans-degisim",
     title: "TSB Prim — Branş Kıyası (Değişim ve Pay)",
     description:
       "TSB prim: branş kıyası altında değişim ve pazar payı; şirket–sektör karşılaştırması (hayat dışı / hayat–emeklilik).",
@@ -165,7 +165,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Branş kıyası",
   },
   bransSira: {
-    path: "/sigorta/prim?panel=brans&view=sira",
+    path: "/sigorta/brans-sira",
     title: "TSB Prim — Branş Kıyası (Sıra Özeti)",
     description:
       "TSB prim: branş kıyası altında sıra özeti; sektör içi sıra ve önceki yılın aynı ayına göre sıra değişimi.",
@@ -174,7 +174,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Branş kıyası",
   },
   primTrend12: {
-    path: "/sigorta/prim?panel=prim-trend-12",
+    path: "/sigorta/prim-trend-12",
     title: "TSB Prim İstatistikleri — Son 12 Ay Sektör ve Şirket Trendi",
     description:
       "TSB prim istatistikleri: son 12 ay sektör toplamı ile tek şirket prim trendi; hayat dışı / hayat–emeklilik, branş/tarife ve kanal filtresi.",
@@ -183,7 +183,7 @@ export const TSB_SEO = {
     breadcrumbLabel: "Son 12 ay prim trendi",
   },
   pazarYogunlasma: {
-    path: "/sigorta/prim?panel=pazar-yogunlasma",
+    path: "/sigorta/pazar-yogunlasma",
     title: "TSB Prim — Pazar Yoğunlaşması (HHI) ve Top-5 Pay",
     description:
       "TSB prim istatistikleri: ana branş bazında HHI (Herfindahl–Hirschman) endeksi, ilk 5 şirket payı ve son 12 ay yoğunlaşma trendi.",

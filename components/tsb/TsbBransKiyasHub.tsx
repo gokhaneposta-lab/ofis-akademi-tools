@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import TsbBransDegisimDashboard from "@/components/tsb/TsbBransDegisimDashboard";
 import TsbBransSiraDashboard from "@/components/tsb/TsbBransSiraDashboard";
@@ -21,18 +21,19 @@ const BRANS_SUB_PAGES = [
   },
 ];
 
+const BRANS_PATHS: Record<TsbBransKiyasView, string> = {
+  degisim: "/sigorta/brans-degisim",
+  sira: "/sigorta/brans-sira",
+};
+
 export default function TsbBransKiyasHub({ view }: { view: TsbBransKiyasView }) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const setView = useCallback(
     (next: TsbBransKiyasView) => {
-      const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-      params.set("panel", "brans");
-      params.set("view", next);
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      router.push(BRANS_PATHS[next], { scroll: false });
     },
-    [pathname, router],
+    [router],
   );
 
   return (

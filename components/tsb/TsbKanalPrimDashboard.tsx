@@ -35,6 +35,7 @@ import {
   TsbSelect,
   TsbTableShell,
   tsbDeltaRenk,
+  tsbKpiDeltaRenk,
   tsbFormatDegisimYuzde,
   tsbFormatPrim,
   tsbSiraIyilestirmeRenk,
@@ -210,7 +211,7 @@ export default function TsbKanalPrimDashboard() {
             label="Hayat dışı · YoY"
             value={tsbFormatDegisimYuzde(hdDegisim)}
             delta={tsbFormatPrim(sektorBuyume.secili.HD)}
-            deltaClassName={tsbDeltaRenk(hdDegisim)}
+            deltaClassName={tsbKpiDeltaRenk(hdDegisim)}
             story={
               hdDegisim == null
                 ? "Önceki yıl karşılaştırması yok."
@@ -225,7 +226,7 @@ export default function TsbKanalPrimDashboard() {
             label="Hayat / Emeklilik · YoY"
             value={tsbFormatDegisimYuzde(heDegisim)}
             delta={tsbFormatPrim(sektorBuyume.secili.HAYAT_EMEKLILIK)}
-            deltaClassName={tsbDeltaRenk(heDegisim)}
+            deltaClassName={tsbKpiDeltaRenk(heDegisim)}
             story={
               heDegisim == null
                 ? "Önceki yıl karşılaştırması yok."
@@ -241,7 +242,7 @@ export default function TsbKanalPrimDashboard() {
             label="Sektör toplamı · YoY"
             value={tsbFormatDegisimYuzde(sektorDegisim)}
             delta={tsbFormatPrim(sektorBuyume.secili.SEKTOR)}
-            deltaClassName={tsbDeltaRenk(sektorDegisim)}
+            deltaClassName={tsbKpiDeltaRenk(sektorDegisim)}
             story={
               sektorDegisim == null
                 ? "Önceki yıl karşılaştırması yok."
@@ -254,6 +255,7 @@ export default function TsbKanalPrimDashboard() {
           />
           <TsbKpiCard
             label="En büyük branş"
+            valueVariant="text"
             value={enBuyukBrans?.ad ?? "—"}
             delta={
               enBuyukBrans

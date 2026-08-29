@@ -55,25 +55,11 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
     ],
   },
   {
-    href: "/sigorta/prim",
-    items: [
-      "Üst sekmeler aynı prim istatistiklerinin farklı bakışlarıdır. İlk sekme Branş kıyası; altında Değişim ve Sıra ayrı alt sayfalardır (filtre değil).",
-      "Satış kanallarında Genel bakış / Branş profili / Şirket / Liderler alt sayfa geçişidir. Havuz ve kırılım seçimleri filtredir.",
-    ],
-  },
-  {
-    href: "/sigorta/brans",
-    items: [
-      "Branş kıyası iki alt sayfadır: Değişim ve pay · Sıra özeti. Üstteki sticky sekmeden diğer prim panellerine geçersiniz.",
-      "Filtreler (dönem, şirket, branş/tarife) her alt sayfada kendi paneline aittir.",
-    ],
-  },
-  {
     href: "/sigorta/kanal-prim",
     items: [
+      "Üstteki sticky sekme ile diğer prim panellerine geçebilirsiniz.",
       "Prim sıralaması: seçili kanal veya branşta şirketleri üretim sırasına dizer.",
       "Dönem ay bazlıdır. Kanal ve branş filtreleri tabloyu daraltır.",
-      "Sıra: küçük numara daha yüksek üretim. Sıra değişimi renklerle gösterilir.",
     ],
   },
   {
@@ -87,6 +73,7 @@ export const TSB_PANEL_HELP: readonly TsbPanelHelpEntry[] = [
   {
     href: "/sigorta/brans-degisim",
     items: [
+      "Branş kıyası iki alt sayfadır: Değişim ve pay · Sıra özeti. Üstteki sticky sekmeden diğer prim panellerine geçersiniz.",
       "Sol blok odak şirket; sağ blok sektör veya seçtiğiniz kıyas şirketi.",
       "Değişim ve pay farkı bir önceki yılın aynı ayına göredir.",
     ],

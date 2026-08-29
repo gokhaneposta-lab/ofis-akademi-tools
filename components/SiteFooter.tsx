@@ -1,6 +1,6 @@
 import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
-import NewsletterForm from "@/components/NewsletterForm";
+import FooterNewsletter from "@/components/FooterNewsletter";
 import { BLOG_CATEGORIES, getPopularPosts } from "@/lib/blog-posts";
 
 const quickLinks = [
@@ -127,7 +127,7 @@ export default function SiteFooter() {
 
           {/* Newsletter */}
           <div className="md:col-span-4">
-            <NewsletterForm variant="footer" source="footer" />
+            <FooterNewsletter />
           </div>
         </div>
 

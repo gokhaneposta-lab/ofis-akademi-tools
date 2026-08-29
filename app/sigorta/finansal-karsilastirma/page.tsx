@@ -12,7 +12,6 @@ export default function SigortaFinansalKarsilastirmaPage() {
     <TsbPageLayout
       seoPageId="finansalKarsilastirma"
       currentHref="/sigorta/finansal-karsilastirma"
-      title="Finansal karşılaştırma"
       description="Şirket sektörün neresinde — büyüklük, kâr ve oranlar nasıl kıyaslanıyor?"
       sourceNote={<TsbSourceNote />}
     >

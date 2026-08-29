@@ -238,7 +238,7 @@ export default function KaynaklarPage() {
             variant="card"
             source="kaynaklar"
             heading="Yeni kaynakları kaçırma"
-            description="Yeni Excel şablonları, formül kartları ve rehberleri yayınladığımızda sana e-posta gönderelim. Haftada en fazla 1 e-posta, spam yok."
+            description="Yeni Excel şablonları, formül kartları ve rehberler yayınlandığında haber ver. Spam yok, istediğin an çık."
           />
         </div>
 

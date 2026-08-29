@@ -12,7 +12,6 @@ export default function SigortaAnaBransTkzPage() {
     <TsbPageLayout
       seoPageId="anaBransTkz"
       currentHref="/sigorta/ana-brans-tkz"
-      title="Ana branş TKZ"
       description="Hangi branşlar teknik kâr üretiyor — gelir, gider ve TKZ nasıl dağılmış?"
       sourceNote={<TsbSourceNote />}
     >

@@ -13,20 +13,21 @@ type Props = {
   source?: string;
   heading?: string;
   description?: string;
+  buttonLabel?: string;
   reason?: SubscribeReason;
   channel?: SubscribeChannel;
 };
 
 const DEFAULTS: Record<Variant, { heading: string; description: string }> = {
   footer: {
-    heading: "Haftalık Excel ipuçları",
+    heading: "Yeni içerikler",
     description:
-      "Haftada 1 kısa e-posta. İlgi alanına göre seçilmiş içerikler. Spam yok, istediğin an çık.",
+      "Yeni rehber, araç veya güncelleme yayınlandığında kısa e-posta. Spam yok, istediğin an çık.",
   },
   inline: {
     heading: "Bu rehberi beğendin mi?",
     description:
-      "Haftada 1 kısa e-posta — ilgi alanına göre rehberler ve araçlar. İstediğin an çık.",
+      "Benzer rehber ve araçlar yayınlandığında kısa e-posta — ilgi alanına göre. İstediğin an çık.",
   },
   card: {
     heading: "Ücretsiz kaynaklara ilk sen ulaş",
@@ -84,6 +85,7 @@ export default function NewsletterForm({
   source = "footer",
   heading,
   description,
+  buttonLabel,
   reason,
   channel,
 }: Props) {
@@ -94,6 +96,9 @@ export default function NewsletterForm({
   const labels = DEFAULTS[variant];
   const finalHeading = heading ?? labels.heading;
   const finalDescription = description ?? labels.description;
+  const finalButtonLabel =
+    buttonLabel ??
+    (variant === "footer" ? "Bültene abone ol" : variant === "inline" ? "Abone ol" : "Ücretsiz abone ol");
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -156,7 +161,7 @@ export default function NewsletterForm({
               disabled={status === "loading"}
               className="h-9 w-full rounded-lg bg-emerald-700 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-800 disabled:opacity-60"
             >
-              {status === "loading" ? "Gönderiliyor…" : "Bültene abone ol"}
+              {status === "loading" ? "Gönderiliyor…" : finalButtonLabel}
             </button>
           </form>
         )}

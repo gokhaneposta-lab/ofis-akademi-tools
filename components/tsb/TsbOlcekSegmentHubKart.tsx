@@ -17,34 +17,22 @@ type HubProps = {
 
 export default function TsbOlcekSegmentHubKart({ data }: HubProps) {
   return (
-    <section className={tsb.sektorOzetiWrap} aria-labelledby="tsb-olcek-segment-baslik">
-      <div className={tsb.sektorOzetiBaslikWrap}>
-        <h2 id="tsb-olcek-segment-baslik" className={tsb.sektorOzetiBaslik}>
-          Ölçek Segmentasyonu
-        </h2>
-        <p className={tsb.sektorOzetiAltBaslik}>
-          Şirketler brüt prim, özsermaye ve aktif büyüklüklerine göre benzer ölçek gruplarına ayrılmıştır.
-        </p>
-      </div>
-
+    <section className={tsb.sektorOzetiWrap} aria-label="Ölçek segment özeti">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <ul className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {OLCEK_SEGMENT_HUB_LEGEND.map((item) => (
-            <li
-              key={item.harf}
-              className="flex items-center gap-2 rounded-lg border border-slate-200/75 bg-slate-50/50 px-2.5 py-2 text-xs"
-            >
-              <span
-                className={`inline-flex min-w-[1.75rem] justify-center rounded-md px-1.5 py-0.5 text-[11px] font-bold ring-1 ring-inset ${SEGMENT_BADGE_CLASS[item.harf]}`}
-              >
-                {item.harf}
-              </span>
-              <span className="font-medium text-slate-800">{item.ad}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="min-w-0">
+          <Link
+            href="/sigorta/olcek-segmentasyon"
+            className="inline-flex min-h-[2.5rem] items-center gap-1.5 rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-900"
+          >
+            Tüm şirket listesi
+            <span aria-hidden>→</span>
+          </Link>
+          <p className="mt-2 max-w-xl text-xs leading-relaxed text-slate-600 sm:text-sm">
+            Brüt prim, özsermaye ve aktif büyüklüğe göre A+…D grupları — peer seçimi ve kıyas için.
+          </p>
+        </div>
 
-        <div className="shrink-0 rounded-lg border border-slate-200/80 bg-white px-3 py-2 text-xs text-slate-700">
+        <div className="shrink-0 rounded-lg border border-slate-200/80 bg-slate-50/60 px-3 py-2 text-xs text-slate-700">
           <p>
             <span className="font-semibold text-slate-900">Hayat Dışı:</span> {data.hubOzet.HD} şirket
           </p>
@@ -55,14 +43,27 @@ export default function TsbOlcekSegmentHubKart({ data }: HubProps) {
           {data.sonFinDonem ? (
             <p className="mt-1 text-[10px] text-slate-500">Son finansal dönem: {data.sonFinDonem}</p>
           ) : null}
-          <Link
-            href="/sigorta/olcek-segmentasyon"
-            className="mt-2 inline-block text-[11px] font-semibold text-emerald-800 hover:underline"
-          >
-            Tüm şirket listesi →
-          </Link>
         </div>
       </div>
+
+      <ul
+        className="mt-4 grid grid-cols-2 gap-2 border-t border-slate-100 pt-4 sm:grid-cols-3 lg:grid-cols-5"
+        aria-label="Ölçek segmentleri"
+      >
+        {OLCEK_SEGMENT_HUB_LEGEND.map((item) => (
+          <li
+            key={item.harf}
+            className="flex min-w-0 items-center justify-center gap-2 rounded-lg border border-slate-200/75 bg-slate-50/50 px-2.5 py-2.5 text-xs sm:justify-start"
+          >
+            <span
+              className={`inline-flex min-w-[1.75rem] shrink-0 justify-center rounded-md px-1.5 py-0.5 text-[11px] font-bold ring-1 ring-inset ${SEGMENT_BADGE_CLASS[item.harf]}`}
+            >
+              {item.harf}
+            </span>
+            <span className="truncate font-medium text-slate-800">{item.ad}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

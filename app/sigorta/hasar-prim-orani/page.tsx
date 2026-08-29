@@ -12,7 +12,6 @@ export default function SigortaHasarPrimOraniPage() {
     <TsbPageLayout
       seoPageId="hasarPrimOrani"
       currentHref="/sigorta/hasar-prim-orani"
-      title="Hasar / Prim oranı"
       description="Teknik sonuç ne durumda — branş bazında H/P sektörün neresinde?"
       sourceNote={<TsbSourceNote />}
     >

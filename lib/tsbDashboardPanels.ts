@@ -19,19 +19,19 @@ export type TsbDashboardGroupMeta = {
 export const TSB_DASHBOARD_GROUPS: readonly TsbDashboardGroupMeta[] = [
   {
     id: "prim",
-    title: "Prim ve üretim",
+    title: "Prim ve Üretim",
     description:
-      "Aylık TSB prim istatistikleri — kanal, branş, sıra, trend ve yoğunlaşma tek hub’da sekmelerle.",
+      "Aylık TSB prim istatistikleri — sıralama, branş kıyası, kanal dağılımı, trend ve pazar yoğunlaşması.",
   },
   {
     id: "finansal",
-    title: "Finansal karşılaştırma",
+    title: "Finansal Karşılaştırma",
     description:
       "Çeyrek bazında gelir tablosu (GT) ve bilanço (BL) özet KPI’ları; şirket, sektör veya başka bir şirketle kıyas.",
   },
   {
     id: "teknik",
-    title: "Teknik karlılık",
+    title: "Teknik Karlılık",
     description: "Gelir tablosu hasar/prim oranları; branş seçimi ve DERK dahil/hariç kırılımı.",
   },
 ] as const;
@@ -40,7 +40,7 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
     href: "/sigorta/sektor-gorunumu",
     badge: "Sektör",
-    title: "Sektör görünümü",
+    title: "Sektör Görünümü",
     subtitle: "HD + H/E toplam · kâr · bilanço · oranlar · ilk 10",
     icon: "🌐",
     group: "finansal",
@@ -48,7 +48,7 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
     href: "/sigorta/sirket-karne",
     badge: "Karne",
-    title: "Şirket karne",
+    title: "Şirket Karne",
     subtitle: "Tek şirket · özet · sekmeler · panellere geçiş",
     icon: "📋",
     group: "finansal",
@@ -56,7 +56,7 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
     href: "/sigorta/finansal-karsilastirma",
     badge: "Finansal",
-    title: "Finansal karşılaştırma",
+    title: "Finansal Karşılaştırma",
     subtitle: "KPI satırları · çeyrekler · HD / H/E / toplam · şirket vs sektör",
     icon: "📋",
     group: "finansal",
@@ -67,7 +67,7 @@ export const TSB_FINANSAL_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
 export const TSB_OLCEK_DASHBOARD_PANEL: TsbDashboardPanel = {
   href: "/sigorta/olcek-segmentasyon",
   badge: "Ölçek",
-  title: "Ölçek segmentasyonu",
+  title: "Ölçek Segmentasyonu",
   subtitle: "A+…D grupları · şirket listesi · sektör/segment sırası",
   icon: "🏢",
   group: "finansal",
@@ -77,7 +77,7 @@ export const TSB_TEKNIK_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
     href: "/sigorta/ana-brans-tkz",
     badge: "TKZ",
-    title: "Ana branş TKZ",
+    title: "Ana Branş TKZ",
     subtitle: "Teknik gelir / gider · branş kırılımı · şirket vs kıyas",
     icon: "🧮",
     group: "teknik",
@@ -85,14 +85,14 @@ export const TSB_TEKNIK_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   {
     href: "/sigorta/hasar-prim-orani",
     badge: "H/P",
-    title: "Hasar / Prim oranı",
+    title: "Hasar / Prim Oranı",
     subtitle: "Branş bazlı H/P · DERK dahil/hariç · sektör sırası",
     icon: "📉",
     group: "teknik",
   },
 ] as const;
 
-/** Prim hub — tek kart / tek sayfa; alt görünümler sekmeyle. */
+/** Eski prim hub URL’si — /sigorta/prim artık kanal-prim’e yönlendirir. */
 export const TSB_PRIM_HUB_HREF = "/sigorta/prim";
 
 export type TsbPrimPanelId =
@@ -114,38 +114,41 @@ export type TsbPrimViewTab = {
   legacyHref: string;
 };
 
+/** TSB hub ana sayfa H1 — panel başlıklarından ayrı (grup girişi). */
+export const TSB_HUB_PAGE_TITLE = "Sektör Verileri (TSB)";
+
 export const TSB_PRIM_VIEW_TABS: readonly TsbPrimViewTab[] = [
   {
     id: "kanal-prim",
-    title: "Prim sıralaması",
+    title: "Prim Sıralaması",
     subtitle: "Kanal / branş kırılımında şirket sırası · pay · YoY",
     story: "Seçili kırılımda hangi şirketler önde — pay ve YoY nasıl?",
     legacyHref: "/sigorta/kanal-prim",
   },
   {
     id: "brans",
-    title: "Branş kıyası",
+    title: "Branş Kıyası",
     subtitle: "Karşılaştırma ve sıra — değişim/pay veya sıra özeti",
     story: "Hangi branşlar büyüyor, hangileri küçülüyor — sıra nasıl değişti?",
     legacyHref: "/sigorta/brans-degisim",
   },
   {
     id: "kanal-dagilim",
-    title: "Satış kanalları",
+    title: "Satış Kanalları",
     subtitle: "Genel bakış · branş profili · şirket kıyası · liderler",
     story: "Lider kanal hangisi — dağılım ve yıllar içi değişim nasıl?",
     legacyHref: "/sigorta/kanal-dagilim",
   },
   {
     id: "prim-trend-12",
-    title: "Son 12 ay prim",
+    title: "Son 12 Ay Prim",
     subtitle: "Sektör vs şirket çizgisi · aylık üretim",
     story: "Son 12 ayda şirket üretimi sektöre göre nasıl seyretti?",
     legacyHref: "/sigorta/prim-trend-12",
   },
   {
     id: "pazar-yogunlasma",
-    title: "Pazar yoğunlaşması",
+    title: "Pazar Yoğunlaşması",
     subtitle: "Branş bazında HHI · top-5 pay · 12 ay trend",
     story: "Pazar ne kadar yoğun — ilk 5’in payı artıyor mu?",
     legacyHref: "/sigorta/pazar-yogunlasma",
@@ -157,16 +160,23 @@ export const TSB_BRANS_KIYAS_STORY: Record<"degisim" | "sira", string> = {
   sira: "Branş sıralaması nasıl değişti — kim yükseldi, kim düştü?",
 };
 
-export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
-  {
-    href: TSB_PRIM_HUB_HREF,
-    badge: "Prim",
-    title: "Prim ve üretim",
-    subtitle: "Branş kıyası · kanal · trend · yoğunlaşma — sekmeli hub",
-    icon: "📊",
-    group: "prim",
-  },
-] as const;
+const PRIM_PANEL_META: Record<TsbPrimPanelId, { badge: string; icon: string }> = {
+  "kanal-prim": { badge: "Prim", icon: "📊" },
+  brans: { badge: "Branş", icon: "📈" },
+  "kanal-dagilim": { badge: "Kanal", icon: "🏪" },
+  "prim-trend-12": { badge: "Trend", icon: "📉" },
+  "pazar-yogunlasma": { badge: "Pazar", icon: "🎯" },
+};
+
+/** Prim panelleri — hub’da ayrı kart; her biri kendi sayfasına gider. */
+export const TSB_PRIM_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = TSB_PRIM_VIEW_TABS.map((t) => ({
+  href: t.legacyHref,
+  badge: PRIM_PANEL_META[t.id].badge,
+  title: t.title,
+  subtitle: t.subtitle,
+  icon: PRIM_PANEL_META[t.id].icon,
+  group: "prim" as const,
+}));
 
 /** Tüm paneller (prim → finansal → teknik), hub sırası; ölçek en sonda */
 export const TSB_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
@@ -175,6 +185,31 @@ export const TSB_DASHBOARD_PANELS: readonly TsbDashboardPanel[] = [
   ...TSB_TEKNIK_DASHBOARD_PANELS,
   TSB_OLCEK_DASHBOARD_PANEL,
 ] as const;
+
+/**
+ * Hub vitrin girişleri — asimetrik ağırlık:
+ * primary = ana giriş; secondary = ikincil yollar.
+ * Katalog grid’inden çıkarılmaz (duplicate bilinçli).
+ */
+export const TSB_HUB_FEATURED = {
+  primaryHref: "/sigorta/sektor-gorunumu",
+  secondaryHrefs: ["/sigorta/kanal-prim", "/sigorta/finansal-karsilastirma"] as const,
+} as const;
+
+export function tsbHubFeaturedPanels(): {
+  primary: TsbDashboardPanel;
+  secondary: TsbDashboardPanel[];
+} {
+  const byHref = (href: string) => {
+    const p = tsbDashboardPanelByHref(href);
+    if (!p) throw new Error(`TSB hub featured panel bulunamadı: ${href}`);
+    return p;
+  };
+  return {
+    primary: byHref(TSB_HUB_FEATURED.primaryHref),
+    secondary: TSB_HUB_FEATURED.secondaryHrefs.map(byHref),
+  };
+}
 
 export function parsePrimPanelId(raw: string | null | undefined): TsbPrimPanelId {
   if (raw === "brans-degisim" || raw === "brans-sira") return "brans";
@@ -187,10 +222,9 @@ export function parseBransKiyasView(raw: string | null | undefined): TsbBransKiy
 }
 
 export function primPanelHref(id: TsbPrimPanelId, view?: string): string {
-  const q = new URLSearchParams();
-  q.set("panel", id);
-  if (view) q.set("view", view);
-  return `${TSB_PRIM_HUB_HREF}?${q.toString()}`;
+  if (id === "brans" && view === "sira") return "/sigorta/brans-sira";
+  if (id === "brans") return "/sigorta/brans-degisim";
+  return primPanelTab(id).legacyHref;
 }
 
 export function primPanelTab(id: TsbPrimPanelId): TsbPrimViewTab {
@@ -213,8 +247,22 @@ export function tsbDashboardPanelsExcept(excludeHref: string): TsbDashboardPanel
 
 export function tsbDashboardPanelByHref(href: string): TsbDashboardPanel | undefined {
   const path = href.split("?")[0] ?? href;
-  if (path === TSB_PRIM_HUB_HREF || primPanelIdFromLegacyHref(path)) {
-    return TSB_PRIM_DASHBOARD_PANELS[0];
+  if (path === "/sigorta/brans-sira") {
+    return TSB_PRIM_DASHBOARD_PANELS.find((p) => p.href === "/sigorta/brans-degisim");
+  }
+  if (path === TSB_PRIM_HUB_HREF) {
+    return TSB_PRIM_DASHBOARD_PANELS.find((p) => p.href === "/sigorta/kanal-prim");
   }
   return TSB_DASHBOARD_PANELS.find((p) => p.href === path);
+}
+
+/** Panel sayfası H1 — hub kartları ve prim sekmeleriyle aynı Title Case. */
+export function tsbPanelPageTitle(href: string): string {
+  const path = href.split("?")[0] ?? href;
+  if (path === "/sigorta/brans-sira") return "Branş Kıyası — Sıra Özeti";
+  const panel = tsbDashboardPanelByHref(path);
+  if (panel) return panel.title;
+  const prim = TSB_PRIM_VIEW_TABS.find((t) => t.legacyHref === path);
+  if (prim) return prim.title;
+  return "TSB Panel";
 }

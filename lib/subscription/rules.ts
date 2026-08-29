@@ -27,6 +27,7 @@ const PATH_RULES: { prefix: string; tag: InterestTag }[] = [
   { prefix: "/formul-kutuphanesi", tag: "excel" },
   { prefix: "/egitimler", tag: "training" },
   { prefix: "/finans-sigorta", tag: "finance" },
+  { prefix: "/blog", tag: "general" },
   { prefix: "/sigorta", tag: "insurance" },
   { prefix: "/tsb", tag: "tsb" },
   { prefix: "/ifrs17", tag: "ifrs17" },

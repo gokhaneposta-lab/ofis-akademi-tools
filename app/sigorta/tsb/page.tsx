@@ -8,6 +8,7 @@ import { tsb } from "@/components/tsb/tsbDashboardUi";
 import {
   TSB_DASHBOARD_GROUPS,
   TSB_DASHBOARD_PANELS,
+  TSB_HUB_PAGE_TITLE,
   TSB_OLCEK_DASHBOARD_PANEL,
 } from "@/lib/tsbDashboardPanels";
 import { loadSektorOzeti } from "@/lib/tsbSektorOzeti";
@@ -41,33 +42,16 @@ export default async function SigortaTsbHubPage() {
               </svg>
               Ana Sayfa
             </Link>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className={tsb.pageTitle}>Sektör verileri (TSB)</h1>
-              <span className={tsb.pageBadge}>Dashboard</span>
-            </div>
-            <p className={tsb.pageLead}>
-              Türkiye Sigortalar Birliği (TSB) kaynaklı veriler — site içinde yeniden düzenlenmiş gösterge
-              panelleri.
+            <h1 className={tsb.pageTitle}>{TSB_HUB_PAGE_TITLE}</h1>
+            <p className="mt-1 max-w-2xl text-sm leading-snug text-slate-600">
+              TSB kaynaklı prim, finansal ve teknik gösterge panelleri.
             </p>
-            <ul className={tsb.hubLeadList} aria-label="Veri türleri">
-              <li className={tsb.hubLeadItem}>
-                <span className={tsb.hubLeadBullet} aria-hidden />
-                <span>
-                  <strong>Prim panelleri</strong> — aylık prim üretimi, kanal ve branş kırılımları
-                </span>
-              </li>
-              <li className={tsb.hubLeadItem}>
-                <span className={tsb.hubLeadBullet} aria-hidden />
-                <span>
-                  <strong>Finansal karşılaştırma</strong> — çeyreklik gelir tablosu ve bilanço KPI&apos;ları
-                </span>
-              </li>
-            </ul>
-            <TsbVeriDurumuBand data={veriDurumu} />
           </div>
         </header>
 
         <main className={tsb.main}>
+          <TsbVeriDurumuBand data={veriDurumu} variant="band" />
+
           <TsbSektorOzeti data={sektorOzeti} />
 
           {TSB_DASHBOARD_GROUPS.map((group) => {
@@ -103,7 +87,7 @@ export default async function SigortaTsbHubPage() {
 
           <section aria-labelledby="tsb-group-olcek" className="mt-2">
             <h2 id="tsb-group-olcek" className={tsb.hubGroupTitle}>
-              Ölçek segmentasyonu
+              Ölçek Segmentasyonu
             </h2>
             <p className={tsb.hubGroupLead}>
               Şirketler prim, özsermaye ve aktif büyüklüğüne göre A+…D gruplarına ayrılır — karşılaştırma ve

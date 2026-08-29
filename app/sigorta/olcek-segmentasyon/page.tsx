@@ -12,7 +12,6 @@ export default function SigortaOlcekSegmentasyonPage() {
     <TsbPageLayout
       seoPageId="olcekSegmentasyon"
       currentHref="/sigorta/olcek-segmentasyon"
-      title="Ölçek segmentasyonu"
       description="Şirketler hangi ölçek grubunda — A+’dan D’ye kimlerle aynı lige düşüyor?"
       sourceNote={<TsbSourceNote />}
     >

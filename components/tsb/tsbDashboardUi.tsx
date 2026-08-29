@@ -4,7 +4,7 @@ import {
   TSB_DASHBOARD_GROUPS,
   TSB_DASHBOARD_PANELS,
   TSB_PRIM_VIEW_TABS,
-  primPanelHref,
+  primPanelIdFromLegacyHref,
   tsbDashboardPanelByHref,
   type TsbDashboardGroupId,
 } from "@/lib/tsbDashboardPanels";
@@ -21,8 +21,7 @@ export const tsb = {
   pageHeaderInner: "mx-auto max-w-[88rem] px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8",
   backLink:
     "mb-1.5 inline-flex min-h-[2rem] items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-emerald-800 sm:text-sm",
-  pageTitle:
-    "text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl lg:text-[2.25rem] lg:leading-tight",
+  pageTitle: "text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl",
   pageBadge:
     "rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300",
   pageLead: "mt-1.5 max-w-2xl text-sm font-medium leading-snug text-slate-600 sm:text-[0.95rem]",
@@ -201,16 +200,18 @@ export const tsb = {
 
   kpiGrid: "grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4 sm:gap-4",
   kpiCard:
-    "relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] before:absolute before:inset-y-3 before:left-0 before:w-1 before:rounded-r before:bg-emerald-500 before:content-[''] sm:p-5",
+    "relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.02] before:absolute before:inset-y-3 before:left-0 before:w-0.5 before:rounded-r before:bg-emerald-500 before:content-[''] sm:p-5",
   kpiCardAccent:
-    "border-emerald-200/80 bg-gradient-to-br from-emerald-50/50 to-white ring-emerald-900/[0.06] before:bg-emerald-600",
-  kpiLabel: "pl-2 text-[10px] font-bold uppercase tracking-widest text-slate-500",
+    "border-emerald-200/70 bg-white ring-emerald-900/[0.04] before:bg-emerald-600",
+  kpiLabel: "pl-2.5 text-[11px] font-medium uppercase tracking-wide text-slate-500",
   kpiValue:
-    "mt-1 pl-2 whitespace-nowrap text-lg font-extrabold tabular-nums tracking-tight text-slate-950 sm:text-xl",
+    "mt-1.5 pl-2.5 text-xl font-bold tabular-nums tracking-tight text-slate-900 sm:text-2xl",
+  kpiValueText:
+    "mt-1.5 pl-2.5 text-sm font-semibold leading-snug text-slate-900 line-clamp-2 sm:text-base",
   kpiValueAccent: "text-emerald-800",
-  kpiHint: "mt-1 pl-2 text-[11px] leading-snug text-slate-500",
-  kpiDelta: "mt-1 pl-2 text-[11px] font-bold tabular-nums",
-  kpiStory: "mt-1 pl-2 text-[11px] font-medium leading-snug text-slate-600",
+  kpiHint: "mt-1 pl-2.5 text-xs leading-snug text-slate-500",
+  kpiDelta: "mt-1 pl-2.5 text-sm font-medium tabular-nums",
+  kpiStory: "mt-2 pl-2.5 text-xs font-normal leading-snug text-slate-500",
 
   karnePerformansEyebrow:
     "mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-500",
@@ -284,6 +285,14 @@ export function tsbDeltaRenk(v: number | null | undefined): string {
   if (v > 0) return tsbDelta.iyi;
   if (v < 0) return tsbDelta.kotu;
   return tsbDelta.notr;
+}
+
+/** KPI kartları — yalnızca metin rengi, arka plan şeridi yok. */
+export function tsbKpiDeltaRenk(v: number | null | undefined): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return "text-slate-500";
+  if (v > 0) return "text-emerald-700";
+  if (v < 0) return "text-red-600";
+  return "text-amber-700";
 }
 
 /** Sıra Δ sütunu: iyileşme yeşil, aynı sarı, kötüleşme kırmızı. */
@@ -416,11 +425,13 @@ export function TsbDashboardStickyNav({
   activePrimPanel,
 }: {
   currentHref: string;
-  /** Prim hub sekmeleri için aktif panel id */
+  /** Prim panelleri arası sticky sekme vurgusu (çoğu sayfada currentHref’ten çıkarılır) */
   activePrimPanel?: string;
 }) {
-  const groupId: TsbDashboardGroupId = tsbDashboardPanelByHref(currentHref)?.group ?? "prim";
+  const path = currentHref.split("?")[0] ?? currentHref;
+  const groupId: TsbDashboardGroupId = tsbDashboardPanelByHref(path)?.group ?? "prim";
   const group = TSB_DASHBOARD_GROUPS.find((g) => g.id === groupId);
+  const activePrimId = activePrimPanel ?? primPanelIdFromLegacyHref(path) ?? "kanal-prim";
 
   return (
     <nav className={tsb.stickyNavWrap} aria-label="TSB panel geçişi">
@@ -434,11 +445,11 @@ export function TsbDashboardStickyNav({
         <div className={tsb.stickyNavLinks}>
           {groupId === "prim" ? (
             TSB_PRIM_VIEW_TABS.map((t) => {
-              const active = (activePrimPanel ?? "brans") === t.id;
+              const active = activePrimId === t.id;
               return (
                 <Link
                   key={t.id}
-                  href={primPanelHref(t.id)}
+                  href={t.legacyHref}
                   aria-current={active ? "page" : undefined}
                   className={cn(tsb.stickyNavLink, active && tsb.stickyNavLinkActive)}
                 >
@@ -448,7 +459,7 @@ export function TsbDashboardStickyNav({
             })
           ) : (
             TSB_DASHBOARD_PANELS.filter((p) => p.group === groupId).map((p) => {
-              const active = p.href === currentHref;
+              const active = p.href === path;
               return (
                 <Link
                   key={p.href}
@@ -565,6 +576,7 @@ export function TsbKpiCard({
   story,
   hint,
   accent,
+  valueVariant = "metric",
 }: {
   label: string;
   value: ReactNode;
@@ -575,11 +587,20 @@ export function TsbKpiCard({
   story?: ReactNode;
   hint?: ReactNode;
   accent?: boolean;
+  /** Uzun metin (branş adı vb.) için iki satır clamp */
+  valueVariant?: "metric" | "text";
 }) {
   return (
     <div className={cn(tsb.kpiCard, accent && tsb.kpiCardAccent)}>
       <p className={tsb.kpiLabel}>{label}</p>
-      <p className={cn(tsb.kpiValue, accent && tsb.kpiValueAccent)}>{value}</p>
+      <p
+        className={cn(
+          valueVariant === "text" ? tsb.kpiValueText : tsb.kpiValue,
+          accent && valueVariant === "metric" && tsb.kpiValueAccent,
+        )}
+      >
+        {value}
+      </p>
       {delta != null && delta !== "" ? (
         <p className={cn(tsb.kpiDelta, deltaClassName)}>{delta}</p>
       ) : null}

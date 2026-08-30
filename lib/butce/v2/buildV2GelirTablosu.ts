@@ -116,7 +116,7 @@ const V2_SENTETIK_FORMULLER: Array<[number, V2Formul]> = [
   ],
 ];
 
-function hesaplaV2SentetikSatirlar(gt: GelirTablosuSonuc): GelirTablosuSonuc {
+export function hesaplaV2SentetikSatirlar(gt: GelirTablosuSonuc): GelirTablosuSonuc {
   const hesapla = (degerler: Record<number, number>, formul: V2Formul) =>
     formul.reduce((toplam, b) => toplam + (degerler[b.satir] ?? 0) * b.carpan, 0);
   const hesaplaAylik = (degerler: Record<number, number[]>, formul: V2Formul) =>
@@ -219,33 +219,46 @@ export function buildV2GelirTablosu(opts: {
   oranAyar: OranAyarStore;
   kpkVade: KpkVadeRow[];
   kapanisTahmin: KpkKapanisTahminStore | null;
+  /** V3: hazır aylık prim dağılımı (mevsim blend). */
+  aylikPrimOverride?: AylikPrimStore;
+  /** V3: branş prim hedeflerini doğrudan kullan (A motoru atlanır). */
+  primHedefleriOverride?: Record<string, number>;
+  endirektPrimOverride?: Record<string, number>;
 }): V2GelirTablosuSonuc {
   const uyarilar: string[] = [];
   const butceYili = opts.varsayimlar.butceYili;
   const referansEtiket =
     opts.varsayimlar.referansEtiket ?? "Son 2 Yıl Ortalaması (2024-2025)";
 
-  const motor = new DagitimMotoru(
-    opts.uretim,
-    opts.tarifeMap,
-    opts.mizan,
-    opts.tarifeBransPay,
-  );
-  const dagitim = motor.dagit({
-    satisRows: opts.satisRows,
-    referansEtiket,
-    mizanYedek: true,
-    tarifeHedefleri: opts.varsayimlar.tarifeHedefleri,
-    yilAgirliklari: opts.varsayimlar.yilAgirliklari,
-  });
+  let primHedefleri: Record<string, number>;
+  let endirektPrim: Record<string, number>;
 
-  const primHedefleri: Record<string, number> = {};
-  for (const b of dagitim.bransOzet) primHedefleri[b.bransKodu] = b.hedefPrim;
-  const endirektPrim: Record<string, number> = {};
-  for (const b of dagitim.bransDirektEndirekt) endirektPrim[b.bransKodu] = b.endirektPrim;
+  if (opts.primHedefleriOverride && opts.endirektPrimOverride) {
+    primHedefleri = opts.primHedefleriOverride;
+    endirektPrim = opts.endirektPrimOverride;
+  } else {
+    const motor = new DagitimMotoru(
+      opts.uretim,
+      opts.tarifeMap,
+      opts.mizan,
+      opts.tarifeBransPay,
+    );
+    const dagitim = motor.dagit({
+      satisRows: opts.satisRows,
+      referansEtiket,
+      mizanYedek: true,
+      tarifeHedefleri: opts.varsayimlar.tarifeHedefleri,
+      yilAgirliklari: opts.varsayimlar.yilAgirliklari,
+    });
 
-  if (dagitim.ozet.dagitilan <= 0) {
-    uyarilar.push("Prim dağıtımı 0 — tarife hedefleri veya pay tablosunu kontrol edin.");
+    primHedefleri = {};
+    for (const b of dagitim.bransOzet) primHedefleri[b.bransKodu] = b.hedefPrim;
+    endirektPrim = {};
+    for (const b of dagitim.bransDirektEndirekt) endirektPrim[b.bransKodu] = b.endirektPrim;
+
+    if (dagitim.ozet.dagitilan <= 0) {
+      uyarilar.push("Prim dağıtımı 0 — tarife hedefleri veya pay tablosunu kontrol edin.");
+    }
   }
 
   uyarilar.push(...primMixUyarilari(primHedefleri, opts.mizan, butceYili));
@@ -261,14 +274,15 @@ export function buildV2GelirTablosu(opts: {
     oranSonuc.bransOranlari,
     genelOranlar,
   );
-  const aylikPrim: AylikPrimStore = {
-    butceYili,
-    referansYil: refYil,
-    kaynak: oranSonuc.kaynak,
-    genelOranlar,
-    satirlar: aylikSatirlar,
-    guncellemeIso: new Date().toISOString(),
-  };
+  const aylikPrim: AylikPrimStore =
+    opts.aylikPrimOverride ?? {
+      butceYili,
+      referansYil: refYil,
+      kaynak: oranSonuc.kaynak,
+      genelOranlar,
+      satirlar: aylikSatirlar,
+      guncellemeIso: new Date().toISOString(),
+    };
 
   const fg = buildFaaliyetGiderFromMizanArtis({
     mizan: opts.mizan,

@@ -18,6 +18,7 @@ import {
   BUTCE_FAALIYET_GIDER_JSON,
   BUTCE_BILANCO_AYLIK_JSON,
   BUTCE_V2_VARSAYIMLAR_JSON,
+  BUTCE_V3_VARSAYIMLAR_JSON,
 } from "./paths";
 import { readPrivateFile } from "./storage";
 import type {
@@ -37,6 +38,8 @@ import type {
   UretimRow,
 } from "./types";
 import type { V2VarsayimlarStore } from "./v2/types";
+import { v3DefaultsForYear, v3DefaultsStore2026 } from "./v3/defaults";
+import type { V3VarsayimlarStore } from "./v3/types";
 
 export async function loadMizanRows(): Promise<MizanRow[]> {
   const raw = await readPrivateFile(BUTCE_MIZAN_JSON);
@@ -184,6 +187,29 @@ export async function loadV2Varsayimlar(): Promise<V2VarsayimlarStore | null> {
   const raw = await readPrivateFile(BUTCE_V2_VARSAYIMLAR_JSON);
   if (!raw) return null;
   return JSON.parse(raw) as V2VarsayimlarStore;
+}
+
+/** Diskteki v3-varsayimlar.json; yoksa null (seed için varsayimlar route kullanır). */
+export async function loadV3VarsayimlarFromDisk(): Promise<V3VarsayimlarStore | null> {
+  const raw = await readPrivateFile(BUTCE_V3_VARSAYIMLAR_JSON);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as V3VarsayimlarStore;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * V3 varsayımlar: private dosya varsa onu, yoksa onaylı 2026 seed (defaults.ts).
+ */
+export async function loadV3Varsayimlar(
+  butceYili?: number,
+): Promise<V3VarsayimlarStore | null> {
+  const fromDisk = await loadV3VarsayimlarFromDisk();
+  if (fromDisk) return fromDisk;
+  const yil = butceYili ?? 2026;
+  return v3DefaultsForYear(yil) ?? (yil === 2026 ? v3DefaultsStore2026() : null);
 }
 
 export async function loadButceMeta(): Promise<ButceMeta | null> {

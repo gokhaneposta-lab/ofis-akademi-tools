@@ -19,6 +19,7 @@ export const BUTCE_SATIS_BUTCE_JSON = "satis-butce.json";
 export const BUTCE_URETIM_JSON = "uretim.json";
 export const BUTCE_FAALIYET_GIDER_JSON = "faaliyet-gider.json";
 export const BUTCE_V2_VARSAYIMLAR_JSON = "v2-varsayimlar.json";
+export const BUTCE_V3_VARSAYIMLAR_JSON = "v3-varsayimlar.json";
 
 /** @deprecated use localPrivateDir() */
 export const BUTCE_PRIVATE_DIR = join(process.cwd(), "data", "butce", "private");

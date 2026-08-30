@@ -23,6 +23,7 @@
     "butce:import-mizan": "node scripts/butce-import-mizan.mjs",
     "butce:import-aylik-gt": "node scripts/butce-import-aylik-gt.mjs",
     "butce:recon-oran": "npx --yes tsx scripts/butce-recon-oran.ts",
+    "butce:v3-validate": "npx --yes tsx scripts/butce-v3-validate.ts",
     "butce:gen-brans": "node scripts/gen-brans-json.mjs",
     "subscription:migrate": "npx --yes tsx scripts/subscription-migrate.ts",
     "subscription:rules-smoke": "npx --yes tsx scripts/subscription-rules-smoke.ts",

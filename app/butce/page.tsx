@@ -49,15 +49,26 @@ export default async function ButceHomePage() {
       </section>
 
       <Link
-        href="/butce/v2"
-        className="block rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm transition hover:border-emerald-300"
+        href="/butce/v3"
+        className="block rounded-xl border-2 border-emerald-400 bg-emerald-50 p-4 shadow-sm transition hover:border-emerald-500"
       >
-        <h2 className="text-sm font-semibold text-emerald-950">Bütçe V2 — hızlı GT taslak</h2>
+        <h2 className="text-sm font-semibold text-emerald-950">Bütçe V3 — Mizan Tahmini (önerilen)</h2>
         <p className="mt-1 text-sm text-emerald-900/90">
-          Tarife hedef prim + genel gider artışı + aylık mali getiri ile paralel projeksiyon. V1
-          adımlarını bozmaz. Mali gelir nakit proxy&apos;si tahakkuk esaslı basitleştirmedir.
+          2026 seed: tarife prim + 614 gider + aylık getiri. YTD kilidi (Temmuz), teknik oranlar ve
+          aylık GT otomatik. V2 motorunun üstünde pratik tek ekran.
         </p>
-        <p className="mt-2 text-sm font-medium text-emerald-800">V2 ekranına git →</p>
+        <p className="mt-2 text-sm font-medium text-emerald-800">V3 ekranına git →</p>
+      </Link>
+
+      <Link
+        href="/butce/v2"
+        className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-slate-300"
+      >
+        <h2 className="text-sm font-semibold text-slate-900">Bütçe V2 — hızlı GT taslak</h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Eski paralel projeksiyon. Yeni bütçe için V3 tercih edin.
+        </p>
+        <p className="mt-2 text-sm font-medium text-slate-700">V2 ekranına git →</p>
       </Link>
 
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">

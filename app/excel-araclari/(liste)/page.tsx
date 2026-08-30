@@ -245,6 +245,11 @@ const analiz: Tool[] = [
     description: "Sınıf aralıklarına göre frekans tablosu.",
   },
   {
+    name: "Grafik Oluşturucu",
+    href: "/excel-araclari/grafik-olusturucu",
+    description: "Veriyi yapıştır; çubuk, çizgi veya pasta grafik önizle.",
+  },
+  {
     name: "Basit Regresyon",
     href: "/excel-araclari/basit-regresyon",
     description: "Doğrusal regresyon: eğim, kesişim, R².",

@@ -35,6 +35,7 @@ export const EXCEL_TOOLS: ExcelTool[] = [
   { name: "Korelasyon Hesaplama (Pearson)", href: "/excel-araclari/korelasyon" },
   { name: "Z Skor (Z-Score) Hesaplama", href: "/excel-araclari/z-score" },
   { name: "Frekans Dağılımı Hesaplama", href: "/excel-araclari/frekans-dagilimi" },
+  { name: "Excel Grafik Oluşturucu", href: "/excel-araclari/grafik-olusturucu" },
   { name: "Regresyon Hesaplama (Doğrusal)", href: "/excel-araclari/basit-regresyon" },
   { name: "Excel Formül Asistanı", href: "/excel-araclari/formul-asistani" },
   { name: "DÜŞEYARA Formül Oluşturucu", href: "/excel-araclari/duseyara-olusturucu" },

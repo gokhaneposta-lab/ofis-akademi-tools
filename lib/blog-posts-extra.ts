@@ -584,6 +584,11 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
     title: "Excel'de Grafik Oluşturma: Çubuk, Pasta, Çizgi — Adım Adım Rehber",
     description: "Excel'de grafik türleri, oluşturma adımları, biçimlendirme ve en iyi uygulamalar. Başlangıçtan ileriye rehber.",
     date: "2026-03-24",
+    toolHref: "/excel-araclari/grafik-olusturucu",
+    toolName: "Grafik Oluşturucu",
+    ctaStyle: "educational",
+    educationalToolNote:
+      "Excel'de grafik oluşturmadan önce verinizi hızlıca görselleştirmek için grafik önizleme aracını kullanabilirsiniz.",
     guideHref: "/egitimler/temel",
     guideName: "Temel Seviye Eğitim",
     content: [
@@ -614,6 +619,14 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
       { type: "h3", text: "Dinamik grafik oluşturma" },
       { type: "p", text: "Verinizi Ctrl+T ile tabloya çevirirseniz tabloya yeni satır eklediğinizde grafik otomatik güncellenir. Bu sayede her ay grafiği yeniden oluşturmanız gerekmez." },
       { type: "p", text: "Özet: Veriyi seçin, Ekle → grafik türü seçin, biçimlendirin. Karşılaştırma için çubuk, trend için çizgi, oran için pasta kullanın. Veriyi tablo yaparsanız grafik otomatik büyür." },
+      {
+        type: "links",
+        title: "İlgili kaynaklar",
+        items: [
+          { label: "Grafik Oluşturucu (önizleme + PNG)", href: "/excel-araclari/grafik-olusturucu" },
+          { label: "Temel seviye Excel eğitimi", href: "/egitimler/temel" },
+        ],
+      },
     ],
   },
   {

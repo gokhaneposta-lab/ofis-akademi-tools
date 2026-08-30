@@ -49,6 +49,11 @@ export type BlogPost = {
   keywords?: string[];
   /** Üst/orta agresif araç CTA'sı yerine öğretici akış (varsayılan: tool). */
   ctaStyle?: "tool" | "educational";
+  /** Öğretici akışta alt CTA — formül kütüphanesi linki. */
+  formulHref?: string;
+  formulName?: string;
+  /** Öğretici akışta araç kutusu açıklaması (yoksa genel metin). */
+  educationalToolNote?: string;
   /** Sayfa altında FAQ + FAQPage şeması */
   faqs?: Array<{ question: string; answer: string }>;
   /** Sosyal paylaşım / OG görseli URL'si (opsiyonel; yoksa site varsayılanı kullanılır). */
@@ -218,6 +223,10 @@ const BLOG_POSTS_CORE: BlogPost[] = [
     toolHref: "/excel-araclari/kelime-karakter-sayaci",
     toolName: "Kelime & Karakter Sayacı",
     ctaStyle: "educational",
+    formulHref: "/formul-kutuphanesi/uzunluk",
+    formulName: "UZUNLUK",
+    educationalToolNote:
+      "Hücre formülü yerine metni doğrudan yapıştırarak kelime ve karakter sayısını görmek isterseniz sayacı kullanabilirsiniz.",
     keywords: [
       "excel karakter sayma",
       "excelde karakter sayma",

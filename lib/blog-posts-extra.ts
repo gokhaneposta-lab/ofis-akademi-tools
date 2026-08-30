@@ -73,11 +73,36 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
   },
   {
     slug: "excelde-bosluk-temizleme",
-    title: "Excel'de Boşluk Temizleme: Baş-Son Boşlukları Tek Tıkla Sil (Ücretsiz Araç)",
-    description: "Excel'de TEMİZLE (TRIM) veya toplu boşluk temizleme. En hızlı çözüm: ücretsiz araç.",
+    title: "Excel'de Boşluk Temizleme: TEMİZLE (TRIM) Formülü ve Toplu Temizlik",
+    description:
+      "Excel'de baştaki ve sondaki boşlukları silmek için TEMİZLE (TRIM) formülü, çift boşlukları düzeltme ve toplu liste temizliği — adım adım örnekler.",
     date: DATE,
     toolHref: "/excel-araclari/bosluk-temizle",
     toolName: "Boşluk Temizle",
+    ctaStyle: "educational",
+    formulHref: "/formul-kutuphanesi/kirp",
+    formulName: "KIRP / TEMİZLE",
+    educationalToolNote:
+      "Formül yerine listeyi yapıştırıp tek tıkla temizlemek için boşluk temizleme aracını kullanabilirsiniz.",
+    keywords: [
+      "excel boşluk temizleme",
+      "excel trim",
+      "excel sondaki boşluğu silme",
+      "temizle formülü excel",
+      "excel çift boşluk",
+    ],
+    faqs: [
+      {
+        question: "Excel'de sondaki boşluk nasıl silinir?",
+        answer:
+          "=TEMİZLE(A1) baştaki ve sondaki boşlukları siler. İngilizce Excel'de TRIM aynı işlevi görür. Sonucu Değer olarak yapıştırarak kalıcı hale getirin.",
+      },
+      {
+        question: "TEMİZLE kelime arasındaki çift boşlukları da düzeltir mi?",
+        answer:
+          "Evet. TEMİZLE kelimeler arasındaki birden fazla boşluğu tek boşluğa indirir. Yalnızca baş/son için KIRP yeterlidir.",
+      },
+    ],
     content: [
       { type: "p", text: "Dış sistemlerden veya kopyala-yapıştırla gelen metinlerde başta, sonda veya kelime arasında gereksiz boşluklar olabilir. Bunlar eşleştirme ve sıralamada sorun çıkarır." },
       { type: "h3", text: "1. Yöntem: TEMİZLE (TRIM) formülü" },
@@ -85,6 +110,14 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
       { type: "h3", text: "2. Yöntem: Araç ile toplu temizlik" },
       { type: "p", text: "Metni yapıştırıp temizleyen araçlar tek tıkla sonuç verir; çıktıyı Excel'e yapıştırabilirsiniz." },
       { type: "p", text: "Özet: Excel'de TEMİZLE; liste dışarıdaysa veya toplu temizlik istiyorsanız araç." },
+      {
+        type: "links",
+        title: "İlgili kaynaklar",
+        items: [
+          { label: "KIRP / TEMİZLE — Formül Kütüphanesi", href: "/formul-kutuphanesi/kirp" },
+          { label: "Boşluk Temizle aracı", href: "/excel-araclari/bosluk-temizle" },
+        ],
+      },
     ],
   },
   {
@@ -427,11 +460,24 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
   },
   {
     slug: "excel-duseyara-formul-olusturma",
-    title: "Excel DÜŞEYARA Formülü: Adım Adım Oluşturucu (Ücretsiz Araç)",
-    description: "DÜŞEYARA formülünü tablo ve sütun seçerek otomatik oluştur. En kolay yöntem—ücretsiz araç.",
+    title: "Excel DÜŞEYARA Formülü: VLOOKUP Kullanımı, Örnekler ve Oluşturucu",
+    description:
+      "Excel DÜŞEYARA (VLOOKUP) nasıl yazılır? Sözdizimi, tam eşleşme, tablo aralığı seçimi ve EĞERHATA ile hata yönetimi — formül oluşturucu ile pratik.",
     date: DATE,
     toolHref: "/excel-araclari/duseyara-olusturucu",
     toolName: "DÜŞEYARA Formül Oluşturucu",
+    ctaStyle: "educational",
+    formulHref: "/formul-kutuphanesi/duseyara",
+    formulName: "DÜŞEYARA",
+    educationalToolNote:
+      "Tablo aralığı ve sütun numarasını seçerek hazır DÜŞEYARA formülünü üretmek için oluşturucuyu kullanabilirsiniz.",
+    keywords: [
+      "düşeyara formülü",
+      "excel düşeyara",
+      "vlookup formülü",
+      "düşeyara nasıl kullanılır",
+      "excel vlookup türkçe",
+    ],
     content: [
       { type: "p", text: "Bir tabloda arama değerine göre aynı satırdaki başka sütundaki değeri getirmek için DÜŞEYARA (VLOOKUP) kullanılır. Formül oluşturucu ile adım adım formül çıkarabilirsiniz." },
       { type: "h3", text: "Sözdizimi" },
@@ -439,6 +485,15 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
       { type: "h3", text: "Araç ile formül oluşturma" },
       { type: "p", text: "Tablo aralığı, aranan hücre ve hangi sütunun getirileceğini seçerek hazır DÜŞEYARA formülünü üreten araçlar formülü kopyalayıp Excel'e yapıştırmanızı sağlar." },
       { type: "p", text: "Özet: Mantığı biliyorsanız doğrudan yazın; ilk kez kullanıyorsanız oluşturucu yardımcı." },
+      {
+        type: "links",
+        title: "İlgili kaynaklar",
+        items: [
+          { label: "DÜŞEYARA — Formül Kütüphanesi", href: "/formul-kutuphanesi/duseyara" },
+          { label: "XLOOKUP (ÇAPRAZARA) rehberi", href: "/blog/excel-caprazara-xlookup-kullanimi" },
+          { label: "DÜŞEYARA formül oluşturucu", href: "/excel-araclari/duseyara-olusturucu" },
+        ],
+      },
     ],
   },
   {
@@ -641,9 +696,39 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
   },
   {
     slug: "excel-caprazara-xlookup-kullanimi",
-    title: "Excel'de ÇAPRAZARA (XLOOKUP) Kullanımı: DÜŞEYARA'nın Modern Alternatifi",
-    description: "XLOOKUP (ÇAPRAZARA) formülünün sözdizimi, DÜŞEYARA ile farkları, örnekler ve adım adım kullanım rehberi.",
+    title: "XLOOKUP Nasıl Kullanılır? ÇAPRAZARA Formülü, Örnekler ve DÜŞEYARA Farkı",
+    description:
+      "XLOOKUP (ÇAPRAZARA) nasıl kullanılır? Türkçe Excel sözdizimi, sola arama, bulunamazsa parametresi ve DÜŞEYARA ile karşılaştırma — adım adım örnekler.",
     date: "2026-03-24",
+    ctaStyle: "educational",
+    formulHref: "/formul-kutuphanesi/xlookup",
+    formulName: "XLOOKUP",
+    keywords: [
+      "xlookup",
+      "xlookup kullanımı",
+      "xlookup nasıl kullanılır",
+      "xlookup türkçesi",
+      "çaprazara kullanımı",
+      "excel xlookup",
+      "xlookup düşeyara farkı",
+    ],
+    faqs: [
+      {
+        question: "XLOOKUP Türkçe Excel'de nasıl yazılır?",
+        answer:
+          "Türkçe Excel'de fonksiyon adı ÇAPRAZARA'dır: =ÇAPRAZARA(aranan; arama_aralığı; dönüş_aralığı; [bulunamadıysa]). İngilizce sürümde XLOOKUP kullanılır; parametre sırası aynıdır.",
+      },
+      {
+        question: "XLOOKUP ile DÜŞEYARA arasındaki temel fark nedir?",
+        answer:
+          "XLOOKUP sola da bakabilir, sütun numarası istemez ve bulunamadıysa parametresi yerleşiktir. DÜŞEYARA yalnızca ilk sütunda arar ve sütun indeksi gerektirir.",
+      },
+      {
+        question: "Hangi Excel sürümlerinde XLOOKUP var?",
+        answer:
+          "Microsoft 365 ve Excel 2021 ve sonrası. Eski sürümlerde İNDİS+KAÇINCI veya DÜŞEYARA kullanılır.",
+      },
+    ],
     guideHref: "/egitimler/ileri",
     guideName: "İleri Seviye Eğitim",
     content: [
@@ -677,6 +762,15 @@ export const BLOG_POSTS_EXTRA: BlogPost[] = [
       { type: "h3", text: "Ne zaman ÇAPRAZARA kullanmalı?" },
       { type: "p", text: "Excel 365 veya 2021+ kullanıyorsanız yeni formüllerinizi ÇAPRAZARA ile yazmanız önerilir. Eski dosyalardaki DÜŞEYARA'ları değiştirmek zorunda değilsiniz ama yeni projelerde ÇAPRAZARA daha güvenli ve okunaklıdır." },
       { type: "p", text: "Özet: ÇAPRAZARA = daha esnek DÜŞEYARA. Her yöne bakabilir, sütun numarası gerektirmez, bulunamadıysa parametresi yerleşik. Excel 365/2021+ için standart arama fonksiyonu." },
+      {
+        type: "links",
+        title: "İlgili kaynaklar",
+        items: [
+          { label: "XLOOKUP — Formül Kütüphanesi", href: "/formul-kutuphanesi/xlookup" },
+          { label: "DÜŞEYARA formül rehberi", href: "/blog/excel-duseyara-formul-olusturma" },
+          { label: "DÜŞEYARA formül oluşturucu", href: "/excel-araclari/duseyara-olusturucu" },
+        ],
+      },
     ],
   },
   {

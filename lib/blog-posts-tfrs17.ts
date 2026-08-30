@@ -324,15 +324,16 @@ export const BLOG_POSTS_TFRS17: BlogPost[] = [
    * ============================================================ */
   {
     slug: CSM_SLUG,
-    title: "IFRS 17 CSM Nedir? Sözleşme Hizmet Marjı — Excel Örnekli Basit Anlatım",
+    title: "CSM Nedir? IFRS 17 Sözleşme Hizmet Marjı — Hesaplama ve Excel Örneği",
     description:
-      "IFRS 17 Sözleşme Hizmet Marjı (CSM) nedir, nasıl hesaplanır ve gelire nasıl yayılır? Basit 1.200 / 960 / 240 örneği, aylık itfa, unlocking mantığı ve Excel şablonu.",
+      "CSM (Sözleşme Hizmet Marjı) nedir? IFRS 17'de nasıl hesaplanır, gelire nasıl yayılır? 1.200 / 960 / 240 basit örneği, itfa ve unlocking mantığı.",
     date: "2026-04-19",
     guideHref: `/blog/${HUB_SLUG}`,
     guideName: "IFRS 17 ana rehber",
     image: OG_IMAGE,
     keywords: [
       ...COMMON_KEYWORDS,
+      "csm nedir",
       "IFRS 17 CSM hesaplama",
       "CSM itfa",
       "CSM unlocking",

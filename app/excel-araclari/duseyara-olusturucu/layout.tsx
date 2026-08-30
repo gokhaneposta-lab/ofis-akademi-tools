@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "DÜŞEYARA Formül Oluşturucu | Excel VLOOKUP Formülü Üret",
+  title: "DÜŞEYARA Formül Oluşturucu — Excel VLOOKUP | Ofis Akademi",
   description:
-    "Aranan değer, arama tablosu ve sütun numarasından DÜŞEYARA (VLOOKUP) formülü oluşturun. Kopyalayıp Excel'e yapıştırın. Ofis Akademi.",
+    "Excel DÜŞEYARA (VLOOKUP) formülünü tablo aralığı ve sütun seçerek otomatik oluşturun. Kopyalayıp Excel'e yapıştırın — ücretsiz araç.",
   alternates: {
     canonical: canonicalUrl("/excel-araclari/duseyara-olusturucu"),
   },

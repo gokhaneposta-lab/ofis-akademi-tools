@@ -373,28 +373,48 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Bottom CTA */}
         <div className="mt-8 rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-5 text-center">
-          {isEducationalCta && post.toolHref ? (
+          {isEducationalCta ? (
             <>
-              <p className="text-[14px] font-medium text-gray-800 mb-1">İlgili araç</p>
-              <p className="text-[13px] text-gray-600 mb-4">
-                Hücre formülü yerine metni doğrudan yapıştırarak kelime ve karakter sayısını görmek
-                isterseniz {post.toolName} kullanılabilir.
-              </p>
-              <Link
-                href={post.toolHref}
-                className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white transition hover:opacity-90 shadow-sm"
-                style={{ background: ACCENT }}
-              >
-                Sayacı aç
-              </Link>
-              <p className="mt-3">
-                <Link
-                  href="/formul-kutuphanesi/uzunluk"
-                  className="text-[13px] font-medium text-emerald-600 hover:underline"
-                >
-                  UZUNLUK formül sayfası →
-                </Link>
-              </p>
+              {post.toolHref ? (
+                <>
+                  <p className="text-[14px] font-medium text-gray-800 mb-1">İlgili araç</p>
+                  <p className="text-[13px] text-gray-600 mb-4">
+                    {post.educationalToolNote ??
+                      "Formülü öğrendikten sonra listeyi yapıştırıp hızlı sonuç almak için aracı kullanabilirsiniz."}
+                  </p>
+                  <Link
+                    href={post.toolHref}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white transition hover:opacity-90 shadow-sm"
+                    style={{ background: ACCENT }}
+                  >
+                    {post.toolName ?? "Aracı aç"}
+                  </Link>
+                </>
+              ) : post.formulHref ? (
+                <>
+                  <p className="text-[14px] font-medium text-gray-800 mb-1">Formül kütüphanesi</p>
+                  <p className="text-[13px] text-gray-600 mb-4">
+                    Sözdizimi, parametreler ve örnekler için detaylı formül sayfasına geçebilirsiniz.
+                  </p>
+                  <Link
+                    href={post.formulHref}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-semibold text-white transition hover:opacity-90 shadow-sm"
+                    style={{ background: ACCENT }}
+                  >
+                    {post.formulName ?? "Formül sayfası"}
+                  </Link>
+                </>
+              ) : null}
+              {post.formulHref && post.toolHref ? (
+                <p className="mt-3">
+                  <Link
+                    href={post.formulHref}
+                    className="text-[13px] font-medium text-emerald-600 hover:underline"
+                  >
+                    {post.formulName ?? "Formül"} sayfası →
+                  </Link>
+                </p>
+              ) : null}
             </>
           ) : (
             <>

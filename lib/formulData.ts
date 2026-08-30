@@ -98,6 +98,19 @@ export const formulas: FormulaDef[] = [
     guideName: "Orta Seviye Eğitim",
     toolHref: "/excel-araclari/duseyara-olusturucu",
     toolName: "DÜŞEYARA Oluşturucu",
+    blogHref: "/blog/excel-duseyara-formul-olusturma",
+    blogName: "DÜŞEYARA rehberi",
+    seoTitle: "DÜŞEYARA Formülü: Excel VLOOKUP Kullanımı, Örnekler ve İpuçları",
+    seoDescription:
+      "Excel DÜŞEYARA (VLOOKUP) nasıl yazılır? Sözdizimi, tam eşleşme, tablo aralığı ve EĞERHATA ile hata yönetimi — adım adım örnekler.",
+    seoKeywords: [
+      "düşeyara formülü",
+      "excel düşeyara",
+      "vlookup formülü",
+      "düşeyara nasıl kullanılır",
+      "excel vlookup türkçe",
+      "düşey ara formülü",
+    ],
   },
   {
     slug: "xlookup",
@@ -136,17 +149,19 @@ export const formulas: FormulaDef[] = [
     guideName: "Orta Seviye Eğitim",
     blogHref: "/blog/excel-caprazara-xlookup-kullanimi",
     blogName: "XLOOKUP Blog Yazısı",
-    seoTitle: "XLOOKUP Kullanımı: Excel'de Sola Arama, Örnekler ve DÜŞEYARA Farkı",
+    seoTitle: "XLOOKUP Nasıl Kullanılır? ÇAPRAZARA Formülü, Örnekler ve DÜŞEYARA Farkı",
     seoDescription:
-      "XLOOKUP nasıl kullanılır? Sözdizimi, sola arama, bulunamazsa parametresi, gerçek örnekler ve DÜŞEYARA ile karşılaştırma — adım adım rehber.",
+      "XLOOKUP (ÇAPRAZARA) nasıl kullanılır? Türkçe Excel sözdizimi, sola arama, bulunamazsa parametresi, örnekler ve DÜŞEYARA ile farklar — adım adım.",
     seoKeywords: [
+      "xlookup",
       "xlookup kullanımı",
       "xlookup nasıl kullanılır",
+      "xlookup türkçesi",
+      "çaprazara kullanımı",
       "excel xlookup",
       "xlookup örnek",
       "xlookup düşeyara farkı",
       "xlookup sola arama",
-      "çaprazara kullanımı",
     ],
   },
   {

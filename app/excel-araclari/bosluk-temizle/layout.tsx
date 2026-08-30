@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { canonicalUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Excel Boşluk Temizleme (TRIM) | Boş Satır Sil",
+  title: "Excel Boşluk Temizleme — TEMİZLE (TRIM) Formülü | Ofis Akademi",
   description:
-    "Baştaki/sondaki boşlukları ve çift boşlukları temizleyin; isteğe bağlı boş satırları silin. Ücretsiz TRIM aracı. Ofis Akademi.",
+    "Excel'de baştaki ve sondaki boşlukları TEMİZLE (TRIM) ile silin; çift boşlukları düzeltin. Toplu liste temizliği için ücretsiz araç.",
   alternates: {
     canonical: canonicalUrl("/excel-araclari/bosluk-temizle"),
   },

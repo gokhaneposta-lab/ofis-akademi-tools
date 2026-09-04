@@ -51,6 +51,7 @@ function mizanYtdHesap(
   hesapKodu: string,
   anchorAy: number,
 ): number {
+  if (hesapKodu === "614") return mizanYtd614Teknik(sirketGt, anchorAy);
   const gt = HESAP_TO_GT[hesapKodu];
   if (gt) return ytdGtPrefix(sirketGt, gt, anchorAy);
   // Üst hesap: çocuk hesapları topla
@@ -66,6 +67,11 @@ function v3YtdHesap(
   cache: Map<string, number>,
 ): number {
   if (cache.has(hesapKodu)) return cache.get(hesapKodu)!;
+  if (hesapKodu === "614") {
+    const val = v3YtdSatir(gt, 9006, anchorAy);
+    cache.set(hesapKodu, val);
+    return val;
+  }
   const gtKod = HESAP_TO_GT[hesapKodu];
   let val = 0;
   if (gtKod) {
@@ -136,8 +142,20 @@ function flattenTutmayan(nodes: MizanReconSatir[]): MizanReconSatir[] {
   return out;
 }
 
+/** Teknik gelir kök hesapları (603 hariç). */
+const TEKNIK_GELIR_HESAPLAR = ["600", "601", "602", "604", "605"] as const;
+/** 614 altında teknik faaliyet (genel gider hariç). */
+const TEKNIK_614_COCUK = ["61401", "61407", "61408", "61409"] as const;
+
 /** Teknik gelir / gider kök hesapları — format7 üst seviye. */
-const RECON_KOKLER = ["600", "601", "602", "605", "610", "611", "613", "614"] as const;
+const RECON_KOKLER = [
+  ...TEKNIK_GELIR_HESAPLAR,
+  "610", "611", "612", "613", "614", "615",
+] as const;
+
+function mizanYtd614Teknik(sirketGt: Map<string, number[]>, anchorAy: number): number {
+  return TEKNIK_614_COCUK.reduce((s, h) => s + mizanYtdHesap(sirketGt, h, anchorAy), 0);
+}
 
 /**
  * Mizan gerçekleşme ile V3 YTD karşılaştırması.
@@ -158,21 +176,22 @@ export function mizanV3Recon(
     reconNode(gt, sirketGt, h, anchor, v3Cache, 0, maxDerinlik),
   );
 
-  const teknikGelirM = ["600", "601", "602", "605"].reduce(
+  const teknikGelirM = TEKNIK_GELIR_HESAPLAR.reduce(
     (s, h) => s + mizanYtdHesap(sirketGt, h, anchor),
     0,
   );
-  const teknikGiderM = ["610", "611", "613", "614"].reduce(
-    (s, h) => s + mizanYtdHesap(sirketGt, h, anchor),
-    0,
-  );
+  const teknikGiderM =
+    (["610", "611", "612", "613", "615"] as const).reduce(
+      (s, h) => s + mizanYtdHesap(sirketGt, h, anchor),
+      0,
+    ) + mizanYtd614Teknik(sirketGt, anchor);
   const safiTkzMizan = teknikGelirM + teknikGiderM;
   const safiTkzV3 = v3YtdSatir(gt, 9003, anchor);
 
   const tutmayan = flattenTutmayan(kokler);
   const ozet: string[] = [];
   ozet.push(
-    `Mizan Safi TKZ (600–605 + 610–614): ${Math.round(safiTkzMizan).toLocaleString("tr-TR")} TL`,
+    `Mizan Safi TKZ (600–605 + 610–615, 603/genel gider hariç): ${Math.round(safiTkzMizan).toLocaleString("tr-TR")} TL`,
   );
   ozet.push(`V3 Safi TKZ (9003): ${Math.round(safiTkzV3).toLocaleString("tr-TR")} TL`);
   if (Math.abs(safiTkzMizan - safiTkzV3) > TOLERANS_TL) {

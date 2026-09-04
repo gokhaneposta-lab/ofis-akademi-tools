@@ -7,8 +7,10 @@ import type { V3KalibrasyonSatir } from "./types";
 /** Yıllık tarife hedefini korumak için H2 ölçeklenen satırlar. */
 const RESCALE_TO_ANNUAL = new Set<number>([11]);
 
-/** Kullanıcı girdisi — YTD mizandan gelmez (yalnızca mali gelir). */
-const MIZAN_DISI_SATIRLAR = new Set<number>([38]);
+/** Kullanıcı girdisi + türetilmiş satırlar — YTD mizandan doğrudan kilitlenmez. */
+const MIZAN_DISI_SATIRLAR = new Set<number>([
+  38, 9, 94, 9001, 9002, 9003, 9005,
+]);
 
 /** Kalibrasyon raporu. */
 const KALIBRASYON_SATIRLARI: ReadonlyArray<{ satir: number; ad: string }> = [
@@ -17,10 +19,12 @@ const KALIBRASYON_SATIRLARI: ReadonlyArray<{ satir: number; ad: string }> = [
   { satir: 96, ad: "Brüt ödenen hasar (61001)" },
   { satir: 114, ad: "Muallak (611)" },
   { satir: 115, ad: "Brüt muallak değişim (61101)" },
-  { satir: 164, ad: "Dengeleme (613 / 024)" },
+  { satir: 157, ad: "İkramiye karşılığı (612)" },
+  { satir: 164, ad: "Diğer teknik karşılık (613)" },
   { satir: 177, ad: "Üretim komisyon (61401)" },
-  { satir: 9, ad: "Teknik gelir (F9)" },
-  { satir: 94, ad: "Teknik gider (F94)" },
+  { satir: 202, ad: "Diğer teknik gider (615)" },
+  { satir: 9001, ad: "Teknik gelir (600–605, 603 hariç)" },
+  { satir: 9002, ad: "Teknik gider (610–615, genel gider hariç)" },
   { satir: 9003, ad: "Safi TKZ" },
 ];
 

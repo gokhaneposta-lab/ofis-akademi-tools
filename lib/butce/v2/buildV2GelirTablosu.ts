@@ -80,20 +80,29 @@ function dagitMaliGelirNetNakit(
 
 /**
  * V2 katmanları (bilinçli ayrım):
- * 1) TEKNİK GELİR  = F9 (603/F38 mali gelir YOK — F9 motorunda F38 gömülmez)
- * 2) TEKNİK GİDER  = F94 − genel gider (61402–06); komisyon vb. teknik faaliyet kalır
+ * 1) TEKNİK GELİR  = 600+601+602+604+605 (603/F38 hariç — Safi TKZ altında gösterilir)
+ * 2) TEKNİK GİDER  = 610+611+612+613+614(tk faaliyet)+615; 61402–06 genel giderde
  * 3) SAFİ TKZ      = teknik gelir + teknik gider
- * 4) TKZ           = safi + F38 (603) + genel giderler  → en altta eklenir
+ * 4) TKZ           = safi + F38 (603) + genel giderler
  */
+/** GT F satır: 600→10, 601→21, 602→31, 604→83, 605→86 */
+const TEKNIK_GELIR_BILESENLERI = [10, 21, 31, 83, 86] as const;
+/** GT F satır: 610→95, 611→114, 612→157, 613→164, 614 tk→9006, 615→202 */
+const TEKNIK_GIDER_BILESENLERI = [95, 114, 157, 164] as const;
+
 const V2_SENTETIK_FORMULLER: Array<[number, V2Formul]> = [
-  [V2_SENTETIK.teknikGelirSafi, [{ satir: 9, carpan: 1 }]],
+  [V2_SENTETIK.teknikGelirSafi, TEKNIK_GELIR_BILESENLERI.map((satir) => ({ satir, carpan: 1 }))],
   [
     V2_SENTETIK.teknikFaaliyetGideri,
     [{ satir: 176, carpan: 1 }, ...GENEL_GIDER_SATIRLARI.map((satir) => ({ satir, carpan: -1 }))],
   ],
   [
     V2_SENTETIK.teknikGiderSafi,
-    [{ satir: 94, carpan: 1 }, ...GENEL_GIDER_SATIRLARI.map((satir) => ({ satir, carpan: -1 }))],
+    [
+      ...TEKNIK_GIDER_BILESENLERI.map((satir) => ({ satir, carpan: 1 })),
+      { satir: V2_SENTETIK.teknikFaaliyetGideri, carpan: 1 },
+      { satir: 202, carpan: 1 },
+    ],
   ],
   [
     V2_SENTETIK.safiTkz,

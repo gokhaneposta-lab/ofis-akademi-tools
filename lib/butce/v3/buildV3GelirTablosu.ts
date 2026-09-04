@@ -42,9 +42,10 @@ import {
 import { V3_DEFAULT_YTD_ANCHOR, V3_METODOLOJI_ADIMLARI } from "./metodoloji";
 import { primHedefFromTarifeAna, primHedefFromToplam } from "./primFromToplam";
 import { syntheticSatisFromTarife } from "./syntheticSatis";
-import type { V3GelirTablosuSonuc, V3VarsayimlarStore } from "./types";
 import { detectYtdAnchorAy, uygulaYtdOverlay } from "./ytdOverlay";
+import { uygulaMaliGelirRolling } from "./maliGelirRolling";
 import { mizanV3Recon, reconTutmayanListe } from "./mizanV3Recon";
+import type { V3GelirTablosuSonuc, V3VarsayimlarStore } from "./types";
 
 function olcekTarifeHedefleri(
   satisRows: SatisButceRow[],
@@ -256,6 +257,17 @@ export function buildV3GelirTablosu(opts: {
     ytdAnchorAy,
   );
 
+  const maliGelirRolling =
+    kalibrasyon.length > 0
+      ? uygulaMaliGelirRolling(gtOverlay, {
+          butceYili,
+          anchorAy: ytdAnchorAy,
+          bilancoAylik: opts.bilancoAylik,
+          aylikGetiriOrani: opts.varsayimlar.aylikGetiriOrani,
+        })
+      : null;
+  if (maliGelirRolling) uyarilar.push(...maliGelirRolling.uyarilar);
+
   const gtFinal = hesaplaV2SentetikSatirlar(gtOverlay);
 
   const mizanRecon = mizanV3Recon(gtFinal, mizanFullEarly, butceYili, ytdAnchorAy);
@@ -300,6 +312,7 @@ export function buildV3GelirTablosu(opts: {
       kalibrasyon,
       mizanRecon,
       mizanTutmayan: reconTutmayanListe(mizanRecon),
+      maliGelirRolling,
       metodolojiOzeti: [...V3_METODOLOJI_ADIMLARI],
       uyarilar,
     },

@@ -9,7 +9,7 @@ const RESCALE_TO_ANNUAL = new Set<number>([11]);
 
 /** Kullanıcı girdisi + türetilmiş satırlar — YTD mizandan doğrudan kilitlenmez. */
 const MIZAN_DISI_SATIRLAR = new Set<number>([
-  38, 9, 94, 9001, 9002, 9003, 9005,
+  9, 94, 9001, 9002, 9003, 9005,
 ]);
 
 /** Kalibrasyon raporu. */
@@ -22,6 +22,7 @@ const KALIBRASYON_SATIRLARI: ReadonlyArray<{ satir: number; ad: string }> = [
   { satir: 157, ad: "İkramiye karşılığı (612)" },
   { satir: 164, ad: "Diğer teknik karşılık (613)" },
   { satir: 177, ad: "Üretim komisyon (61401)" },
+  { satir: 38, ad: "Mali gelir (603)" },
   { satir: 202, ad: "Diğer teknik gider (615)" },
   { satir: 9001, ad: "Teknik gelir (600–605, 603 hariç)" },
   { satir: 9002, ad: "Teknik gider (610–615, genel gider hariç)" },
@@ -61,9 +62,15 @@ export function detectYtdAnchorAy(
     if (r.ay >= 1 && r.ay <= 11) months.add(r.ay);
   }
   if (months.size > 0) maxAvailable = Math.max(...months);
-  if (maxAvailable == null) return { anchorAy: preferred, maxAvailable: null, preferredUsed: true };
-  if (months.has(preferred)) return { anchorAy: preferred, maxAvailable, preferredUsed: true };
-  return { anchorAy: Math.min(maxAvailable, preferred), maxAvailable, preferredUsed: false };
+  if (maxAvailable == null) {
+    return { anchorAy: preferred, maxAvailable: null, preferredUsed: true };
+  }
+  /** Eylül/Kasım güncellemelerinde en son yüklü mizan ayı anchor olur. */
+  return {
+    anchorAy: maxAvailable,
+    maxAvailable,
+    preferredUsed: maxAvailable === preferred,
+  };
 }
 
 /**

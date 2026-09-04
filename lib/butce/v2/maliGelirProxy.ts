@@ -141,6 +141,108 @@ export function resolveAcilisBanka(opts: {
   };
 }
 
+/**
+ * Bütçe yılı anchor ayı sonu banka stoku (102/100, yoksa 10).
+ * V3 rolling mali gelir: kalan aylar bu bakiyeden proxy ile tahmin edilir.
+ */
+export function resolveAnchorBanka(opts: {
+  butceYili: number;
+  anchorAy: number;
+  bilancoAylik: BilancoAylikRow[];
+}): {
+  tutar: number;
+  kaynak: "102/100" | "10" | "yok";
+  kaynakAy: number | null;
+  kaynakEtiket: string;
+  uyari?: string;
+} {
+  const anchor = Math.min(Math.max(opts.anchorAy, 1), 12);
+  const rows = opts.bilancoAylik.filter(
+    (r) => r.yil === opts.butceYili && r.ay === anchor,
+  );
+  if (rows.length === 0) {
+    const mevcut = opts.bilancoAylik
+      .filter((r) => r.yil === opts.butceYili && r.ay >= 1 && r.ay <= 12)
+      .map((r) => r.ay);
+    const maxAy = mevcut.length ? Math.max(...mevcut) : null;
+    return {
+      tutar: 0,
+      kaynak: "yok",
+      kaynakAy: null,
+      kaynakEtiket: `${opts.butceYili} ay ${anchor} bilançosu yok`,
+      uyari:
+        maxAy != null
+          ? `${opts.butceYili}-${String(anchor).padStart(2, "0")} bilanço satırı yok (mizan yüklemesinde ${maxAy}. ay mevcut).`
+          : `${opts.butceYili} bilanço satırı bulunamadı — GT/Bilanço mizan dosyasını kontrol edin.`,
+    };
+  }
+
+  const byHesap = tutarByHesap(rows);
+  const leaf = bankaStokFromMap(byHesap);
+  const ayEtiket = AYLAR[anchor - 1] ?? `${anchor}. ay`;
+  if (leaf > 0) {
+    return {
+      tutar: leaf,
+      kaynak: "102/100",
+      kaynakAy: anchor,
+      kaynakEtiket: `${opts.butceYili} ${ayEtiket} bilançosu — 102/100`,
+    };
+  }
+  const agg = agrega10FromMap(byHesap);
+  if (agg > 0) {
+    return {
+      tutar: agg,
+      kaynak: "10",
+      kaynakAy: anchor,
+      kaynakEtiket: `${opts.butceYili} ${ayEtiket} bilançosu — 10`,
+      uyari: "102/100 yok; agrega 10 kullanıldı.",
+    };
+  }
+  return {
+    tutar: 0,
+    kaynak: "yok",
+    kaynakAy: anchor,
+    kaynakEtiket: `${opts.butceYili} ${ayEtiket} bilançosu — banka stoku 0`,
+    uyari: `${opts.butceYili} ${ayEtiket} bilançosunda 102/100/10 bulunamadı.`,
+  };
+}
+
+/** Anchor sonrası aylık mali gelir tahmini (bileşik banka stoku). */
+export function buildMaliGelirForecastFromBank(opts: {
+  aylikToplam: Record<number, number[]>;
+  aylikGetiriOrani: number[];
+  acilisBanka: number;
+  /** 0-indexed; bu aydan itibaren tahmin (anchor ay = ilk tahmin ayı değil, anchor SONRASI). */
+  tahminBaslangicIdx: number;
+}): { maliGelirAylik: number[]; uyarilar: string[] } {
+  const uyarilar: string[] = [];
+  const start = Math.min(Math.max(opts.tahminBaslangicIdx, 0), 11);
+  const getiri = Array.from({ length: 12 }, (_, i) => {
+    const g = opts.aylikGetiriOrani[i];
+    return Number.isFinite(g) ? g : 0;
+  });
+
+  const maliGelirAylik = Array(12).fill(0);
+  if (opts.acilisBanka <= 0) {
+    uyarilar.push("Anchor banka bakiyesi 0 — kalan aylar mali gelir tahmini 0.");
+    return { maliGelirAylik, uyarilar };
+  }
+
+  let ayBasi = opts.acilisBanka;
+  for (let i = start; i < 12; i++) {
+    let giris = 0;
+    for (const g of V2_PROXY_GT_GIRIS) giris += Math.abs(ayToplam(opts.aylikToplam, g.satir, i));
+    let cikis = 0;
+    for (const c of V2_PROXY_GT_CIKIS) cikis += Math.abs(ayToplam(opts.aylikToplam, c.satir, i));
+    const netNakit = giris - cikis;
+    const maliGelir = ayBasi * getiri[i]!;
+    maliGelirAylik[i] = maliGelir;
+    ayBasi = ayBasi + netNakit + maliGelir;
+  }
+
+  return { maliGelirAylik, uyarilar };
+}
+
 function ayToplam(aylikToplam: Record<number, number[]>, satir: number, ayIdx: number): number {
   return aylikToplam[satir]?.[ayIdx] ?? 0;
 }

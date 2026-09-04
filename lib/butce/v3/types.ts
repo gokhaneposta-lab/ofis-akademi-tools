@@ -37,6 +37,8 @@ export type V3KalibrasyonSatir = {
   uygulananCarpan: number;
 };
 
+export type { V3MaliGelirRollingSonuc } from "./maliGelirRolling";
+
 export type V3GelirTablosuSonuc = V2GelirTablosuSonuc & {
   v3: {
     toplamPrimHedef: number;
@@ -45,6 +47,7 @@ export type V3GelirTablosuSonuc = V2GelirTablosuSonuc & {
     kalibrasyon: V3KalibrasyonSatir[];
     mizanRecon?: import("./mizanV3Recon").MizanReconSonuc;
     mizanTutmayan?: import("./mizanV3Recon").MizanReconSatir[];
+    maliGelirRolling?: V3MaliGelirRollingSonuc | null;
     metodolojiOzeti: string[];
     uyarilar: string[];
   };

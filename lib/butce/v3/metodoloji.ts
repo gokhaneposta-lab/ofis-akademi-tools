@@ -18,7 +18,7 @@ export const V3_METODOLOJI_ADIMLARI: readonly string[] = [
   "H2 prim: yıllık tarife hedefi − YTD gerçek, kalan aylara V2 profili ile dağıtılır.",
   "H2 hasar: V2 projeksiyonu korunur (yıllık hasar YTD sapması ile ezilmez).",
   "Tarife-branş pay yoksa: ana grup (TARSİM/TRAFİK/…) + geçmiş yıl iç-grup mizan payı.",
-  "Mali gelir (F38): kullanıcının aylık getiri oranları + V2 banka proxy.",
+  "Mali gelir (F38): YTD mizan (603); kalan aylar mizan yüklemesindeki bilanço banka (102/100) + getiri proxy.",
   "Genel giderler: kullanıcı 61402–06 tutarları; oran türetimi yok.",
 ];
 

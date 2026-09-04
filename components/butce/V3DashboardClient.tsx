@@ -12,9 +12,12 @@ import {
 } from "@/lib/butce/v2/maliGelirProxyConfig";
 import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu";
 import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
-import type { V2MaliGelirProxySonuc } from "@/lib/butce/v2/types";
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
-import type { V3KalibrasyonSatir, MizanReconSatir } from "@/lib/butce/v3/types";
+import type {
+  V3KalibrasyonSatir,
+  MizanReconSatir,
+  V3MaliGelirRollingSonuc,
+} from "@/lib/butce/v3/types";
 import type { V3Oneri } from "@/lib/butce/v3/motor/types";
 import { toplamPrimFromTarife, V3_AYLIK_GETIRI_PCT_2026 } from "@/lib/butce/v3/defaults";
 import {
@@ -66,7 +69,7 @@ export default function V3DashboardClient() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [gt, setGt] = useState<GelirTablosuSonuc | null>(null);
-  const [proxy, setProxy] = useState<V2MaliGelirProxySonuc | null>(null);
+  const [maliGelirRolling, setMaliGelirRolling] = useState<V3MaliGelirRollingSonuc | null>(null);
   const [kalibrasyon, setKalibrasyon] = useState<V3KalibrasyonSatir[]>([]);
   const [mizanTutmayan, setMizanTutmayan] = useState<MizanReconSatir[]>([]);
   const [oneriler, setOneriler] = useState<V3Oneri[]>([]);
@@ -210,7 +213,7 @@ export default function V3DashboardClient() {
       return;
     }
     setGt(data.gt);
-    setProxy(data.proxy);
+    setMaliGelirRolling(data.v3?.maliGelirRolling ?? null);
     setKalibrasyon(data.v3?.kalibrasyon ?? []);
     setMizanTutmayan(data.v3?.mizanTutmayan ?? []);
     setOneriler(data.v3?.oneriler ?? data.v3?.motor?.oneriler ?? []);
@@ -609,15 +612,23 @@ export default function V3DashboardClient() {
         </details>
       ) : null}
 
-      {proxy ? (
+      {maliGelirRolling ? (
         <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">Mali gelir proxy</h2>
+          <h2 className="text-sm font-semibold text-slate-900">Mali gelir (603) — rolling proxy</h2>
           <p className="mt-1 text-xs text-slate-500">
             {V2_MALI_GELIR_DISCLAIMER} {V2_VERGI_DISCLAIMER}
           </p>
-          <p className="mt-1 text-xs text-slate-500">
-            Açılış: {tl(proxy.acilisBanka)} ({proxy.acilisKaynakEtiket}) · Yıllık:{" "}
-            {tl(proxy.maliGelirYillik)}
+          <p className="mt-2 text-xs text-slate-600">
+            YTD (1–{maliGelirRolling.anchorAy}. ay): mizan ·{" "}
+            {tl(maliGelirRolling.ytdMaliGelir)}
+          </p>
+          <p className="mt-1 text-xs text-slate-600">
+            Tahmin ({maliGelirRolling.tahminBaslangicAy}–12. ay): anchor banka{" "}
+            {tl(maliGelirRolling.anchorBanka)} ({maliGelirRolling.anchorBankaKaynak}) ·{" "}
+            {tl(maliGelirRolling.tahminMaliGelir)}
+          </p>
+          <p className="mt-1 text-xs font-medium text-slate-700">
+            Yıllık toplam: {tl(maliGelirRolling.yillikMaliGelir)}
           </p>
         </section>
       ) : null}

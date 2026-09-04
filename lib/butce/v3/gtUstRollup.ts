@@ -1,10 +1,11 @@
 /**
- * GT üst satır rollup formülleri — yaprak mizan kilidi sonrası F21, F31, F114… türetimi.
+ * GT üst satır rollup — yalnızca KPK / DERK / muallak / prim / hasar ağacı.
+ * 61401 (F177), 614071 (F196), genel gider yaprakları mizandan gelir; rollup ile EZİLMEZ.
  */
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
 
-/** gt_excel_harita / ytdFullOverlay ile uyumlu üst formüller. */
-export const GT_UST_FORMUL: ReadonlyArray<[number, readonly number[]]> = [
+/** Güvenli rollup: alt yapraklar dolu olduğunda ebeveyn türetilir. */
+export const GT_YAPRAK_ROLLUP_FORMUL: ReadonlyArray<[number, readonly number[]]> = [
   [10, [11, 19, 20]],
   [22, [23, 24]],
   [25, [26, 27]],
@@ -17,17 +18,23 @@ export const GT_UST_FORMUL: ReadonlyArray<[number, readonly number[]]> = [
   [115, [116, 126]],
   [136, [137, 147]],
   [114, [115, 136]],
-  [157, [158, 161]],
-  [166, [167, 168]],
-  [178, [180, 181]],
-  [177, [178, 189]],
-  [196, [197, 198]],
-  [176, [177, 190, 191, 192, 193, 194, 196, 200, 201]],
-  [9, [10, 21, 31, 86]],
-  [94, [95, 114, 157, 166, 176, 202]],
 ];
 
-export const GT_ROLLUP_PARENTS = new Set(GT_UST_FORMUL.map(([h]) => h));
+export const GT_YAPRAK_ROLLUP_PARENTS = new Set(GT_YAPRAK_ROLLUP_FORMUL.map(([h]) => h));
+
+/**
+ * Mizandan doğrudan kilitlenen satırlar — rollup sonrası YTD geri yüklenir.
+ * (Komisyon, faaliyet gideri, brüt hasar/prim yaprakları.)
+ */
+export const MIZAN_DOGRUDAN_YAPRAK = new Set<number>([
+  11, 19, 20, 86, 38, 96, 105, 177, 196, 200, 201, 190, 191, 192, 193, 194, 202,
+  23, 24, 26, 27, 29, 30, 33, 34, 36, 37, 116, 126, 137, 147, 167,
+]);
+
+/** @deprecated Tam ağaç rollup — komisyon satırlarını sıfırlar; kullanma. */
+export const GT_UST_FORMUL = GT_YAPRAK_ROLLUP_FORMUL;
+
+export const GT_ROLLUP_PARENTS = GT_YAPRAK_ROLLUP_PARENTS;
 
 export function yenileToplamlar(gt: GelirTablosuSonuc, satirlar: readonly number[]): void {
   const tekil = [...new Set(satirlar)];
@@ -48,12 +55,14 @@ export function yenileToplamlar(gt: GelirTablosuSonuc, satirlar: readonly number
   }
 }
 
-/** Branş bazında üst formülleri yeniden hesapla, ardından şirket toplamı. */
-export function yenidenTuretUstFormuller(gt: GelirTablosuSonuc): void {
+export function yenidenTuretUstFormuller(
+  gt: GelirTablosuSonuc,
+  formul: ReadonlyArray<[number, readonly number[]]> = GT_YAPRAK_ROLLUP_FORMUL,
+): void {
   for (const b of gt.branslar) {
     const ab = gt.aylikBrans[b.bransKodu];
     if (!ab) continue;
-    for (const [hedef, parts] of GT_UST_FORMUL) {
+    for (const [hedef, parts] of formul) {
       const ser = Array.from({ length: 12 }, (_, ay) =>
         parts.reduce((s, p) => s + (ab[p]?.[ay] ?? 0), 0),
       );
@@ -61,8 +70,27 @@ export function yenidenTuretUstFormuller(gt: GelirTablosuSonuc): void {
       b.degerler[hedef] = ser.reduce((a, x) => a + x, 0);
     }
   }
-  yenileToplamlar(
-    gt,
-    GT_UST_FORMUL.map(([h]) => h),
-  );
+  yenileToplamlar(gt, formul.map(([h]) => h));
+}
+
+/** Rollup sonrası mizan YTD yapraklarını branş serilerine geri yükle. */
+export function geriYukleMizanYtdYapraklar(
+  gt: GelirTablosuSonuc,
+  bransSatir: Map<string, Map<number, number[]>>,
+  anchorAy: number,
+): void {
+  const anchor = Math.min(Math.max(anchorAy, 1), 11);
+  for (const b of gt.branslar) {
+    const bm = bransSatir.get(b.bransKodu);
+    if (!bm) continue;
+    const ab = gt.aylikBrans[b.bransKodu] ?? {};
+    for (const [satir, mizanSer] of bm) {
+      if (!MIZAN_DOGRUDAN_YAPRAK.has(satir)) continue;
+      const ser = [...(ab[satir] ?? Array(12).fill(0))];
+      for (let ay = 0; ay < anchor; ay++) ser[ay] = mizanSer[ay] ?? 0;
+      ab[satir] = ser;
+      b.degerler[satir] = ser.reduce((a, x) => a + x, 0);
+    }
+    gt.aylikBrans[b.bransKodu] = ab;
+  }
 }

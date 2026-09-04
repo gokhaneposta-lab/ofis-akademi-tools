@@ -4,6 +4,7 @@ import type { V2GelirTablosuSonuc } from "../v2/buildV2GelirTablosu";
 
 export type { V2VarsayimlarStore, V2MaliGelirProxySonuc, V2MaliGelirAySatir } from "../v2/types";
 export type { V2GelirTablosuSonuc } from "../v2/buildV2GelirTablosu";
+export type { MizanReconSatir, MizanReconSonuc } from "./mizanV3Recon";
 
 export type V3VarsayimlarStore = {
   guncellemeIso?: string;
@@ -42,6 +43,8 @@ export type V3GelirTablosuSonuc = V2GelirTablosuSonuc & {
     primKaynak: string;
     ytdAnchorAy: number;
     kalibrasyon: V3KalibrasyonSatir[];
+    mizanRecon?: import("./mizanV3Recon").MizanReconSonuc;
+    mizanTutmayan?: import("./mizanV3Recon").MizanReconSatir[];
     metodolojiOzeti: string[];
     uyarilar: string[];
   };

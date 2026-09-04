@@ -171,6 +171,8 @@ async function runHesapla(body: Partial<V3VarsayimlarStore>) {
       v3: {
         ...sonuc.v3,
         oneriler,
+        mizanRecon: sonuc.v3.mizanRecon,
+        mizanTutmayan: sonuc.v3.mizanTutmayan,
         metodolojiOzeti: [
           ...sonuc.v3.metodolojiOzeti,
           "Öneri rozetleri: tarife prim CAGR + YTD run-rate, gider CAGR, mali getiri ort.",

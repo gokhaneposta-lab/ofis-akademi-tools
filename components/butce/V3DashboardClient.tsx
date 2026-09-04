@@ -14,7 +14,7 @@ import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu
 import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
 import type { V2MaliGelirProxySonuc } from "@/lib/butce/v2/types";
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
-import type { V3KalibrasyonSatir } from "@/lib/butce/v3/types";
+import type { V3KalibrasyonSatir, MizanReconSatir } from "@/lib/butce/v3/types";
 import type { V3Oneri } from "@/lib/butce/v3/motor/types";
 import { toplamPrimFromTarife, V3_AYLIK_GETIRI_PCT_2026 } from "@/lib/butce/v3/defaults";
 import {
@@ -68,6 +68,7 @@ export default function V3DashboardClient() {
   const [gt, setGt] = useState<GelirTablosuSonuc | null>(null);
   const [proxy, setProxy] = useState<V2MaliGelirProxySonuc | null>(null);
   const [kalibrasyon, setKalibrasyon] = useState<V3KalibrasyonSatir[]>([]);
+  const [mizanTutmayan, setMizanTutmayan] = useState<MizanReconSatir[]>([]);
   const [oneriler, setOneriler] = useState<V3Oneri[]>([]);
   const [uyarilar, setUyarilar] = useState<string[]>([]);
   const [formatCocukPay, setFormatCocukPay] = useState<GtCocukPay>({});
@@ -211,6 +212,7 @@ export default function V3DashboardClient() {
     setGt(data.gt);
     setProxy(data.proxy);
     setKalibrasyon(data.v3?.kalibrasyon ?? []);
+    setMizanTutmayan(data.v3?.mizanTutmayan ?? []);
     setOneriler(data.v3?.oneriler ?? data.v3?.motor?.oneriler ?? []);
     setUyarilar([...(data.uyarilar ?? [])]);
     setFormatCocukPay(data.formatCocukPay ?? {});
@@ -510,6 +512,36 @@ export default function V3DashboardClient() {
             <li key={i}>• {u}</li>
           ))}
         </ul>
+      ) : null}
+
+      {mizanTutmayan.length > 0 ? (
+        <div className="mt-4 overflow-x-auto rounded-xl border border-amber-300 bg-amber-50/50">
+          <p className="border-b border-amber-200 px-3 py-2 text-xs font-semibold text-amber-950">
+            Mizan kontrol — Temmuz YTD tutmayan kalemler ({mizanTutmayan.length})
+          </p>
+          <table className="w-full min-w-[640px] text-sm">
+            <thead>
+              <tr className="border-b bg-amber-100/60 text-left text-xs uppercase text-amber-900">
+                <th className="px-3 py-2">Hesap</th>
+                <th className="px-3 py-2">Kalem</th>
+                <th className="px-3 py-2 text-right">Mizan</th>
+                <th className="px-3 py-2 text-right">V3</th>
+                <th className="px-3 py-2 text-right">Fark</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mizanTutmayan.map((r) => (
+                <tr key={r.hesapKodu} className="border-b border-amber-100">
+                  <td className="px-3 py-2 font-mono text-xs">{r.hesapKodu}</td>
+                  <td className="px-3 py-2">{r.ad}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{tl(r.mizanYtd)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{tl(r.v3Ytd)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums text-amber-900">{tl(r.fark)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : null}
 
       {kalibrasyon.length > 0 ? (

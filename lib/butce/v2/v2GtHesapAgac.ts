@@ -123,7 +123,10 @@ export const V2_HESAP_AGAC: V2HesapDugum[] = [
           { id: "61002", hesap: "61002", satir: 105 },
         ],
       },
-      { id: "611", hesap: "611", satir: 114 },
+      { id: "611", hesap: "611", satir: 114, kalin: true, children: [
+          { id: "61101", hesap: "61101", satir: 115, kalin: true },
+          { id: "61102", hesap: "61102", satir: 136, kalin: true },
+        ] },
       {
         id: "613",
         hesap: "613",

@@ -44,6 +44,7 @@ import { primHedefFromTarifeAna, primHedefFromToplam } from "./primFromToplam";
 import { syntheticSatisFromTarife } from "./syntheticSatis";
 import type { V3GelirTablosuSonuc, V3VarsayimlarStore } from "./types";
 import { detectYtdAnchorAy, uygulaYtdOverlay } from "./ytdOverlay";
+import { mizanV3Recon, reconTutmayanListe } from "./mizanV3Recon";
 
 function olcekTarifeHedefleri(
   satisRows: SatisButceRow[],
@@ -257,6 +258,16 @@ export function buildV3GelirTablosu(opts: {
 
   const gtFinal = hesaplaV2SentetikSatirlar(gtOverlay);
 
+  const mizanRecon = mizanV3Recon(gtFinal, mizanFullEarly, butceYili, ytdAnchorAy);
+  if (mizanRecon.tutmayanSayisi > 0) {
+    uyarilar.push(
+      `Mizan kontrol: ${mizanRecon.tutmayanSayisi} kalem YTD sapması (>50.000 TL).`,
+    );
+    for (const line of mizanRecon.ozet.slice(0, 8)) uyarilar.push(line);
+  } else if (kalibrasyon.length > 0) {
+    uyarilar.push("Mizan kontrol: Temmuz YTD tüm ana hesaplarda tutarlı.");
+  }
+
   if (kalibrasyon.length === 0) {
     uyarilar.push(
       `YTD overlay uygulanmadı — ${butceYili} aylık mizan bulunamadı (anchor=${ytdAnchorAy}). ` +
@@ -265,11 +276,11 @@ export function buildV3GelirTablosu(opts: {
   } else {
     uyarilar.push(
       `YTD kilit aktif: ${butceYili}-01 … ${butceYili}-${String(ytdAnchorAy).padStart(2, "0")} ` +
-        `aylık mizandan alındı (${kalibrasyon.length} kalem kalibre).`,
+        `mizan-aylik-full (${kalibrasyon.length} kalem).`,
     );
     for (const k of kalibrasyon) {
       if (k.sapmaPct != null && Math.abs(k.sapmaPct) > 5) {
-        uyarilar.push(`${k.ad}: YTD sapma ${k.sapmaPct.toFixed(1)}%.`);
+        uyarilar.push(`${k.ad}: overlay öncesi sapma ${k.sapmaPct.toFixed(1)}%.`);
       }
     }
   }
@@ -287,6 +298,8 @@ export function buildV3GelirTablosu(opts: {
       primKaynak,
       ytdAnchorAy,
       kalibrasyon,
+      mizanRecon,
+      mizanTutmayan: reconTutmayanListe(mizanRecon),
       metodolojiOzeti: [...V3_METODOLOJI_ADIMLARI],
       uyarilar,
     },

@@ -34,6 +34,15 @@ export const GT_PARENT_ROLLUPS: ReadonlyArray<readonly [number, readonly number[
   return out;
 })();
 
+/** Yaprak GT kodunu en yakın eşleşen üst kod üzerinden F satıra çevir. */
+export function gtKodToSatirEnYakin(gtKod: string): number | null {
+  for (let k = gtKod; k.length > 0; k = k.slice(0, -1)) {
+    const satir = GT_KOD_TO_SATIR[k];
+    if (satir != null) return satir;
+  }
+  return null;
+}
+
 /** Mizan kod kümesinde yaprak (en derin) kodları seç — çift sayımı önler. */
 export function yaprakGtKodlari(kodlar: Iterable<string>): Set<string> {
   const arr = [...new Set(kodlar)];

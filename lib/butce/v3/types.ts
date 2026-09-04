@@ -1,10 +1,12 @@
 /** Bütçe V3 — kullanıcı yalnızca prim + mali getiri + genel gider girer. */
 
 import type { V2GelirTablosuSonuc } from "../v2/buildV2GelirTablosu";
+import type { V3MaliGelirRollingSonuc } from "./maliGelirRolling";
 
 export type { V2VarsayimlarStore, V2MaliGelirProxySonuc, V2MaliGelirAySatir } from "../v2/types";
 export type { V2GelirTablosuSonuc } from "../v2/buildV2GelirTablosu";
 export type { MizanReconSatir, MizanReconSonuc } from "./mizanV3Recon";
+export type { V3MaliGelirRollingSonuc };
 
 export type V3VarsayimlarStore = {
   guncellemeIso?: string;
@@ -36,8 +38,6 @@ export type V3KalibrasyonSatir = {
   sapmaPct: number | null;
   uygulananCarpan: number;
 };
-
-export type { V3MaliGelirRollingSonuc } from "./maliGelirRolling";
 
 export type V3GelirTablosuSonuc = V2GelirTablosuSonuc & {
   v3: {

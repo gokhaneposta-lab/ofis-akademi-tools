@@ -10,7 +10,7 @@ import {
   V2_MALI_GELIR_DISCLAIMER,
   V2_VERGI_DISCLAIMER,
 } from "@/lib/butce/v2/maliGelirProxyConfig";
-import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu";
+import { downloadV3GelirTablosuExcel } from "@/lib/butce/v3/exportV3GelirTablosu";
 import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 import type {
@@ -70,6 +70,7 @@ export default function V3DashboardClient() {
   const [err, setErr] = useState<string | null>(null);
   const [gt, setGt] = useState<GelirTablosuSonuc | null>(null);
   const [maliGelirRolling, setMaliGelirRolling] = useState<V3MaliGelirRollingSonuc | null>(null);
+  const [ytdAnchorResolved, setYtdAnchorResolved] = useState<number | undefined>(undefined);
   const [kalibrasyon, setKalibrasyon] = useState<V3KalibrasyonSatir[]>([]);
   const [mizanTutmayan, setMizanTutmayan] = useState<MizanReconSatir[]>([]);
   const [oneriler, setOneriler] = useState<V3Oneri[]>([]);
@@ -214,6 +215,7 @@ export default function V3DashboardClient() {
     }
     setGt(data.gt);
     setMaliGelirRolling(data.v3?.maliGelirRolling ?? null);
+    setYtdAnchorResolved(data.v3?.ytdAnchorAy);
     setKalibrasyon(data.v3?.kalibrasyon ?? []);
     setMizanTutmayan(data.v3?.mizanTutmayan ?? []);
     setOneriler(data.v3?.oneriler ?? data.v3?.motor?.oneriler ?? []);
@@ -225,7 +227,9 @@ export default function V3DashboardClient() {
     if (!gt) return;
     setExcelBusy(true);
     try {
-      await downloadV2GelirTablosuExcel(gt, formatCocukPay);
+      await downloadV3GelirTablosuExcel(gt, formatCocukPay, {
+        ytdAnchorAy: ytdAnchorResolved ?? ytdAnchorAy,
+      });
     } finally {
       setExcelBusy(false);
     }

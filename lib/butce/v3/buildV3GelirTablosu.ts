@@ -44,6 +44,7 @@ import { primHedefFromTarifeAna, primHedefFromToplam } from "./primFromToplam";
 import { syntheticSatisFromTarife } from "./syntheticSatis";
 import { detectYtdAnchorAy, uygulaYtdOverlay } from "./ytdOverlay";
 import { uygulaMaliGelirRolling } from "./maliGelirRolling";
+import { senkronize603AylikBrans } from "./senkronize603";
 import { mizanV3Recon, reconTutmayanListe } from "./mizanV3Recon";
 import type { V3GelirTablosuSonuc, V3VarsayimlarStore } from "./types";
 
@@ -267,6 +268,8 @@ export function buildV3GelirTablosu(opts: {
         })
       : null;
   if (maliGelirRolling) uyarilar.push(...maliGelirRolling.uyarilar);
+
+  senkronize603AylikBrans(gtOverlay);
 
   const gtFinal = hesaplaV2SentetikSatirlar(gtOverlay);
 

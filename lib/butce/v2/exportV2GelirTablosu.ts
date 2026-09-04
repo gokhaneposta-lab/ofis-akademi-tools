@@ -13,13 +13,13 @@ function aktifBransKodlari(gt: GelirTablosuSonuc): string[] {
   return gt.branslar.filter((b) => /^7\d{2}$/.test(b.bransKodu)).map((b) => b.bransKodu);
 }
 
-/** V2 GT — şirket formatı: tidy (ay × branş × hesap) + format_7 + Format_Grup. */
-export async function downloadV2GelirTablosuExcel(
+/** Şirket formatı sayfalarını mevcut workbook'a ekler. */
+export function appendGtFormatSheets(
+  utils: typeof import("xlsx").utils,
+  workbook: import("xlsx").WorkBook,
   gt: GelirTablosuSonuc,
   cocukPay: GtCocukPay = {},
-): Promise<void> {
-  const XLSX = await import("xlsx");
-  const workbook = XLSX.utils.book_new();
+): void {
   const tidy = buildGtFormatTidy(gt, cocukPay);
   const yil = yilToplamByBrans(tidy);
   const branslar = aktifBransKodlari(gt);
@@ -36,13 +36,13 @@ export async function downloadV2GelirTablosuExcel(
       r.gtKod, r.hesapKodu, r.bransHesap, r.hesapAdi, r.tutar,
     ]);
   }
-  const uzunSheet = XLSX.utils.aoa_to_sheet(uzun);
+  const uzunSheet = utils.aoa_to_sheet(uzun);
   uzunSheet["!cols"] = [
     { wch: 10 }, { wch: 8 }, { wch: 10 }, { wch: 10 }, { wch: 24 }, { wch: 18 },
     { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 52 }, { wch: 16 },
   ];
   uzunSheet["!autofilter"] = { ref: `A1:K${uzun.length}` };
-  XLSX.utils.book_append_sheet(workbook, uzunSheet, "Tidy_Aylik");
+  utils.book_append_sheet(workbook, uzunSheet, "Tidy_Aylik");
 
   const f7: Array<Array<string | number>> = [
     [
@@ -55,15 +55,15 @@ export async function downloadV2GelirTablosuExcel(
     const toplam = cols.reduce((a, b) => a + b, 0);
     f7.push([satir.gtKod, satir.hesapKodu, satir.hesapAdi, toplam, ...cols]);
   });
-  const f7Sheet = XLSX.utils.aoa_to_sheet(f7);
+  const f7Sheet = utils.aoa_to_sheet(f7);
   f7Sheet["!cols"] = [
     { wch: 12 }, { wch: 12 }, { wch: 52 }, { wch: 16 },
     ...branslar.map(() => ({ wch: 14 })),
   ];
   f7Sheet["!autofilter"] = {
-    ref: `A1:${XLSX.utils.encode_col(branslar.length + 3)}${f7.length}`,
+    ref: `A1:${utils.encode_col(branslar.length + 3)}${f7.length}`,
   };
-  XLSX.utils.book_append_sheet(workbook, f7Sheet, "format_7");
+  utils.book_append_sheet(workbook, f7Sheet, "format_7");
 
   const grupKolon = GRUP_SIRA;
   const grupToplam = new Map<string, number[]>();
@@ -92,16 +92,25 @@ export async function downloadV2GelirTablosuExcel(
     const toplam = grupVals.reduce((a, b) => a + b, 0);
     fg.push([satir.hesapKodu, satir.hesapAdi, toplam, ...grupVals]);
   }
-  const fgSheet = XLSX.utils.aoa_to_sheet(fg);
+  const fgSheet = utils.aoa_to_sheet(fg);
   fgSheet["!cols"] = [
     { wch: 12 }, { wch: 62 }, { wch: 16 },
     ...grupKolon.map(() => ({ wch: 16 })),
   ];
   fgSheet["!autofilter"] = {
-    ref: `A1:${XLSX.utils.encode_col(grupKolon.length + 2)}${fg.length}`,
+    ref: `A1:${utils.encode_col(grupKolon.length + 2)}${fg.length}`,
   };
-  XLSX.utils.book_append_sheet(workbook, fgSheet, "Format_Grup");
+  utils.book_append_sheet(workbook, fgSheet, "Format_Grup");
+}
 
+/** V2 GT — şirket formatı: tidy (ay × branş × hesap) + format_7 + Format_Grup. */
+export async function downloadV2GelirTablosuExcel(
+  gt: GelirTablosuSonuc,
+  cocukPay: GtCocukPay = {},
+): Promise<void> {
+  const XLSX = await import("xlsx");
+  const workbook = XLSX.utils.book_new();
+  appendGtFormatSheets(XLSX.utils, workbook, gt, cocukPay);
   XLSX.writeFile(workbook, `Butce_V2_GT_${gt.butceYili}_Sirket_Format.xlsx`, {
     compression: true,
   });

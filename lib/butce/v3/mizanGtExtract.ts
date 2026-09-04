@@ -24,21 +24,32 @@ export type MizanGtAylik = {
 function kumulGtByBrans(
   rows: MizanAylikRow[],
   butceYili: number,
-  yapraklar: Set<string>,
 ): Map<string, Map<string, number[]>> {
-  const out = new Map<string, Map<string, number[]>>();
+  /** branş → GT kod → 12 aylık kümülatif (tüm satırlar). */
+  const raw = new Map<string, Map<string, number[]>>();
   for (const r of rows) {
     if (Number(r.yil) !== butceYili) continue;
     const gtKod = String(r.hesap);
-    if (!yapraklar.has(gtKod)) continue;
+    if (!gtKod) continue;
     const b = normalizeBransKodu(r.bransKodu);
     if (!b || !/^7\d{2}$/.test(b)) continue;
     const ay = Number(r.ay);
     if (ay < 1 || ay > 12) continue;
-    if (!out.has(b)) out.set(b, new Map());
-    const gm = out.get(b)!;
+    if (!raw.has(b)) raw.set(b, new Map());
+    const gm = raw.get(b)!;
     if (!gm.has(gtKod)) gm.set(gtKod, Array(12).fill(0));
     gm.get(gtKod)![ay - 1] += Number(r.tutar) || 0;
+  }
+
+  /** Yaprak seçimi branş içinde — 703'ün 025810101 yaprakları 715'in 0258101'ini dışlamaz. */
+  const out = new Map<string, Map<string, number[]>>();
+  for (const [b, gm] of raw) {
+    const yapraklar = yaprakGtKodlari(gm.keys());
+    const leafMap = new Map<string, number[]>();
+    for (const [gtKod, kumul] of gm) {
+      if (yapraklar.has(gtKod)) leafMap.set(gtKod, kumul);
+    }
+    out.set(b, leafMap);
   }
   return out;
 }
@@ -73,14 +84,7 @@ export function extractMizanGtAylik(
   rows: MizanAylikRow[],
   butceYili: number,
 ): MizanGtAylik {
-  const kodSet = new Set<string>();
-  for (const r of rows) {
-    if (Number(r.yil) !== butceYili) continue;
-    kodSet.add(String(r.hesap));
-  }
-  const yapraklar = yaprakGtKodlari(kodSet);
-
-  const bransKumul = kumulGtByBrans(rows, butceYili, yapraklar);
+  const bransKumul = kumulGtByBrans(rows, butceYili);
 
   // Şirket GT kümülatif = branş toplamı
   const sirketKumul = new Map<string, number[]>();

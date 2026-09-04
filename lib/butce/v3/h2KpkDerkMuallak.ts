@@ -16,7 +16,9 @@ import type {
   OranAyarStore,
   TarifeBransPayRow,
 } from "../types";
-import { yenidenTuretUstFormuller } from "./gtUstRollup";
+import { extractMizanGtAylik } from "./mizanGtExtract";
+import { geriYukleMizanYtdTam, yenidenTuretUstFormuller } from "./gtUstRollup";
+import { MIZAN_DISI_SATIRLAR } from "./ytdOverlay";
 
 /** Muallak yaprak — H2 oran motorundan. */
 const H2_ORAN_SATIRLARI = [116, 126, 137, 147] as const;
@@ -184,6 +186,10 @@ export function uygulaH2KpkDerkMuallak(
   );
 
   yenidenTuretUstFormuller(gt);
+
+  // YTD (Ocak–anchor): rollup üst satırları ezmesin — mizandan tekrar kilitle
+  const mizanGt = extractMizanGtAylik(opts.mizanAylikFull, opts.butceYili);
+  geriYukleMizanYtdTam(gt, mizanGt, anchor, MIZAN_DISI_SATIRLAR);
 
   uyarilar.push(
     `H2 motor: KPK (601) + DERK (602) + muallak yaprakları ${anchor + 1}–12. ay için projekte edildi.`,

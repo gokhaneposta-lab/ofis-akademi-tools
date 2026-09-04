@@ -94,3 +94,44 @@ export function geriYukleMizanYtdYapraklar(
     gt.aylikBrans[b.bransKodu] = ab;
   }
 }
+
+type MizanSatirHarita = {
+  bransSatir: Map<string, Map<number, number[]>>;
+  sirketSatir: Map<number, number[]>;
+};
+
+/**
+ * Rollup sonrası Ocak–anchor YTD: mizandaki tüm satırları branş + şirket düzeyinde geri yükle.
+ * Üst satırlar (60101/F22, 610/F95…) branş rollup ile ezilmesin diye H2 adımından sonra da çağrılır.
+ */
+export function geriYukleMizanYtdTam(
+  gt: GelirTablosuSonuc,
+  mizan: MizanSatirHarita,
+  anchorAy: number,
+  disiSatirlar: ReadonlySet<number> = new Set(),
+): void {
+  const anchor = Math.min(Math.max(anchorAy, 1), 11);
+
+  for (const b of gt.branslar) {
+    const bm = mizan.bransSatir.get(b.bransKodu);
+    if (!bm) continue;
+    const ab = gt.aylikBrans[b.bransKodu] ?? {};
+    for (const [satir, mizanSer] of bm) {
+      if (disiSatirlar.has(satir)) continue;
+      const ser = [...(ab[satir] ?? Array(12).fill(0))];
+      for (let ay = 0; ay < anchor; ay++) ser[ay] = mizanSer[ay] ?? 0;
+      ab[satir] = ser;
+      b.degerler[satir] = ser.reduce((a, x) => a + x, 0);
+    }
+    gt.aylikBrans[b.bransKodu] = ab;
+  }
+
+  for (const [satir, mizanSer] of mizan.sirketSatir) {
+    if (disiSatirlar.has(satir)) continue;
+    if (!gt.aylikToplam[satir]) gt.aylikToplam[satir] = Array(12).fill(0);
+    const ser = [...gt.aylikToplam[satir]!];
+    for (let ay = 0; ay < anchor; ay++) ser[ay] = mizanSer[ay] ?? 0;
+    gt.aylikToplam[satir] = ser;
+    gt.toplam[satir] = ser.reduce((a, x) => a + x, 0);
+  }
+}

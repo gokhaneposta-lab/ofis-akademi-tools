@@ -2,7 +2,7 @@ import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
 import type { MizanAylikRow } from "../types";
 import { extractMizanGtAylik, ytdToplam } from "./mizanGtExtract";
 import {
-  geriYukleMizanYtdYapraklar,
+  geriYukleMizanYtdTam,
   yenidenTuretUstFormuller,
 } from "./gtUstRollup";
 import { V3_DEFAULT_YTD_ANCHOR } from "./metodoloji";
@@ -12,7 +12,7 @@ import type { V3KalibrasyonSatir } from "./types";
 const RESCALE_TO_ANNUAL = new Set<number>([11]);
 
 /** Kullanıcı girdisi + türetilmiş satırlar — YTD mizandan doğrudan kilitlenmez. */
-const MIZAN_DISI_SATIRLAR = new Set<number>([
+export const MIZAN_DISI_SATIRLAR = new Set<number>([
   9, 94, 9001, 9002, 9003, 9005,
 ]);
 
@@ -136,9 +136,9 @@ export function uygulaYtdOverlay(
     gt.aylikBrans[b.bransKodu] = ab;
   }
 
-  // 3) KPK/DERK/muallak rollup + mizan yapraklarını geri yükle (61401/614071 ezilmesin)
+  // 3) Rollup + mizan YTD tam geri yükle (60101, 610, 61401… üst+yaprak)
   yenidenTuretUstFormuller(gt);
-  geriYukleMizanYtdYapraklar(gt, mizan.bransSatir, anchor);
+  geriYukleMizanYtdTam(gt, mizan, anchor, MIZAN_DISI_SATIRLAR);
 
   // F11 şirket H2 branş toplamından
   if (gt.aylikToplam[11]) {
@@ -150,16 +150,6 @@ export function uygulaYtdOverlay(
     }
     gt.aylikToplam[11] = top;
     gt.toplam[11] = top.reduce((a, x) => a + x, 0);
-  }
-
-  // Şirket YTD: mizandan birebir (61401, 614071, F176… rollup sonrası da korunur)
-  for (const [satir, mizanSer] of mizan.sirketSatir) {
-    if (MIZAN_DISI_SATIRLAR.has(satir)) continue;
-    if (!gt.aylikToplam[satir]) gt.aylikToplam[satir] = Array(12).fill(0);
-    const ser = [...gt.aylikToplam[satir]!];
-    for (let ay = 0; ay < anchor; ay++) ser[ay] = mizanSer[ay] ?? 0;
-    gt.aylikToplam[satir] = ser;
-    gt.toplam[satir] = ser.reduce((a, x) => a + x, 0);
   }
 
   for (const { satir, ad } of KALIBRASYON_SATIRLARI) {

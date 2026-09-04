@@ -14,7 +14,7 @@ export const V3_METODOLOJI_ADIMLARI: readonly string[] = [
   "Tarife prim hedefleri → V2 DagitimMotoru (tarife-branş pay; yoksa üretim/mizan yedek).",
   "Teknik oranlar: V2 metodolojisi (ağırlıklı yıl + küçük baz grup fallback).",
   "Aylık prim: bütçe yılı YTD mevsimsellik + geçmiş tam yıl blend.",
-  "YTD kilidi: anchor aya kadar 0111/0211/0212 gerçekleşmeden alınır; F95 = F96+F105.",
+  "YTD kilidi: anchor aya kadar mizan-aylik-full'daki TÜM GT kodları (gt_tam_harita) branş×ay bazında kilitlenir.",
   "H2 prim: yıllık tarife hedefi − YTD gerçek, kalan aylara V2 profili ile dağıtılır.",
   "H2 hasar: V2 projeksiyonu korunur (yıllık hasar YTD sapması ile ezilmez).",
   "Tarife-branş pay yoksa: ana grup (TARSİM/TRAFİK/…) + geçmiş yıl iç-grup mizan payı.",

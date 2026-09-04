@@ -3,13 +3,19 @@ import { NextResponse } from "next/server";
 import {
   butceDataDurumu,
   loadBilancoAylikRows,
+  loadKpkKapanisTahmin,
+  loadKpkVadeRows,
   loadMizanAylikFullRows,
   loadMizanAylikRows,
   loadMizanRows,
+  loadOranAyarlar,
   loadSatisButceRows,
+  loadTarifeBransPayRows,
+  loadTarifeMapRows,
+  loadUretimRows,
   loadV3Varsayimlar,
 } from "@/lib/butce/loadData";
-import { buildV3Motor } from "@/lib/butce/v3/motor/buildV3Motor";
+import { buildV3GelirTablosu } from "@/lib/butce/v3/buildV3GelirTablosu";
 import { toplamPrimFromTarife, v3DefaultsForYear } from "@/lib/butce/v3/defaults";
 import { buildGtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 import {
@@ -18,6 +24,11 @@ import {
   V2_MALI_GELIR_DISCLAIMER,
   V2_VERGI_DISCLAIMER,
 } from "@/lib/butce/v2/maliGelirProxyConfig";
+import {
+  oneriGenelGider,
+  oneriMaliGetiri,
+  oneriTarifePrim,
+} from "@/lib/butce/v3/motor/oneriMotoru";
 import type { V3VarsayimlarStore } from "@/lib/butce/v3/types";
 
 export const runtime = "nodejs";
@@ -94,27 +105,59 @@ async function runHesapla(body: Partial<V3VarsayimlarStore>) {
 
   const [
     satisRows,
+    uretim,
+    tarifeMap,
+    tarifeBransPay,
     mizan,
     mizanAylik,
     mizanAylikFull,
     bilancoAylik,
+    oranAyar,
+    kpkVade,
+    kapanisTahmin,
   ] = await Promise.all([
     loadSatisButceRows(),
+    loadUretimRows(),
+    loadTarifeMapRows(),
+    loadTarifeBransPayRows(),
     loadMizanRows(),
     loadMizanAylikRows(),
     loadMizanAylikFullRows(),
     loadBilancoAylikRows(),
+    loadOranAyarlar(),
+    loadKpkVadeRows(),
+    loadKpkKapanisTahmin(),
   ]);
 
   try {
-    const sonuc = buildV3Motor({
+    const sonuc = buildV3GelirTablosu({
       varsayimlar,
       satisRows,
+      uretim,
+      tarifeMap,
+      tarifeBransPay,
       mizan,
       mizanAylik,
       mizanAylikFull,
       bilancoAylik,
+      oranAyar,
+      kpkVade,
+      kapanisTahmin,
     });
+
+    const ytdAnchorAy = sonuc.v3.ytdAnchorAy;
+    const oneriler = [
+      ...oneriTarifePrim(
+        mizan,
+        mizanAylikFull,
+        butceYili,
+        ytdAnchorAy,
+        satisRows,
+        varsayimlar.tarifeHedefleri ?? {},
+      ),
+      ...oneriGenelGider(mizan, mizanAylikFull, butceYili, varsayimlar.faaliyetGiderButce ?? {}),
+      ...oneriMaliGetiri(varsayimlar.aylikGetiriOrani ?? [], butceYili),
+    ];
 
     return NextResponse.json({
       ok: true,
@@ -126,19 +169,11 @@ async function runHesapla(body: Partial<V3VarsayimlarStore>) {
       endirektPrim: sonuc.endirektPrim,
       uyarilar: sonuc.uyarilar,
       v3: {
-        toplamPrimHedef: sonuc.toplamPrimHedef,
-        ytdAnchorAy: sonuc.ytdAnchorAy,
-        motor: sonuc.motor,
-        oneriler: sonuc.motor.oneriler,
+        ...sonuc.v3,
+        oneriler,
         metodolojiOzeti: [
-          "1) V3 oran motoru: 2022-2025 mizandan (kalem, branş) için veri-kalite ağırlıklı pay/baz.",
-          "2) Torpu: z-score > 2 dışlanır + kalem özel min/max sıkıştırma.",
-          "3) Küçük baz (<500K) fallback: tarife grubu Σpay/Σbaz.",
-          "4) Hasar bloğu tutarlılığı: F320/F436/F451/F456 birlikte grup.",
-          "5) Kural kalemleri: F348 dengeleme -%12 (mizan geçmişi varsa).",
-          "6) Aylık mevsim: geçmiş tam yıl profili + 2026 YTD blend (anchor'a kadar).",
-          "7) YTD full overlay: anchor ayına kadar TÜM yaprak GT satırları mizandan.",
-          "8) Prim H2 = yıllık hedef − YTD gerçek; mevsimle dağıtılır.",
+          ...sonuc.v3.metodolojiOzeti,
+          "Öneri rozetleri: tarife prim CAGR + YTD run-rate, gider CAGR, mali getiri ort.",
         ],
       },
     });

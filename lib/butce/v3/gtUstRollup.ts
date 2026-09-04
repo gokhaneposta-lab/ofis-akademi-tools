@@ -18,6 +18,9 @@ export const GT_YAPRAK_ROLLUP_FORMUL: ReadonlyArray<[number, readonly number[]]>
   [115, [116, 126]],
   [136, [137, 147]],
   [114, [115, 136]],
+  [166, [167, 168]],
+  [165, [166, 169]],
+  [164, [165, 170, 173]],
 ];
 
 export const GT_YAPRAK_ROLLUP_PARENTS = new Set(GT_YAPRAK_ROLLUP_FORMUL.map(([h]) => h));
@@ -46,6 +49,33 @@ export function yenileToplamlar(gt: GelirTablosuSonuc, satirlar: readonly number
       }
       return t;
     });
+    gt.aylikToplam[satir] = ser;
+    gt.toplam[satir] = ser.reduce((a, x) => a + x, 0);
+    for (const b of gt.branslar) {
+      const s = gt.aylikBrans[b.bransKodu]?.[satir];
+      if (s) b.degerler[satir] = s.reduce((a, x) => a + x, 0);
+    }
+  }
+}
+
+/** Yalnızca H2 aylarını branş toplamından şirket serisine yazar; YTD mizan kilidini bozmaz. */
+export function yenileToplamlarH2(
+  gt: GelirTablosuSonuc,
+  satirlar: readonly number[],
+  anchorAy: number,
+): void {
+  const anchor = Math.min(Math.max(anchorAy, 1), 11);
+  const tekil = [...new Set(satirlar)];
+  for (const satir of tekil) {
+    if (!gt.aylikToplam[satir]) gt.aylikToplam[satir] = Array(12).fill(0);
+    const ser = [...gt.aylikToplam[satir]!];
+    for (let ay = anchor; ay < 12; ay++) {
+      let t = 0;
+      for (const b of gt.branslar) {
+        t += gt.aylikBrans[b.bransKodu]?.[satir]?.[ay] ?? 0;
+      }
+      ser[ay] = t;
+    }
     gt.aylikToplam[satir] = ser;
     gt.toplam[satir] = ser.reduce((a, x) => a + x, 0);
     for (const b of gt.branslar) {

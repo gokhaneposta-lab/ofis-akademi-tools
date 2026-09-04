@@ -125,8 +125,26 @@ export const V2_HESAP_AGAC: V2HesapDugum[] = [
         ],
       },
       { id: "611", hesap: "611", satir: 114, kalin: true, children: [
-          { id: "61101", hesap: "61101", satir: 115, kalin: true },
-          { id: "61102", hesap: "61102", satir: 136, kalin: true },
+          {
+            id: "61101",
+            hesap: "61101",
+            satir: 115,
+            kalin: true,
+            children: [
+              { id: "611011", hesap: "611011", satir: 116 },
+              { id: "611012", hesap: "611012", satir: 126 },
+            ],
+          },
+          {
+            id: "61102",
+            hesap: "61102",
+            satir: 136,
+            kalin: true,
+            children: [
+              { id: "611021", hesap: "611021", satir: 137 },
+              { id: "611022", hesap: "611022", satir: 147 },
+            ],
+          },
         ] },
       { id: "612", hesap: "612", satir: 157, kalin: true },
       {

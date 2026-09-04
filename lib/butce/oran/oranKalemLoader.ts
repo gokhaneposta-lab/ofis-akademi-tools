@@ -96,6 +96,30 @@ const MANUEL: Record<string, Partial<OranKalemSpec>> = {
   },
   F349: { pay: ["013"], baz: ["0111"], carpim: CARPIM_BRUT_PRIM },
   F441: { pay: ["611"], baz: ["60001"] },
+  F451: {
+    pay: ["611011"],
+    baz: ["60001"],
+    carpim: CARPIM_BRUT_PRIM,
+    gt_hucre: "F451",
+  },
+  F456: {
+    pay: ["611012"],
+    baz: ["60001"],
+    carpim: CARPIM_BRUT_PRIM,
+    gt_hucre: "F456",
+  },
+  F466: {
+    pay: ["611021"],
+    baz: ["60001"],
+    carpim: CARPIM_BRUT_PRIM,
+    gt_hucre: "F466",
+  },
+  F471: {
+    pay: ["611022"],
+    baz: ["60001"],
+    carpim: CARPIM_BRUT_PRIM,
+    gt_hucre: "F471",
+  },
   /** GT F197 = F11×F300 — alınan reasürans komisyonu / GWP (614071). */
   F300: {
     pay: ["614071"],

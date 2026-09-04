@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BEREKET · Haziran Performans Özeti 2026</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+    :root {
+      --navy: #0b1f3a;
+      --navy-2: #132a4a;
+      --teal: #0f766e;
+      --teal-soft: #ecfdf8;
+      --red: #b91c1c;
+      --red-soft: #fef2f2;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0f172a;
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      color: var(--ink);
+    }
+    .stage {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .slide {
+      width: min(1280px, 100%);
+      aspect-ratio: 16 / 9;
+      background: var(--bg);
+      border-radius: 10px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    header {
+      background: var(--navy);
+      color: #fff;
+      padding: 18px 28px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    header p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+    header .badge {
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.18);
+      padding: 8px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    main {
+      padding: 18px 28px 8px;
+      display: grid;
+      gap: 14px;
+      grid-template-rows: auto 1fr;
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px 11px;
+    }
+    .kpi .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .kpi .value {
+      margin-top: 4px;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--navy);
+    }
+    .kpi .sub {
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .delta {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+    .up { color: var(--teal); background: var(--teal-soft); }
+    .down { color: var(--red); background: var(--red-soft); }
+    .flat { color: var(--muted); background: #f1f5f9; }
+    .panels {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 12px;
+      min-height: 0;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy-2);
+      letter-spacing: 0.02em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    th, td {
+      padding: 7px 6px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+    }
+    th:first-child, td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: #334155;
+    }
+    th {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    tbody tr:last-child td { border-bottom: 0; }
+    .ops {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 0 10px;
+      font-size: 12px;
+      align-items: center;
+    }
+    .ops .row {
+      display: contents;
+    }
+    .ops .name {
+      padding: 6.5px 0;
+      border-bottom: 1px solid var(--line);
+      font-weight: 600;
+      color: #334155;
+    }
+    .ops .a, .ops .b, .ops .d {
+      padding: 6.5px 0;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .ops .a { color: var(--muted); }
+    .ops .b { font-weight: 700; color: var(--navy); }
+    .ops .d { font-weight: 700; min-width: 54px; }
+    .ops .row:last-child > * { border-bottom: 0; }
+    footer {
+      padding: 8px 28px 12px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    @media print {
+      body { background: #fff; }
+      .stage { padding: 0; }
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <article class="slide" aria-label="BEREKET Haziran performans slaydı">
+      <header>
+        <div>
+          <h1>BEREKET</h1>
+          <p>Haziran Performans Özeti · YoY 2025 → 2026</p>
+        </div>
+        <div class="badge">Üst tablo: Mio ₺ · Alt tablo: adet / ₺</div>
+      </header>
+
+      <main>
+        <section class="kpis" aria-label="Öne çıkan göstergeler">
+          <div class="kpi">
+            <div class="label">Net Kâr</div>
+            <div class="value">702 Mn</div>
+            <div class="sub">2025: 389 Mn ₺</div>
+            <span class="delta up">+80%</span>
+          </div>
+          <div class="kpi">
+            <div class="label">Prim · Hayat Dışı</div>
+            <div class="value">12.979</div>
+            <div class="sub">2025: 9.982 Mio ₺</div>
+            <span class="delta up">+30%</span>
+          </div>
+          <div class="kpi">
+            <div class="label">Prim · Hayat</div>
+            <div class="value">1.042</div>
+            <div class="sub">2025: 686 Mio ₺</div>
+            <span class="delta up">+52%</span>
+          </div>
+          <div class="kpi">
+            <div class="label">BES Fon Büyüklüğü</div>
+            <div class="value">14,3 Mr</div>
+            <div class="sub">2025: 8,7 Mr ₺</div>
+            <span class="delta up">+64%</span>
+          </div>
+        </section>
+
+        <section class="panels">
+          <div class="panel">
+            <h2>Prim, Sıralama &amp; Pazar Payı</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Gösterge</th>
+                  <th>2025</th>
+                  <th>2026</th>
+                  <th>Değişim</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>HD Prim</td><td>9.982</td><td>12.979</td><td class="up">+30%</td></tr>
+                <tr><td>Hayat Prim</td><td>686</td><td>1.042</td><td class="up">+52%</td></tr>
+                <tr><td>HD Sıralama</td><td>17</td><td>17</td><td class="flat">—</td></tr>
+                <tr><td>Hayat Sıralama</td><td>13</td><td>13</td><td class="flat">—</td></tr>
+                <tr><td>HD Pazar Payı</td><td>2,00%</td><td>2,08%</td><td class="up">+0,08 pp</td></tr>
+                <tr><td>Hayat Pazar Payı</td><td>0,81%</td><td>0,86%</td><td class="up">+0,05 pp</td></tr>
+                <tr><td>Sektör Prim</td><td>576.813</td><td>743.852</td><td class="up">+29%</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h2>Operasyon &amp; Finans</h2>
+            <div class="ops">
+              <div class="row"><div class="name">Aktif Sigortalı</div><div class="a">1.682.759</div><div class="b">1.633.637</div><div class="d down">−2,9%</div></div>
+              <div class="row"><div class="name">Aktif Poliçe</div><div class="a">5.416.063</div><div class="b">5.252.998</div><div class="d down">−3,0%</div></div>
+              <div class="row"><div class="name">TARSİM Poliçe</div><div class="a">655.714</div><div class="b">662.839</div><div class="d up">+1,1%</div></div>
+              <div class="row"><div class="name">BES Sözleşme</div><div class="a">130.098</div><div class="b">146.753</div><div class="d up">+13%</div></div>
+              <div class="row"><div class="name">Teminat</div><div class="a">22,0 Tr</div><div class="b">27,8 Tr</div><div class="d up">+26%</div></div>
+              <div class="row"><div class="name">Hasar Ödemesi</div><div class="a">3,2 Mr</div><div class="b">3,8 Mr</div><div class="d up">+19%</div></div>
+              <div class="row"><div class="name">Vergi Öncesi Kâr</div><div class="a">656 Mn</div><div class="b">968 Mn</div><div class="d up">+48%</div></div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>Kaynak: Yönetim özeti · Haziran 2026</span>
+        <span>BEREKET</span>
+      </footer>
+    </article>
+  </div>
+</body>
+</html>

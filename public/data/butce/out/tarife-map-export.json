@@ -1,0 +1,595 @@
+{
+  "kaynak": "excel:C:\\Users\\g.yildirim\\Desktop\\BUTCE_MAP.xlsx",
+  "guncellemeIso": "2026-07-01T07:20:09.436Z",
+  "satirSayisi": 84,
+  "rows": [
+    {
+      "bransKodu": "703",
+      "hazineBransAd": "ZORUNLU DEPREM (DASK)",
+      "anaBrans": "YANGIN VE DOĞAL AFETLER",
+      "sirketBransAd": "DASK",
+      "tarifeGrubu": "DASK"
+    },
+    {
+      "bransKodu": "704",
+      "hazineBransAd": "MADEN ÇALIŞANLARI ZORUNLU FERDİ KAZA",
+      "anaBrans": "KAZA",
+      "sirketBransAd": "FERDİ KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "705",
+      "hazineBransAd": "DOĞRUDAN KEFALET",
+      "anaBrans": "KEFALET",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "706",
+      "hazineBransAd": "DOLAYLI KEFALET",
+      "anaBrans": "KEFALET",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "707",
+      "hazineBransAd": "DEVLET DESTEKLİ TİCARİ ALACAK SİGORTASI",
+      "anaBrans": "KREDİ",
+      "sirketBransAd": "KREDİ",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "708",
+      "hazineBransAd": "BİNA TAMAMLAMA",
+      "anaBrans": "KEFALET",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "718",
+      "hazineBransAd": "OTOBÜS ZORUNLU KOLTUK FERDİ KAZA",
+      "anaBrans": "KAZA",
+      "sirketBransAd": "FERDİ KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "719",
+      "hazineBransAd": "İŞVEREN MALİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "720",
+      "hazineBransAd": "ÜÇÜNCÜ ŞAHISLARA KARŞI MALİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "721",
+      "hazineBransAd": "ASANSÖR KAZA ÜÇÜNCÜ ŞAHISLARA KARŞI MALİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "722",
+      "hazineBransAd": "ÇEVRE KİRLİLİĞİ MALİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "725",
+      "hazineBransAd": "TÜPGAZ ZORUNLU SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "726",
+      "hazineBransAd": "TEHLİKE MADDELER ZORUNLU SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "728",
+      "hazineBransAd": "UÇAK MALİ MESULİYET",
+      "anaBrans": "HAVA ARAÇLARI SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "729",
+      "hazineBransAd": "UÇAK YOLCU KAZA",
+      "anaBrans": "KAZA",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "730",
+      "hazineBransAd": "TIBBİ KÖTÜ UYGULAMA",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "731",
+      "hazineBransAd": "ÖZEL GÜVENLİK MALİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "732",
+      "hazineBransAd": "ZORUNLU SERTİFİKA MALİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "733",
+      "hazineBransAd": "MESLEKİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "734",
+      "hazineBransAd": "KIYI TESİSLERİ DENİZ KİRLİLİĞİ ZORUNLU MALİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "735",
+      "hazineBransAd": "TEKNE SORUMLULUK",
+      "anaBrans": "SU ARAÇLARI SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "736",
+      "hazineBransAd": "EMNİYETİ SUİSTİMAL",
+      "anaBrans": "KEFALET",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "745",
+      "hazineBransAd": "TAKSİTLİ KREDİ",
+      "anaBrans": "KREDİ",
+      "sirketBransAd": "KREDİ",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "746",
+      "hazineBransAd": "UZUN VADELİ KONUT KREDİSİ",
+      "anaBrans": "KREDİ",
+      "sirketBransAd": "KREDİ",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "747",
+      "hazineBransAd": "TARIM KREDİSİ",
+      "anaBrans": "KREDİ",
+      "sirketBransAd": "KREDİ",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "748",
+      "hazineBransAd": "İSTİHDAM",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "749",
+      "hazineBransAd": "GELİR YETERSİZLİĞİ",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "751",
+      "hazineBransAd": "UZUN SÜRELİ FERDİ KAZA",
+      "anaBrans": "KAZA",
+      "sirketBransAd": "FERDİ KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "752",
+      "hazineBransAd": "HAVA ŞARTLARI",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "753",
+      "hazineBransAd": "GENEL GİDERLER",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "754",
+      "hazineBransAd": "BEKLENMEYEN TİCARİ GİDERLER",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "755",
+      "hazineBransAd": "KREDİ",
+      "anaBrans": "KREDİ",
+      "sirketBransAd": "KREDİ",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "756",
+      "hazineBransAd": "İHRACAT KREDİ",
+      "anaBrans": "KREDİ",
+      "sirketBransAd": "KREDİ",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "757",
+      "hazineBransAd": "PİYASA DEĞERİNDEKİ KAYIP",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "758",
+      "hazineBransAd": "KİRA VE GELİR KAYBI",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "759",
+      "hazineBransAd": "DİĞER FİNANSAL KAYIPLAR",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "769",
+      "hazineBransAd": "YAPI DENETİMİ ZORUNLU MALİ SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "770",
+      "hazineBransAd": "DENİZ YOLU TAŞIMACILIĞI ZMM",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "771",
+      "hazineBransAd": "ÜRÜN SORUMLULUK",
+      "anaBrans": "GENEL SORUMLULUK",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "DIGER KAZA"
+    },
+    {
+      "bransKodu": "750",
+      "hazineBransAd": "FERDİ KAZA",
+      "anaBrans": "KAZA",
+      "sirketBransAd": "FERDİ KAZA",
+      "tarifeGrubu": "FERDI KAZA"
+    },
+    {
+      "bransKodu": "716",
+      "hazineBransAd": "MOTORLU KARA TAŞIT ARAÇLARI İHTİYARİ MALİ SORUMLULUK",
+      "anaBrans": "KARA ARAÇLARI SORUMLULUK",
+      "sirketBransAd": "TRAFİK",
+      "tarifeGrubu": "KAZA OTO"
+    },
+    {
+      "bransKodu": "717",
+      "hazineBransAd": "MOTORLU KARA TAŞIT ARAÇLARI KASKO",
+      "anaBrans": "KARA ARAÇLARI",
+      "sirketBransAd": "KASKO",
+      "tarifeGrubu": "KAZA OTO"
+    },
+    {
+      "bransKodu": "724",
+      "hazineBransAd": "HIRSIZLIK",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "KAZA OTO"
+    },
+    {
+      "bransKodu": "737",
+      "hazineBransAd": "MOTORLU KARA TAŞITLARI DIŞINDAKİ KARA TAŞITLARI",
+      "anaBrans": "KARA ARAÇLARI",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "KAZA OTO"
+    },
+    {
+      "bransKodu": "760",
+      "hazineBransAd": "HUKUKSAL KORUMA",
+      "anaBrans": "HUKUKSAL KORUMA",
+      "sirketBransAd": "HUKUKSAL KORUMA",
+      "tarifeGrubu": "KAZA OTO"
+    },
+    {
+      "bransKodu": "701",
+      "hazineBransAd": "YANGIN",
+      "anaBrans": "YANGIN VE DOĞAL AFETLER",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "MUHENDISLIK"
+    },
+    {
+      "bransKodu": "765",
+      "hazineBransAd": "MAKİNE KIRILMASI",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "MÜHENDİSLİK",
+      "tarifeGrubu": "MUHENDISLIK"
+    },
+    {
+      "bransKodu": "766",
+      "hazineBransAd": "MONTAJ",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "MÜHENDİSLİK",
+      "tarifeGrubu": "MUHENDISLIK"
+    },
+    {
+      "bransKodu": "767",
+      "hazineBransAd": "İNŞAAT",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "MÜHENDİSLİK",
+      "tarifeGrubu": "MUHENDISLIK"
+    },
+    {
+      "bransKodu": "710",
+      "hazineBransAd": "EMTEA",
+      "anaBrans": "NAKLİYAT",
+      "sirketBransAd": "NAKLİYAT",
+      "tarifeGrubu": "NAKLIYAT"
+    },
+    {
+      "bransKodu": "711",
+      "hazineBransAd": "KIYMET",
+      "anaBrans": "NAKLİYAT",
+      "sirketBransAd": "NAKLİYAT",
+      "tarifeGrubu": "NAKLIYAT"
+    },
+    {
+      "bransKodu": "712",
+      "hazineBransAd": "TEKNE",
+      "anaBrans": "SU ARAÇLARI",
+      "sirketBransAd": "NAKLİYAT",
+      "tarifeGrubu": "NAKLIYAT"
+    },
+    {
+      "bransKodu": "713",
+      "hazineBransAd": "RAYLI ARAÇLAR GENEL",
+      "anaBrans": "RAYLI ARAÇLAR",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "NAKLIYAT"
+    },
+    {
+      "bransKodu": "727",
+      "hazineBransAd": "UÇAK TEKNE",
+      "anaBrans": "HAVA ARAÇLARI",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "NAKLIYAT"
+    },
+    {
+      "bransKodu": "738",
+      "hazineBransAd": "NEHİR ARAÇLARI",
+      "anaBrans": "SU ARAÇLARI",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "NAKLIYAT"
+    },
+    {
+      "bransKodu": "739",
+      "hazineBransAd": "GÖL ARAÇLARI",
+      "anaBrans": "SU ARAÇLARI",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "NAKLIYAT"
+    },
+    {
+      "bransKodu": "784",
+      "hazineBransAd": "HASTALIK",
+      "anaBrans": "HASTALIK / SAĞLIK",
+      "sirketBransAd": "SAĞLIK",
+      "tarifeGrubu": "SAGLIK"
+    },
+    {
+      "bransKodu": "785",
+      "hazineBransAd": "SAĞLIK",
+      "anaBrans": "HASTALIK / SAĞLIK",
+      "sirketBransAd": "SAĞLIK",
+      "tarifeGrubu": "SAGLIK"
+    },
+    {
+      "bransKodu": "786",
+      "hazineBransAd": "SEYAHAT SAĞLIK",
+      "anaBrans": "HASTALIK / SAĞLIK",
+      "sirketBransAd": "SAĞLIK",
+      "tarifeGrubu": "SAGLIK"
+    },
+    {
+      "bransKodu": "789",
+      "hazineBransAd": "SEYAHAT ARAÇ DESTEK",
+      "anaBrans": "DESTEK",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "SAGLIK"
+    },
+    {
+      "bransKodu": "798",
+      "hazineBransAd": "DESTEK",
+      "anaBrans": "DESTEK",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "SAGLIK"
+    },
+    {
+      "bransKodu": "Hazine Branş Kod",
+      "hazineBransAd": "Hazine Branş Ad",
+      "anaBrans": "HAZİNE Ana Branş Ad",
+      "sirketBransAd": "ŞİRKET Branş Ad",
+      "tarifeGrubu": "TARIFE GRUBU"
+    },
+    {
+      "bransKodu": "773",
+      "hazineBransAd": "DEVLET DESTEKLİ ARICILIK",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARSİM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "774",
+      "hazineBransAd": "SU ÜRÜNLERİ",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARIM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "775",
+      "hazineBransAd": "DOLU SERA",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARIM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "776",
+      "hazineBransAd": "DEVLET DESTEKLİ SERA",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARSİM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "777",
+      "hazineBransAd": "DEVLET DESTEKLİ BİTKİSEL ÜRÜN",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARSİM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "778",
+      "hazineBransAd": "DEVLET DESTEKLİ SU ÜRÜNLERİ",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARSİM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "779",
+      "hazineBransAd": "DEVLET DESTEKLİ HAYVAN HAYAT",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARSİM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "780",
+      "hazineBransAd": "HAYVAN HAYAT",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARIM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "781",
+      "hazineBransAd": "KÜMES HAYVAN HAYAT",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARIM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "782",
+      "hazineBransAd": "DEVLET DESTEKLİ KÜMES HAYVAN HAYAT",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARSİM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "783",
+      "hazineBransAd": "DEVLET DESTEKLİ KÜÇÜKBAŞ HAYVAN HAYAT",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "TARSİM",
+      "tarifeGrubu": "TARSIM"
+    },
+    {
+      "bransKodu": "714",
+      "hazineBransAd": "ZORUNLU KARAYOLU TAŞIMACILIK MALİ SORUMLULUK",
+      "anaBrans": "KARA ARAÇLARI SORUMLULUK",
+      "sirketBransAd": "TRAFİK",
+      "tarifeGrubu": "TRAFIK"
+    },
+    {
+      "bransKodu": "715",
+      "hazineBransAd": "ZORUNLU TRAFİK",
+      "anaBrans": "KARA ARAÇLARI SORUMLULUK",
+      "sirketBransAd": "TRAFİK",
+      "tarifeGrubu": "TRAFIK"
+    },
+    {
+      "bransKodu": "702",
+      "hazineBransAd": "KAR KAYBI",
+      "anaBrans": "FİNANSAL KAYIPLAR",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "YANGIN"
+    },
+    {
+      "bransKodu": "723",
+      "hazineBransAd": "CAM KIRILMASI",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "DİĞER KAZA",
+      "tarifeGrubu": "YANGIN"
+    },
+    {
+      "bransKodu": "740",
+      "hazineBransAd": "İHTİYARİ DEPREM",
+      "anaBrans": "YANGIN VE DOĞAL AFETLER",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "YANGIN"
+    },
+    {
+      "bransKodu": "741",
+      "hazineBransAd": "SEL",
+      "anaBrans": "YANGIN VE DOĞAL AFETLER",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "YANGIN"
+    },
+    {
+      "bransKodu": "742",
+      "hazineBransAd": "DEPREM VE SEL DIŞINDAKİ DOĞAL AFETLER",
+      "anaBrans": "YANGIN VE DOĞAL AFETLER",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "YANGIN"
+    },
+    {
+      "bransKodu": "743",
+      "hazineBransAd": "NÜKLEER ENERJİ",
+      "anaBrans": "YANGIN VE DOĞAL AFETLER",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "YANGIN"
+    },
+    {
+      "bransKodu": "744",
+      "hazineBransAd": "TOPRAK KAYMASI",
+      "anaBrans": "YANGIN VE DOĞAL AFETLER",
+      "sirketBransAd": "YANGIN",
+      "tarifeGrubu": "YANGIN"
+    },
+    {
+      "bransKodu": "761",
+      "hazineBransAd": "PATLAMA",
+      "anaBrans": "YANGIN VE DOĞAL AFETLER",
+      "sirketBransAd": "FİNANSAL KAYIPLAR",
+      "tarifeGrubu": "YANGIN"
+    },
+    {
+      "bransKodu": "768",
+      "hazineBransAd": "ELEKTRONİK CİHAZ",
+      "anaBrans": "GENEL ZARARLAR",
+      "sirketBransAd": "MÜHENDİSLİK",
+      "tarifeGrubu": "YANGIN"
+    }
+  ]
+}

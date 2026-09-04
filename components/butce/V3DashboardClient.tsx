@@ -15,6 +15,7 @@ import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
 import type { V2MaliGelirProxySonuc } from "@/lib/butce/v2/types";
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 import type { V3KalibrasyonSatir } from "@/lib/butce/v3/types";
+import type { V3Oneri } from "@/lib/butce/v3/motor/types";
 import { toplamPrimFromTarife, V3_AYLIK_GETIRI_PCT_2026 } from "@/lib/butce/v3/defaults";
 import {
   v2FiltreBransKodlari,
@@ -67,6 +68,7 @@ export default function V3DashboardClient() {
   const [gt, setGt] = useState<GelirTablosuSonuc | null>(null);
   const [proxy, setProxy] = useState<V2MaliGelirProxySonuc | null>(null);
   const [kalibrasyon, setKalibrasyon] = useState<V3KalibrasyonSatir[]>([]);
+  const [oneriler, setOneriler] = useState<V3Oneri[]>([]);
   const [uyarilar, setUyarilar] = useState<string[]>([]);
   const [formatCocukPay, setFormatCocukPay] = useState<GtCocukPay>({});
   const [excelBusy, setExcelBusy] = useState(false);
@@ -79,6 +81,39 @@ export default function V3DashboardClient() {
     () => tarifeRows.reduce((a, r) => a + (r.yeniHedef || 0), 0),
     [tarifeRows],
   );
+
+  const oneriByKey = useMemo(() => {
+    const m = new Map<string, V3Oneri>();
+    for (const o of oneriler) m.set(`${o.alan}|${o.key}`, o);
+    return m;
+  }, [oneriler]);
+
+  function OneriBadge({ alan, oneriKey }: { alan: V3Oneri["alan"]; oneriKey: string }) {
+    const o = oneriByKey.get(`${alan}|${oneriKey}`);
+    if (!o) return null;
+    const sapma = o.sapmaPct;
+    const renk =
+      sapma == null
+        ? "bg-slate-100 text-slate-600"
+        : Math.abs(sapma) < 5
+          ? "bg-emerald-100 text-emerald-800"
+          : Math.abs(sapma) < 15
+            ? "bg-amber-100 text-amber-800"
+            : "bg-rose-100 text-rose-800";
+    const oneriText =
+      alan === "mali_getiri"
+        ? `${o.modelOneri.toFixed(2)}%`
+        : new Intl.NumberFormat("tr-TR").format(o.modelOneri);
+    return (
+      <span
+        className={`ml-2 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium ${renk}`}
+        title={o.aciklama}
+      >
+        model: {oneriText}
+        {sapma != null ? ` (${sapma > 0 ? "+" : ""}${sapma.toFixed(1)}%)` : ""}
+      </span>
+    );
+  }
 
   const refYears = REFERANS_YIL_SECENEKLERI[referans] ?? [2024, 2025];
 
@@ -176,6 +211,7 @@ export default function V3DashboardClient() {
     setGt(data.gt);
     setProxy(data.proxy);
     setKalibrasyon(data.v3?.kalibrasyon ?? []);
+    setOneriler(data.v3?.oneriler ?? data.v3?.motor?.oneriler ?? []);
     setUyarilar([...(data.uyarilar ?? [])]);
     setFormatCocukPay(data.formatCocukPay ?? {});
   }
@@ -271,22 +307,25 @@ export default function V3DashboardClient() {
                   <td className="py-1.5 pr-3 font-medium">{row.tarifeGrubu}</td>
                   <td className="py-1.5 pr-3 tabular-nums text-slate-600">{tl(row.mevcutHedef)}</td>
                   <td className="py-1.5 pr-3">
-                    <input
-                      type="number"
-                      className="w-36 rounded border border-slate-200 px-2 py-1 tabular-nums"
-                      value={Math.round(row.yeniHedef) || ""}
-                      onChange={(e) => {
-                        const v = Number(e.target.value) || 0;
-                        setTarifeRows((prev) => {
-                          const next = [...prev];
-                          const r = { ...next[idx]! };
-                          r.yeniHedef = v;
-                          r.artisOrani = r.mevcutHedef > 0 ? v / r.mevcutHedef - 1 : 0;
-                          next[idx] = r;
-                          return next;
-                        });
-                      }}
-                    />
+                    <div className="flex items-center">
+                      <input
+                        type="number"
+                        className="w-36 rounded border border-slate-200 px-2 py-1 tabular-nums"
+                        value={Math.round(row.yeniHedef) || ""}
+                        onChange={(e) => {
+                          const v = Number(e.target.value) || 0;
+                          setTarifeRows((prev) => {
+                            const next = [...prev];
+                            const r = { ...next[idx]! };
+                            r.yeniHedef = v;
+                            r.artisOrani = r.mevcutHedef > 0 ? v / r.mevcutHedef - 1 : 0;
+                            next[idx] = r;
+                            return next;
+                          });
+                        }}
+                      />
+                      <OneriBadge alan="tarife_prim" oneriKey={row.tarifeGrubu} />
+                    </div>
                   </td>
                   <td className="py-1.5 tabular-nums text-slate-600">{pct(row.artisOrani)}</td>
                 </tr>
@@ -384,17 +423,20 @@ export default function V3DashboardClient() {
                     <td className="py-1 pr-2">{r.ad}</td>
                     <td className="py-1 pr-2 text-right tabular-nums">{tl(r.oncekiYilTutari)}</td>
                     <td className="py-1 pr-2">
-                      <input
-                        type="number"
-                        value={Math.round(r.butceTutari) || ""}
-                        onChange={(e) => {
-                          const v = Number(e.target.value) || 0;
-                          setGiderRows((rows) =>
-                            rows.map((x) => (x.hesap === r.hesap ? { ...x, butceTutari: v } : x)),
-                          );
-                        }}
-                        className="w-full rounded border border-slate-200 px-2 py-1 text-right tabular-nums"
-                      />
+                      <div className="flex items-center justify-end">
+                        <input
+                          type="number"
+                          value={Math.round(r.butceTutari) || ""}
+                          onChange={(e) => {
+                            const v = Number(e.target.value) || 0;
+                            setGiderRows((rows) =>
+                              rows.map((x) => (x.hesap === r.hesap ? { ...x, butceTutari: v } : x)),
+                            );
+                          }}
+                          className="w-full rounded border border-slate-200 px-2 py-1 text-right tabular-nums"
+                        />
+                        <OneriBadge alan="genel_gider" oneriKey={r.hesap} />
+                      </div>
                     </td>
                     <td className="py-1 text-right tabular-nums">
                       {r.oncekiYilTutari > 0 ? pct(r.butceTutari / r.oncekiYilTutari - 1) : "—"}
@@ -408,10 +450,14 @@ export default function V3DashboardClient() {
 
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-bold text-slate-900">3) Aylık mali getiri (%)</h2>
+          <p className="mt-1 text-[10px] text-slate-500">Baseline: her ay için model önerisi rozette.</p>
           <div className="mt-2 grid grid-cols-3 gap-1.5 sm:grid-cols-4">
             {AY_ADLARI.map((ad, i) => (
               <label key={ad} className="text-[10px] text-slate-500">
-                {ad}
+                <span className="flex items-center justify-between">
+                  {ad}
+                  <OneriBadge alan="mali_getiri" oneriKey={String(i + 1)} />
+                </span>
                 <input
                   type="number"
                   step="0.01"
@@ -491,6 +537,44 @@ export default function V3DashboardClient() {
             </tbody>
           </table>
         </div>
+      ) : null}
+
+      {oneriler.length > 0 ? (
+        <details className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/40 p-3 text-xs">
+          <summary className="cursor-pointer font-semibold text-emerald-900">
+            Model önerileri ({oneriler.length}) — kullanıcı girdileri vs V3 tahmini
+          </summary>
+          <table className="mt-2 w-full text-xs">
+            <thead>
+              <tr className="border-b text-left text-slate-500">
+                <th className="py-1 pr-2">Alan</th>
+                <th className="py-1 pr-2">Kalem</th>
+                <th className="py-1 pr-2 text-right">Kullanıcı</th>
+                <th className="py-1 pr-2 text-right">Model önerisi</th>
+                <th className="py-1 pr-2 text-right">Sapma %</th>
+                <th className="py-1 pl-2">Açıklama</th>
+              </tr>
+            </thead>
+            <tbody>
+              {oneriler.map((o) => (
+                <tr key={`${o.alan}|${o.key}`} className="border-b border-slate-100">
+                  <td className="py-1 pr-2 text-slate-500">{o.alan}</td>
+                  <td className="py-1 pr-2 font-medium">{o.key}</td>
+                  <td className="py-1 pr-2 text-right tabular-nums">
+                    {o.alan === "mali_getiri" ? `${o.kullaniciDeger}%` : tl(o.kullaniciDeger)}
+                  </td>
+                  <td className="py-1 pr-2 text-right tabular-nums">
+                    {o.alan === "mali_getiri" ? `${o.modelOneri}%` : tl(o.modelOneri)}
+                  </td>
+                  <td className="py-1 pr-2 text-right tabular-nums">
+                    {o.sapmaPct != null ? `${o.sapmaPct > 0 ? "+" : ""}${o.sapmaPct.toFixed(1)}%` : "—"}
+                  </td>
+                  <td className="py-1 pl-2 text-slate-500">{o.aciklama}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </details>
       ) : null}
 
       {proxy ? (

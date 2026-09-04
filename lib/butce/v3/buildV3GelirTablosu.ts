@@ -45,6 +45,7 @@ import { syntheticSatisFromTarife } from "./syntheticSatis";
 import { detectYtdAnchorAy, uygulaYtdOverlay } from "./ytdOverlay";
 import { uygulaMaliGelirRolling } from "./maliGelirRolling";
 import { senkronize603AylikBrans } from "./senkronize603";
+import { uygulaH2KpkDerkMuallak } from "./h2KpkDerkMuallak";
 import { mizanV3Recon, reconTutmayanListe } from "./mizanV3Recon";
 import type { V3GelirTablosuSonuc, V3VarsayimlarStore } from "./types";
 
@@ -257,6 +258,20 @@ export function buildV3GelirTablosu(opts: {
     butceYili,
     ytdAnchorAy,
   );
+
+  const h2Motor = uygulaH2KpkDerkMuallak(gtOverlay, {
+    anchorAy: ytdAnchorAy,
+    butceYili,
+    mizan: opts.mizan,
+    mizanAylik: opts.mizanAylik,
+    mizanAylikFull: mizanFullEarly,
+    tarifeBransPay: opts.tarifeBransPay,
+    kpkVade: opts.kpkVade,
+    oranAyar: opts.oranAyar,
+    aylikPrim,
+    kapanisTahmin: opts.kapanisTahmin,
+  });
+  uyarilar.push(...h2Motor.uyarilar);
 
   const maliGelirRolling =
     kalibrasyon.length > 0

@@ -19,6 +19,7 @@ export const V3_METODOLOJI_ADIMLARI: readonly string[] = [
   "H2 hasar: V2 projeksiyonu korunur (yıllık hasar YTD sapması ile ezilmez).",
   "Tarife-branş pay yoksa: ana grup (TARSİM/TRAFİK/…) + geçmiş yıl iç-grup mizan payı.",
   "Mali gelir (F38): YTD mizan (603); kalan aylar mizan yüklemesindeki bilanço banka (102/100) + getiri proxy.",
+  "YTD yaprak overlay + üst rollup; H2 KPK/DERK/muallak motor projeksiyonu.",
   "Genel giderler: kullanıcı 61402–06 tutarları; oran türetimi yok.",
 ];
 

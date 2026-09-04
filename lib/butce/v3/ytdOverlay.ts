@@ -1,6 +1,7 @@
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
 import type { MizanAylikRow } from "../types";
 import { extractMizanGtAylik, ytdToplam } from "./mizanGtExtract";
+import { GT_ROLLUP_PARENTS, yenidenTuretUstFormuller, yenileToplamlar } from "./gtUstRollup";
 import { V3_DEFAULT_YTD_ANCHOR } from "./metodoloji";
 import type { V3KalibrasyonSatir } from "./types";
 
@@ -28,24 +29,6 @@ const KALIBRASYON_SATIRLARI: ReadonlyArray<{ satir: number; ad: string }> = [
   { satir: 9002, ad: "Teknik gider (610–615, genel gider hariç)" },
   { satir: 9003, ad: "Safi TKZ" },
 ];
-
-function yenileToplamlar(gt: GelirTablosuSonuc, satirlar: readonly number[]): void {
-  for (const satir of satirlar) {
-    const ser = Array.from({ length: 12 }, (_, ay) => {
-      let t = 0;
-      for (const b of gt.branslar) {
-        t += gt.aylikBrans[b.bransKodu]?.[satir]?.[ay] ?? 0;
-      }
-      return t;
-    });
-    gt.aylikToplam[satir] = ser;
-    gt.toplam[satir] = ser.reduce((a, x) => a + x, 0);
-    for (const b of gt.branslar) {
-      const s = gt.aylikBrans[b.bransKodu]?.[satir];
-      if (s) b.degerler[satir] = s.reduce((a, x) => a + x, 0);
-    }
-  }
-}
 
 export function detectYtdAnchorAy(
   mizanAylikFull: MizanAylikRow[],
@@ -150,6 +133,9 @@ export function uygulaYtdOverlay(
     gt.aylikBrans[b.bransKodu] = ab;
   }
 
+  // 3) Yaprak kilitten üst satırları rollup (F21, F31, F114…)
+  yenidenTuretUstFormuller(gt);
+
   // F11 şirket H2 branş toplamından
   if (gt.aylikToplam[11]) {
     const top = [...gt.aylikToplam[11]!];
@@ -162,16 +148,18 @@ export function uygulaYtdOverlay(
     gt.toplam[11] = top.reduce((a, x) => a + x, 0);
   }
 
-  // Branş rollup sonrası YTD şirket satırlarını mizana geri kilitle
-  yenileToplamlar(gt, [...kilitleSatirlar]);
+  // YTD yaprak satırlar: şirket = branş toplamı (rollup ebeveynler zaten türetildi)
+  yenileToplamlar(gt, [...kilitleSatirlar].filter((s) => !GT_ROLLUP_PARENTS.has(s)));
   for (const [satir, mizanSer] of mizan.sirketSatir) {
     if (MIZAN_DISI_SATIRLAR.has(satir)) continue;
+    if (GT_ROLLUP_PARENTS.has(satir)) continue;
     if (!gt.aylikToplam[satir]) continue;
     const ser = [...gt.aylikToplam[satir]!];
     for (let ay = 0; ay < anchor; ay++) ser[ay] = mizanSer[ay] ?? 0;
     gt.aylikToplam[satir] = ser;
     gt.toplam[satir] = ser.reduce((a, x) => a + x, 0);
   }
+  yenidenTuretUstFormuller(gt);
 
   for (const { satir, ad } of KALIBRASYON_SATIRLARI) {
     const ytdTahmin = ytdOnce.get(satir) ?? 0;

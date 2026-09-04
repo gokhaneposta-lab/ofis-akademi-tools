@@ -10,8 +10,31 @@
  */
 
 import type { MizanAylikRow, MizanRow, SatisButceRow } from "../../types";
-import { normalizeBransKodu } from "../../textUtils";
+import { ANA_BRANS_GRUPLARI } from "../../config/brans";
+import { normalizeBransKodu, normalizeText } from "../../textUtils";
 import type { V3Oneri } from "./types";
+
+/** Satış tarife grubu adı → ana branş grup adı(ları). primFromToplam.ts ile uyumlu. */
+const TARIFE_ANA_ALIAS: Readonly<Record<string, readonly string[]>> = {
+  "KAZA OTO": ["KASKO"],
+  "DIGER KAZA": ["DIGER KAZA", "FERDI KAZA", "KREDI", "FINANSAL KAYIPLAR"],
+};
+
+function bransKodlariForTarife(tarifeGrubu: string): string[] {
+  const n = normalizeText(tarifeGrubu);
+  const wanted = TARIFE_ANA_ALIAS[n] ?? [n];
+  const kodlar: string[] = [];
+  for (const w of wanted) {
+    for (const key of Object.keys(ANA_BRANS_GRUPLARI)) {
+      if (normalizeText(key) === normalizeText(w)) {
+        for (const kod of ANA_BRANS_GRUPLARI[key] ?? []) {
+          if (!kodlar.includes(kod)) kodlar.push(kod);
+        }
+      }
+    }
+  }
+  return kodlar;
+}
 
 /** İki yıllık büyümeden CAGR (compound annual growth rate). */
 function cagr(from: number, to: number, yearGap: number): number {
@@ -69,14 +92,14 @@ export function oneriTarifePrim(
   satisRows: SatisButceRow[],
   kullaniciHedefler: Record<string, number>,
 ): V3Oneri[] {
-  // Tarife grubu → branş listesi (satisRows'dan çıkar)
+  // Tarife grubu → branş listesi. satisRows'da branş yok; ana grup haritasından çıkar.
   const tarifeBranslar = new Map<string, string[]>();
-  for (const r of satisRows) {
-    const g = r.tarifeGrubu;
-    if (!tarifeBranslar.has(g)) tarifeBranslar.set(g, []);
-    if (r.bransKodu && !tarifeBranslar.get(g)!.includes(r.bransKodu)) {
-      tarifeBranslar.get(g)!.push(r.bransKodu);
-    }
+  const grupSet = new Set<string>();
+  for (const r of satisRows) grupSet.add(r.tarifeGrubu);
+  for (const g of Object.keys(kullaniciHedefler)) grupSet.add(g);
+  for (const g of grupSet) {
+    const kodlar = bransKodlariForTarife(g);
+    if (kodlar.length > 0) tarifeBranslar.set(g, kodlar);
   }
 
   const gecmisYillar = [...new Set(mizan.map((r) => Number(r.yil)))]

@@ -6,6 +6,7 @@ import {
 } from "../v2/v2GtHesapAgac";
 import { appendGtFormatSheets } from "../v2/exportV2GelirTablosu";
 import type { GtCocukPay } from "../v2/gtFormatCocukPay";
+import { gtOzetOranSatirlari } from "./gtOzetTeknikOranlar";
 
 const AY_ADLARI = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -40,6 +41,21 @@ function appendGtOzetSheet(
     const ser = gt.aylikToplam[node.satir] ?? Array(12).fill(0);
     const yillik = ser.reduce((a, x) => a + x, 0);
     rows.push([node.satir, node.hesap ?? "", dugumEtiket(node), ...ser, yillik]);
+  }
+
+  // TKZ (son satır) sonrası — teknik oranlar (GT tutarlarından)
+  rows.push([], [], []);
+  rows.push(["", "", "TEKNİK ORANLAR (GT tutarlarından)", ...AY_ADLARI.map(() => ""), "Yıllık"]);
+  for (const { tanim, aylar, yillik } of gtOzetOranSatirlari(gt)) {
+    const fmt = (n: number | null) =>
+      n == null || !Number.isFinite(n) ? "" : Math.round(n * 1e6) / 1e6;
+    rows.push([
+      "",
+      "",
+      `${tanim.ad} — ${tanim.formul}`,
+      ...aylar.map(fmt),
+      fmt(yillik),
+    ]);
   }
 
   const sheet = utils.aoa_to_sheet(rows);

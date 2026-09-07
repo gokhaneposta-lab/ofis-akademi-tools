@@ -22,11 +22,11 @@ import { MIZAN_DISI_SATIRLAR } from "./ytdOverlay";
 /** KPK yaprak — H2'de yalnızca cari satırlar motorla; devreden mizan gibi Ocak dışı 0. */
 const KPK_H2_CARI_YAPRAK = [23, 26, 29] as const;
 
-/** Devreden KPK/RE/SGK — yıl içinde mizan: hareket yalnızca Ocak (YTD kilit). H2 = 0. */
-const KPK_DEVREDEN_SATIRLARI = [24, 27, 30] as const;
+/** Devreden KPK/RE/SGK + devreden muallak — H2 = 0 (Ocak hareketi YTD mizandan). */
+const DEVREDEN_H2_SIFIR = [24, 27, 30, 126, 147] as const;
 
-/** Muallak yaprak — H2 oran motorundan (GT kodları; F451 vb. MizanOranServisi'nde 0 döner). */
-const H2_ORAN_SATIRLARI = [116, 126, 137, 147] as const;
+/** Muallak cari — H2 oran motorundan (GT kodları). Devreden (126, 147) dahil değil. */
+const H2_ORAN_SATIRLARI = [116, 137] as const;
 
 const ORAN_BY_SATIR: Partial<Record<number, string>> = {
   116: "02211",
@@ -234,7 +234,7 @@ export function uygulaH2KpkDerkMuallak(
   const mizanGt = extractMizanGtAylik(opts.mizanAylikFull, opts.butceYili);
   geriYukleMizanYtdTam(gt, mizanGt, anchor, MIZAN_DISI_SATIRLAR);
 
-  sifirlaH2Devreden(gt, anchor, KPK_DEVREDEN_SATIRLARI);
+  sifirlaH2Devreden(gt, anchor, DEVREDEN_H2_SIFIR);
 
   oranH2Satir(
     gt,
@@ -245,7 +245,7 @@ export function uygulaH2KpkDerkMuallak(
     anchor,
     H2_ORAN_SATIRLARI,
     ORAN_BY_SATIR,
-    (satir, prim, oran) => (satir === 116 || satir === 147 ? -prim * oran : prim * oran),
+    (_satir, prim, oran) => prim * oran,
   );
 
   sgkH2Satir(
@@ -262,7 +262,7 @@ export function uygulaH2KpkDerkMuallak(
   geriYukleMizanYtdTam(gt, mizanGt, anchor, MIZAN_DISI_SATIRLAR);
 
   uyarilar.push(
-    `H2 motor: KPK cari + DERK + muallak + SGK (60003) ${anchor + 1}–12. ay; devreden KPK Ağu+ = 0.`,
+    `H2 motor: KPK cari + DERK + muallak (611011/611021) + SGK ${anchor + 1}–12. ay; devreden KPK/muallak Ağu+ = 0.`,
   );
   return { uyarilar };
 }

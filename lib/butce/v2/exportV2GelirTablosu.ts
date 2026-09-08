@@ -8,10 +8,17 @@ import {
   yilToplamByBrans,
 } from "./buildGtFormatGrid";
 import type { GtCocukPay } from "./gtFormatCocukPay";
+import type { FormatOranGecmisiSheet } from "../v3/gtOzetOranGecmisi";
+import { formatSheetOranGecmisiExcelSatirlari } from "../v3/gtOzetOranGecmisi";
 
 function aktifBransKodlari(gt: GelirTablosuSonuc): string[] {
   return gt.branslar.filter((b) => /^7\d{2}$/.test(b.bransKodu)).map((b) => b.bransKodu);
 }
+
+export type GtFormatSheetOranOpts = {
+  format7?: FormatOranGecmisiSheet;
+  formatGrup?: FormatOranGecmisiSheet;
+};
 
 /** Şirket formatı sayfalarını mevcut workbook'a ekler. */
 export function appendGtFormatSheets(
@@ -19,6 +26,7 @@ export function appendGtFormatSheets(
   workbook: import("xlsx").WorkBook,
   gt: GelirTablosuSonuc,
   cocukPay: GtCocukPay = {},
+  oranOpts: GtFormatSheetOranOpts = {},
 ): void {
   const tidy = buildGtFormatTidy(gt, cocukPay);
   const yil = yilToplamByBrans(tidy);
@@ -55,6 +63,19 @@ export function appendGtFormatSheets(
     const toplam = cols.reduce((a, b) => a + b, 0);
     f7.push([satir.gtKod, satir.hesapKodu, satir.hesapAdi, toplam, ...cols]);
   });
+
+  const f7ColCount = branslar.length + 4;
+  if (oranOpts.format7?.bloklar.length) {
+    f7.push([], [], []);
+    f7.push(
+      ...formatSheetOranGecmisiExcelSatirlari(
+        oranOpts.format7,
+        { labelCol: 2, toplamCol: 3, dataCol: 4, colCount: f7ColCount },
+        "ORAN GEÇMİŞİ (mizan — branş bazlı, GTV8 birleştirme)",
+      ),
+    );
+  }
+
   const f7Sheet = utils.aoa_to_sheet(f7);
   f7Sheet["!cols"] = [
     { wch: 12 }, { wch: 12 }, { wch: 52 }, { wch: 16 },
@@ -92,6 +113,19 @@ export function appendGtFormatSheets(
     const toplam = grupVals.reduce((a, b) => a + b, 0);
     fg.push([satir.hesapKodu, satir.hesapAdi, toplam, ...grupVals]);
   }
+
+  const fgColCount = grupKolon.length + 3;
+  if (oranOpts.formatGrup?.bloklar.length) {
+    fg.push([], [], []);
+    fg.push(
+      ...formatSheetOranGecmisiExcelSatirlari(
+        oranOpts.formatGrup,
+        { labelCol: 1, toplamCol: 2, dataCol: 3, colCount: fgColCount },
+        "ORAN GEÇMİŞİ (mizan — tarife grubu Σpay÷Σpayda, GTV8 birleştirme)",
+      ),
+    );
+  }
+
   const fgSheet = utils.aoa_to_sheet(fg);
   fgSheet["!cols"] = [
     { wch: 12 }, { wch: 62 }, { wch: 16 },

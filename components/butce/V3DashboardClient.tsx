@@ -11,7 +11,7 @@ import {
   V2_VERGI_DISCLAIMER,
 } from "@/lib/butce/v2/maliGelirProxyConfig";
 import { downloadV3GelirTablosuExcel } from "@/lib/butce/v3/exportV3GelirTablosu";
-import type { GtOzetOranGecmisiBlok } from "@/lib/butce/v3/gtOzetOranGecmisi";
+import type { GtOzetOranGecmisiBlok, OranGecmisiPaket } from "@/lib/butce/v3/gtOzetOranGecmisi";
 import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 import type {
@@ -228,21 +228,32 @@ export default function V3DashboardClient() {
     if (!gt) return;
     setExcelBusy(true);
     try {
-      let oranGecmisi: GtOzetOranGecmisiBlok[] = [];
+      let oranPaket: OranGecmisiPaket | undefined;
       try {
+        const branslar = gt.branslar
+          .filter((b) => /^7\d{2}$/.test(b.bransKodu))
+          .map((b) => b.bransKodu)
+          .join(",");
         const ogRes = await fetch(
-          `/api/butce/v3/oran-gecmisi?yil=${butceYili}&ay=${ozetAy}`,
+          `/api/butce/v3/oran-gecmisi?yil=${butceYili}&ay=${ozetAy}&branslar=${encodeURIComponent(branslar)}`,
         );
         const ogData = await ogRes.json();
-        if (ogRes.ok && Array.isArray(ogData.oranGecmisi)) {
-          oranGecmisi = ogData.oranGecmisi;
+        if (ogRes.ok && ogData.oranPaket) {
+          oranPaket = ogData.oranPaket as OranGecmisiPaket;
+        } else if (ogRes.ok && Array.isArray(ogData.oranGecmisi)) {
+          oranPaket = {
+            sirket: ogData.oranGecmisi as GtOzetOranGecmisiBlok[],
+            format7: { kolonIds: [], bloklar: [] },
+            formatGrup: { kolonIds: [], bloklar: [] },
+          };
         }
       } catch {
         /* oran geçmişi olmadan da GT indirilebilir */
       }
       await downloadV3GelirTablosuExcel(gt, formatCocukPay, {
         ytdAnchorAy: ytdAnchorResolved ?? ytdAnchorAy,
-        oranGecmisi,
+        oranPaket,
+        oranGecmisi: oranPaket?.sirket,
       });
     } finally {
       setExcelBusy(false);

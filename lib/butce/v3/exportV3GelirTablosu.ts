@@ -7,6 +7,10 @@ import {
 import { appendGtFormatSheets } from "../v2/exportV2GelirTablosu";
 import type { GtCocukPay } from "../v2/gtFormatCocukPay";
 import { gtOzetOranSatirlari } from "./gtOzetTeknikOranlar";
+import {
+  gtOzetOranGecmisiExcelSatirlari,
+  type GtOzetOranGecmisiBlok,
+} from "./gtOzetOranGecmisi";
 
 const AY_ADLARI = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -27,6 +31,7 @@ function appendGtOzetSheet(
   utils: typeof import("xlsx").utils,
   workbook: import("xlsx").WorkBook,
   gt: GelirTablosuSonuc,
+  oranGecmisi: GtOzetOranGecmisiBlok[] = [],
 ): void {
   const header: Array<string | number> = [
     "F Satır",
@@ -58,6 +63,18 @@ function appendGtOzetSheet(
     ]);
   }
 
+  if (oranGecmisi.length > 0) {
+    rows.push([], [], []);
+    rows.push([
+      "",
+      "",
+      "ORAN GEÇMİŞİ (mizan — şirket Σpay÷Σpayda, GTV8 GT birleştirme)",
+      ...AY_ADLARI.map(() => ""),
+      "",
+    ]);
+    rows.push(...gtOzetOranGecmisiExcelSatirlari(oranGecmisi));
+  }
+
   const sheet = utils.aoa_to_sheet(rows);
   sheet["!cols"] = [
     { wch: 8 },
@@ -74,6 +91,7 @@ function appendGtOzetSheet(
 
 export type V3ExcelExportOpts = {
   ytdAnchorAy?: number;
+  oranGecmisi?: GtOzetOranGecmisiBlok[];
 };
 
 /** V3 GT export — dashboard GT_Ozet + şirket formatı (Tidy, format_7, Format_Grup). */
@@ -85,7 +103,7 @@ export async function downloadV3GelirTablosuExcel(
   const XLSX = await import("xlsx");
   const workbook = XLSX.utils.book_new();
 
-  appendGtOzetSheet(XLSX.utils, workbook, gt);
+  appendGtOzetSheet(XLSX.utils, workbook, gt, opts.oranGecmisi ?? []);
   appendGtFormatSheets(XLSX.utils, workbook, gt, cocukPay);
 
   const anchor = opts.ytdAnchorAy;

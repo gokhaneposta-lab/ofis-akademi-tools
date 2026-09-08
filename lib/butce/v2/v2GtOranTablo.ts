@@ -50,15 +50,20 @@ function normalizeKodlar(branslar: readonly string[]): string[] {
  * Dinamik hucre eslestirmesi gizli/ara satirlarda tum oranlari eleyebildigi icin
  * burada V2 gosterime ait kullanilan kalemleri acikca tutuyoruz.
  */
-const KULLANILAN_ORAN_KODLARI = new Set([
-  "0112",
-  "016",
+/**
+ * V2 özet / GT motorunda fiilen kullanılan teknik oran kalemleri (GTV8 GT F275, F295 …).
+ * Excel GT_Ozet oran geçmişi bu sırayı izler.
+ */
+export const GT_MOTOR_ORAN_KALEMLER = [
   "0211",
   "0212",
   "02211",
   "02212",
   "02221",
   "02222",
+  "0112",
+  "0113",
+  "016",
   "014",
   "0251",
   "0258",
@@ -67,7 +72,9 @@ const KULLANILAN_ORAN_KODLARI = new Set([
   "F348",
   "F349",
   "F368",
-]);
+] as const;
+
+const KULLANILAN_ORAN_KODLARI = new Set<string>(GT_MOTOR_ORAN_KALEMLER);
 
 function grupAyar(
   ayarlar: OranAyarStore,

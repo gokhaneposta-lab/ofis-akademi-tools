@@ -18,6 +18,7 @@ import {
 import { buildV3GelirTablosu } from "@/lib/butce/v3/buildV3GelirTablosu";
 import { toplamPrimFromTarife, v3DefaultsForYear } from "@/lib/butce/v3/defaults";
 import { buildGtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
+import { buildGtOzetOranGecmisi } from "@/lib/butce/v3/gtOzetOranGecmisi";
 import {
   V2_AYLIK_GETIRI_VARSAYILAN,
   V2_FAALIYET_ARTIS_HESAPLARI,
@@ -159,11 +160,20 @@ async function runHesapla(body: Partial<V3VarsayimlarStore>) {
       ...oneriMaliGetiri(varsayimlar.aylikGetiriOrani ?? [], butceYili),
     ];
 
+    const oranGecmisi = buildGtOzetOranGecmisi({
+      mizan,
+      butceYili,
+      mizanAylikFull,
+      oranAyar,
+      ay: ytdAnchorAy,
+    });
+
     return NextResponse.json({
       ok: true,
       disclaimer: V2_MALI_GELIR_DISCLAIMER,
       vergiNotu: V2_VERGI_DISCLAIMER,
       formatCocukPay: buildGtCocukPay(mizanAylikFull, butceYili),
+      oranGecmisi,
       gt: sonuc.gt,
       primHedefleri: sonuc.primHedefleri,
       endirektPrim: sonuc.endirektPrim,

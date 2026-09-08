@@ -250,7 +250,7 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
     if (kod.startsWith("0222") || kod === "F461") {
       spec.torpu = { yil_disi_max: 2, oran_min: -0.5, oran_max: 0.5 };
     }
-    if (kod === "0211") spec.yil_birlestirme = [[1, 0.8], [2, 0.005], [3, 0.15]];
+    if (kod === "0211") spec.yil_birlestirme = [[1, 0.8], [2, 0.1], [3, 0.1]];
     if (kod === "0212") spec.yil_birlestirme = [[1, 0.95], [2, 0.05]];
     if (raw !== kod) spec.excel_kalem_kodu = raw;
 

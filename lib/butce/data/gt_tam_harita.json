@@ -5457,12 +5457,12 @@
         {
           "satir": 318,
           "hucre": "F318",
-          "agirlik": 0.005
+          "agirlik": 0.1
         },
         {
           "satir": 317,
           "hucre": "F317",
-          "agirlik": 0.15
+          "agirlik": 0.1
         }
       ],
       "oran_satir": 320,

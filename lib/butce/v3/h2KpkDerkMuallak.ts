@@ -17,6 +17,7 @@ import type {
 } from "../types";
 import { extractMizanGtAylik } from "./mizanGtExtract";
 import { geriYukleMizanYtdTam, yenidenTuretUstFormuller, yenileToplamlarH2 } from "./gtUstRollup";
+import { uygulaMuallakH2Residual } from "./muallakH2Residual";
 import { MIZAN_DISI_SATIRLAR } from "./ytdOverlay";
 
 /** KPK yaprak — H2'de yalnızca cari satırlar motorla; devreden mizan gibi Ocak dışı 0. */
@@ -24,16 +25,6 @@ const KPK_H2_CARI_YAPRAK = [23, 26, 29] as const;
 
 /** Devreden KPK/RE/SGK + devreden muallak — H2 = 0 (Ocak hareketi YTD mizandan). */
 const DEVREDEN_H2_SIFIR = [24, 27, 30, 126, 147] as const;
-
-/** Muallak cari — H2 oran motorundan (GT kodları). Devreden (126, 147) dahil değil. */
-const H2_ORAN_SATIRLARI = [116, 137] as const;
-
-const ORAN_BY_SATIR: Partial<Record<number, string>> = {
-  116: "02211",
-  126: "02212",
-  137: "02221",
-  147: "02222",
-};
 
 /** H2 sonrası şirket toplamını branş serilerinden yenile. */
 const H2_YENILE_SATIRLAR: readonly number[] = [
@@ -236,17 +227,14 @@ export function uygulaH2KpkDerkMuallak(
 
   sifirlaH2Devreden(gt, anchor, DEVREDEN_H2_SIFIR);
 
-  oranH2Satir(
-    gt,
-    opts.mizan,
-    opts.butceYili,
-    opts.oranAyar,
-    opts.mizanAylikFull,
-    anchor,
-    H2_ORAN_SATIRLARI,
-    ORAN_BY_SATIR,
-    (_satir, prim, oran) => prim * oran,
-  );
+  const muallakH2 = uygulaMuallakH2Residual(gt, {
+    anchorAy: anchor,
+    butceYili: opts.butceYili,
+    mizan: opts.mizan,
+    mizanAylikFull: opts.mizanAylikFull,
+    oranAyar: opts.oranAyar,
+  });
+  uyarilar.push(...muallakH2.uyarilar);
 
   sgkH2Satir(
     gt,
@@ -262,7 +250,7 @@ export function uygulaH2KpkDerkMuallak(
   geriYukleMizanYtdTam(gt, mizanGt, anchor, MIZAN_DISI_SATIRLAR);
 
   uyarilar.push(
-    `H2 motor: KPK cari + DERK + muallak (611011/611021) + SGK ${anchor + 1}–12. ay; devreden KPK/muallak Ağu+ = 0.`,
+    `H2 motor: KPK cari + DERK + muallak/RE artık pay + SGK ${anchor + 1}–12. ay; devreden KPK/muallak Ağu+ = 0.`,
   );
   return { uyarilar };
 }

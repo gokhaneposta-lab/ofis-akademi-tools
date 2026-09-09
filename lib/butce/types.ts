@@ -46,6 +46,8 @@ export type BransOranSatir = {
   referans: string;
   oran: number;
   manuel: boolean;
+  /** MIZAN yılsonu (veya ay kümülatif) branş oranı — ağırlıklandırma girdisi. */
+  yilOran?: Record<string, number | null>;
 };
 
 export type ButceMeta = {

@@ -40,6 +40,8 @@ export async function GET(request: Request) {
     return NextResponse.json({
       kalem,
       tablo,
+      yillar: servis.yillar,
+      yilAgirliklari: servis.kalemAgirlikliYillar(kalem),
       referansSecenekleri: servis.yilEtiketleri(),
       aciklama: oranKalemAciklama(kalem),
     });

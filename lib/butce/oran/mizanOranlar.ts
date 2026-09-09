@@ -16,7 +16,11 @@ import {
   V2_GRUP_FALLBACK_KALEMLER,
   V2_HASAR_BLOK_KALEMLER,
 } from "./oranMetodoloji";
-import { exportNormSpec, hesaplaEtkinOran } from "./oranMotoru";
+import {
+  exportNormSpec,
+  hesaplaEtkinOran,
+  kalemAgirlikliYillar as cozKalemAgirlikliYillar,
+} from "./oranMotoru";
 import {
   duzenlemelerFromEtkinDetay,
   grupFallbackDuzenlemesi,
@@ -495,6 +499,29 @@ export class MizanOranServisi {
     return opts;
   }
 
+  kalemAgirlikliYillar(kalemKodu: string): Array<{ yil: number; agirlik: number }> {
+    return cozKalemAgirlikliYillar(kalemKodu, this.yillar);
+  }
+
+  private bransYilOranlari(
+    kalemKodu: string,
+    brans: string,
+    ay: number,
+  ): Record<string, number | null> {
+    const yillar = ay === 12 ? this.yillar : this.aylikYillar;
+    const out: Record<string, number | null> = {};
+    for (const yil of yillar) {
+      if (!(kalemKodu in ORAN_KALEM_MIZAN)) {
+        out[String(yil)] = null;
+        continue;
+      }
+      const olc = this.yilOlcum(kalemKodu, brans, yil, ay);
+      out[String(yil)] =
+        olc?.oran == null ? null : Math.round(olc.oran * 1e6) / 1e6;
+    }
+    return out;
+  }
+
   tumBranslarTablosu(
     kalemKodu: string,
     bransAyar: Record<string, BransOranAyar> = {},
@@ -522,6 +549,7 @@ export class MizanOranServisi {
         referans,
         oran: Math.round(oran * 1e6) / 1e6,
         manuel,
+        yilOran: this.bransYilOranlari(kalemKodu, kod, ay),
       };
     });
   }
@@ -538,6 +566,7 @@ export class MizanOranServisi {
         referans: ayar.referans ?? ORAN_REFERANS_VARSAYILAN,
         oran: Math.round((ayar.oran ?? varsayilan) * 1e6) / 1e6,
         manuel: ayar.manuel ?? false,
+        yilOran: this.bransYilOranlari(kalemKodu, kod, 12),
       };
     });
   }

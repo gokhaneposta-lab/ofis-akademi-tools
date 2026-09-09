@@ -5,12 +5,22 @@ import type { BransOranSatir } from "@/lib/butce/types";
 import type { OranKalemAciklama } from "@/lib/butce/oran/oranKalemAciklama";
 
 type Kalem = { kod: string; ad: string };
+type YilAgirlik = { yil: number; agirlik: number };
 
 const pct = (n: number) =>
   new Intl.NumberFormat("tr-TR", {
     style: "percent",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+  }).format(n);
+
+const pctMaybe = (n: number | null | undefined) =>
+  n == null || !Number.isFinite(n) ? "—" : pct(n);
+
+const agirlikPct = (n: number) =>
+  new Intl.NumberFormat("tr-TR", {
+    style: "percent",
+    maximumFractionDigits: 0,
   }).format(n);
 
 function oranToPctInput(oran: number) {
@@ -23,6 +33,7 @@ export default function OranlarPanel() {
   const [tablo, setTablo] = useState<BransOranSatir[]>([]);
   const [aciklama, setAciklama] = useState<OranKalemAciklama | null>(null);
   const [yillar, setYillar] = useState<number[]>([]);
+  const [yilAgirliklari, setYilAgirliklari] = useState<YilAgirlik[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -49,8 +60,13 @@ export default function OranlarPanel() {
     try {
       const res = await fetch(`/api/butce/oranlar?${q}`);
       const text = await res.text();
-      let data: { tablo?: BransOranSatir[]; aciklama?: OranKalemAciklama | null; error?: string } =
-        {};
+      let data: {
+        tablo?: BransOranSatir[];
+        aciklama?: OranKalemAciklama | null;
+        yillar?: number[];
+        yilAgirliklari?: YilAgirlik[];
+        error?: string;
+      } = {};
       try {
         data = text ? JSON.parse(text) : {};
       } catch {
@@ -64,6 +80,8 @@ export default function OranlarPanel() {
       const rows = data.tablo ?? [];
       setTablo(rows);
       setAciklama(data.aciklama ?? null);
+      if (data.yillar?.length) setYillar(data.yillar);
+      setYilAgirliklari(data.yilAgirliklari ?? []);
       setDirty(false);
       if (rows.length === 0) {
         setErr("Branş tablosu boş döndü — sayfayı yenileyip tekrar deneyin.");
@@ -259,6 +277,15 @@ export default function OranlarPanel() {
       {yillar.length > 0 && (
         <p className="text-xs text-slate-500">
           MIZAN yılları: {yillar.join(", ")} (bütçe yılı hariç)
+          {yilAgirliklari.length > 0 && (
+            <>
+              {" "}
+              · Ağırlık:{" "}
+              {yilAgirliklari
+                .map(({ yil, agirlik }) => `${yil} ${agirlikPct(agirlik)}`)
+                .join(", ")}
+            </>
+          )}
         </p>
       )}
       {msg && <p className="text-sm text-emerald-700">{msg}</p>}
@@ -274,7 +301,35 @@ export default function OranlarPanel() {
               <th className="px-3 py-2">Ad</th>
               <th className="px-3 py-2">Ana branş</th>
               <th className="px-3 py-2">Durum</th>
-              <th className="px-3 py-2 text-right">Oran %</th>
+              {yillar.map((y) => {
+                const ag = yilAgirliklari.find((a) => a.yil === y)?.agirlik;
+                return (
+                  <th
+                    key={y}
+                    className={`px-2 py-2 text-right whitespace-nowrap ${
+                      ag != null ? "bg-sky-50 text-sky-800" : ""
+                    }`}
+                    title={
+                      ag != null
+                        ? `${y} yılsonu MIZAN oranı — birleştirmede ${agirlikPct(ag)} ağırlık`
+                        : `${y} yılsonu MIZAN oranı (birleştirmeye dahil değil)`
+                    }
+                  >
+                    {y}
+                    {ag != null && (
+                      <span className="block text-[10px] font-normal normal-case">
+                        ({agirlikPct(ag)})
+                      </span>
+                    )}
+                  </th>
+                );
+              })}
+              <th
+                className="px-3 py-2 text-right"
+                title="Ağırlıklı yıl birleştirme + torpu sonrası uygulanan oran"
+              >
+                Oran %
+              </th>
               <th className="px-3 py-2">Müdahale</th>
             </tr>
           </thead>
@@ -302,6 +357,20 @@ export default function OranlarPanel() {
                     </span>
                   )}
                 </td>
+                {yillar.map((y) => {
+                  const ag = yilAgirliklari.find((a) => a.yil === y)?.agirlik;
+                  const yOran = row.yilOran?.[String(y)] ?? null;
+                  return (
+                    <td
+                      key={y}
+                      className={`px-2 py-1.5 text-right tabular-nums text-xs ${
+                        ag != null ? "bg-sky-50/40 text-slate-700" : "text-slate-500"
+                      }`}
+                    >
+                      {pctMaybe(yOran)}
+                    </td>
+                  );
+                })}
                 <td className="px-3 py-1.5 text-right">
                   <input
                     type="number"

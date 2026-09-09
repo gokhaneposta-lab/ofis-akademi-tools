@@ -185,3 +185,13 @@ export function hesaplaEtkinOran(
 export function exportNormSpec(kalemKodu: string) {
   return normSpec(kalemKodu);
 }
+
+/** Kalem için MIZAN yıllarına çözülmüş ağırlık listesi (excel_gt birleştirme). */
+export function kalemAgirlikliYillar(
+  kalemKodu: string,
+  yillar: number[],
+): Array<{ yil: number; agirlik: number }> {
+  if (!(kalemKodu in ORAN_KALEM_MIZAN)) return [];
+  const spec = normSpec(kalemKodu);
+  return yilCiftleri(spec, yillar).map(([yil, agirlik]) => ({ yil, agirlik }));
+}

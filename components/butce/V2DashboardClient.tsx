@@ -17,6 +17,10 @@ import type { V2MaliGelirProxySonuc } from "@/lib/butce/v2/types";
 import type { GelirTablosuSonuc } from "@/lib/butce/gelir/gelirTablosu";
 import { downloadV2GelirTablosuExcel } from "@/lib/butce/v2/exportV2GelirTablosu";
 import type { GtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
+import type {
+  GtOzetOranGecmisiBlok,
+  OranGecmisiPaket,
+} from "@/lib/butce/v3/gtOzetOranGecmisi";
 import V2GtHesapTablo from "@/components/butce/V2GtHesapTablo";
 import V2GtFiltreBar from "@/components/butce/V2GtFiltreBar";
 import V2GtTeknikOranTablo from "@/components/butce/V2GtTeknikOranTablo";
@@ -198,6 +202,44 @@ export default function V2DashboardClient() {
       setErr(e instanceof Error ? e.message : "Bağlantı hatası");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function excelIndir() {
+    if (!gt) return;
+    setExcelBusy(true);
+    setErr(null);
+    try {
+      let oranPaket: OranGecmisiPaket | undefined;
+      try {
+        const branslar = gt.branslar
+          .filter((b) => /^7\d{2}$/.test(b.bransKodu))
+          .map((b) => b.bransKodu)
+          .join(",");
+        const ogRes = await fetch(
+          `/api/butce/v3/oran-gecmisi?yil=${butceYili}&ay=${ozetAy}&branslar=${encodeURIComponent(branslar)}`,
+        );
+        const ogData = await ogRes.json();
+        if (ogRes.ok && ogData.oranPaket) {
+          oranPaket = ogData.oranPaket as OranGecmisiPaket;
+        } else if (ogRes.ok && Array.isArray(ogData.oranGecmisi)) {
+          oranPaket = {
+            sirket: ogData.oranGecmisi as GtOzetOranGecmisiBlok[],
+            format7: { kolonIds: [], bloklar: [] },
+            formatGrup: { kolonIds: [], bloklar: [] },
+          };
+        }
+      } catch {
+        /* oran geçmişi olmadan da indirilebilir */
+      }
+      await downloadV2GelirTablosuExcel(gt, formatCocukPay, {
+        oranPaket,
+        oranGecmisi: oranPaket?.sirket,
+      });
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Excel oluşturulamadı");
+    } finally {
+      setExcelBusy(false);
     }
   }
 
@@ -580,20 +622,10 @@ export default function V2DashboardClient() {
               <button
                 type="button"
                 disabled={excelBusy}
-                onClick={async () => {
-                  setExcelBusy(true);
-                  setErr(null);
-                  try {
-                    await downloadV2GelirTablosuExcel(gt, formatCocukPay);
-                  } catch (e) {
-                    setErr(e instanceof Error ? e.message : "Excel oluşturulamadı");
-                  } finally {
-                    setExcelBusy(false);
-                  }
-                }}
+                onClick={() => void excelIndir()}
                 className="rounded border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900 disabled:opacity-50"
               >
-                {excelBusy ? "Excel hazırlanıyor…" : "Şirket formatı Excel indir"}
+                {excelBusy ? "Excel hazırlanıyor…" : "Excel indir (şirket formatı)"}
               </button>
             </div>
           </div>

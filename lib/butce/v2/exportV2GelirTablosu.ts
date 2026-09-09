@@ -8,7 +8,12 @@ import {
   yilToplamByBrans,
 } from "./buildGtFormatGrid";
 import type { GtCocukPay } from "./gtFormatCocukPay";
-import type { FormatOranGecmisiSheet } from "../v3/gtOzetOranGecmisi";
+import { appendGtOzetSheet } from "./gtOzetExport";
+import type {
+  FormatOranGecmisiSheet,
+  GtOzetOranGecmisiBlok,
+  OranGecmisiPaket,
+} from "../v3/gtOzetOranGecmisi";
 import { formatSheetOranGecmisiExcelSatirlari } from "../v3/gtOzetOranGecmisi";
 
 function aktifBransKodlari(gt: GelirTablosuSonuc): string[] {
@@ -137,14 +142,24 @@ export function appendGtFormatSheets(
   utils.book_append_sheet(workbook, fgSheet, "Format_Grup");
 }
 
-/** V2 GT — şirket formatı: tidy (ay × branş × hesap) + format_7 + Format_Grup. */
+export type V2ExcelExportOpts = {
+  oranGecmisi?: GtOzetOranGecmisiBlok[];
+  oranPaket?: OranGecmisiPaket;
+};
+
+/** V2 GT — GT_Ozet (gruplu aylık) + şirket formatı (Tidy, format_7, Format_Grup). Motor değişmez. */
 export async function downloadV2GelirTablosuExcel(
   gt: GelirTablosuSonuc,
   cocukPay: GtCocukPay = {},
+  opts: V2ExcelExportOpts = {},
 ): Promise<void> {
   const XLSX = await import("xlsx");
   const workbook = XLSX.utils.book_new();
-  appendGtFormatSheets(XLSX.utils, workbook, gt, cocukPay);
+  appendGtOzetSheet(XLSX.utils, workbook, gt, opts.oranGecmisi ?? opts.oranPaket?.sirket ?? []);
+  appendGtFormatSheets(XLSX.utils, workbook, gt, cocukPay, {
+    format7: opts.oranPaket?.format7,
+    formatGrup: opts.oranPaket?.formatGrup,
+  });
   XLSX.writeFile(workbook, `Butce_V2_GT_${gt.butceYili}_Sirket_Format.xlsx`, {
     compression: true,
   });

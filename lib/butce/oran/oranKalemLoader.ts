@@ -172,6 +172,9 @@ const CARPIM_MAP: Record<string, string> = {
   F398: CARPIM_BRUT_PRIM,
 };
 
+/** F451/F456/F466/F471 — aylık GT; varsayılan torpu (yil_disi_max 1.5) uygulanmaz. */
+const MUALLAK_ORAN_KALEMLER = new Set(["02211", "02212", "02221", "02222"]);
+
 const VARSAYILAN_ORAN: Record<string, number> = {
   "0112": -0.6,
   "0113": -0.02,
@@ -244,10 +247,11 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
       spec.baz_toplam_sirket = true;
     }
 
-    if (kod.startsWith("022") || kod === "0211" || kod === "016") {
+    if (MUALLAK_ORAN_KALEMLER.has(kod)) {
+      spec.torpu = { yil_disi_max: null, oran_min: null, oran_max: null };
+    } else if (kod === "0211" || kod === "016") {
       spec.torpu = { yil_disi_max: HASAR_YIL_DISI_MAX, oran_min: -1, oran_max: 0.5 };
-    }
-    if (kod.startsWith("0222") || kod === "F461") {
+    } else if (kod === "F461") {
       spec.torpu = { yil_disi_max: 2, oran_min: -0.5, oran_max: 0.5 };
     }
     if (kod === "0211") spec.yil_birlestirme = [[1, 0.8], [2, 0.1], [3, 0.1]];

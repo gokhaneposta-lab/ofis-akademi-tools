@@ -22,6 +22,8 @@ type Props = {
   etiket: string;
   busy: boolean;
   onUygula: () => Promise<void>;
+  /** GT özet tablosunda prim×oran açıklaması için. */
+  onTabloChange?: (tablo: V2TeknikOranTablo | null) => void;
 };
 
 export default function V2GtTeknikOranTablo({
@@ -30,6 +32,7 @@ export default function V2GtTeknikOranTablo({
   etiket,
   busy,
   onUygula,
+  onTabloChange,
 }: Props) {
   const kodlar = useMemo(
     () => (bransKodlari ?? []).filter((k) => /^7\d{2}$/.test(k)),
@@ -56,17 +59,21 @@ export default function V2GtTeknikOranTablo({
         setTablo(null);
         return;
       }
-      setTablo(data as V2TeknikOranTablo);
+      const next = data as V2TeknikOranTablo;
+      setTablo(next);
+      onTabloChange?.(next);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Bağlantı hatası");
+      onTabloChange?.(null);
     } finally {
       setYukleniyor(false);
     }
-  }, []);
+  }, [onTabloChange]);
 
   useEffect(() => {
     if (kodlar.length === 0) {
       setTablo(null);
+      onTabloChange?.(null);
       return;
     }
     void load(kodlar, ozetAy);

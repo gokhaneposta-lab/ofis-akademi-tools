@@ -25,6 +25,11 @@ import V2GtHesapTablo from "@/components/butce/V2GtHesapTablo";
 import V2GtFiltreBar from "@/components/butce/V2GtFiltreBar";
 import V2GtTeknikOranTablo from "@/components/butce/V2GtTeknikOranTablo";
 import {
+  v2CarpimAciklamalari,
+  v2CarpimAciklamaMap,
+} from "@/lib/butce/v2/v2GtCarpimSatir";
+import type { V2TeknikOranTablo } from "@/lib/butce/v2/v2GtOranTablo";
+import {
   v2FiltreBransKodlari,
   v2FiltreEtiket,
   v2OzetDeger,
@@ -83,6 +88,7 @@ export default function V2DashboardClient() {
   const [excelBusy, setExcelBusy] = useState(false);
   const [filtreMod, setFiltreMod] = useState<V2GtFiltreModu>("tarife");
   const [filtreSecim, setFiltreSecim] = useState<Set<string>>(() => new Set());
+  const [teknikOranTablo, setTeknikOranTablo] = useState<V2TeknikOranTablo | null>(null);
 
   const load = useCallback(async (hedefYil?: number) => {
     const query = hedefYil ? `?butceYili=${hedefYil}` : "";
@@ -252,6 +258,13 @@ export default function V2DashboardClient() {
   const ozetDeger = (satir: number) =>
     gt ? v2OzetDeger(gt, satir, ozetAy, filtreBranslar) : 0;
   const filtreEtiket = v2FiltreEtiket(filtreMod, filtreSecim, yediliSecenekler);
+  const carpimAciklama = useMemo(() => {
+    if (!teknikOranTablo || !gt || !filtreBranslar?.length) return undefined;
+    const deger = (satir: number) => v2OzetDeger(gt, satir, ozetAy, filtreBranslar);
+    return v2CarpimAciklamaMap(
+      v2CarpimAciklamalari(teknikOranTablo.satirlar, deger, ozetAy, butceYili),
+    );
+  }, [teknikOranTablo, gt, filtreBranslar, ozetAy, butceYili]);
 
   return (
     <div className="space-y-5">
@@ -659,6 +672,7 @@ export default function V2DashboardClient() {
             <V2GtHesapTablo
               ozetDeger={ozetDeger}
               donemEtiket={`${AY_ADLARI[ozetAy - 1]} sonu`}
+              carpimAciklama={carpimAciklama}
             />
           </div>
           <V2GtTeknikOranTablo
@@ -667,6 +681,7 @@ export default function V2DashboardClient() {
             etiket={filtreEtiket}
             busy={busy}
             onUygula={hesapla}
+            onTabloChange={setTeknikOranTablo}
           />
         </section>
       )}

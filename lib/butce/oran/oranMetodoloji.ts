@@ -94,7 +94,7 @@ export const HASAR_YIL_DISI_MAX = 1.1;
 
 /** V2 teknik oran tablosu üst bilgi metni. */
 export const V2_ORAN_METODOLOJI_OZET =
-  "V2 oranları: (1) Excel GT ağırlıklı yıl birleştirme + torpu, (2) küçük bazda tarife grubu Σpay÷Σbaz, (3) hasar bloğu tutarlılığı, (4) kural kalemleri (F348, 014 net nakit payı). Sapma etiketleri satır altında.";
+  "V2 oranları: (1) Excel GT ağırlıklı yıl birleştirme (+ torpu; muallak 02211–02222 hariç), (2) küçük bazda tarife grubu Σpay÷Σbaz, (3) hasar bloğu tutarlılığı, (4) kural kalemleri (F348, 014 net nakit payı). Sapma etiketleri satır altında.";
 
 export function oranDuzenleme(
   kod: OranDuzenlemeKodu,

@@ -6,6 +6,7 @@ import {
   dugumEtiket,
   type V2HesapDugum,
 } from "@/lib/butce/v2/v2GtHesapAgac";
+import type { V2CarpimAciklama } from "@/lib/butce/v2/v2GtCarpimSatir";
 
 const tl = (n: number) =>
   new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 }).format(n);
@@ -29,6 +30,8 @@ type Props = {
   donemEtiket: string;
   /** GT_Ozet ile aynı F sütunu. */
   showFSatir?: boolean;
+  /** Muallak vb. prim×oran / mizan devreden açıklamaları (7xx filtre seçiliyken). */
+  carpimAciklama?: Map<number, V2CarpimAciklama>;
 };
 
 function flatten(
@@ -46,7 +49,12 @@ function flatten(
   return out;
 }
 
-export default function V2GtHesapTablo({ ozetDeger, donemEtiket, showFSatir = true }: Props) {
+export default function V2GtHesapTablo({
+  ozetDeger,
+  donemEtiket,
+  showFSatir = true,
+  carpimAciklama,
+}: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(DEFAULT_EXPANDED));
 
   const rows = useMemo(() => flatten(V2_HESAP_AGAC, expanded, 0), [expanded]);
@@ -68,6 +76,9 @@ export default function V2GtHesapTablo({ ozetDeger, donemEtiket, showFSatir = tr
           <th className="px-2 py-1 text-left w-24">Hesap</th>
           <th className="px-2 py-1 text-left">Kalem</th>
           <th className="px-2 py-1 text-right">{donemEtiket}</th>
+          {carpimAciklama?.size ? (
+            <th className="px-2 py-1 text-left min-w-[280px]">Hesaplama</th>
+          ) : null}
         </tr>
       </thead>
       <tbody>
@@ -75,13 +86,14 @@ export default function V2GtHesapTablo({ ozetDeger, donemEtiket, showFSatir = tr
           const hasKids = Boolean(node.children?.length);
           const open = expanded.has(node.id);
           const deger = ozetDeger(node.satir);
-          const bos = Math.abs(deger) < 1 && !node.kalin && !node.vurgu;
+          const carpim = carpimAciklama?.get(node.satir);
+          const bos = Math.abs(deger) < 1 && !node.kalin && !node.vurgu && !carpim;
           return (
             <tr
               key={node.id}
               className={`border-b border-slate-100 ${node.kalin ? "font-semibold" : ""} ${
                 node.vurgu ? "bg-emerald-50/50" : ""
-              } ${bos ? "text-slate-400" : ""}`}
+              } ${bos ? "text-slate-400" : ""} ${carpim ? "bg-sky-50/30" : ""}`}
             >
               {showFSatir ? (
                 <td className="px-2 py-1 font-mono text-[11px] text-slate-500">{node.satir}</td>
@@ -105,6 +117,13 @@ export default function V2GtHesapTablo({ ozetDeger, donemEtiket, showFSatir = tr
               </td>
               <td className="px-2 py-1">{dugumEtiket(node)}</td>
               <td className="px-2 py-1 text-right tabular-nums">{tl(deger)}</td>
+              {carpimAciklama?.size ? (
+                <td className="px-2 py-1 text-[11px] leading-snug text-sky-900">
+                  {carpim ? (
+                    <span title={carpim.metin}>{carpim.metin}</span>
+                  ) : null}
+                </td>
+              ) : null}
             </tr>
           );
         })}

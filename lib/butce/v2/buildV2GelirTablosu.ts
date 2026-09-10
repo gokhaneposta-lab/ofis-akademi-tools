@@ -20,6 +20,10 @@ import type {
   TarifeMapRow,
   UretimRow,
 } from "../types";
+import {
+  devredenMuallakOcakFromMizan,
+  devredenMuallakOcakOzet,
+} from "../gelir/muallakDevreden";
 import { buildFaaliyetGiderFromMizanArtis } from "./faaliyetGiderFromMizanArtis";
 import { buildMaliGelirProxy, resolveAcilisBanka } from "./maliGelirProxy";
 import { NET_NAK_GT_SATIRLARI, payFromNetNakitMap } from "./netNakitPay";
@@ -304,6 +308,19 @@ export function buildV2GelirTablosu(opts: {
   });
   uyarilar.push(...fg.uyarilar);
 
+  const mizanFull = opts.mizanAylikFull ?? [];
+  const muallakDevredenOcak = devredenMuallakOcakFromMizan(mizanFull, butceYili);
+  const mdOzet = devredenMuallakOcakOzet(muallakDevredenOcak);
+  if (mdOzet.bransSayisi === 0) {
+    uyarilar.push(
+      `${butceYili - 1} Aralık devreden muallak mizanı bulunamadı — 611012/611022 prim×oran yoluna düşüldü.`,
+    );
+  } else {
+    uyarilar.push(
+      `Devreden muallak: ${butceYili - 1} Aralık mizan → yalnızca Ocak (611012=${Math.round(mdOzet.satir126Toplam).toLocaleString("tr-TR")} TL, ${mdOzet.bransSayisi} branş).`,
+    );
+  }
+
   const gtPass1 = buildGelirTablosu({
     mizan: opts.mizan,
     butceYili,
@@ -318,8 +335,9 @@ export function buildV2GelirTablosu(opts: {
     kapanisTahmin: opts.kapanisTahmin,
     faaliyetGider: fg.rows,
     gosterimSatirlari: V2_GT_GOSTERIM,
-    mizanAylikFull: opts.mizanAylikFull,
+    mizanAylikFull: mizanFull,
     v2Metodoloji: true,
+    muallakDevredenOcak: mdOzet.bransSayisi > 0 ? muallakDevredenOcak : undefined,
   });
 
   const acilis = resolveAcilisBanka({
@@ -359,8 +377,9 @@ export function buildV2GelirTablosu(opts: {
     gosterimSatirlari: V2_GT_GOSTERIM,
     // 38. satır başta prim payıyla dağıtılır; aşağıda net nakit payıyla ezilir.
     aylikSatirOverride: { 38: proxy.maliGelirAylik },
-    mizanAylikFull: opts.mizanAylikFull,
+    mizanAylikFull: mizanFull,
     v2Metodoloji: true,
+    muallakDevredenOcak: mdOzet.bransSayisi > 0 ? muallakDevredenOcak : undefined,
   });
 
   // 603 (F38) dağılımını NET NAKİT AKIŞI payıyla yeniden hesapla.

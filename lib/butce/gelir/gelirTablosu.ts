@@ -19,6 +19,7 @@ import {
   FAALIYET_GT_SATIRLARI,
 } from "./faaliyetGiderGt";
 import { GelirTablosuMotoru, type GtEksikGirdi } from "./gtMotoru";
+import type { MuallakDevredenOcak } from "./muallakDevreden";
 
 /** Gelir tablosunda gösterilecek GT satırları (Excel satır no + sunum). */
 export type GtGosterimSatir = {
@@ -102,6 +103,8 @@ export function buildGelirTablosu(opts: {
   v2Metodoloji?: boolean;
   /** Kalem bazlı yıl birleştirme ağırlık override (Teknik oranlar ekranı). */
   kalemYilBirlestirme?: OranYilBirlestirmeStore;
+  /** V2: 611012/611022 — önceki yıl Aralık mizan, yalnızca Ocak (F126/F147 YTD düzeyi sabit). */
+  muallakDevredenOcak?: Map<string, MuallakDevredenOcak>;
 }): GelirTablosuSonuc {
   const {
     mizan,
@@ -121,6 +124,7 @@ export function buildGelirTablosu(opts: {
     mizanAylikFull = [],
     v2Metodoloji = false,
     kalemYilBirlestirme = {},
+    muallakDevredenOcak,
   } = opts;
 
   const satirlar = gosterimSatirlari ?? GT_GOSTERIM_SATIRLARI;
@@ -218,6 +222,12 @@ export function buildGelirTablosu(opts: {
           if (!ser) continue;
           disHucreler[s] = ser.slice(0, i + 1).reduce((a, b) => a + b, 0);
         }
+      }
+      const muallakDev = muallakDevredenOcak?.get(kod);
+      if (muallakDev) {
+        // YTD kümülatif düzey Ocak hareketinde sabitlenir → Şubat–Aralık aylık delta = 0
+        disHucreler[126] = muallakDev.satir126;
+        disHucreler[147] = muallakDev.satir147;
       }
 
       const ytdVals = motor.hesaplaBrans(kod, ytdBrut, ytdEndirekt, disHucreler, i + 1);

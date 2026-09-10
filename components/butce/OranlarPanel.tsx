@@ -190,20 +190,24 @@ export default function OranlarPanel() {
 
   async function kaydet() {
     if (!kalem || tablo.length === 0) return;
+    if (!dirty && !agirlikDirty) return;
     setBusy(true);
     setErr(null);
-    const okBrans = await persistAyarlar(tablo);
+    let okBrans = true;
     let okAgirlik = true;
+    const agirlikKaydedildi = agirlikDirty;
+    if (dirty) okBrans = await persistAyarlar(tablo);
     if (agirlikDirty) okAgirlik = await persistYilAgirliklari(yilAgirliklari);
-    setBusy(false);
-    setDirty(false);
-    setAgirlikDirty(false);
     if (okBrans && okAgirlik) {
-      setYilAgirlikOzel(true);
-      setMsg("Oran ve yıl ağırlıkları kaydedildi — V2 GT bu ayarları kullanır");
+      setDirty(false);
+      setAgirlikDirty(false);
+      setYilAgirlikOzel(agirlikKaydedildi || yilAgirlikOzel);
+      await loadTablo(kalem, false, yilAgirliklari);
+      setMsg("Kaydedildi — V2 GT hesapla bu oran ve ağırlıkları kullanır");
     } else {
       setErr("Kayıt başarısız");
     }
+    setBusy(false);
   }
 
   function setYilAgirlik(yil: number, pctValue: number) {
@@ -217,11 +221,6 @@ export default function OranlarPanel() {
     });
     setAgirlikDirty(true);
     setMsg(null);
-  }
-
-  async function agirlikUygula(next: YilAgirlik[]) {
-    if (!kalem) return;
-    await loadTablo(kalem, false, next);
   }
 
   async function agirlikVarsayilanaDon() {
@@ -270,8 +269,9 @@ export default function OranlarPanel() {
       <section className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-950">
         <strong>Hasar/Prim ve teknik oranlar:</strong> Varsayılan değer geçmiş yılların
         (torpulu) ağırlıklı ortalamasıdır. Yıl sütun başlığındaki % değerlerini değiştirerek
-        birleştirme ağırlığını özelleştirebilirsiniz — <em>Kaydet</em> sonrası V2 GT hesapla
-        bu ağırlıkları kullanır. Branş satırında oranı elle yazın veya ±1 pp ile kaydırın;
+        birleştirme ağırlığını özelleştirebilirsiniz — değişiklikler yalnızca üstteki{" "}
+        <em>Kaydet</em> ile uygulanır; V2 GT hesapla kayıtlı ayarları kullanır. Branş
+        satırında oranı elle yazın veya ±1 pp ile kaydırın;
         satır <em>manuel</em> olur.
       </section>
 
@@ -300,8 +300,8 @@ export default function OranlarPanel() {
         </button>
         <button
           type="button"
-          disabled={busy || !kalem || !dirty}
-          onClick={kaydet}
+          disabled={busy || !kalem || (!dirty && !agirlikDirty)}
+          onClick={() => void kaydet()}
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
           Kaydet{dirty || agirlikDirty ? " *" : ""}
@@ -425,13 +425,6 @@ export default function OranlarPanel() {
                           disabled={busy}
                           value={Number((ag * 100).toFixed(1))}
                           onChange={(e) => setYilAgirlik(y, Number(e.target.value))}
-                          onBlur={(e) => {
-                            const agirlik = Math.max(0, Number(e.target.value)) / 100;
-                            const next = yilAgirliklari.map((a) =>
-                              a.yil === y ? { yil: y, agirlik } : a,
-                            );
-                            void agirlikUygula(next);
-                          }}
                           className="w-12 rounded border border-sky-200 bg-white px-1 py-0.5 text-right text-[11px] font-normal normal-case tabular-nums text-sky-900"
                           title={`${y} birleştirme ağırlığı (%)`}
                         />

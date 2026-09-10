@@ -219,9 +219,15 @@ export async function loadButceMeta(): Promise<ButceMeta | null> {
 }
 
 export async function loadOranAyarlar(): Promise<OranAyarStore> {
+  const paket = await loadOranAyarPaket();
+  return paket.ayarlar;
+}
+
+export async function loadOranAyarPaket() {
+  const { parseOranAyarDosya } = await import("./oran/oranAyarPaket");
   const raw = await readPrivateFile(BUTCE_ORAN_AYAR_JSON);
-  if (!raw) return {};
-  return JSON.parse(raw) as OranAyarStore;
+  if (!raw) return parseOranAyarDosya({});
+  return parseOranAyarDosya(JSON.parse(raw));
 }
 
 export async function butceDataDurumu() {

@@ -39,6 +39,9 @@ export type BransOranAyar = {
 /** kalem_kodu → brans_kodu → ayar */
 export type OranAyarStore = Record<string, Record<string, BransOranAyar>>;
 
+/** Teknik oran kalemi → Excel yil_birlestirme offset ağırlıkları [[1,0.5],[2,0.25],…]. */
+export type OranYilBirlestirmeStore = Record<string, [number, number][]>;
+
 export type BransOranSatir = {
   bransKodu: string;
   bransAdi: string;

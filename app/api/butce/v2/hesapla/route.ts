@@ -7,7 +7,7 @@ import {
   loadMizanAylikFullRows,
   loadMizanAylikRows,
   loadMizanRows,
-  loadOranAyarlar,
+  loadOranAyarPaket,
   loadSatisButceRows,
   loadTarifeBransPayRows,
   loadTarifeMapRows,
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     mizanAylik,
     mizanAylikFull,
     bilancoAylik,
-    oranAyar,
+    oranPaket,
     kpkVade,
     kapanisTahmin,
   ] = await Promise.all([
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     loadMizanAylikRows(),
     loadMizanAylikFullRows(),
     loadBilancoAylikRows(),
-    loadOranAyarlar(),
+    loadOranAyarPaket(),
     loadKpkVadeRows(),
     loadKpkKapanisTahmin(),
   ]);
@@ -106,7 +106,8 @@ export async function POST(request: Request) {
       mizanAylik,
       mizanAylikFull,
       bilancoAylik,
-      oranAyar,
+      oranAyar: oranPaket.ayarlar,
+      kalemYilBirlestirme: oranPaket.kalemYilBirlestirme,
       kpkVade,
       kapanisTahmin,
     });

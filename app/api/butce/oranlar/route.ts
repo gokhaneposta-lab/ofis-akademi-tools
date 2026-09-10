@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
-import { loadMizanRows, loadMizanAylikFullRows, loadOranAyarlar, butceDataDurumu } from "@/lib/butce/loadData";
+import {
+  loadMizanRows,
+  loadMizanAylikFullRows,
+  loadOranAyarPaket,
+  butceDataDurumu,
+} from "@/lib/butce/loadData";
 import { MizanOranServisi, oranKalemListesi } from "@/lib/butce/oran/mizanOranlar";
+import { parseYilAgirlikParam } from "@/lib/butce/oran/oranAyarPaket";
 import { oranKalemAciklama } from "@/lib/butce/oran/oranKalemAciklama";
+import type { OranYilBirlestirmeStore } from "@/lib/butce/types";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -19,9 +26,25 @@ export async function GET(request: Request) {
 
   const mizanAylikFull = await loadMizanAylikFullRows();
   const { butceYili } = await butceDataDurumu();
-  const servis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
-  let ayarlar = await loadOranAyarlar();
-  ayarlar = servis.migrateLegacyBransAyarlar(ayarlar);
+  const baseServis = new MizanOranServisi(mizan, butceYili, mizanAylikFull);
+  const oranPaket = await loadOranAyarPaket();
+  let ayarlar = baseServis.migrateLegacyBransAyarlar(oranPaket.ayarlar);
+
+  const kalemYilBirlestirme: OranYilBirlestirmeStore = {
+    ...oranPaket.kalemYilBirlestirme,
+  };
+  if (kalem) {
+    const preview = parseYilAgirlikParam(searchParams.get("yilAgirlik"), baseServis.yillar);
+    if (preview) kalemYilBirlestirme[kalem] = preview;
+  }
+
+  const servis = new MizanOranServisi(
+    mizan,
+    butceYili,
+    mizanAylikFull,
+    false,
+    kalemYilBirlestirme,
+  );
 
   if (!kalem) {
     return NextResponse.json({
@@ -42,6 +65,7 @@ export async function GET(request: Request) {
       tablo,
       yillar: servis.yillar,
       yilAgirliklari: servis.kalemAgirlikliYillar(kalem),
+      yilAgirlikOzel: Boolean(oranPaket.kalemYilBirlestirme[kalem]?.length),
       referansSecenekleri: servis.yilEtiketleri(),
       aciklama: oranKalemAciklama(kalem),
     });

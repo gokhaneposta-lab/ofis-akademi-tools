@@ -3,7 +3,17 @@ import { AYLAR } from "../config/constants";
 import { normalizeBransKodu } from "../textUtils";
 import { buildKpkSonuc } from "../kpk/buildKpkSonuc";
 import { KPK_GT_SATIRLARI } from "../kpk/kpkMotoru";
-import type { AylikPrimStore, FaaliyetGiderRow, KpkVadeRow, MizanAylikRow, MizanRow, OranAyarStore, TarifeBransPayRow, KpkKapanisTahminStore } from "../types";
+import type {
+  AylikPrimStore,
+  FaaliyetGiderRow,
+  KpkVadeRow,
+  MizanAylikRow,
+  MizanRow,
+  OranAyarStore,
+  OranYilBirlestirmeStore,
+  TarifeBransPayRow,
+  KpkKapanisTahminStore,
+} from "../types";
 import {
   buildFaaliyetGiderSonuc,
   FAALIYET_GT_SATIRLARI,
@@ -90,6 +100,8 @@ export function buildGelirTablosu(opts: {
   mizanAylikFull?: MizanAylikRow[];
   /** V2: küçük baz grup fallback + hasar bloğu tutarlılığı. */
   v2Metodoloji?: boolean;
+  /** Kalem bazlı yıl birleştirme ağırlık override (Teknik oranlar ekranı). */
+  kalemYilBirlestirme?: OranYilBirlestirmeStore;
 }): GelirTablosuSonuc {
   const {
     mizan,
@@ -108,6 +120,7 @@ export function buildGelirTablosu(opts: {
     aylikSatirOverride,
     mizanAylikFull = [],
     v2Metodoloji = false,
+    kalemYilBirlestirme = {},
   } = opts;
 
   const satirlar = gosterimSatirlari ?? GT_GOSTERIM_SATIRLARI;
@@ -147,7 +160,14 @@ export function buildGelirTablosu(opts: {
       : null;
   const faaliyetByBrans = new Map(faaliyetSonuc?.map((b) => [b.bransKodu, b]) ?? []);
 
-  const motor = new GelirTablosuMotoru(mizan, butceYili, oranAyar, mizanAylikFull, v2Metodoloji);
+  const motor = new GelirTablosuMotoru(
+    mizan,
+    butceYili,
+    oranAyar,
+    mizanAylikFull,
+    v2Metodoloji,
+    kalemYilBirlestirme,
+  );
 
   const branslar: GelirBransKolon[] = [];
   const toplam: Record<number, number> = {};

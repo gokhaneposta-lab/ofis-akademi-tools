@@ -14,6 +14,7 @@ import type {
   MizanAylikRow,
   MizanRow,
   OranAyarStore,
+  OranYilBirlestirmeStore,
   SatisButceRow,
   TarifeBransPayRow,
   TarifeMapRow,
@@ -226,6 +227,7 @@ export function buildV2GelirTablosu(opts: {
   mizanAylikFull?: MizanAylikRow[];
   bilancoAylik: BilancoAylikRow[];
   oranAyar: OranAyarStore;
+  kalemYilBirlestirme?: OranYilBirlestirmeStore;
   kpkVade: KpkVadeRow[];
   kapanisTahmin: KpkKapanisTahminStore | null;
   /** V3: hazır aylık prim dağılımı (mevsim blend). */
@@ -309,6 +311,7 @@ export function buildV2GelirTablosu(opts: {
     endirektPrim,
     aylikPrim,
     oranAyar: opts.oranAyar,
+    kalemYilBirlestirme: opts.kalemYilBirlestirme ?? {},
     mizanAylik: opts.mizanAylik,
     tarifeBransPay: opts.tarifeBransPay,
     kpkVade: opts.kpkVade,
@@ -347,6 +350,7 @@ export function buildV2GelirTablosu(opts: {
     endirektPrim,
     aylikPrim,
     oranAyar: opts.oranAyar,
+    kalemYilBirlestirme: opts.kalemYilBirlestirme ?? {},
     mizanAylik: opts.mizanAylik,
     tarifeBransPay: opts.tarifeBransPay,
     kpkVade: opts.kpkVade,

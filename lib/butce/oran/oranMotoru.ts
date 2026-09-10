@@ -57,15 +57,28 @@ function torpuCfg(spec: OranKalemSpec) {
   return { ...ORAN_TORPU_VARSAYILAN, ...spec.torpu };
 }
 
-function yilCiftleri(spec: OranKalemSpec, yillar: number[]): [number, number][] {
-  if (yillar.length === 0) return [];
-  const maxY = yillar[yillar.length - 1];
+function yilCiftleriFromWeights(
+  weights: [number, number][],
+  yillar: number[],
+): [number, number][] {
+  if (yillar.length === 0 || weights.length === 0) return [];
+  const maxY = yillar[yillar.length - 1]!;
   const out: [number, number][] = [];
-  for (const [ofset, agirlik] of spec.yil_birlestirme) {
+  for (const [ofset, agirlik] of weights) {
     const y = maxY - (ofset - 1);
     if (yillar.includes(y)) out.push([y, agirlik]);
   }
   return out;
+}
+
+function yilCiftleri(
+  spec: OranKalemSpec,
+  yillar: number[],
+  yilBirlestirmeOverride?: [number, number][],
+): [number, number][] {
+  const weights =
+    yilBirlestirmeOverride?.length ? yilBirlestirmeOverride : spec.yil_birlestirme;
+  return yilCiftleriFromWeights(weights, yillar);
 }
 
 function agirlikliOrtalama(
@@ -105,9 +118,10 @@ export function hesaplaBilesenOrani(
   brans: string,
   spec: OranKalemSpec,
   yillar: number[],
+  yilBirlestirmeOverride?: [number, number][],
 ): BilesenOran {
   const torpu = torpuCfg(spec);
-  const yilCift = yilCiftleri(spec, yillar);
+  const yilCift = yilCiftleri(spec, yillar, yilBirlestirmeOverride);
   const hamParcalar: [number, number][] = [];
   const detayRows: YilOranParcasi[] = [];
 
@@ -154,12 +168,13 @@ export function hesaplaEtkinOran(
   brans: string,
   yilOraniFn: YilOraniFn,
   yillar: number[],
+  yilBirlestirmeOverride?: [number, number][],
 ): KalemOranSonuc {
   const spec = normSpec(kalemKodu);
   const torpu = torpuCfg(spec);
 
   const bilesenSonuclar = spec.bilesenler.map((b) =>
-    hesaplaBilesenOrani(yilOraniFn, b, brans, spec, yillar),
+    hesaplaBilesenOrani(yilOraniFn, b, brans, spec, yillar, yilBirlestirmeOverride),
   );
 
   const agirlikToplam = bilesenSonuclar.reduce((s, b) => s + b.agirlik, 0) || 1;
@@ -190,8 +205,12 @@ export function exportNormSpec(kalemKodu: string) {
 export function kalemAgirlikliYillar(
   kalemKodu: string,
   yillar: number[],
+  yilBirlestirmeOverride?: [number, number][],
 ): Array<{ yil: number; agirlik: number }> {
   if (!(kalemKodu in ORAN_KALEM_MIZAN)) return [];
   const spec = normSpec(kalemKodu);
-  return yilCiftleri(spec, yillar).map(([yil, agirlik]) => ({ yil, agirlik }));
+  return yilCiftleri(spec, yillar, yilBirlestirmeOverride).map(([yil, agirlik]) => ({
+    yil,
+    agirlik,
+  }));
 }

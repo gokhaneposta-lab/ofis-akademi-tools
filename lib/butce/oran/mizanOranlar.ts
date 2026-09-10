@@ -6,7 +6,14 @@ import {
 } from "../config/constants";
 import { bransGrubu } from "../v2/buildGtFormatGrid";
 import { NET_NAK_MIZAN_HESAPLARI, pozitifNetNakit } from "../v2/netNakitPay";
-import type { BransOranAyar, BransOranSatir, MizanAylikRow, MizanRow, OranAyarStore } from "../types";
+import type {
+  BransOranAyar,
+  BransOranSatir,
+  MizanAylikRow,
+  MizanRow,
+  OranAyarStore,
+  OranYilBirlestirmeStore,
+} from "../types";
 import type { BilesenSpec } from "./oranKalemLoader";
 import { ORAN_BAZLI_KALEMLER, ORAN_KALEM_MIZAN } from "./oranKalemLoader";
 import type { OranDuzenleme } from "./oranMetodoloji";
@@ -49,6 +56,7 @@ export class MizanOranServisi {
   private readonly netNakitBazCache = new Map<string, number>();
   /** Bütçe V2: küçük baz / hasar bloğu grup fallback + audit */
   readonly v2Metodoloji: boolean;
+  readonly kalemYilBirlestirme: OranYilBirlestirmeStore;
   private readonly oranCache = new Map<string, number>();
   private readonly duzenlemeCache = new Map<string, OranDuzenleme[]>();
   private readonly sonBazCache = new Map<string, number>();
@@ -59,8 +67,10 @@ export class MizanOranServisi {
     butceYili = 2027,
     mizanAylikFull: MizanAylikRow[] = [],
     v2Metodoloji = false,
+    kalemYilBirlestirme: OranYilBirlestirmeStore = {},
   ) {
     this.v2Metodoloji = v2Metodoloji;
+    this.kalemYilBirlestirme = kalemYilBirlestirme;
     this.butceYili = butceYili;
     const merged = mergeMizanYillikVeAylik(mizan, mizanAylikFull);
     const filtered = merged.filter((r) => r.bransKodu !== "TOPLAM");
@@ -389,6 +399,11 @@ export class MizanOranServisi {
     return { pay, baz: payda, oran: pay / payda };
   }
 
+  private yilBirlestirmeOverride(kalemKodu: string): [number, number][] | undefined {
+    const o = this.kalemYilBirlestirme[kalemKodu];
+    return o?.length ? o : undefined;
+  }
+
   private etkinOranHesapla(kalemKodu: string, brans: string, ay = 12) {
     const yillar = ay === 12 ? this.yillar : this.aylikYillar;
     return hesaplaEtkinOran(
@@ -396,6 +411,7 @@ export class MizanOranServisi {
       brans,
       (b, y, bil) => this.bilesenYilOrani(b, y, bil, ay),
       yillar,
+      this.yilBirlestirmeOverride(kalemKodu),
     );
   }
 
@@ -500,7 +516,11 @@ export class MizanOranServisi {
   }
 
   kalemAgirlikliYillar(kalemKodu: string): Array<{ yil: number; agirlik: number }> {
-    return cozKalemAgirlikliYillar(kalemKodu, this.yillar);
+    return cozKalemAgirlikliYillar(
+      kalemKodu,
+      this.yillar,
+      this.yilBirlestirmeOverride(kalemKodu),
+    );
   }
 
   private bransYilOranlari(

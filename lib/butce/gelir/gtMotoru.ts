@@ -1,6 +1,6 @@
 import gtHaritaRaw from "../data/gt_excel_harita.json";
 import { HAZINE_BRANS_SIRASI } from "../config/brans";
-import type { MizanAylikRow, MizanRow, OranAyarStore } from "../types";
+import type { MizanAylikRow, MizanRow, OranAyarStore, OranYilBirlestirmeStore } from "../types";
 import { ORAN_KALEM_MIZAN } from "../oran/oranKalemLoader";
 import { MizanOranServisi } from "../oran/mizanOranlar";
 
@@ -73,8 +73,15 @@ export class GelirTablosuMotoru {
     oranAyar: OranAyarStore = {},
     mizanAylikFull: MizanAylikRow[] = [],
     v2Metodoloji = false,
+    kalemYilBirlestirme: OranYilBirlestirmeStore = {},
   ) {
-    this.oranServisi = new MizanOranServisi(mizan, butceYili, mizanAylikFull, v2Metodoloji);
+    this.oranServisi = new MizanOranServisi(
+      mizan,
+      butceYili,
+      mizanAylikFull,
+      v2Metodoloji,
+      kalemYilBirlestirme,
+    );
     for (let ay = 1; ay <= 12; ay++) {
       const byHucre = new Map<string, Map<string, number>>();
       for (const [hucre, kalem] of ORAN_HUCRE_TO_KALEM) {

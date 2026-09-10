@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { BransOranSatir } from "@/lib/butce/types";
+import { yilAgirlikToOffset } from "@/lib/butce/oran/oranAyarPaket";
 import type { OranKalemAciklama } from "@/lib/butce/oran/oranKalemAciklama";
 
 type Kalem = { kod: string; ad: string };
@@ -34,10 +35,12 @@ export default function OranlarPanel() {
   const [aciklama, setAciklama] = useState<OranKalemAciklama | null>(null);
   const [yillar, setYillar] = useState<number[]>([]);
   const [yilAgirliklari, setYilAgirliklari] = useState<YilAgirlik[]>([]);
+  const [yilAgirlikOzel, setYilAgirlikOzel] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
+  const [agirlikDirty, setAgirlikDirty] = useState(false);
 
   const loadKalemler = useCallback(async () => {
     const res = await fetch("/api/butce/oranlar");
@@ -50,13 +53,23 @@ export default function OranlarPanel() {
     }
   }, [kalem]);
 
-  const loadTablo = useCallback(async (k: string, yeniden = false) => {
+  const loadTablo = useCallback(async (
+    k: string,
+    yeniden = false,
+    agirliklar?: YilAgirlik[],
+  ) => {
     if (!k) return;
     setBusy(true);
     setMsg(null);
     setErr(null);
     const q = new URLSearchParams({ kalem: k });
     if (yeniden) q.set("yeniden", "1");
+    if (agirliklar?.length) {
+      q.set(
+        "yilAgirlik",
+        agirliklar.map(({ yil, agirlik }) => `${yil}:${agirlik}`).join(","),
+      );
+    }
     try {
       const res = await fetch(`/api/butce/oranlar?${q}`);
       const text = await res.text();
@@ -65,6 +78,7 @@ export default function OranlarPanel() {
         aciklama?: OranKalemAciklama | null;
         yillar?: number[];
         yilAgirliklari?: YilAgirlik[];
+        yilAgirlikOzel?: boolean;
         error?: string;
       } = {};
       try {
@@ -82,7 +96,9 @@ export default function OranlarPanel() {
       setAciklama(data.aciklama ?? null);
       if (data.yillar?.length) setYillar(data.yillar);
       setYilAgirliklari(data.yilAgirliklari ?? []);
+      if (!agirliklar?.length) setYilAgirlikOzel(Boolean(data.yilAgirlikOzel));
       setDirty(false);
+      if (!agirliklar?.length) setAgirlikDirty(false);
       if (rows.length === 0) {
         setErr("Branş tablosu boş döndü — sayfayı yenileyip tekrar deneyin.");
       } else if (yeniden) {
@@ -131,7 +147,9 @@ export default function OranlarPanel() {
       Record<string, { referans: string; oran: number; manuel: boolean }>
     > = {};
     const getRes = await fetch("/api/butce/oran-ayar");
-    const existing = getRes.ok ? await getRes.json() : { ayarlar: {} };
+    const existing = getRes.ok
+      ? await getRes.json()
+      : { ayarlar: {}, kalemYilBirlestirme: {} };
     Object.assign(ayarlar, existing.ayarlar ?? {});
     ayarlar[kalem] = {};
     for (const row of nextTablo) {
@@ -144,7 +162,28 @@ export default function OranlarPanel() {
     const res = await fetch("/api/butce/oran-ayar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ayarlar }),
+      body: JSON.stringify({
+        ayarlar,
+        kalemYilBirlestirme: existing.kalemYilBirlestirme ?? {},
+      }),
+    });
+    return res.ok;
+  }
+
+  async function persistYilAgirliklari(next: YilAgirlik[]) {
+    const offset = yilAgirlikToOffset(next, yillar);
+    const sum = offset.reduce((s, [, w]) => s + w, 0);
+    const normalized =
+      sum > 0 ? offset.map(([o, w]) => [o, w / sum] as [number, number]) : offset;
+    const res = await fetch("/api/butce/oran-ayar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        patchYilBirlestirme: {
+          kalem,
+          yilBirlestirme: normalized.length ? normalized : null,
+        },
+      }),
     });
     return res.ok;
   }
@@ -153,10 +192,59 @@ export default function OranlarPanel() {
     if (!kalem || tablo.length === 0) return;
     setBusy(true);
     setErr(null);
-    const ok = await persistAyarlar(tablo);
+    const okBrans = await persistAyarlar(tablo);
+    let okAgirlik = true;
+    if (agirlikDirty) okAgirlik = await persistYilAgirliklari(yilAgirliklari);
     setBusy(false);
     setDirty(false);
-    setMsg(ok ? "Oran ayarları kaydedildi — GT bu oranları kullanır" : "Kayıt başarısız");
+    setAgirlikDirty(false);
+    if (okBrans && okAgirlik) {
+      setYilAgirlikOzel(true);
+      setMsg("Oran ve yıl ağırlıkları kaydedildi — V2 GT bu ayarları kullanır");
+    } else {
+      setErr("Kayıt başarısız");
+    }
+  }
+
+  function setYilAgirlik(yil: number, pctValue: number) {
+    const agirlik = Math.max(0, pctValue) / 100;
+    setYilAgirliklari((once) => {
+      const idx = once.findIndex((a) => a.yil === yil);
+      if (idx < 0) return [...once, { yil, agirlik }];
+      const next = [...once];
+      next[idx] = { yil, agirlik };
+      return next;
+    });
+    setAgirlikDirty(true);
+    setMsg(null);
+  }
+
+  async function agirlikUygula(next: YilAgirlik[]) {
+    if (!kalem) return;
+    await loadTablo(kalem, false, next);
+  }
+
+  async function agirlikVarsayilanaDon() {
+    if (!kalem) return;
+    setBusy(true);
+    setErr(null);
+    const res = await fetch("/api/butce/oran-ayar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        patchYilBirlestirme: { kalem, yilBirlestirme: null },
+      }),
+    });
+    if (!res.ok) {
+      setBusy(false);
+      setErr("Varsayılan ağırlıklara dönülemedi");
+      return;
+    }
+    setAgirlikDirty(false);
+    setYilAgirlikOzel(false);
+    await loadTablo(kalem, true);
+    setMsg(`${kalem} yıl ağırlıkları Excel varsayılanına döndü`);
+    setBusy(false);
   }
 
   async function mizanDon(bransKodu: string) {
@@ -181,9 +269,10 @@ export default function OranlarPanel() {
     <div className="space-y-4">
       <section className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-950">
         <strong>Hasar/Prim ve teknik oranlar:</strong> Varsayılan değer geçmiş yılların
-        (torpulu) ağırlıklı ortalamasıdır. Branş satırında oranı elle yazın veya ±1 pp ile
-        kaydırın — satır <em>manuel</em> olur. GT bu kaydı kullanır. &quot;MIZAN&apos;a dön&quot;
-        ilgili branşı tekrar hesaplanan orana çeker.
+        (torpulu) ağırlıklı ortalamasıdır. Yıl sütun başlığındaki % değerlerini değiştirerek
+        birleştirme ağırlığını özelleştirebilirsiniz — <em>Kaydet</em> sonrası V2 GT hesapla
+        bu ağırlıkları kullanır. Branş satırında oranı elle yazın veya ±1 pp ile kaydırın;
+        satır <em>manuel</em> olur.
       </section>
 
       <div className="flex flex-wrap items-end gap-3">
@@ -215,8 +304,18 @@ export default function OranlarPanel() {
           onClick={kaydet}
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
-          Kaydet{dirty ? " *" : ""}
+          Kaydet{dirty || agirlikDirty ? " *" : ""}
         </button>
+        {yilAgirlikOzel && (
+          <button
+            type="button"
+            disabled={busy || !kalem}
+            onClick={() => void agirlikVarsayilanaDon()}
+            className="rounded-lg border border-sky-300 px-4 py-2 text-sm font-medium text-sky-900 hover:bg-sky-50 disabled:opacity-50"
+          >
+            Yıl ağırlığı varsayılan
+          </button>
+        )}
       </div>
 
       {aciklama && (
@@ -280,10 +379,10 @@ export default function OranlarPanel() {
           {yilAgirliklari.length > 0 && (
             <>
               {" "}
-              · Ağırlık:{" "}
-              {yilAgirliklari
-                .map(({ yil, agirlik }) => `${yil} ${agirlikPct(agirlik)}`)
-                .join(", ")}
+              · Ağırlık toplamı:{" "}
+              {agirlikPct(yilAgirliklari.reduce((s, a) => s + a.agirlik, 0))}
+              {yilAgirlikOzel ? " (özel)" : " (Excel varsayılan)"}
+              {agirlikDirty ? " — kaydedilmedi" : ""}
             </>
           )}
         </p>
@@ -315,12 +414,30 @@ export default function OranlarPanel() {
                         : `${y} yılsonu MIZAN oranı (birleştirmeye dahil değil)`
                     }
                   >
-                    {y}
-                    {ag != null && (
-                      <span className="block text-[10px] font-normal normal-case">
-                        ({agirlikPct(ag)})
-                      </span>
-                    )}
+                    <div>{y}</div>
+                    {ag != null ? (
+                      <div className="mt-0.5 flex justify-end">
+                        <input
+                          type="number"
+                          step="1"
+                          min="0"
+                          max="100"
+                          disabled={busy}
+                          value={Number((ag * 100).toFixed(1))}
+                          onChange={(e) => setYilAgirlik(y, Number(e.target.value))}
+                          onBlur={(e) => {
+                            const agirlik = Math.max(0, Number(e.target.value)) / 100;
+                            const next = yilAgirliklari.map((a) =>
+                              a.yil === y ? { yil, agirlik } : a,
+                            );
+                            void agirlikUygula(next);
+                          }}
+                          className="w-12 rounded border border-sky-200 bg-white px-1 py-0.5 text-right text-[11px] font-normal normal-case tabular-nums text-sky-900"
+                          title={`${y} birleştirme ağırlığı (%)`}
+                        />
+                        <span className="ml-0.5 text-[10px] font-normal normal-case">%</span>
+                      </div>
+                    ) : null}
                   </th>
                 );
               })}

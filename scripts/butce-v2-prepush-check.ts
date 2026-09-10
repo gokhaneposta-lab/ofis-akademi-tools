@@ -6,8 +6,17 @@
  */
 import { buildFaaliyetGiderSonuc } from "../lib/butce/gelir/faaliyetGiderGt";
 import { ORAN_KALEM_MIZAN } from "../lib/butce/oran/oranKalemLoader";
+import {
+  HASAR_YIL_DISI_MAX,
+  MUALLAK_ORAN_KALEMLER,
+} from "../lib/butce/oran/oranMetodoloji";
 import { MizanOranServisi } from "../lib/butce/oran/mizanOranlar";
-import { loadMizanRows, loadBilancoAylikRows, loadMizanAylikRows } from "../lib/butce/loadData";
+import {
+  loadMizanRows,
+  loadBilancoAylikRows,
+  loadMizanAylikRows,
+  loadMizanAylikFullRows,
+} from "../lib/butce/loadData";
 import { buildMaliGelirProxy, resolveAcilisBanka } from "../lib/butce/v2/maliGelirProxy";
 import { buildFaaliyetGiderFromMizanArtis } from "../lib/butce/v2/faaliyetGiderFromMizanArtis";
 import { V2_GT_GOSTERIM } from "../lib/butce/v2/buildV2GelirTablosu";
@@ -384,6 +393,65 @@ async function check60301() {
   return { blocked: false as const, gercek60301 };
 }
 
+async function checkTorpuMuallakVeSifirTuzagi() {
+  section("7) Torpu — muallak istisnası + sıfır tuzağı");
+  for (const k of MUALLAK_ORAN_KALEMLER) {
+    const spec = ORAN_KALEM_MIZAN[k];
+    if (!spec) throw new Error(`ORAN_KALEM_MIZAN.${k} yok`);
+    if (spec.torpu?.yil_disi_max != null || spec.torpu?.oran_max != null) {
+      throw new Error(`Muallak ${k} torpu almamalı (yil_disi_max/ max sıfır olmalı)`);
+    }
+  }
+  console.log("Muallak 02211–02222: torpu kapalı OK");
+
+  const mizan = await loadMizanRows();
+  const mizanFull = await loadMizanAylikFullRows();
+  if (mizan.length === 0) {
+    console.log("Mizan yok — torpu sıfır tuzağı taraması atlandı");
+    return;
+  }
+
+  const servis = new MizanOranServisi(mizan, 2026, mizanFull, true);
+  const uyarilar: string[] = [];
+
+  for (const ay of [1, 12] as const) {
+    for (const kalem of ["0211", "02211"] as const) {
+      const tablo = servis.tumBranslarTablosu(kalem, {}, { ay });
+      for (const row of tablo) {
+        const yilDegerleri = Object.values(row.yilOran ?? {}).filter(
+          (o): o is number => o != null && Number.isFinite(o),
+        );
+        if (yilDegerleri.length < 2) continue;
+        const buyuk = yilDegerleri.filter((o) => Math.abs(o) > 0.05);
+        if (buyuk.length === 0) continue;
+        if (Math.abs(row.oran) > 0.001) continue;
+
+        if (kalem === "02211") {
+          uyarilar.push(
+            `REGRESYON muallak ${row.bransKodu} ay=${ay}: yıl oranları var (${buyuk.length} adet) ama birleşik=0 — muallak torpu kapalı olmalı`,
+          );
+        } else {
+          const hepsiAsiri = buyuk.every((o) => Math.abs(o) > HASAR_YIL_DISI_MAX);
+          if (hepsiAsiri) {
+            uyarilar.push(
+              `TORPU ${kalem} ${row.bransKodu} ay=${ay}: tüm yıl oranları |oran|>${HASAR_YIL_DISI_MAX} → birleşik 0 (beklenen; bkz. docs/butce/v2-oran-torpu-kontrol.md)`,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  if (uyarilar.length === 0) {
+    console.log("Torpu sıfır tuzağı örneği bulunamadı (veya birleşik oranlar sıfır değil)");
+  } else {
+    for (const u of uyarilar.slice(0, 12)) console.log("  ⚠", u);
+    if (uyarilar.length > 12) console.log(`  … +${uyarilar.length - 12} satır`);
+    const regresyon = uyarilar.some((u) => u.startsWith("REGRESYON"));
+    if (regresyon) throw new Error("Muallak torpu regresyonu — birleşik oran 0");
+  }
+}
+
 async function main() {
   await checkNegatifBakiye();
   const r = await check60301();
@@ -391,6 +459,7 @@ async function main() {
   await checkButceYiliVeManuelGider();
   await checkKpkReasurHareketIsareti();
   await checkKpkKapanisYilUyumu();
+  await checkTorpuMuallakVeSifirTuzagi();
   section("Özet");
   console.log("1 Negatif bakiye UI/flag: motor OK (UI banner+satır bayrağı eklendi)");
   console.log(
@@ -402,6 +471,7 @@ async function main() {
   console.log("4 Bütçe yılı + manuel gider: Y-1 kapanış ve 1/12 dağılım OK");
   console.log("5 KPK reasürör payı: aylık hareket işareti ve yıllık mutabakat OK");
   console.log("6 KPK kapanış yılı: farklı çalışma kaydı açılışı kesmiyor");
+  console.log("7 Torpu: muallak torpu kapalı; 0211 sıfır tuzağı uyarıları yukarıda");
 }
 
 main().catch((e) => {

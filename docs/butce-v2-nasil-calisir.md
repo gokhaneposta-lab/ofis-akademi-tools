@@ -89,7 +89,7 @@ Birden fazla yıl varsa Excel GT’deki gibi **ağırlıklı ortalama** alınır
 | 3. önceki | %15 |
 | 4. önceki | %10 |
 
-Bazı kalemler özeldir (ör. brüt hasar oranı 0211’de son yıla daha yüksek ağırlık). Uç yıllar **torpu** ile elenir veya oran min/max banda sıkıştırılır.
+Bazı kalemler özeldir (ör. brüt hasar oranı 0211’de son yıla daha yüksek ağırlık). Uç yıllar **torpu** ile elenir veya oran min/max banda sıkıştırılır. **Muallak oranları (02211–02222 / F451–F471) torpu almaz** — aylık GT ham MIZAN birleştirme. Torpu kaynaklı “yıl dolu ama Oran % = 0” tuzağı için bkz. [`docs/butce/v2-oran-torpu-kontrol.md`](butce/v2-oran-torpu-kontrol.md).
 
 Referans seçenekleri: Excel GT (varsayılan), son yıl, son 3 yıl aritmetik, tek yıl, manuel kayıt.
 

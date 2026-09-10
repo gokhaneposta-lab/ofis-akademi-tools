@@ -7,7 +7,7 @@ import {
   CARPIM_NET_KAZANILMIS_PRIM,
   DENGELEME_NET_KAZANILMIS_ORAN,
 } from "../config/constants";
-import { HASAR_YIL_DISI_MAX } from "./oranMetodoloji";
+import { HASAR_YIL_DISI_MAX, MUALLAK_ORAN_KALEM_SET } from "./oranMetodoloji";
 
 type KalemRaw = {
   kalem_kodu: string;
@@ -31,7 +31,12 @@ type OranKalemSpec = {
   baz_toplam_sirket?: boolean;
   /** 014: pay = max(0, net nakit); baz = Σ pozitif net nakit (şirket). */
   net_nakit_pay?: boolean;
-  torpu?: { yil_disi_max?: number; oran_min?: number; oran_max?: number };
+  /** null = varsayılan torpu devre dışı (muallak 02211–02222). */
+  torpu?: {
+    yil_disi_max?: number | null;
+    oran_min?: number | null;
+    oran_max?: number | null;
+  };
   /** Pay gideri geçmişi olan branşlara bu oran; diğerleri 0 (F348 dengeleme). */
   sabit_oran?: number;
   sadece_pay_gideri?: boolean;
@@ -172,9 +177,6 @@ const CARPIM_MAP: Record<string, string> = {
   F398: CARPIM_BRUT_PRIM,
 };
 
-/** F451/F456/F466/F471 — aylık GT; varsayılan torpu (yil_disi_max 1.5) uygulanmaz. */
-const MUALLAK_ORAN_KALEMLER = new Set(["02211", "02212", "02221", "02222"]);
-
 const VARSAYILAN_ORAN: Record<string, number> = {
   "0112": -0.6,
   "0113": -0.02,
@@ -247,7 +249,7 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
       spec.baz_toplam_sirket = true;
     }
 
-    if (MUALLAK_ORAN_KALEMLER.has(kod)) {
+    if (MUALLAK_ORAN_KALEM_SET.has(kod)) {
       spec.torpu = { yil_disi_max: null, oran_min: null, oran_max: null };
     } else if (kod === "0211" || kod === "016") {
       spec.torpu = { yil_disi_max: HASAR_YIL_DISI_MAX, oran_min: -1, oran_max: 0.5 };

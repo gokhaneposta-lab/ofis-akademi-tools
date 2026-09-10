@@ -67,6 +67,10 @@ export const V2_GRUP_FALLBACK_KALEMLER = new Set([
   "02222",
 ]);
 
+/** Muallak GT oranları — torpu uygulanmaz (aylık ham MIZAN birleştirme). */
+export const MUALLAK_ORAN_KALEMLER = ["02211", "02212", "02221", "02222"] as const;
+export const MUALLAK_ORAN_KALEM_SET = new Set<string>(MUALLAK_ORAN_KALEMLER);
+
 /** Hasar bloğu — biri gruba kayınca hepsi grup oranı (tutarlılık). */
 export const V2_HASAR_BLOK_KALEMLER = new Set([
   "0211",

@@ -1,0 +1,21 @@
+---
+description: "Bütçe V2 oran torpu" — muallak/teknik oran 0 tuzağı; test ve raporlama (bütçe oran/GT görevlerinde)
+alwaysApply: false
+---
+
+# Bütçe V2 — torpu kontrolü
+
+**Ne zaman:** `lib/butce/oran/*`, teknik oranlar paneli, V2 GT muallak (611011–611022), F451/F456/F466/F471, “oran neden 0?” soruları.
+
+**Tam rehber:** `docs/butce/v2-oran-torpu-kontrol.md` — test öncesi oku.
+
+## Zorunlu kontrol
+
+1. **Yıl sütunları dolu + Oran % = 0** → önce torpu ihtimalini raporla (0211 vb.); muallak 02211–02222 torpu **almaz** (regresyon say).
+2. **Ocak YTD vs Aralık yılsonu** karıştırma — GT aylık geçmiş kullanır; panelde “Kümülatif ay”a bak.
+3. **Muallak:** F116=0, F115≠0 → devreden mizan (611012); cari = prim×F451 ayrı satır.
+4. Değişiklik sonrası: `npx tsx scripts/butce-v2-prepush-check.ts` (bölüm 7).
+
+## Kullanıcıya söyle
+
+Torpu kaynaklı sapmada: hangi kalem, branş, ay, kaç yıl elendi, muallak mı değil mi — tek paragraf; “MIZAN bozuk” demeden önce bu listeyi işle.

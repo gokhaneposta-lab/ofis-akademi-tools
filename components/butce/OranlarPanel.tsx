@@ -428,7 +428,7 @@ export default function OranlarPanel() {
                           onBlur={(e) => {
                             const agirlik = Math.max(0, Number(e.target.value)) / 100;
                             const next = yilAgirliklari.map((a) =>
-                              a.yil === y ? { yil, agirlik } : a,
+                              a.yil === y ? { yil: y, agirlik } : a,
                             );
                             void agirlikUygula(next);
                           }}

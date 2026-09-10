@@ -18,6 +18,7 @@ import {
   buildFaaliyetGiderSonuc,
   FAALIYET_GT_SATIRLARI,
 } from "./faaliyetGiderGt";
+import { v2HesapAgacTumSatirlar } from "../v2/v2GtHesapAgac";
 import { GelirTablosuMotoru, type GtEksikGirdi } from "./gtMotoru";
 import type { MuallakDevredenOcak } from "./muallakDevreden";
 
@@ -129,6 +130,10 @@ export function buildGelirTablosu(opts: {
 
   const satirlar = gosterimSatirlari ?? GT_GOSTERIM_SATIRLARI;
   const gosterimNolari = satirlar.map((s) => s.satir);
+  /** V2 özet: 61101/611011 vb. alt satırlar da aylikToplam'a yazılır. */
+  const persistSatirlar = v2Metodoloji
+    ? [...new Set([...gosterimNolari, ...v2HesapAgacTumSatirlar()])]
+    : gosterimNolari;
 
   const kpkSonuc =
     kpkVade.length > 0
@@ -177,7 +182,7 @@ export function buildGelirTablosu(opts: {
   const toplam: Record<number, number> = {};
   const aylikToplam: Record<number, number[]> = {};
   const aylikBrans: Record<string, Record<number, number[]>> = {};
-  for (const s of gosterimNolari) {
+  for (const s of persistSatirlar) {
     toplam[s] = 0;
     aylikToplam[s] = Array.from({ length: 12 }, () => 0);
   }
@@ -195,7 +200,7 @@ export function buildGelirTablosu(opts: {
     const paySerie = paylar ?? Array.from({ length: 12 }, () => 1 / 12);
 
     const bransAylik: Record<number, number[]> = {};
-    for (const s of gosterimNolari) bransAylik[s] = Array.from({ length: 12 }, () => 0);
+    for (const s of persistSatirlar) bransAylik[s] = Array.from({ length: 12 }, () => 0);
 
     let cumPay = 0;
     const prevYtd = new Map<number, number>();
@@ -231,7 +236,7 @@ export function buildGelirTablosu(opts: {
       }
 
       const ytdVals = motor.hesaplaBrans(kod, ytdBrut, ytdEndirekt, disHucreler, i + 1);
-      for (const s of gosterimNolari) {
+      for (const s of persistSatirlar) {
         const ytd = ytdVals.get(s) ?? 0;
         const once = prevYtd.get(s) ?? 0;
         bransAylik[s]![i] = ytd - once;
@@ -261,8 +266,10 @@ export function buildGelirTablosu(opts: {
     const info = HAZINE_BRANS_KODLARI[kod] ?? ["", kod, ""];
     branslar.push({ bransKodu: kod, bransAdi: info[1], brutPrim: brut, degerler });
 
-    for (const s of gosterimNolari) {
-      toplam[s] = (toplam[s] ?? 0) + (degerler[s] ?? 0);
+    for (const s of persistSatirlar) {
+      const yillik = (bransAylik[s] ?? []).reduce((a, b) => a + b, 0);
+      if (gosterimNolari.includes(s)) degerler[s] = yillik;
+      toplam[s] = (toplam[s] ?? 0) + yillik;
       for (let i = 0; i < 12; i++) aylikToplam[s]![i] += bransAylik[s]![i] ?? 0;
     }
     aylikBrans[kod] = bransAylik;

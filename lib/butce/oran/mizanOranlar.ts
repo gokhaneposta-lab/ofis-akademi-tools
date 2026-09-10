@@ -529,6 +529,62 @@ export class MizanOranServisi {
     );
   }
 
+  /** Oran tablosu yıl sütunları — ay=12 yıllık mizan, ay<12 kümülatif ay-sonu snapshot yılları. */
+  kalemYillar(ay = 12): number[] {
+    return ay === 12 ? this.yillar : this.aylikYillar;
+  }
+
+  /**
+   * Şirket geneli özet: yıl sütunlarında MIZAN kümülatif pay/baz oranı;
+   * birleştirilmiş MIZAN ortalaması ve tablodaki branş oranlarının prim ağırlıklı ortalaması (V2 GT ile uyumlu).
+   */
+  sirketOranOzeti(
+    kalemKodu: string,
+    tablo: BransOranSatir[],
+    primler: Record<string, number>,
+    ay = 12,
+  ): {
+    yilOranlari: Record<string, number | null>;
+    mizanAgirlikli: number | null;
+    sistemOran: number | null;
+  } {
+    const kodlar = HAZINE_BRANS_SIRASI.filter((k) => k in HAZINE_BRANS_KODLARI);
+    const yilOranlari: Record<string, number | null> = {};
+    for (const y of this.kalemYillar(ay)) {
+      const olc = this.grupYilOlcum(kalemKodu, kodlar, y, ay);
+      yilOranlari[String(y)] =
+        olc?.oran == null ? null : Math.round(olc.oran * 1e6) / 1e6;
+    }
+
+    let mizanPay = 0;
+    let mizanBaz = 0;
+    for (const { yil, agirlik } of this.kalemAgirlikliYillar(kalemKodu)) {
+      const o = yilOranlari[String(yil)];
+      if (o == null) continue;
+      mizanPay += o * agirlik;
+      mizanBaz += agirlik;
+    }
+    const mizanAgirlikli =
+      mizanBaz > 0 ? Math.round((mizanPay / mizanBaz) * 1e6) / 1e6 : null;
+
+    let primPay = 0;
+    let primBaz = 0;
+    for (const row of tablo) {
+      const p = primler[row.bransKodu] ?? 0;
+      if (p <= 0) continue;
+      primPay += p * row.oran;
+      primBaz += p;
+    }
+    const sistemOran =
+      primBaz > 0
+        ? Math.round((primPay / primBaz) * 1e6) / 1e6
+        : Math.round(
+            this.grupOrani(kalemKodu, kodlar, ORAN_REFERANS_VARSAYILAN, ay) * 1e6,
+          ) / 1e6;
+
+    return { yilOranlari, mizanAgirlikli, sistemOran };
+  }
+
   private bransYilOranlari(
     kalemKodu: string,
     brans: string,
@@ -556,7 +612,7 @@ export class MizanOranServisi {
     const { mizanHesapla = true, ay = 12 } = opts;
 
     if (!mizanHesapla && Object.keys(bransAyar).length > 0) {
-      return this.tabloFromBransAyar(kalemKodu, bransAyar);
+      return this.tabloFromBransAyar(kalemKodu, bransAyar, ay);
     }
 
     return HAZINE_BRANS_SIRASI.map((kod) => {
@@ -580,7 +636,11 @@ export class MizanOranServisi {
     });
   }
 
-  tabloFromBransAyar(kalemKodu: string, bransAyar: Record<string, BransOranAyar>): BransOranSatir[] {
+  tabloFromBransAyar(
+    kalemKodu: string,
+    bransAyar: Record<string, BransOranAyar>,
+    ay = 12,
+  ): BransOranSatir[] {
     const varsayilan = ORAN_BAZLI_KALEMLER[kalemKodu]?.varsayilan_oran ?? 0;
     return HAZINE_BRANS_SIRASI.map((kod) => {
       const info = HAZINE_BRANS_KODLARI[kod] ?? ["", kod, ""];
@@ -592,7 +652,7 @@ export class MizanOranServisi {
         referans: ayar.referans ?? ORAN_REFERANS_VARSAYILAN,
         oran: Math.round((ayar.oran ?? varsayilan) * 1e6) / 1e6,
         manuel: ayar.manuel ?? false,
-        yilOran: this.bransYilOranlari(kalemKodu, kod, 12),
+        yilOran: this.bransYilOranlari(kalemKodu, kod, ay),
       };
     });
   }

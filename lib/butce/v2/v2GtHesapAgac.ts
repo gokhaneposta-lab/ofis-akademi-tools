@@ -206,3 +206,16 @@ export function dugumEtiket(d: V2HesapDugum): string {
   if (d.hesap) return hesapAdi(d.hesap);
   return SENTETIK_AD[d.satir] ?? `F${d.satir}`;
 }
+
+/** V2 özet tablosu — hesap ağacındaki tüm GT satır numaraları. */
+export function v2HesapAgacTumSatirlar(): number[] {
+  const out = new Set<number>();
+  function walk(nodes: V2HesapDugum[]) {
+    for (const n of nodes) {
+      out.add(n.satir);
+      if (n.children?.length) walk(n.children);
+    }
+  }
+  walk(V2_HESAP_AGAC);
+  return [...out];
+}

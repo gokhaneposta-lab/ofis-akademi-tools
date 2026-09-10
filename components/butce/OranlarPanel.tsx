@@ -7,6 +7,16 @@ import type { OranKalemAciklama } from "@/lib/butce/oran/oranKalemAciklama";
 
 type Kalem = { kod: string; ad: string };
 type YilAgirlik = { yil: number; agirlik: number };
+type SirketOzeti = {
+  yilOranlari: Record<string, number | null>;
+  mizanAgirlikli: number | null;
+  sistemOran: number | null;
+};
+
+const AY_ADLARI = [
+  "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+  "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
+] as const;
 
 const pct = (n: number) =>
   new Intl.NumberFormat("tr-TR", {
@@ -41,6 +51,8 @@ export default function OranlarPanel() {
   const [err, setErr] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
   const [agirlikDirty, setAgirlikDirty] = useState(false);
+  const [kumulAy, setKumulAy] = useState(12);
+  const [sirketOzeti, setSirketOzeti] = useState<SirketOzeti | null>(null);
 
   const loadKalemler = useCallback(async () => {
     const res = await fetch("/api/butce/oranlar");
@@ -62,7 +74,7 @@ export default function OranlarPanel() {
     setBusy(true);
     setMsg(null);
     setErr(null);
-    const q = new URLSearchParams({ kalem: k });
+    const q = new URLSearchParams({ kalem: k, kumulAy: String(kumulAy) });
     if (yeniden) q.set("yeniden", "1");
     if (agirliklar?.length) {
       q.set(
@@ -79,6 +91,8 @@ export default function OranlarPanel() {
         yillar?: number[];
         yilAgirliklari?: YilAgirlik[];
         yilAgirlikOzel?: boolean;
+        kumulAy?: number;
+        sirketOzeti?: SirketOzeti | null;
         error?: string;
       } = {};
       try {
@@ -95,6 +109,8 @@ export default function OranlarPanel() {
       setTablo(rows);
       setAciklama(data.aciklama ?? null);
       if (data.yillar?.length) setYillar(data.yillar);
+      if (data.kumulAy) setKumulAy(data.kumulAy);
+      setSirketOzeti(data.sirketOzeti ?? null);
       setYilAgirliklari(data.yilAgirliklari ?? []);
       if (!agirliklar?.length) setYilAgirlikOzel(Boolean(data.yilAgirlikOzel));
       setDirty(false);
@@ -109,7 +125,7 @@ export default function OranlarPanel() {
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [kumulAy]);
 
   useEffect(() => {
     loadKalemler();
@@ -117,7 +133,7 @@ export default function OranlarPanel() {
 
   useEffect(() => {
     if (kalem) loadTablo(kalem);
-  }, [kalem, loadTablo]);
+  }, [kalem, kumulAy, loadTablo]);
 
   function patchRow(bransKodu: string, patch: Partial<BransOranSatir>) {
     setTablo((prev) =>
@@ -290,6 +306,21 @@ export default function OranlarPanel() {
             ))}
           </select>
         </label>
+        <label className="block text-sm">
+          <span className="text-slate-600">Kümülatif ay</span>
+          <select
+            value={kumulAy}
+            onChange={(e) => setKumulAy(Number(e.target.value))}
+            className="mt-1 block min-w-[140px] rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            title="MIZAN yıl sütunları ve V2 oran birleştirmesi bu ayın YTD kümülatif verisini kullanır"
+          >
+            {AY_ADLARI.map((ad, i) => (
+              <option key={ad} value={i + 1}>
+                {i + 1 === 12 ? "Aralık (yılsonu)" : `${ad} sonu (YTD)`}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
           type="button"
           disabled={busy || !kalem}
@@ -376,6 +407,7 @@ export default function OranlarPanel() {
       {yillar.length > 0 && (
         <p className="text-xs text-slate-500">
           MIZAN yılları: {yillar.join(", ")} (bütçe yılı hariç)
+          {kumulAy < 12 ? ` · ${AY_ADLARI[kumulAy - 1]} sonu kümülatif oran` : " · yılsonu oran"}
           {yilAgirliklari.length > 0 && (
             <>
               {" "}
@@ -395,6 +427,46 @@ export default function OranlarPanel() {
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
         <table className="min-w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
+            {sirketOzeti && (
+              <tr className="border-b border-amber-200 bg-amber-50/90 text-[11px] normal-case text-amber-950">
+                <th
+                  colSpan={4}
+                  className="px-3 py-2 text-left font-semibold"
+                  title="Şirket geneli: tüm branşların pay/baz toplamından MIZAN oranı"
+                >
+                  Şirket özeti
+                  {kumulAy < 12 ? ` (${AY_ADLARI[kumulAy - 1]} YTD)` : ""}
+                </th>
+                {yillar.map((y) => {
+                  const ag = yilAgirliklari.find((a) => a.yil === y)?.agirlik;
+                  const o = sirketOzeti.yilOranlari[String(y)] ?? null;
+                  return (
+                    <th
+                      key={`oz-${y}`}
+                      className={`px-2 py-2 text-right font-semibold tabular-nums whitespace-nowrap ${
+                        ag != null ? "bg-amber-100/80" : ""
+                      }`}
+                      title={`${y} — şirket geneli MIZAN kümülatif oran (pay÷baz, tüm branş)`}
+                    >
+                      {pctMaybe(o)}
+                    </th>
+                  );
+                })}
+                <th
+                  className="px-3 py-2 text-right font-semibold tabular-nums text-amber-900"
+                  title="V2 GT: branş oranlarının bütçe brüt prim ağırlıklı ortalaması (F451×prim toplamı ÷ prim toplamı)"
+                >
+                  {pctMaybe(sirketOzeti.sistemOran)}
+                </th>
+                <th className="px-3 py-2 text-left font-normal text-[10px] text-amber-800">
+                  {sirketOzeti.mizanAgirlikli != null ? (
+                    <span title="Yıl sütunlarındaki şirket oranlarının birleştirme ağırlıklı ortalaması (MIZAN geçmişi)">
+                      MIZAN birleşik: {pct(sirketOzeti.mizanAgirlikli)}
+                    </span>
+                  ) : null}
+                </th>
+              </tr>
+            )}
             <tr>
               <th className="px-3 py-2">Branş</th>
               <th className="px-3 py-2">Ad</th>

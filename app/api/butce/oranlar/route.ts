@@ -3,8 +3,10 @@ import {
   loadMizanRows,
   loadMizanAylikFullRows,
   loadOranAyarPaket,
+  loadPrimBransHedef,
   butceDataDurumu,
 } from "@/lib/butce/loadData";
+import { HAZINE_BRANS_SIRASI } from "@/lib/butce/config/brans";
 import { MizanOranServisi, oranKalemListesi } from "@/lib/butce/oran/mizanOranlar";
 import { parseYilAgirlikParam } from "@/lib/butce/oran/oranAyarPaket";
 import { oranKalemAciklama } from "@/lib/butce/oran/oranKalemAciklama";
@@ -18,6 +20,10 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const kalem = searchParams.get("kalem");
   const yeniden = searchParams.get("yeniden") === "1";
+  const kumulAyRaw = searchParams.get("kumulAy");
+  const kumulAy = kumulAyRaw
+    ? Math.min(12, Math.max(1, parseInt(kumulAyRaw, 10) || 12))
+    : 12;
 
   const mizan = await loadMizanRows();
   if (mizan.length === 0) {
@@ -56,18 +62,31 @@ export async function GET(request: Request) {
 
   try {
     const kalemAyar = ayarlar[kalem] ?? {};
+    const tabloOpts = { ay: kumulAy };
     const tablo = yeniden
-      ? servis.tumBranslarTablosu(kalem, servis.bransAyarMizanHesapla(kalem, kalemAyar))
-      : servis.tumBranslarTablosu(kalem, kalemAyar);
+      ? servis.tumBranslarTablosu(
+          kalem,
+          servis.bransAyarMizanHesapla(kalem, kalemAyar),
+          tabloOpts,
+        )
+      : servis.tumBranslarTablosu(kalem, kalemAyar, tabloOpts);
+
+    const primHedef = (await loadPrimBransHedef()) ?? {};
+    const primler: Record<string, number> = {};
+    for (const kod of HAZINE_BRANS_SIRASI) {
+      primler[kod] = primHedef[kod] ?? 0;
+    }
 
     return NextResponse.json({
       kalem,
       tablo,
-      yillar: servis.yillar,
+      kumulAy,
+      yillar: servis.kalemYillar(kumulAy),
       yilAgirliklari: servis.kalemAgirlikliYillar(kalem),
       yilAgirlikOzel: Boolean(oranPaket.kalemYilBirlestirme[kalem]?.length),
       referansSecenekleri: servis.yilEtiketleri(),
       aciklama: oranKalemAciklama(kalem),
+      sirketOzeti: servis.sirketOranOzeti(kalem, tablo, primler, kumulAy),
     });
   } catch (e) {
     const detail = e instanceof Error ? e.message : String(e);

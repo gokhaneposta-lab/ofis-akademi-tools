@@ -14,6 +14,7 @@ import {
   loadUretimRows,
   loadV2Varsayimlar,
 } from "@/lib/butce/loadData";
+import { MizanOranServisi } from "@/lib/butce/oran/mizanOranlar";
 import { buildV2GelirTablosu } from "@/lib/butce/v2/buildV2GelirTablosu";
 import { buildGtCocukPay } from "@/lib/butce/v2/gtFormatCocukPay";
 import {
@@ -95,6 +96,15 @@ export async function POST(request: Request) {
     loadKpkKapanisTahmin(),
   ]);
 
+  const oranServis = new MizanOranServisi(
+    mizan,
+    varsayimlar.butceYili,
+    mizanAylikFull,
+    true,
+    oranPaket.kalemYilBirlestirme,
+  );
+  const oranAyar = oranServis.migrateLegacyBransAyarlar(oranPaket.ayarlar);
+
   try {
     const sonuc = buildV2GelirTablosu({
       varsayimlar,
@@ -106,7 +116,7 @@ export async function POST(request: Request) {
       mizanAylik,
       mizanAylikFull,
       bilancoAylik,
-      oranAyar: oranPaket.ayarlar,
+      oranAyar,
       kalemYilBirlestirme: oranPaket.kalemYilBirlestirme,
       kpkVade,
       kapanisTahmin,

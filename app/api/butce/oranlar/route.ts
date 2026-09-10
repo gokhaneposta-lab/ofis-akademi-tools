@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     mizan,
     butceYili,
     mizanAylikFull,
-    false,
+    true,
     kalemYilBirlestirme,
   );
 

@@ -339,7 +339,13 @@ export class MizanOranServisi {
       this.grupBilesenYilOrani(kodlar, y, bil, ay);
 
     if (referans === ORAN_REFERANS_VARSAYILAN || referans === "excel_gt") {
-      return hesaplaEtkinOran(kalemKodu, kodlar.join("+"), yilFn, yillar).etkinOran;
+      return hesaplaEtkinOran(
+        kalemKodu,
+        kodlar.join("+"),
+        yilFn,
+        yillar,
+        this.yilBirlestirmeOverride(kalemKodu),
+      ).etkinOran;
     }
     if (referans === "son_yil") {
       if (yillar.length === 0) return 0;

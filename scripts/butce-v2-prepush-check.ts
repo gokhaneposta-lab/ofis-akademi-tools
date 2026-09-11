@@ -36,6 +36,7 @@ import { syntheticSatisFromTarife } from "../lib/butce/v3/syntheticSatis";
 import { DagitimMotoru } from "../lib/butce/prim/dagitimMotoru";
 import { referansYilAgirliklari } from "../lib/butce/config/constants";
 import { v2OzetDeger } from "../lib/butce/v2/v2GtFiltre";
+import { TEKNIK_GELIR_BILESENLERI, V2_SENTETIK } from "../lib/butce/v2/v2SentetikFormul";
 import { hesaplaKpkBrans } from "../lib/butce/kpk/kpkMotoru";
 import { buildKpkSonuc } from "../lib/butce/kpk/buildKpkSonuc";
 import type { FaaliyetGiderRow, MizanRow } from "../lib/butce/types";
@@ -520,7 +521,21 @@ async function checkKpkGtTutarlilikTamGt() {
     );
     assertKpkGtTutarlilik(gt, anchor);
   }
-  console.log("OK — 601011 anchor ay stok seviyesi; toplam hatası ve 2× brüt prim guard");
+  const anchor = 12;
+  const tg = v2OzetDeger(gt, V2_SENTETIK.teknikGelirSafi, anchor, null);
+  const tgBek = TEKNIK_GELIR_BILESENLERI.reduce(
+    (s, satir) => s + v2OzetDeger(gt, satir, anchor, null),
+    0,
+  );
+  if (Math.abs(tg - tgBek) > 1) {
+    throw new Error(
+      `TEKNİK GELİR (9001) ${(tg / 1e6).toFixed(1)} mn ≠ 600+601+602+604+605 (${(tgBek / 1e6).toFixed(1)} mn)`,
+    );
+  }
+  console.log(
+    `  TEKNİK GELİR Aralık: ${(tg / 1e6).toFixed(1)} mn (=600+601+602+604+605, 603 hariç)`,
+  );
+  console.log("OK — 601011 stok seviyesi; TEKNİK GELİR formül; 2× brüt prim guard");
 }
 
 async function checkTorpuMuallakVeSifirTuzagi() {

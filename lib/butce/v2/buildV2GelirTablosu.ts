@@ -33,19 +33,13 @@ import { buildMaliGelirProxy, resolveAcilisBanka } from "./maliGelirProxy";
 import { NET_NAK_GT_SATIRLARI, payFromNetNakitMap } from "./netNakitPay";
 import { primMixUyarilari } from "./primMixUyari";
 import type { V2MaliGelirProxySonuc, V2VarsayimlarStore } from "./types";
-
-const V2_SENTETIK = {
-  teknikGelirSafi: 9001,
-  teknikGiderSafi: 9002,
-  safiTkz: 9003,
-  genelGiderler: 9004,
-  tkz: 9005,
-  teknikFaaliyetGideri: 9006,
-} as const;
+import {
+  V2_SENTETIK,
+  V2_SENTETIK_FORMULLER,
+  type V2Formul,
+} from "./v2SentetikFormul";
 
 const GENEL_GIDER_SATIRLARI = [190, 191, 192, 193, 194] as const;
-
-type V2Formul = Array<{ satir: number; carpan: number }>;
 
 const MALI_GELIR_SATIRI = 38;
 
@@ -94,46 +88,6 @@ function dagitMaliGelirNetNakit(
  * 3) SAFİ TKZ      = teknik gelir + teknik gider
  * 4) TKZ           = safi + F38 (603) + genel giderler
  */
-/** GT F satır: 600→10, 601→21, 602→31, 604→83, 605→86 */
-const TEKNIK_GELIR_BILESENLERI = [10, 21, 31, 83, 86] as const;
-/** GT F satır: 610→95, 611→114, 612→157, 613→164, 614 tk→9006, 615→202 */
-const TEKNIK_GIDER_BILESENLERI = [95, 114, 157, 164] as const;
-
-const V2_SENTETIK_FORMULLER: Array<[number, V2Formul]> = [
-  [V2_SENTETIK.teknikGelirSafi, TEKNIK_GELIR_BILESENLERI.map((satir) => ({ satir, carpan: 1 }))],
-  [
-    V2_SENTETIK.teknikFaaliyetGideri,
-    [{ satir: 176, carpan: 1 }, ...GENEL_GIDER_SATIRLARI.map((satir) => ({ satir, carpan: -1 }))],
-  ],
-  [
-    V2_SENTETIK.teknikGiderSafi,
-    [
-      ...TEKNIK_GIDER_BILESENLERI.map((satir) => ({ satir, carpan: 1 })),
-      { satir: V2_SENTETIK.teknikFaaliyetGideri, carpan: 1 },
-      { satir: 202, carpan: 1 },
-    ],
-  ],
-  [
-    V2_SENTETIK.safiTkz,
-    [
-      { satir: V2_SENTETIK.teknikGelirSafi, carpan: 1 },
-      { satir: V2_SENTETIK.teknikGiderSafi, carpan: 1 },
-    ],
-  ],
-  [
-    V2_SENTETIK.genelGiderler,
-    GENEL_GIDER_SATIRLARI.map((satir) => ({ satir, carpan: 1 })),
-  ],
-  [
-    V2_SENTETIK.tkz,
-    [
-      { satir: V2_SENTETIK.safiTkz, carpan: 1 },
-      { satir: 38, carpan: 1 },
-      { satir: V2_SENTETIK.genelGiderler, carpan: 1 },
-    ],
-  ],
-];
-
 export function hesaplaV2SentetikSatirlar(gt: GelirTablosuSonuc): GelirTablosuSonuc {
   const hesapla = (degerler: Record<number, number>, formul: V2Formul) =>
     formul.reduce((toplam, b) => toplam + (degerler[b.satir] ?? 0) * b.carpan, 0);

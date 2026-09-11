@@ -1,5 +1,6 @@
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
 import { KPK_SEVIYE_OKUMA_SATIRLARI, kpkStokYtd } from "../kpk/kpkMotoru";
+import { v2SentetikFormul } from "./v2SentetikFormul";
 import { bransAdi } from "../config/brans";
 import formatRaw from "../data/gt_sirket_format.json";
 import { bransGrubu, GRUP_SIRA } from "./buildGtFormatGrid";
@@ -75,6 +76,13 @@ export function v2OzetDeger(
   ozetAy: number,
   bransKodlari: string[] | null,
 ): number {
+  const sentetik = v2SentetikFormul(satir);
+  if (sentetik) {
+    return sentetik.reduce(
+      (t, b) => t + v2OzetDeger(gt, b.satir, ozetAy, bransKodlari) * b.carpan,
+      0,
+    );
+  }
   if (!bransKodlari || bransKodlari.length === 0) {
     if (gt.aylikToplam[satir]) return aylikTopla(gt.aylikToplam[satir], ozetAy, satir);
     return gt.toplam[satir] ?? 0;

@@ -1,5 +1,7 @@
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
 import { KPK_SEVIYE_OKUMA_SATIRLARI, kpkStokYtd } from "../kpk/kpkMotoru";
+import { v2OzetDeger } from "./v2GtFiltre";
+import { V2_SENTETIK_SATIRLARI } from "./v2SentetikFormul";
 import { gtOzetOranSatirlari } from "../v3/gtOzetTeknikOranlar";
 import {
   gtOzetOranGecmisiExcelSatirlari,
@@ -40,9 +42,11 @@ export function appendGtOzetSheet(
   const kpkStokSeviye = new Set<number>(KPK_SEVIYE_OKUMA_SATIRLARI as unknown as number[]);
   for (const node of flattenAgac(V2_HESAP_AGAC)) {
     const ser = gt.aylikToplam[node.satir] ?? Array(12).fill(0);
-    const yillik = kpkStokSeviye.has(node.satir)
-      ? kpkStokYtd(ser, 12)
-      : ser.reduce((a, x) => a + x, 0);
+    const yillik = V2_SENTETIK_SATIRLARI.has(node.satir)
+      ? v2OzetDeger(gt, node.satir, 12, null)
+      : kpkStokSeviye.has(node.satir)
+        ? kpkStokYtd(ser, 12)
+        : ser.reduce((a, x) => a + x, 0);
     rows.push([node.satir, node.hesap ?? "", dugumEtiket(node), ...ser, yillik]);
   }
 

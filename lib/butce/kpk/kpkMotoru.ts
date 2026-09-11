@@ -64,6 +64,19 @@ function sgkKpk(brans: string, brutHareket: number, sgkPrimOrani: number): numbe
   return brutHareket * Math.abs(sgkPrimOrani);
 }
 
+function splitPrimGecmisi(
+  primGecmisi: KpkPrimAy[],
+  butceYili: number,
+): { cari: KpkPrimAy[]; devreden: KpkPrimAy[] } {
+  const cari: KpkPrimAy[] = [];
+  const devreden: KpkPrimAy[] = [];
+  for (const k of primGecmisi) {
+    if (k.yil === butceYili) cari.push(k);
+    else if (k.yil < butceYili) devreden.push(k);
+  }
+  return { cari, devreden };
+}
+
 function gtHareketFromStok(
   cariStok: number[],
   devStok: number[],
@@ -76,15 +89,18 @@ function gtHareketFromStok(
   };
 
   for (let m = 1; m <= 12; m++) {
-    // 601011 GT hareketi bütçe yılında sıfır bazlı başlar (601012 Ocak devralma ayrı).
-    // Aralık rolling stok seviyesi Ocak F23'e baz olarak girmez; aksi halde stok
-    // eriyince F23 pozitif (601011 yanlış işaret), F26 (601021) negatif olur.
-    const oncekiCari = m === 1 ? 0 : cariStok[m - 1]!;
-    const dCari = cariStok[m]! - oncekiCari;
-    const dDev = devStok[m]! - devStok[m - 1]!;
-
-    const f23 = -dCari;
-    const f24 = -dDev;
+    // Ocak 601011: yalnızca bütçe yılı yazımından KPK artışı (601012 mizan devralma ayrı).
+    // Şubat–Aralık: portföy toplam stok değişimi (önceki yıl poliçe eriması dahil).
+    const f23 =
+      m === 1
+        ? -(cariStok[m]! - cariStok[0]!)
+        : -(
+            cariStok[m]! +
+            devStok[m]! -
+            (cariStok[m - 1]! + devStok[m - 1]!)
+          );
+    // F24/F27 motor üretmez; gelirTablosu Ocak mizan devralmasını yazar.
+    const f24 = 0;
     const f26 = -f23 * reasOran;
     const f27 = -f24 * reasOran;
     const f29 = -sgkKpk(brans, f23, sgkPrimOrani);
@@ -141,10 +157,12 @@ export function hesaplaKpkBrans(opts: {
   const reas = Math.max(0, Math.min(1, Math.abs(opts.reasurOrani)));
   const sgk = opts.sgkPrimOrani ?? 0;
 
-  const cariStok = rollingStokSerisi(opts.primGecmisi, brans, vade, opts.butceYili);
-  const devredenStok = Array.from({ length: 13 }, () => 0);
+  const { cari: cariPrim, devreden: devPrim } = splitPrimGecmisi(opts.primGecmisi, opts.butceYili);
+  const cariOnlyStok = rollingStokSerisi(cariPrim, brans, vade, opts.butceYili);
+  const devredenStok = rollingStokSerisi(devPrim, brans, vade, opts.butceYili);
+  const cariStok = cariOnlyStok.map((c, i) => c + (devredenStok[i] ?? 0));
 
-  const { yillik, aylik } = gtHareketFromStok(cariStok, devredenStok, reas, brans, sgk);
+  const { yillik, aylik } = gtHareketFromStok(cariOnlyStok, devredenStok, reas, brans, sgk);
 
   return {
     bransKodu: brans,

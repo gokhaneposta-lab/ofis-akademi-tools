@@ -32,7 +32,7 @@ export function kpkKalanOrani(
   const end = policyEnd(yazimYil, yazimAy, vadeGun);
   const val = valuationDate(degerlemeYil, degerlemeAy);
   if (val.getTime() >= end.getTime()) return 0;
-  if (val.getTime() < start.getTime()) return 1;
+  if (val.getTime() < start.getTime()) return 0;
   const total = end.getTime() - start.getTime();
   const remaining = end.getTime() - val.getTime();
   return Math.max(0, Math.min(1, remaining / total));

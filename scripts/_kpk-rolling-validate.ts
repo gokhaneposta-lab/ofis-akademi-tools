@@ -63,7 +63,7 @@ async function main() {
     let tv2 = 0;
     let tmz = 0;
     for (const b of kpk.branslar) {
-      const f23ytd = b.gtAylik[23]!.slice(0, anchor).reduce((a, x) => a + x, 0);
+      const f23ytd = b.gtAylik[23]![anchor - 1] ?? 0;
       const mz = mizanF23YtdExact(full, b.bransKodu, anchor);
       if (Math.abs(mz) > 1e5 || Math.abs(f23ytd) > 1e5) {
         rows.push({
@@ -90,7 +90,7 @@ async function main() {
     for (const brans of ["717", "715"]) {
       const b = kpk.branslar.find((x) => x.bransKodu === brans);
       if (!b) continue;
-      const v2 = b.gtAylik[23]!.slice(0, anchor).reduce((a, x) => a + x, 0);
+      const v2 = b.gtAylik[23]![anchor - 1] ?? 0;
       const mz = mizanF23YtdExact(full, brans, anchor);
       const st0 = b.cariStok[0] ?? 0;
       const stN = b.cariStok[anchor] ?? 0;

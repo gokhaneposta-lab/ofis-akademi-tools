@@ -2,6 +2,7 @@
  * Mizan ↔ Bütçe V3 karşılaştırması — hesap hiyerarşisi, sapma, alt kalem drill-down.
  */
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
+import { gtYtdSatir } from "../v2/gtHesapYtd";
 import type { MizanAylikRow } from "../types";
 import { extractMizanGtAylik, ytdGtPrefix, ytdToplam } from "./mizanGtExtract";
 import {
@@ -42,7 +43,7 @@ export type MizanReconSonuc = {
 const TOLERANS_TL = 50_000;
 
 function v3YtdSatir(gt: GelirTablosuSonuc, satir: number, anchorAy: number): number {
-  return ytdToplam(gt.aylikToplam[satir], anchorAy);
+  return gtYtdSatir(gt, satir, anchorAy);
 }
 
 /** Mizan YTD: hesap kodu → gt prefix toplamı (yaprak GT). */

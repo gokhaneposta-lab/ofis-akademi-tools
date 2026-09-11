@@ -5,6 +5,16 @@ import type { KpkPrimAy } from "./kpkPrimGecmisi";
 
 export const KPK_GT_SATIRLARI = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30] as const;
 
+/** KPK yaprakları — aylık seri ay sonu stok/YTD seviyesi; toplam değil anchor ay hücresi. */
+export const KPK_STOK_SEVIYE_SATIRLARI = [23, 24, 26, 27, 29, 30] as const;
+
+/** Gelir tablosu YTD: stok seviyesi satırlarında toplam değil anchor ay hücresi. */
+export function kpkStokYtd(ser: number[] | undefined, anchorAy: number): number {
+  if (!ser?.length) return 0;
+  const i = Math.min(Math.max(anchorAy, 1), 12) - 1;
+  return ser[i] ?? 0;
+}
+
 export type KpkBransSonuc = {
   bransKodu: string;
   /** Ay sonu stok: ay 0 = açılış, ay 1–12 = Ocak–Aralık sonu (rolling aktif KPK). */
@@ -64,22 +74,13 @@ function sgkKpk(brans: string, brutHareket: number, sgkPrimOrani: number): numbe
   return brutHareket * Math.abs(sgkPrimOrani);
 }
 
-function splitPrimGecmisi(
-  primGecmisi: KpkPrimAy[],
-  butceYili: number,
-): { cari: KpkPrimAy[]; devreden: KpkPrimAy[] } {
-  const cari: KpkPrimAy[] = [];
-  const devreden: KpkPrimAy[] = [];
-  for (const k of primGecmisi) {
-    if (k.yil === butceYili) cari.push(k);
-    else if (k.yil < butceYili) devreden.push(k);
-  }
-  return { cari, devreden };
-}
-
-function gtHareketFromStok(
-  cariStok: number[],
-  devStok: number[],
+/**
+ * 601011 GT: ay sonu rolling KPK stok seviyesi (negatif işaret).
+ * Vade penceresindeki tüm yazım aylarından kpkTutari toplamı — bütçe + mizan prim geçmişi.
+ * F24/F27 motor üretmez (601012 Ocak mizan devralma gelirTablosu'nda).
+ */
+function gtStokSeviyeleriFromRolling(
+  totalStok: number[],
   reasOran: number,
   brans: string,
   sgkPrimOrani: number,
@@ -89,17 +90,8 @@ function gtHareketFromStok(
   };
 
   for (let m = 1; m <= 12; m++) {
-    // Ocak 601011: yalnızca bütçe yılı yazımından KPK artışı (601012 mizan devralma ayrı).
-    // Şubat–Aralık: portföy toplam stok değişimi (önceki yıl poliçe eriması dahil).
-    const f23 =
-      m === 1
-        ? -(cariStok[m]! - cariStok[0]!)
-        : -(
-            cariStok[m]! +
-            devStok[m]! -
-            (cariStok[m - 1]! + devStok[m - 1]!)
-          );
-    // F24/F27 motor üretmez; gelirTablosu Ocak mizan devralmasını yazar.
+    const stok = totalStok[m] ?? 0;
+    const f23 = -stok;
     const f24 = 0;
     const f26 = -f23 * reasOran;
     const f27 = -f24 * reasOran;
@@ -114,13 +106,12 @@ function gtHareketFromStok(
     gtAylik[30]!.push(f30);
   }
 
-  const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
-  const f23y = sum(gtAylik[23]!);
-  const f24y = sum(gtAylik[24]!);
-  const f26y = sum(gtAylik[26]!);
-  const f27y = sum(gtAylik[27]!);
-  const f29y = sum(gtAylik[29]!);
-  const f30y = sum(gtAylik[30]!);
+  const f23y = gtAylik[23]![11] ?? 0;
+  const f24y = 0;
+  const f26y = gtAylik[26]![11] ?? 0;
+  const f27y = 0;
+  const f29y = gtAylik[29]![11] ?? 0;
+  const f30y = 0;
 
   const yillik: Record<number, number> = {
     23: f23y,
@@ -157,12 +148,11 @@ export function hesaplaKpkBrans(opts: {
   const reas = Math.max(0, Math.min(1, Math.abs(opts.reasurOrani)));
   const sgk = opts.sgkPrimOrani ?? 0;
 
-  const { cari: cariPrim, devreden: devPrim } = splitPrimGecmisi(opts.primGecmisi, opts.butceYili);
-  const cariOnlyStok = rollingStokSerisi(cariPrim, brans, vade, opts.butceYili);
-  const devredenStok = rollingStokSerisi(devPrim, brans, vade, opts.butceYili);
-  const cariStok = cariOnlyStok.map((c, i) => c + (devredenStok[i] ?? 0));
+  const cariStok = rollingStokSerisi(opts.primGecmisi, brans, vade, opts.butceYili);
+  const devredenPrim = opts.primGecmisi.filter((k) => k.yil < opts.butceYili);
+  const devredenStok = rollingStokSerisi(devredenPrim, brans, vade, opts.butceYili);
 
-  const { yillik, aylik } = gtHareketFromStok(cariOnlyStok, devredenStok, reas, brans, sgk);
+  const { yillik, aylik } = gtStokSeviyeleriFromRolling(cariStok, reas, brans, sgk);
 
   return {
     bransKodu: brans,

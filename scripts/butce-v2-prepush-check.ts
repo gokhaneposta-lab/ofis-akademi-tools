@@ -233,9 +233,9 @@ async function checkKpkReasurHareketIsareti() {
   if (f24Motor !== 0 || f27Motor !== 0) {
     throw new Error(`Rolling modelde F24/F27 motor sıfır olmalı: F24=${f24Motor}, F27=${f27Motor}`);
   }
-  const f23Onceki = oncekiYilSonuc.gtYillik[23] ?? 0;
-  if (f23Onceki === 0) {
-    throw new Error("2025 Aralık primi rolling F23 yıllık hareket üretmedi");
+  const f23OncekiTem = oncekiYilSonuc.gtAylik[23]?.[6] ?? 0;
+  if (f23OncekiTem === 0) {
+    throw new Error("2025 Aralık primi Temmuz sonu KPK stok seviyesi (F23) üretmedi");
   }
 
   const sgkCari = hesaplaKpkBrans({
@@ -254,10 +254,10 @@ async function checkKpkReasurHareketIsareti() {
     reasurOrani: 0,
     sgkPrimOrani: 0.02,
   });
-  const f23Sgk = sgkCari.gtYillik[23] ?? 0;
-  const f29 = sgkCari.gtYillik[29] ?? 0;
-  const f23SgkOnceki = sgkOnceki.gtYillik[23] ?? 0;
-  const f29Onceki = sgkOnceki.gtYillik[29] ?? 0;
+  const f23Sgk = sgkCari.gtAylik[23]?.[0] ?? 0;
+  const f29 = sgkCari.gtAylik[29]?.[0] ?? 0;
+  const f23SgkOnceki = sgkOnceki.gtAylik[23]?.[6] ?? 0;
+  const f29Onceki = sgkOnceki.gtAylik[29]?.[6] ?? 0;
   if (
     f23Sgk === 0 ||
     Math.abs(f29 + f23Sgk * 0.02) > 1e-9 ||
@@ -268,7 +268,7 @@ async function checkKpkReasurHareketIsareti() {
       `SGK KPK hareketleri mutabık değil: F23=${f23Sgk}, F29=${f29}, F23ö=${f23SgkOnceki}, F29ö=${f29Onceki}`,
     );
   }
-  console.log("OK — rolling F23 + F26/F29 brüt KPK hareketlerini ters işaretle izliyor; F24 motor=0");
+  console.log("OK — F23/F26 ay sonu KPK stok seviyesi; F26/F29 brüt stokla mutabık; F24 motor=0");
 }
 
 async function checkKpkKapanisYilUyumu() {
@@ -297,8 +297,9 @@ async function checkKpkKapanisYilUyumu() {
       guncellemeIso: "",
     },
   });
-  if (sonuc.sonGercekAy !== 12 || sonuc.branslar.length === 0 || (sonuc.toplamGtYillik[23] ?? 0) === 0) {
-    throw new Error("Farklı bütçe yılı kapanış kaydı 2025 prim geçmişini (rolling F23) kesti");
+  const f23Tem = sonuc.toplamGtAylik[23]?.[6] ?? 0;
+  if (sonuc.sonGercekAy !== 12 || sonuc.branslar.length === 0 || f23Tem === 0) {
+    throw new Error("Farklı bütçe yılı kapanış kaydı 2025 prim geçmişini (rolling F23 stok) kesti");
   }
   console.log("OK — 2027 kapanış kaydı 2026 bütçesinin 2025 prim geçmişini etkilemiyor");
 }

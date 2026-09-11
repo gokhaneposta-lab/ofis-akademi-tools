@@ -197,8 +197,7 @@ async function checkKpkReasurHareketIsareti() {
   const cariSonuc = hesaplaKpkBrans({
     bransKodu: "701",
     butceYili: 2026,
-    cariPrimAylar: [1200, ...Array(11).fill(0)],
-    oncekiYilPrimAylar: Array(12).fill(0),
+    primGecmisi: [{ yil: 2026, ay: 1, prim: 1200 }],
     vadeRows,
     reasurOrani: 0.5,
   });
@@ -210,60 +209,61 @@ async function checkKpkReasurHareketIsareti() {
     }
   }
 
-  const devredenSonuc = hesaplaKpkBrans({
+  const oncekiYilSonuc = hesaplaKpkBrans({
     bransKodu: "701",
     butceYili: 2026,
-    cariPrimAylar: Array(12).fill(0),
-    oncekiYilPrimAylar: [...Array(11).fill(0), 1200],
+    primGecmisi: [{ yil: 2025, ay: 12, prim: 1200 }],
     vadeRows,
     reasurOrani: 0.5,
   });
   for (let i = 0; i < 12; i++) {
-    const brut = devredenSonuc.gtAylik[24]?.[i] ?? 0;
-    const reasur = devredenSonuc.gtAylik[27]?.[i] ?? 0;
+    const brut = oncekiYilSonuc.gtAylik[23]?.[i] ?? 0;
+    const reasur = oncekiYilSonuc.gtAylik[26]?.[i] ?? 0;
     if (Math.abs(reasur + brut * 0.5) > 1e-9) {
-      throw new Error(`${i + 1}. ay F27, F24 hareketinin ters işaretlisi değil`);
+      throw new Error(`${i + 1}. ay F26, önceki yıl primli rolling F23 ile mutabık değil`);
     }
   }
-  const f24 = devredenSonuc.gtYillik[24] ?? 0;
-  const f27 = devredenSonuc.gtYillik[27] ?? 0;
-  if (f24 <= 0 || f27 >= 0 || Math.abs(f27 + f24 * 0.5) > 1e-9) {
-    throw new Error(`F27 devreden reasürör payı mutabık değil: F24=${f24}, F27=${f27}`);
+  const f24Motor = oncekiYilSonuc.gtYillik[24] ?? 0;
+  const f27Motor = oncekiYilSonuc.gtYillik[27] ?? 0;
+  if (f24Motor !== 0 || f27Motor !== 0) {
+    throw new Error(`Rolling modelde F24/F27 motor sıfır olmalı: F24=${f24Motor}, F27=${f27Motor}`);
+  }
+  const f23Onceki = oncekiYilSonuc.gtYillik[23] ?? 0;
+  if (f23Onceki === 0) {
+    throw new Error("2025 Aralık primi rolling F23 yıllık hareket üretmedi");
   }
 
   const sgkCari = hesaplaKpkBrans({
     bransKodu: "715",
     butceYili: 2026,
-    cariPrimAylar: [1200, ...Array(11).fill(0)],
-    oncekiYilPrimAylar: Array(12).fill(0),
+    primGecmisi: [{ yil: 2026, ay: 1, prim: 1200 }],
     vadeRows: vadeRows.map((r) => ({ ...r, bransKodu: "715" })),
     reasurOrani: 0,
     sgkPrimOrani: 0.02,
   });
-  const sgkDevreden = hesaplaKpkBrans({
+  const sgkOnceki = hesaplaKpkBrans({
     bransKodu: "715",
     butceYili: 2026,
-    cariPrimAylar: Array(12).fill(0),
-    oncekiYilPrimAylar: [...Array(11).fill(0), 1200],
+    primGecmisi: [{ yil: 2025, ay: 12, prim: 1200 }],
     vadeRows: vadeRows.map((r) => ({ ...r, bransKodu: "715" })),
     reasurOrani: 0,
     sgkPrimOrani: 0.02,
   });
   const f23Sgk = sgkCari.gtYillik[23] ?? 0;
   const f29 = sgkCari.gtYillik[29] ?? 0;
-  const f24Sgk = sgkDevreden.gtYillik[24] ?? 0;
-  const f30 = sgkDevreden.gtYillik[30] ?? 0;
+  const f23SgkOnceki = sgkOnceki.gtYillik[23] ?? 0;
+  const f29Onceki = sgkOnceki.gtYillik[29] ?? 0;
   if (
-    f23Sgk >= 0 ||
-    f29 <= 0 ||
+    f23Sgk === 0 ||
     Math.abs(f29 + f23Sgk * 0.02) > 1e-9 ||
-    f24Sgk <= 0 ||
-    f30 >= 0 ||
-    Math.abs(f30 + f24Sgk * 0.02) > 1e-9
+    f23SgkOnceki === 0 ||
+    Math.abs(f29Onceki + f23SgkOnceki * 0.02) > 1e-9
   ) {
-    throw new Error(`SGK KPK hareketleri mutabık değil: F23=${f23Sgk}, F29=${f29}, F24=${f24Sgk}, F30=${f30}`);
+    throw new Error(
+      `SGK KPK hareketleri mutabık değil: F23=${f23Sgk}, F29=${f29}, F23ö=${f23SgkOnceki}, F29ö=${f29Onceki}`,
+    );
   }
-  console.log("OK — F26/F27 ve F29/F30 brüt KPK hareketlerini ters işaretle izliyor");
+  console.log("OK — rolling F23 + F26/F29 brüt KPK hareketlerini ters işaretle izliyor; F24 motor=0");
 }
 
 async function checkKpkKapanisYilUyumu() {
@@ -292,10 +292,10 @@ async function checkKpkKapanisYilUyumu() {
       guncellemeIso: "",
     },
   });
-  if (sonuc.sonGercekAy !== 12 || (sonuc.toplamGtYillik[24] ?? 0) <= 0) {
-    throw new Error("Farklı bütçe yılı kapanış kaydı 2025 tam devreden KPK serisini kesti");
+  if (sonuc.sonGercekAy !== 12 || sonuc.branslar.length === 0 || (sonuc.toplamGtYillik[23] ?? 0) === 0) {
+    throw new Error("Farklı bütçe yılı kapanış kaydı 2025 prim geçmişini (rolling F23) kesti");
   }
-  console.log("OK — 2027 kapanış kaydı 2026 bütçesinin tam 2025 açılışını etkilemiyor");
+  console.log("OK — 2027 kapanış kaydı 2026 bütçesinin 2025 prim geçmişini etkilemiyor");
 }
 
 async function check60301() {

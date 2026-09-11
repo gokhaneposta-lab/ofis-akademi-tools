@@ -2,6 +2,7 @@ import type { AylikPrimStore, KpkVadeRow, MizanRow, OranAyarStore } from "../typ
 import { MizanOranServisi } from "../oran/mizanOranlar";
 import { normalizeBransKodu } from "../textUtils";
 import { buildOncekiYilPrimSerisi } from "./oncekiYilPrimTahmin";
+import { buildKpkPrimGecmisi } from "./kpkPrimGecmisi";
 import { hesaplaKpkPortfoy, type KpkBransSonuc } from "./kpkMotoru";
 import type { MizanAylikRow, TarifeBransPayRow, KpkKapanisTahminStore } from "../types";
 
@@ -94,10 +95,17 @@ export function buildKpkSonuc(opts: {
     opts.v2Metodoloji ?? false,
   );
 
+  const primGecmisi = buildKpkPrimGecmisi({
+    butceYili: opts.butceYili,
+    oncekiYilPrim: onceki.bransAylik,
+    cariPrim,
+    mizanAylik: opts.mizanAylik,
+    mizanAylikFull: opts.mizanAylikFull,
+  });
+
   const branslar = hesaplaKpkPortfoy({
     butceYili: opts.butceYili,
-    cariPrim,
-    oncekiYilPrim: onceki.bransAylik,
+    primGecmisi,
     vadeRows: opts.vadeRows,
     reasurOranlari: reas,
     sgkPrimOranlari: sgk,

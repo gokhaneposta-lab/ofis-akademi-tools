@@ -1,13 +1,15 @@
 import { normalizeBransKodu } from "../textUtils";
 import type { KpkVadeRow } from "../types";
 import { kpkTutari } from "./kpkTarih";
+import type { KpkPrimAy } from "./kpkPrimGecmisi";
 
 export const KPK_GT_SATIRLARI = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30] as const;
 
 export type KpkBransSonuc = {
   bransKodu: string;
-  /** Ay sonu stok: ay 0 = açılış, ay 1–12 = Ocak–Aralık sonu */
+  /** Ay sonu stok: ay 0 = açılış, ay 1–12 = Ocak–Aralık sonu (rolling aktif KPK). */
   cariStok: number[];
+  /** Devreden stok motoru kullanmaz; F24 mizan Ocak devralması ile override edilir. */
   devredenStok: number[];
   /** GT hücreleri — yıllık toplam hareket */
   gtYillik: Record<number, number>;
@@ -27,36 +29,31 @@ function vadeGun(map: Map<string, number>, brans: string, ay: number): number {
   return map.get(`${brans}|${ay}`) ?? 365;
 }
 
-function stok(
-  primAylar: number[],
-  yazimYil: number,
+/** Vade süresince hâlâ aktif tüm yazım aylarından KPK stoku. */
+function rollingStok(
+  primGecmisi: KpkPrimAy[],
   brans: string,
   vade: Map<string, number>,
   degerlemeYil: number,
   degerlemeAy: number,
-  maxYazimAy = 12,
 ): number {
   let sum = 0;
-  for (let t = 1; t <= maxYazimAy; t++) {
-    const p = primAylar[t - 1] ?? 0;
-    if (p <= 0) continue;
-    sum += kpkTutari(p, yazimYil, t, vadeGun(vade, brans, t), degerlemeYil, degerlemeAy);
+  for (const { yil, ay, prim } of primGecmisi) {
+    if (prim <= 0) continue;
+    sum += kpkTutari(prim, yil, ay, vadeGun(vade, brans, ay), degerlemeYil, degerlemeAy);
   }
   return sum;
 }
 
-function stokSerisi(
-  primAylar: number[],
-  yazimYil: number,
+function rollingStokSerisi(
+  primGecmisi: KpkPrimAy[],
   brans: string,
   vade: Map<string, number>,
   degerlemeYil: number,
-  cumulativeYazim = true,
 ): number[] {
   const out: number[] = [];
   for (let m = 0; m <= 12; m++) {
-    const maxYazim = cumulativeYazim ? Math.min(m, 12) : 12;
-    out.push(stok(primAylar, yazimYil, brans, vade, degerlemeYil, m, maxYazim || 0));
+    out.push(rollingStok(primGecmisi, brans, vade, degerlemeYil, m));
   }
   return out;
 }
@@ -84,8 +81,6 @@ function gtHareketFromStok(
 
     const f23 = -dCari;
     const f24 = -dDev;
-    // Reasürör payı brüt KPK hareketini ters işaretle izler.
-    // Math.abs kullanmak, stok azalan aylarda da pozitif pay üretip F25/F21'i şişirir.
     const f26 = -f23 * reasOran;
     const f27 = -f24 * reasOran;
     const f29 = -sgkKpk(brans, f23, sgkPrimOrani);
@@ -132,8 +127,7 @@ function gtHareketFromStok(
 export function hesaplaKpkBrans(opts: {
   bransKodu: string;
   butceYili: number;
-  cariPrimAylar: number[];
-  oncekiYilPrimAylar: number[];
+  primGecmisi: KpkPrimAy[];
   vadeRows: KpkVadeRow[];
   reasurOrani: number;
   sgkPrimOrani?: number;
@@ -143,22 +137,8 @@ export function hesaplaKpkBrans(opts: {
   const reas = Math.max(0, Math.min(1, Math.abs(opts.reasurOrani)));
   const sgk = opts.sgkPrimOrani ?? 0;
 
-  const cariStok = stokSerisi(
-    opts.cariPrimAylar,
-    opts.butceYili,
-    brans,
-    vade,
-    opts.butceYili,
-    true,
-  );
-  const devredenStok = stokSerisi(
-    opts.oncekiYilPrimAylar,
-    opts.butceYili - 1,
-    brans,
-    vade,
-    opts.butceYili,
-    false,
-  );
+  const cariStok = rollingStokSerisi(opts.primGecmisi, brans, vade, opts.butceYili);
+  const devredenStok = Array.from({ length: 13 }, () => 0);
 
   const { yillik, aylik } = gtHareketFromStok(cariStok, devredenStok, reas, brans, sgk);
 
@@ -173,27 +153,19 @@ export function hesaplaKpkBrans(opts: {
 
 export function hesaplaKpkPortfoy(opts: {
   butceYili: number;
-  cariPrim: Record<string, number[]>;
-  oncekiYilPrim: Record<string, number[]>;
+  primGecmisi: Record<string, KpkPrimAy[]>;
   vadeRows: KpkVadeRow[];
   reasurOranlari: Record<string, number>;
   sgkPrimOranlari?: Record<string, number>;
 }): KpkBransSonuc[] {
-  const branslar = new Set([
-    ...Object.keys(opts.cariPrim),
-    ...Object.keys(opts.oncekiYilPrim),
-  ]);
   const out: KpkBransSonuc[] = [];
-  for (const bransKodu of branslar) {
-    const cari = opts.cariPrim[bransKodu];
-    const onceki = opts.oncekiYilPrim[bransKodu];
-    if (!cari?.some((v) => v > 0) && !onceki?.some((v) => v > 0)) continue;
+  for (const [bransKodu, gecmisi] of Object.entries(opts.primGecmisi)) {
+    if (!gecmisi.some((r) => r.prim > 0)) continue;
     out.push(
       hesaplaKpkBrans({
         bransKodu,
         butceYili: opts.butceYili,
-        cariPrimAylar: cari ?? Array.from({ length: 12 }, () => 0),
-        oncekiYilPrimAylar: onceki ?? Array.from({ length: 12 }, () => 0),
+        primGecmisi: gecmisi,
         vadeRows: opts.vadeRows,
         reasurOrani: opts.reasurOranlari[bransKodu] ?? 0,
         sgkPrimOrani: opts.sgkPrimOranlari?.[bransKodu] ?? 0,

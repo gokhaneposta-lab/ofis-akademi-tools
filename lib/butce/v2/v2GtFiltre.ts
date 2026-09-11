@@ -1,4 +1,5 @@
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
+import { KPK_STOK_SEVIYE_SATIRLARI, kpkStokYtd } from "../kpk/kpkMotoru";
 import { bransAdi } from "../config/brans";
 import formatRaw from "../data/gt_sirket_format.json";
 import { bransGrubu, GRUP_SIRA } from "./buildGtFormatGrid";
@@ -60,8 +61,11 @@ export function v2FiltreBransKodlari(
     .map((b) => b.bransKodu);
 }
 
-function aylikTopla(aylik: number[] | undefined, ozetAy: number): number {
+const KPK_STOK_SEVIYE = new Set<number>(KPK_STOK_SEVIYE_SATIRLARI as unknown as number[]);
+
+function aylikTopla(aylik: number[] | undefined, ozetAy: number, satir?: number): number {
   if (!aylik?.length) return 0;
+  if (satir != null && KPK_STOK_SEVIYE.has(satir)) return kpkStokYtd(aylik, ozetAy);
   return aylik.slice(0, ozetAy).reduce((t, n) => t + n, 0);
 }
 
@@ -72,12 +76,12 @@ export function v2OzetDeger(
   bransKodlari: string[] | null,
 ): number {
   if (!bransKodlari || bransKodlari.length === 0) {
-    if (gt.aylikToplam[satir]) return aylikTopla(gt.aylikToplam[satir], ozetAy);
+    if (gt.aylikToplam[satir]) return aylikTopla(gt.aylikToplam[satir], ozetAy, satir);
     return gt.toplam[satir] ?? 0;
   }
   let toplam = 0;
   for (const kod of bransKodlari) {
-    toplam += aylikTopla(gt.aylikBrans[kod]?.[satir], ozetAy);
+    toplam += aylikTopla(gt.aylikBrans[kod]?.[satir], ozetAy, satir);
   }
   return toplam;
 }

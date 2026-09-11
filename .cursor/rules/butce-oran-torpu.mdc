@@ -14,7 +14,17 @@ alwaysApply: false
 1. **Yıl sütunları dolu + Oran % = 0** → önce torpu ihtimalini raporla (0211 vb.); muallak 02211–02222 torpu **almaz** (regresyon say).
 2. **Ocak YTD vs Aralık yılsonu** karıştırma — GT aylık geçmiş kullanır; panelde “Kümülatif ay”a bak.
 3. **Muallak:** F116=0, F115≠0 → devreden mizan (611012); cari = prim×F451 ayrı satır.
-4. Değişiklik sonrası: `npx tsx scripts/butce-v2-prepush-check.ts` (bölüm 7).
+4. Değişiklik sonrası: `npx tsx scripts/butce-v2-prepush-check.ts` (bölüm 7–8).
+
+## KPK / 601011 (GT push zorunlu)
+
+601011 **ay sonu rolling stok seviyesi**dir; Ocak–anchor **toplanmaz**.
+
+Push öncesi bölüm 8 geçmeli. Aksi halde push etme:
+
+- `|601011| > 2 × brüt prim YTD` → dur, okuma/motor hatası (76 milyar sınıfı)
+- `sum(Ocak..anchor) >> anchor ay stok` → `v2OzetDeger` aylık topluyor olabilir
+- Canlıya çıkmadan: Mart + Temmuz anchor, şirket toplam raporla
 
 ## Kullanıcıya söyle
 

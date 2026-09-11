@@ -3,8 +3,10 @@
  * 1) Negatif banka bakiyesi flag
  * 2) Yerel mizan varsa 2025 proxy vs 60301 sapma
  * 3) F368 (61402) branş payı beslemesi
+ * 8) KPK 601011 — stok seviyesi toplanmasın; |KPK| ≤ 2× brüt prim YTD
  */
 import { buildFaaliyetGiderSonuc } from "../lib/butce/gelir/faaliyetGiderGt";
+import { assertKpkGtTutarlilik, dogrulaKpkGtTutarlilik } from "../lib/butce/kpk/kpkGtTutarlilik";
 import { ORAN_KALEM_MIZAN } from "../lib/butce/oran/oranKalemLoader";
 import {
   HASAR_YIL_DISI_MAX,
@@ -16,10 +18,24 @@ import {
   loadBilancoAylikRows,
   loadMizanAylikRows,
   loadMizanAylikFullRows,
+  loadOranAyarPaket,
+  loadKpkVadeRows,
+  loadKpkKapanisTahmin,
+  loadV2Varsayimlar,
+  loadSatisButceRows,
+  loadUretimRows,
+  loadTarifeMapRows,
+  loadTarifeBransPayRows,
 } from "../lib/butce/loadData";
 import { buildMaliGelirProxy, resolveAcilisBanka } from "../lib/butce/v2/maliGelirProxy";
 import { buildFaaliyetGiderFromMizanArtis } from "../lib/butce/v2/faaliyetGiderFromMizanArtis";
-import { V2_GT_GOSTERIM } from "../lib/butce/v2/buildV2GelirTablosu";
+import { buildV2GelirTablosu, V2_GT_GOSTERIM } from "../lib/butce/v2/buildV2GelirTablosu";
+import { alignTarifeHedefleri, v3DefaultsStore2026 } from "../lib/butce/v3/defaults";
+import { primHedefFromTarifeAna } from "../lib/butce/v3/primFromToplam";
+import { syntheticSatisFromTarife } from "../lib/butce/v3/syntheticSatis";
+import { DagitimMotoru } from "../lib/butce/prim/dagitimMotoru";
+import { referansYilAgirliklari } from "../lib/butce/config/constants";
+import { v2OzetDeger } from "../lib/butce/v2/v2GtFiltre";
 import { hesaplaKpkBrans } from "../lib/butce/kpk/kpkMotoru";
 import { buildKpkSonuc } from "../lib/butce/kpk/buildKpkSonuc";
 import type { FaaliyetGiderRow, MizanRow } from "../lib/butce/types";
@@ -399,6 +415,112 @@ async function check60301() {
   return { blocked: false as const, gercek60301 };
 }
 
+async function checkKpkGtTutarlilikTamGt() {
+  section("8) KPK 601011 tutarlılık (tam V2 GT + dashboard okuma)");
+  const [
+    satis, uretim, tarifeMap, tarifeBransPay, mizan, mizanAylik, mizanFull,
+    bilancoAylik, oranPaket, kpkVade, kapanisTahmin, v2Saved,
+  ] = await Promise.all([
+    loadSatisButceRows(),
+    loadUretimRows(),
+    loadTarifeMapRows(),
+    loadTarifeBransPayRows(),
+    loadMizanRows(),
+    loadMizanAylikRows(),
+    loadMizanAylikFullRows(),
+    loadBilancoAylikRows(),
+    loadOranAyarPaket(),
+    loadKpkVadeRows(),
+    loadKpkKapanisTahmin(),
+    loadV2Varsayimlar(),
+  ]);
+
+  if (mizan.length === 0) {
+    console.log("Mizan yok — KPK tutarlılık (tam GT) atlandı");
+    return;
+  }
+
+  const v3def = v3DefaultsStore2026();
+  const butceYili = 2026;
+  const tarifeHedefleri = alignTarifeHedefleri(
+    v2Saved?.tarifeHedefleri ?? v3def.tarifeHedefleri,
+    satis,
+  );
+  let satisRows = satis;
+  if (satisRows.length === 0 && Object.keys(tarifeHedefleri).length > 0) {
+    satisRows = syntheticSatisFromTarife(tarifeHedefleri);
+  }
+  const referansEtiket =
+    v2Saved?.referansEtiket ?? v3def.referansEtiket ?? "Son 2 Yıl Ortalaması (2024-2025)";
+  const yilAgirliklari = referansYilAgirliklari(
+    referansEtiket,
+    v2Saved?.yilAgirliklari ?? v3def.yilAgirliklari,
+  );
+
+  let primOverride: Record<string, number> | undefined;
+  let endirektOverride: Record<string, number> | undefined;
+  if (uretim?.length && Object.keys(tarifeHedefleri).length > 0) {
+    const motor = new DagitimMotoru(uretim, tarifeMap, mizan, tarifeBransPay);
+    const dagitim = motor.dagit({
+      satisRows,
+      referansEtiket,
+      mizanYedek: true,
+      tarifeHedefleri,
+      yilAgirliklari,
+    });
+    if (dagitim.ozet.dagitilan > 0) {
+      primOverride = {};
+      endirektOverride = {};
+      for (const b of dagitim.bransOzet) primOverride[b.bransKodu] = b.hedefPrim;
+      for (const b of dagitim.bransDirektEndirekt) {
+        endirektOverride[b.bransKodu] = b.endirektPrim;
+      }
+    }
+  }
+  if (!primOverride && Object.keys(tarifeHedefleri).length > 0) {
+    const fb = primHedefFromTarifeAna(tarifeHedefleri, mizan, butceYili);
+    primOverride = fb.primHedefleri;
+    endirektOverride = fb.endirektPrim;
+  }
+
+  const { gt } = buildV2GelirTablosu({
+    varsayimlar: {
+      butceYili,
+      tarifeHedefleri,
+      referansEtiket,
+      yilAgirliklari,
+      giderArtisOrani: v2Saved?.giderArtisOrani ?? 0,
+      faaliyetGiderButce: v2Saved?.faaliyetGiderButce ?? v3def.faaliyetGiderButce,
+      aylikGetiriOrani: v2Saved?.aylikGetiriOrani ?? v3def.aylikGetiriOrani,
+    },
+    satisRows,
+    primHedefleriOverride: primOverride,
+    endirektPrimOverride: endirektOverride,
+    uretim,
+    tarifeMap,
+    tarifeBransPay,
+    mizan,
+    mizanAylik,
+    mizanAylikFull: mizanFull,
+    bilancoAylik,
+    oranAyar: oranPaket.ayarlar,
+    kalemYilBirlestirme: oranPaket.kalemYilBirlestirme,
+    kpkVade,
+    kapanisTahmin,
+  });
+
+  for (const anchor of [3, 7] as const) {
+    const r = dogrulaKpkGtTutarlilik(gt, anchor);
+    const brut = v2OzetDeger(gt, 11, anchor);
+    const f23 = v2OzetDeger(gt, 23, anchor);
+    console.log(
+      `  anchor=${anchor}: brüt prim YTD ${(brut / 1e6).toFixed(1)} mn · 601011 ${(f23 / 1e6).toFixed(1)} mn · oran ${(brut > 0 ? Math.abs(f23) / brut : 0).toFixed(2)}×`,
+    );
+    assertKpkGtTutarlilik(gt, anchor);
+  }
+  console.log("OK — 601011 anchor ay stok seviyesi; toplam hatası ve 2× brüt prim guard");
+}
+
 async function checkTorpuMuallakVeSifirTuzagi() {
   section("7) Torpu — muallak istisnası + sıfır tuzağı");
   for (const k of MUALLAK_ORAN_KALEMLER) {
@@ -465,6 +587,7 @@ async function main() {
   await checkButceYiliVeManuelGider();
   await checkKpkReasurHareketIsareti();
   await checkKpkKapanisYilUyumu();
+  await checkKpkGtTutarlilikTamGt();
   await checkTorpuMuallakVeSifirTuzagi();
   section("Özet");
   console.log("1 Negatif bakiye UI/flag: motor OK (UI banner+satır bayrağı eklendi)");
@@ -477,6 +600,7 @@ async function main() {
   console.log("4 Bütçe yılı + manuel gider: Y-1 kapanış ve 1/12 dağılım OK");
   console.log("5 KPK reasürör payı: aylık hareket işareti ve yıllık mutabakat OK");
   console.log("6 KPK kapanış yılı: farklı çalışma kaydı açılışı kesmiyor");
+  console.log("8 KPK 601011: dashboard stok seviyesi; |KPK|≤2× brüt prim; toplam hatası guard");
   console.log("7 Torpu: muallak torpu kapalı; 0211 sıfır tuzağı uyarıları yukarıda");
 }
 

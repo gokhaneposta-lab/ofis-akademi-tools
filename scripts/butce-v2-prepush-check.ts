@@ -201,6 +201,11 @@ async function checkKpkReasurHareketIsareti() {
     vadeRows,
     reasurOrani: 0.5,
   });
+  const f23Ocak = cariSonuc.gtAylik[23]?.[0] ?? 0;
+  const f26Ocak = cariSonuc.gtAylik[26]?.[0] ?? 0;
+  if (f23Ocak >= 0 || f26Ocak <= 0) {
+    throw new Error(`Ocak cari KPK işareti yanlış: F23=${f23Ocak}, F26=${f26Ocak} (601011<0, 601021>0)`);
+  }
   for (let i = 0; i < 12; i++) {
     const brut = cariSonuc.gtAylik[23]?.[i] ?? 0;
     const reasur = cariSonuc.gtAylik[26]?.[i] ?? 0;

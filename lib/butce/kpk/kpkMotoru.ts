@@ -76,7 +76,11 @@ function gtHareketFromStok(
   };
 
   for (let m = 1; m <= 12; m++) {
-    const dCari = cariStok[m]! - cariStok[m - 1]!;
+    // 601011 GT hareketi bütçe yılında sıfır bazlı başlar (601012 Ocak devralma ayrı).
+    // Aralık rolling stok seviyesi Ocak F23'e baz olarak girmez; aksi halde stok
+    // eriyince F23 pozitif (601011 yanlış işaret), F26 (601021) negatif olur.
+    const oncekiCari = m === 1 ? 0 : cariStok[m - 1]!;
+    const dCari = cariStok[m]! - oncekiCari;
     const dDev = devStok[m]! - devStok[m - 1]!;
 
     const f23 = -dCari;

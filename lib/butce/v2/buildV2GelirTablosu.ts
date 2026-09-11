@@ -21,6 +21,10 @@ import type {
   UretimRow,
 } from "../types";
 import {
+  devredenKpkOcakFromMizan,
+  devredenKpkOcakOzet,
+} from "../gelir/kpkDevreden";
+import {
   devredenMuallakOcakFromMizan,
   devredenMuallakOcakOzet,
 } from "../gelir/muallakDevreden";
@@ -321,6 +325,18 @@ export function buildV2GelirTablosu(opts: {
     );
   }
 
+  const kpkDevredenOcak = devredenKpkOcakFromMizan(mizanFull, butceYili);
+  const kdOzet = devredenKpkOcakOzet(kpkDevredenOcak);
+  if (kdOzet.bransSayisi === 0) {
+    uyarilar.push(
+      `${butceYili} Ocak devreden KPK mizanı bulunamadı — 601012/601022 KPK motoru devreden tahminine düşüldü.`,
+    );
+  } else {
+    uyarilar.push(
+      `Devreden KPK: ${butceYili} Ocak mizan (kapanış devralma) → yalnızca Ocak (601012=${Math.round(kdOzet.satir24Toplam).toLocaleString("tr-TR")} TL, ${kdOzet.bransSayisi} branş).`,
+    );
+  }
+
   const gtPass1 = buildGelirTablosu({
     mizan: opts.mizan,
     butceYili,
@@ -338,6 +354,7 @@ export function buildV2GelirTablosu(opts: {
     mizanAylikFull: mizanFull,
     v2Metodoloji: true,
     muallakDevredenOcak: mdOzet.bransSayisi > 0 ? muallakDevredenOcak : undefined,
+    kpkDevredenOcak: kdOzet.bransSayisi > 0 ? kpkDevredenOcak : undefined,
   });
 
   const acilis = resolveAcilisBanka({
@@ -380,6 +397,7 @@ export function buildV2GelirTablosu(opts: {
     mizanAylikFull: mizanFull,
     v2Metodoloji: true,
     muallakDevredenOcak: mdOzet.bransSayisi > 0 ? muallakDevredenOcak : undefined,
+    kpkDevredenOcak: kdOzet.bransSayisi > 0 ? kpkDevredenOcak : undefined,
   });
 
   // 603 (F38) dağılımını NET NAKİT AKIŞI payıyla yeniden hesapla.

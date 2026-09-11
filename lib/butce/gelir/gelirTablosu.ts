@@ -20,6 +20,12 @@ import {
 } from "./faaliyetGiderGt";
 import { v2HesapAgacTumSatirlar } from "../v2/v2GtHesapAgac";
 import { GelirTablosuMotoru, type GtEksikGirdi } from "./gtMotoru";
+import {
+  KPK_DEVREDEN_SATIRLARI,
+  ocakOnlyAylikSeri,
+  turetKpkUstSatirlar,
+  type KpkDevredenOcak,
+} from "./kpkDevreden";
 import type { MuallakDevredenOcak } from "./muallakDevreden";
 
 /** Gelir tablosunda gösterilecek GT satırları (Excel satır no + sunum). */
@@ -106,6 +112,8 @@ export function buildGelirTablosu(opts: {
   kalemYilBirlestirme?: OranYilBirlestirmeStore;
   /** V2: 611012/611022 — önceki yıl Aralık mizan, yalnızca Ocak (F126/F147 YTD düzeyi sabit). */
   muallakDevredenOcak?: Map<string, MuallakDevredenOcak>;
+  /** V2: 601012/601022 — önceki yıl Aralık mizan, yalnızca Ocak (F24/F27 YTD düzeyi sabit). */
+  kpkDevredenOcak?: Map<string, KpkDevredenOcak>;
 }): GelirTablosuSonuc {
   const {
     mizan,
@@ -126,6 +134,7 @@ export function buildGelirTablosu(opts: {
     v2Metodoloji = false,
     kalemYilBirlestirme = {},
     muallakDevredenOcak,
+    kpkDevredenOcak,
   } = opts;
 
   const satirlar = gosterimSatirlari ?? GT_GOSTERIM_SATIRLARI;
@@ -234,6 +243,11 @@ export function buildGelirTablosu(opts: {
         disHucreler[126] = muallakDev.satir126;
         disHucreler[147] = muallakDev.satir147;
       }
+      const kpkDev = kpkDevredenOcak?.get(kod);
+      if (kpkDev) {
+        disHucreler[24] = kpkDev.satir24;
+        disHucreler[27] = kpkDev.satir27;
+      }
 
       const ytdVals = motor.hesaplaBrans(kod, ytdBrut, ytdEndirekt, disHucreler, i + 1);
       for (const s of persistSatirlar) {
@@ -248,8 +262,16 @@ export function buildGelirTablosu(opts: {
     const kpkAylikSatirlar = new Set<number>(KPK_GT_SATIRLARI as unknown as number[]);
     const faaliyetAylikSatirlar = new Set<number>(FAALIYET_GT_SATIRLARI);
     if (kpkBrans) {
+      const kpkDev = kpkDevredenOcak?.get(kod);
+      const devredenSet = new Set<number>(KPK_DEVREDEN_SATIRLARI);
       for (const s of kpkAylikSatirlar) {
+        if (kpkDev && devredenSet.has(s)) continue;
         if (kpkBrans.gtAylik[s]) bransAylik[s] = [...kpkBrans.gtAylik[s]!];
+      }
+      if (kpkDev) {
+        bransAylik[24] = ocakOnlyAylikSeri(kpkDev.satir24);
+        bransAylik[27] = ocakOnlyAylikSeri(kpkDev.satir27);
+        turetKpkUstSatirlar(bransAylik);
       }
     }
     if (fgBrans) {

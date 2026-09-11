@@ -1,5 +1,5 @@
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
-import { KPK_STOK_SEVIYE_SATIRLARI, kpkStokYtd } from "../kpk/kpkMotoru";
+import { KPK_SEVIYE_OKUMA_SATIRLARI, kpkStokYtd } from "../kpk/kpkMotoru";
 import { bransAdi } from "../config/brans";
 import formatRaw from "../data/gt_sirket_format.json";
 import { bransGrubu, GRUP_SIRA } from "./buildGtFormatGrid";
@@ -61,11 +61,11 @@ export function v2FiltreBransKodlari(
     .map((b) => b.bransKodu);
 }
 
-const KPK_STOK_SEVIYE = new Set<number>(KPK_STOK_SEVIYE_SATIRLARI as unknown as number[]);
+const KPK_SEVIYE_OKUMA = new Set<number>(KPK_SEVIYE_OKUMA_SATIRLARI as unknown as number[]);
 
 function aylikTopla(aylik: number[] | undefined, ozetAy: number, satir?: number): number {
   if (!aylik?.length) return 0;
-  if (satir != null && KPK_STOK_SEVIYE.has(satir)) return kpkStokYtd(aylik, ozetAy);
+  if (satir != null && KPK_SEVIYE_OKUMA.has(satir)) return kpkStokYtd(aylik, ozetAy);
   return aylik.slice(0, ozetAy).reduce((t, n) => t + n, 0);
 }
 

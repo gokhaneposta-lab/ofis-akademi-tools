@@ -3,7 +3,7 @@
  * Örn. ay sonu stok seviyelerinin Ocak–Temmuz toplanması → 76 milyar hatası.
  */
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
-import { KPK_STOK_SEVIYE_SATIRLARI, kpkStokYtd } from "./kpkMotoru";
+import { KPK_SEVIYE_OKUMA_SATIRLARI, KPK_STOK_SEVIYE_SATIRLARI, kpkStokYtd } from "./kpkMotoru";
 import { gtYtdSatir } from "../v2/gtHesapYtd";
 import { v2OzetDeger } from "../v2/v2GtFiltre";
 
@@ -14,6 +14,7 @@ export type KpkGtTutarlilikSonuc = {
 };
 
 const KPK_STOK = new Set<number>(KPK_STOK_SEVIYE_SATIRLARI as unknown as number[]);
+const KPK_SEVIYE = new Set<number>(KPK_SEVIYE_OKUMA_SATIRLARI as unknown as number[]);
 
 /** |601011| / brüt prim YTD — normalde ~0.5–1.2; 2 üzeri şüpheli. */
 const KPK_BRUT_ORAN_UST = 2;
@@ -38,8 +39,8 @@ export function dogrulaKpkGtTutarlilik(
   const hatalar: string[] = [];
   const uyarilar: string[] = [];
 
-  const brutPrimYtd = v2OzetDeger(gt, 11, anchorAy);
-  const f23Ozet = v2OzetDeger(gt, 23, anchorAy);
+  const brutPrimYtd = v2OzetDeger(gt, 11, anchorAy, null);
+  const f23Ozet = v2OzetDeger(gt, 23, anchorAy, null);
   const f23Ser = gt.aylikToplam[23];
   const f23Sum = aylikSum(f23Ser, anchorAy);
   const f23Stok = kpkStokYtd(f23Ser, anchorAy);
@@ -85,20 +86,40 @@ export function dogrulaKpkGtTutarlilik(
   for (const satir of KPK_STOK) {
     const ser = gt.aylikToplam[satir];
     if (!ser?.length) continue;
-    const ozet = v2OzetDeger(gt, satir, anchorAy);
+    const ozet = v2OzetDeger(gt, satir, anchorAy, null);
     const stok = kpkStokYtd(ser, anchorAy);
     if (Math.abs(ozet - stok) > 1) {
       hatalar.push(`F${satir} dashboard ${mn(ozet)} ≠ stok seviyesi ${mn(stok)}`);
     }
   }
 
-  const f22Ozet = v2OzetDeger(gt, 22, anchorAy);
-  const f24Ozet = v2OzetDeger(gt, 24, anchorAy);
+  for (const satir of KPK_SEVIYE) {
+    const ser = gt.aylikToplam[satir];
+    if (!ser?.length) continue;
+    const ozet = v2OzetDeger(gt, satir, anchorAy, null);
+    const stok = kpkStokYtd(ser, anchorAy);
+    if (Math.abs(ozet - stok) > 1) {
+      hatalar.push(`F${satir} dashboard ${mn(ozet)} ≠ anchor stok ${mn(stok)} (toplam hatası?)`);
+    }
+  }
+
+  const f22Ozet = v2OzetDeger(gt, 22, anchorAy, null);
+  const f24Ozet = v2OzetDeger(gt, 24, anchorAy, null);
+  const f26Ozet = v2OzetDeger(gt, 26, anchorAy, null);
+  const f27Ozet = v2OzetDeger(gt, 27, anchorAy, null);
   const f22Beklenen = f23Ozet + f24Ozet;
+  const f25Beklenen = f26Ozet + f27Ozet;
+  const f21Beklenen = f22Beklenen + f25Beklenen + v2OzetDeger(gt, 28, anchorAy, null);
   if (Math.abs(f22Ozet - f22Beklenen) > Math.max(Math.abs(f22Beklenen) * 0.01, 1e6)) {
-    uyarilar.push(
-      `60101 (F22) ${mn(f22Ozet)} ≈ F23+F24 (${mn(f22Beklenen)}) sapması — üst satır rollup kontrol edin`,
-    );
+    hatalar.push(`60101 (F22) ${mn(f22Ozet)} ≠ F23+F24 (${mn(f22Beklenen)})`);
+  }
+  const f25Ozet = v2OzetDeger(gt, 25, anchorAy, null);
+  if (Math.abs(f25Ozet - f25Beklenen) > Math.max(Math.abs(f25Beklenen) * 0.01, 1e6)) {
+    hatalar.push(`60102 (F25) ${mn(f25Ozet)} ≠ F26+F27 (${mn(f25Beklenen)})`);
+  }
+  const f21Ozet = v2OzetDeger(gt, 21, anchorAy, null);
+  if (Math.abs(f21Ozet - f21Beklenen) > Math.max(Math.abs(f21Beklenen) * 0.01, 1e6)) {
+    hatalar.push(`601 (F21) ${mn(f21Ozet)} ≠ F22+F25+F28 (${mn(f21Beklenen)})`);
   }
 
   return { ok: hatalar.length === 0, hatalar, uyarilar };

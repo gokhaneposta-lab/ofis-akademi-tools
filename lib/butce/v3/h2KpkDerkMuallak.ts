@@ -245,9 +245,9 @@ export function uygulaH2KpkDerkMuallak(
     anchor,
   );
 
-  yenidenTuretUstFormuller(gt);
   yenileToplamlarH2(gt, H2_YENILE_SATIRLAR, anchor);
   geriYukleMizanYtdTam(gt, mizanGt, anchor, MIZAN_DISI_SATIRLAR);
+  yenidenTuretUstFormuller(gt);
 
   uyarilar.push(
     `H2 motor: KPK cari + DERK + muallak/RE artık pay + SGK ${anchor + 1}–12. ay; devreden KPK/muallak Ağu+ = 0.`,

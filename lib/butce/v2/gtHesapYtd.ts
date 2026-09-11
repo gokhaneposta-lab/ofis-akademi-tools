@@ -2,18 +2,18 @@
  * GelirTablosuSonuc → muhasebe hesap YTD (format7 ağacı).
  */
 import type { GelirTablosuSonuc } from "../gelir/gelirTablosu";
-import { kpkStokYtd, KPK_STOK_SEVIYE_SATIRLARI } from "../kpk/kpkMotoru";
+import { kpkStokYtd, KPK_SEVIYE_OKUMA_SATIRLARI } from "../kpk/kpkMotoru";
 import { extractMizanGtAylik, ytdGtPrefix, ytdToplam } from "../v3/mizanGtExtract";
 import { hesapCocuklari, gtKodToSatir, HESAP_TO_GT } from "../v3/mizanFormatHarita";
 import type { MizanAylikRow } from "../types";
 
 const TEKNIK_614_COCUK = ["61401", "61407", "61408", "61409"] as const;
 
-const KPK_STOK_SEVIYE = new Set<number>(KPK_STOK_SEVIYE_SATIRLARI as unknown as number[]);
+const KPK_SEVIYE_OKUMA = new Set<number>(KPK_SEVIYE_OKUMA_SATIRLARI as unknown as number[]);
 
 export function gtYtdSatir(gt: GelirTablosuSonuc, satir: number, anchorAy: number): number {
   const ser = gt.aylikToplam[satir];
-  if (KPK_STOK_SEVIYE.has(satir)) return kpkStokYtd(ser, anchorAy);
+  if (KPK_SEVIYE_OKUMA.has(satir)) return kpkStokYtd(ser, anchorAy);
   return ytdToplam(ser, anchorAy);
 }
 

@@ -8,6 +8,9 @@ export const KPK_GT_SATIRLARI = [21, 22, 23, 24, 25, 26, 27, 28, 29, 30] as cons
 /** KPK yaprakları — aylık seri ay sonu stok/YTD seviyesi; toplam değil anchor ay hücresi. */
 export const KPK_STOK_SEVIYE_SATIRLARI = [23, 24, 26, 27, 29, 30] as const;
 
+/** Tüm KPK ağacı (601…60103) — özet/yıllık okuma anchor ay hücresi, aylık toplam değil. */
+export const KPK_SEVIYE_OKUMA_SATIRLARI = KPK_GT_SATIRLARI;
+
 /** Gelir tablosu YTD: stok seviyesi satırlarında toplam değil anchor ay hücresi. */
 export function kpkStokYtd(ser: number[] | undefined, anchorAy: number): number {
   if (!ser?.length) return 0;

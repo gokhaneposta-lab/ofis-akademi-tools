@@ -2,7 +2,12 @@ import { HAZINE_BRANS_KODLARI, HAZINE_BRANS_SIRASI } from "../config/brans";
 import { AYLAR } from "../config/constants";
 import { normalizeBransKodu } from "../textUtils";
 import { buildKpkSonuc } from "../kpk/buildKpkSonuc";
-import { KPK_GT_SATIRLARI, KPK_STOK_SEVIYE_SATIRLARI, kpkStokYtd } from "../kpk/kpkMotoru";
+import {
+  KPK_GT_SATIRLARI,
+  KPK_SEVIYE_OKUMA_SATIRLARI,
+  KPK_STOK_SEVIYE_SATIRLARI,
+  kpkStokYtd,
+} from "../kpk/kpkMotoru";
 import type {
   AylikPrimStore,
   FaaliyetGiderRow,
@@ -223,11 +228,11 @@ export function buildGelirTablosu(opts: {
       }
       // KPK / faaliyet: ay sonuna kadar kümülatif (YTD) override
       if (kpkBrans) {
-        const stokSeviye = new Set<number>(KPK_STOK_SEVIYE_SATIRLARI as unknown as number[]);
+        const kpkSeviye = new Set<number>(KPK_SEVIYE_OKUMA_SATIRLARI as unknown as number[]);
         for (const s of KPK_GT_SATIRLARI as unknown as number[]) {
           const ser = kpkBrans.gtAylik[s];
           if (!ser) continue;
-          disHucreler[s] = stokSeviye.has(s)
+          disHucreler[s] = kpkSeviye.has(s)
             ? (ser[i] ?? 0)
             : ser.slice(0, i + 1).reduce((a, b) => a + b, 0);
         }
@@ -291,10 +296,10 @@ export function buildGelirTablosu(opts: {
     const info = HAZINE_BRANS_KODLARI[kod] ?? ["", kod, ""];
     branslar.push({ bransKodu: kod, bransAdi: info[1], brutPrim: brut, degerler });
 
-    const kpkStokSeviye = new Set<number>(KPK_STOK_SEVIYE_SATIRLARI as unknown as number[]);
+    const kpkSeviyeOku = new Set<number>(KPK_SEVIYE_OKUMA_SATIRLARI as unknown as number[]);
     for (const s of persistSatirlar) {
       const ser = bransAylik[s] ?? [];
-      const yillik = kpkStokSeviye.has(s)
+      const yillik = kpkSeviyeOku.has(s)
         ? (ser[11] ?? 0)
         : ser.reduce((a, b) => a + b, 0);
       if (gosterimNolari.includes(s)) degerler[s] = yillik;

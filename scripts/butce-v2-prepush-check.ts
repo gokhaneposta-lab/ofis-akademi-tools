@@ -509,12 +509,14 @@ async function checkKpkGtTutarlilikTamGt() {
     kapanisTahmin,
   });
 
-  for (const anchor of [3, 7] as const) {
-    const r = dogrulaKpkGtTutarlilik(gt, anchor);
-    const brut = v2OzetDeger(gt, 11, anchor);
-    const f23 = v2OzetDeger(gt, 23, anchor);
+  for (const anchor of [3, 7, 12] as const) {
+    dogrulaKpkGtTutarlilik(gt, anchor);
+    const brut = v2OzetDeger(gt, 11, anchor, null);
+    const f22 = v2OzetDeger(gt, 22, anchor, null);
+    const f23 = v2OzetDeger(gt, 23, anchor, null);
+    const f24 = v2OzetDeger(gt, 24, anchor, null);
     console.log(
-      `  anchor=${anchor}: brüt prim YTD ${(brut / 1e6).toFixed(1)} mn · 601011 ${(f23 / 1e6).toFixed(1)} mn · oran ${(brut > 0 ? Math.abs(f23) / brut : 0).toFixed(2)}×`,
+      `  anchor=${anchor}: brüt prim YTD ${(brut / 1e6).toFixed(1)} mn · 601011 ${(f23 / 1e6).toFixed(1)} mn · 60101 ${(f22 / 1e6).toFixed(1)} mn (=F23+F24 ${((f23 + f24) / 1e6).toFixed(1)}) · oran ${(brut > 0 ? Math.abs(f23) / brut : 0).toFixed(2)}×`,
     );
     assertKpkGtTutarlilik(gt, anchor);
   }

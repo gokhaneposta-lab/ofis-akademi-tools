@@ -14,6 +14,8 @@ const RESCALE_TO_ANNUAL = new Set<number>([11]);
 /** Kullanıcı girdisi + türetilmiş satırlar — YTD mizandan doğrudan kilitlenmez. */
 export const MIZAN_DISI_SATIRLAR = new Set<number>([
   9, 94, 9001, 9002, 9003, 9005,
+  /** KPK üst satırlar — yapraklardan türetilir; mizan artış serisi stok seviyesi ile karışmasın. */
+  21, 22, 25, 28,
 ]);
 
 /** Kalibrasyon raporu. */
@@ -136,9 +138,9 @@ export function uygulaYtdOverlay(
     gt.aylikBrans[b.bransKodu] = ab;
   }
 
-  // 3) Rollup + mizan YTD tam geri yükle (60101, 610, 61401… üst+yaprak)
-  yenidenTuretUstFormuller(gt);
+  // 3) Mizan YTD geri yükle, sonra üst satırları yapraklardan türet (60101=F23+F24 vb.)
   geriYukleMizanYtdTam(gt, mizan, anchor, MIZAN_DISI_SATIRLAR);
+  yenidenTuretUstFormuller(gt);
 
   // F11 şirket H2 branş toplamından
   if (gt.aylikToplam[11]) {

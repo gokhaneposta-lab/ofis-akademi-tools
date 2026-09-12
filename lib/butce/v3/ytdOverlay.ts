@@ -14,8 +14,8 @@ const RESCALE_TO_ANNUAL = new Set<number>([11]);
 /** Kullanıcı girdisi + türetilmiş satırlar — YTD mizandan doğrudan kilitlenmez. */
 export const MIZAN_DISI_SATIRLAR = new Set<number>([
   9, 94, 9001, 9002, 9003, 9005,
-  /** KPK üst satırlar — yapraklardan türetilir; mizan artış serisi stok seviyesi ile karışmasın. */
-  21, 22, 25, 28,
+  /** KPK ağacı — EYE katmanında mizan kümülatif stok yolu; incremental overlay karışmasın. */
+  21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
 ]);
 
 /** Kalibrasyon raporu. */

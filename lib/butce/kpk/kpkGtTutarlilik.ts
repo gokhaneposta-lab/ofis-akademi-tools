@@ -13,6 +13,11 @@ export type KpkGtTutarlilikSonuc = {
   uyarilar: string[];
 };
 
+export type KpkGtTutarlilikOpts = {
+  /** Branş → F320 (0211); verilirse F96 = (F11+F22+F32)×F320 zinciri doğrulanır. */
+  f320ByBrans?: Record<string, number>;
+};
+
 const KPK_STOK = new Set<number>(KPK_STOK_SEVIYE_SATIRLARI as unknown as number[]);
 const KPK_SEVIYE = new Set<number>(KPK_SEVIYE_OKUMA_SATIRLARI as unknown as number[]);
 
@@ -35,6 +40,7 @@ function aylikSum(ser: number[] | undefined, anchorAy: number): number {
 export function dogrulaKpkGtTutarlilik(
   gt: GelirTablosuSonuc,
   anchorAy: number,
+  opts?: KpkGtTutarlilikOpts,
 ): KpkGtTutarlilikSonuc {
   const hatalar: string[] = [];
   const uyarilar: string[] = [];
@@ -122,11 +128,35 @@ export function dogrulaKpkGtTutarlilik(
     hatalar.push(`601 (F21) ${mn(f21Ozet)} ≠ F22+F25+F28 (${mn(f21Beklenen)})`);
   }
 
+  const f320Map = opts?.f320ByBrans;
+  if (f320Map) {
+    for (const b of gt.branslar) {
+      const f320 = f320Map[b.bransKodu];
+      if (f320 == null || !Number.isFinite(f320)) continue;
+      const kod = [b.bransKodu];
+      const f11 = v2OzetDeger(gt, 11, anchorAy, kod);
+      const f22 = v2OzetDeger(gt, 22, anchorAy, kod);
+      const f32 = v2OzetDeger(gt, 32, anchorAy, kod);
+      const f96 = v2OzetDeger(gt, 96, anchorAy, kod);
+      const beklenen = (f11 + f22 + f32) * f320;
+      const esik = Math.max(Math.abs(beklenen) * 0.001, 100);
+      if (Math.abs(f96 - beklenen) > esik) {
+        hatalar.push(
+          `F96 branş ${b.bransKodu}: ${mn(f96)} ≠ (F11+F22+F32)×F320 (${mn(beklenen)}) — hesap F22=${mn(f22)}`,
+        );
+      }
+    }
+  }
+
   return { ok: hatalar.length === 0, hatalar, uyarilar };
 }
 
-export function assertKpkGtTutarlilik(gt: GelirTablosuSonuc, anchorAy: number): void {
-  const r = dogrulaKpkGtTutarlilik(gt, anchorAy);
+export function assertKpkGtTutarlilik(
+  gt: GelirTablosuSonuc,
+  anchorAy: number,
+  opts?: KpkGtTutarlilikOpts,
+): void {
+  const r = dogrulaKpkGtTutarlilik(gt, anchorAy, opts);
   for (const u of r.uyarilar) console.warn("  ⚠ KPK:", u);
   if (!r.ok) {
     throw new Error(r.hatalar.join("\n"));

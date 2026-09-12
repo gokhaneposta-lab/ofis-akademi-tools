@@ -45,7 +45,8 @@ import { syntheticSatisFromTarife } from "./syntheticSatis";
 import { detectYtdAnchorAy, uygulaYtdOverlay } from "./ytdOverlay";
 import { uygulaMaliGelirRolling } from "./maliGelirRolling";
 import { senkronize603AylikBrans } from "./senkronize603";
-import { uygulaH2KpkDerkMuallak } from "./h2KpkDerkMuallak";
+import { uygulaEstimatedYeForecastLayer } from "./estimatedYeForecastLayer";
+import { buildEyeSnapshotV1, writeEyeSnapshotFile } from "./eyeSnapshot";
 import { mizanV3Recon, reconTutmayanListe } from "./mizanV3Recon";
 import type { V3GelirTablosuSonuc, V3VarsayimlarStore } from "./types";
 
@@ -116,10 +117,27 @@ export function buildV3GelirTablosu(opts: {
   const mizanFullEarly = opts.mizanAylikFull ?? opts.mizanAylik;
   const preferredAnchor = opts.varsayimlar.ytdAnchorAy ?? V3_DEFAULT_YTD_ANCHOR;
   const ytdDetect = detectYtdAnchorAy(mizanFullEarly, butceYili, preferredAnchor);
-  const ytdAnchorAy = ytdDetect.anchorAy;
-  if (!ytdDetect.preferredUsed && ytdDetect.maxAvailable != null) {
+  const maxMizan = ytdDetect.maxAvailable;
+  let ytdAnchorAy = ytdDetect.anchorAy;
+  let kesimKaynak: "auto" | "manual" = ytdDetect.preferredUsed ? "auto" : "auto";
+  if (
+    opts.varsayimlar.ytdAnchorAy != null &&
+    maxMizan != null &&
+    preferredAnchor <= maxMizan
+  ) {
+    ytdAnchorAy = preferredAnchor;
+    kesimKaynak = preferredAnchor === ytdDetect.anchorAy ? "auto" : "manual";
+  } else if (
+    opts.varsayimlar.ytdAnchorAy != null &&
+    maxMizan != null &&
+    preferredAnchor > maxMizan
+  ) {
     uyarilar.push(
-      `YTD kilidi: tercih ${preferredAnchor}, mevcut veri max ay=${ytdDetect.maxAvailable} → anchor=${ytdAnchorAy}.`,
+      `Kesim ayı ${preferredAnchor} > maxMizanAy ${maxMizan} — anchor=${ytdAnchorAy} kullanıldı.`,
+    );
+  } else if (!ytdDetect.preferredUsed && maxMizan != null) {
+    uyarilar.push(
+      `YTD kilidi: tercih ${preferredAnchor}, mevcut veri max ay=${maxMizan} → anchor=${ytdAnchorAy}.`,
     );
   }
   const referansEtiket =
@@ -259,7 +277,7 @@ export function buildV3GelirTablosu(opts: {
     ytdAnchorAy,
   );
 
-  const h2Motor = uygulaH2KpkDerkMuallak(gtOverlay, {
+  const eyeSonuc = uygulaEstimatedYeForecastLayer(gtOverlay, {
     anchorAy: ytdAnchorAy,
     butceYili,
     mizan: opts.mizan,
@@ -271,7 +289,7 @@ export function buildV3GelirTablosu(opts: {
     aylikPrim,
     kapanisTahmin: opts.kapanisTahmin,
   });
-  uyarilar.push(...h2Motor.uyarilar);
+  uyarilar.push(...eyeSonuc.uyarilar);
 
   const maliGelirRolling =
     kalibrasyon.length > 0
@@ -284,11 +302,37 @@ export function buildV3GelirTablosu(opts: {
       : null;
   if (maliGelirRolling) uyarilar.push(...maliGelirRolling.uyarilar);
 
+  if (maliGelirRolling?.tahminBaslangicAy) {
+    eyeSonuc.quality.maliGelirProxyMonths = Array.from(
+      { length: 12 - ytdAnchorAy },
+      (_, i) => ytdAnchorAy + 1 + i,
+    );
+  }
+
   senkronize603AylikBrans(gtOverlay);
 
   const gtFinal = hesaplaV2SentetikSatirlar(gtOverlay);
 
   const mizanRecon = mizanV3Recon(gtFinal, mizanFullEarly, butceYili, ytdAnchorAy);
+  eyeSonuc.quality.mizanRecon = {
+    tutmayanSayisi: mizanRecon.tutmayanSayisi,
+    satirlar: reconTutmayanListe(mizanRecon),
+  };
+
+  let snapshotPath: string | undefined;
+  if (kalibrasyon.length > 0) {
+    const snapshot = buildEyeSnapshotV1({
+      gt: gtFinal,
+      butceYili,
+      kesimAy: ytdAnchorAy,
+      kesimKaynak,
+      maxMizanAy: ytdDetect.maxAvailable,
+      varsayimlar: opts.varsayimlar,
+      quality: eyeSonuc.quality,
+    });
+    snapshotPath = writeEyeSnapshotFile(snapshot);
+    uyarilar.push(`EYE snapshot: ${snapshotPath}`);
+  }
   if (mizanRecon.tutmayanSayisi > 0) {
     uyarilar.push(
       `Mizan kontrol: ${mizanRecon.tutmayanSayisi} kalem YTD sapması (>50.000 TL).`,
@@ -333,6 +377,11 @@ export function buildV3GelirTablosu(opts: {
       maliGelirRolling,
       metodolojiOzeti: [...V3_METODOLOJI_ADIMLARI],
       uyarilar,
+      eye: {
+        quality: eyeSonuc.quality,
+        snapshotPath,
+        f22F96Ok: eyeSonuc.f22F96Ok,
+      },
     },
   };
 }

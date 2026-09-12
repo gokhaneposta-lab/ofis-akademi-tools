@@ -25,11 +25,8 @@ import {
 } from "./faaliyetGiderGt";
 import { v2HesapAgacTumSatirlar } from "../v2/v2GtHesapAgac";
 import { GelirTablosuMotoru, type GtEksikGirdi } from "./gtMotoru";
-import {
-  KPK_DEVREDEN_SATIRLARI,
-  turetKpkUstSatirlar,
-  type KpkDevredenOcak,
-} from "./kpkDevreden";
+import { buildKpkGtHucreleri } from "./buildKpkGtHucreleri";
+import type { KpkDevredenOcak } from "./kpkDevreden";
 import type { MuallakDevredenOcak } from "./muallakDevreden";
 
 /** Gelir tablosunda gösterilecek GT satırları (Excel satır no + sunum). */
@@ -226,15 +223,11 @@ export function buildGelirTablosu(opts: {
       for (const [satirStr, v] of Object.entries(disHucrelerByBrans[kod] ?? {})) {
         disHucreler[Number(satirStr)] = (Number(v) || 0) * cumPay;
       }
-      // KPK / faaliyet: ay sonuna kadar kümülatif (YTD) override
-      if (kpkBrans) {
-        const kpkSeviye = new Set<number>(KPK_SEVIYE_OKUMA_SATIRLARI as unknown as number[]);
+      const kpkDev = kpkDevredenOcak?.get(kod);
+      const kpkHucre = kpkBrans ? buildKpkGtHucreleri(kpkBrans, kpkDev, i) : null;
+      if (kpkHucre) {
         for (const s of KPK_GT_SATIRLARI as unknown as number[]) {
-          const ser = kpkBrans.gtAylik[s];
-          if (!ser) continue;
-          disHucreler[s] = kpkSeviye.has(s)
-            ? (ser[i] ?? 0)
-            : ser.slice(0, i + 1).reduce((a, b) => a + b, 0);
+          disHucreler[s] = kpkHucre[s] ?? 0;
         }
       }
       if (fgBrans) {
@@ -250,12 +243,6 @@ export function buildGelirTablosu(opts: {
         disHucreler[126] = muallakDev.satir126;
         disHucreler[147] = muallakDev.satir147;
       }
-      const kpkDev = kpkDevredenOcak?.get(kod);
-      if (kpkDev) {
-        disHucreler[24] = kpkDev.satir24;
-        disHucreler[27] = kpkDev.satir27;
-      }
-
       const ytdVals = motor.hesaplaBrans(kod, ytdBrut, ytdEndirekt, disHucreler, i + 1);
       for (const s of persistSatirlar) {
         const ytd = ytdVals.get(s) ?? 0;
@@ -263,25 +250,14 @@ export function buildGelirTablosu(opts: {
         bransAylik[s]![i] = ytd - once;
         prevYtd.set(s, ytd);
       }
+      if (kpkHucre) {
+        for (const s of KPK_GT_SATIRLARI as unknown as number[]) {
+          bransAylik[s]![i] = kpkHucre[s] ?? 0;
+        }
+      }
     }
 
-    // KPK / faaliyet satırları kendi motorlarının aylık serisini korur
-    const kpkAylikSatirlar = new Set<number>(KPK_GT_SATIRLARI as unknown as number[]);
     const faaliyetAylikSatirlar = new Set<number>(FAALIYET_GT_SATIRLARI);
-    if (kpkBrans) {
-      const kpkDev = kpkDevredenOcak?.get(kod);
-      const devredenSet = new Set<number>(KPK_DEVREDEN_SATIRLARI);
-      for (const s of kpkAylikSatirlar) {
-        if (kpkDev && devredenSet.has(s)) continue;
-        if (kpkBrans.gtAylik[s]) bransAylik[s] = [...kpkBrans.gtAylik[s]!];
-      }
-      if (kpkDev) {
-        // 601012/601022: mizan YTD kümülatif Ocak–Aralık sabit devreden seviyesi
-        bransAylik[24] = Array.from({ length: 12 }, () => kpkDev.satir24);
-        bransAylik[27] = Array.from({ length: 12 }, () => kpkDev.satir27);
-        turetKpkUstSatirlar(bransAylik);
-      }
-    }
     if (fgBrans) {
       for (const s of faaliyetAylikSatirlar) {
         if (fgBrans.gtAylik[s]) bransAylik[s] = [...fgBrans.gtAylik[s]!];

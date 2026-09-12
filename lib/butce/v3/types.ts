@@ -39,6 +39,50 @@ export type V3KalibrasyonSatir = {
   uygulananCarpan: number;
 };
 
+export type EyeQuality = {
+  f105Proxy: boolean;
+  maliGelirProxyMonths: number[];
+  mizanRecon: {
+    tutmayanSayisi: number;
+    satirlar: import("./mizanV3Recon").MizanReconSatir[];
+  };
+  forecastMethodVersion: "eye-v1";
+  kpkRecon: Record<string, number>;
+};
+
+export type EyeSnapshotV1 = {
+  meta: {
+    schemaVersion: "eye-v1";
+    butceYili: number;
+    kesimAy: number;
+    kesimKaynak: "auto" | "manual";
+    maxMizanAy: number | null;
+    uretimTarihi: string;
+    forecastMethodVersion: "eye-v1";
+  };
+  assumptions: {
+    tarifeHedefleri: Record<string, number>;
+    aylikGetiriOrani: number[];
+    faaliyetGiderButce: Record<string, number>;
+    varsayimHash: string;
+  };
+  branslar: string[];
+  sirket: {
+    rollupGT: Record<string, number[]>;
+    sentetik: Record<string, number[]>;
+    yillik: Record<string, number>;
+  };
+  yaprakGT: Record<string, Record<string, number[]>>;
+  rollupGT: Record<string, Record<string, number[]>>;
+  sentetik: Record<string, number[]>;
+  oranGirdisi: {
+    "2026EyeYillik": Record<string, number>;
+  };
+  quality: EyeQuality;
+  /** 2027 prim hedefi — otomatik doldurulmaz. */
+  hedef2027: null | Record<string, unknown>;
+};
+
 export type V3GelirTablosuSonuc = V2GelirTablosuSonuc & {
   v3: {
     toplamPrimHedef: number;
@@ -50,5 +94,10 @@ export type V3GelirTablosuSonuc = V2GelirTablosuSonuc & {
     maliGelirRolling?: V3MaliGelirRollingSonuc | null;
     metodolojiOzeti: string[];
     uyarilar: string[];
+    eye?: {
+      quality: EyeQuality;
+      snapshotPath?: string;
+      f22F96Ok: boolean;
+    };
   };
 };

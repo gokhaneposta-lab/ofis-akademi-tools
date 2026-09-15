@@ -215,7 +215,7 @@ function finalizeRows(
   rows.sort(
     (a, b) =>
       a.hesap.localeCompare(b.hesap) ||
-      a.altHesapKodu.localeCompare(b.altHesapKodu) ||
+      (a.altHesapKodu ?? "").localeCompare(b.altHesapKodu ?? "") ||
       a.ay - b.ay,
   );
 

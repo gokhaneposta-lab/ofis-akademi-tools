@@ -32,17 +32,18 @@ export function buildGenelGiderImportOzet(
   const byAna = new Map<string, Map<string, GenelGiderAltSatir>>();
 
   for (const r of filtered) {
+    const altKod = r.altHesapKodu ?? r.hesap;
     if (!byAna.has(r.hesap)) byAna.set(r.hesap, new Map());
     const altMap = byAna.get(r.hesap)!;
-    if (!altMap.has(r.altHesapKodu)) {
-      altMap.set(r.altHesapKodu, {
-        altHesapKodu: r.altHesapKodu,
+    if (!altMap.has(altKod)) {
+      altMap.set(altKod, {
+        altHesapKodu: altKod,
         aciklama: r.hesapAd,
         aylik: Array(12).fill(0),
         yillik: 0,
       });
     }
-    const alt = altMap.get(r.altHesapKodu)!;
+    const alt = altMap.get(altKod)!;
     if (!alt.aciklama && r.hesapAd) alt.aciklama = r.hesapAd;
     alt.aylik[r.ay - 1] = (alt.aylik[r.ay - 1] ?? 0) + r.tutar;
     alt.yillik += r.tutar;
@@ -73,7 +74,7 @@ export function buildGenelGiderImportOzet(
   return {
     butceYili,
     satirSayisi: filtered.length,
-    altHesapSayisi: new Set(filtered.map((r) => r.altHesapKodu)).size,
+    altHesapSayisi: new Set(filtered.map((r) => r.altHesapKodu ?? r.hesap)).size,
     anaHesaplar,
   };
 }

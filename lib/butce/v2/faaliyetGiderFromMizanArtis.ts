@@ -115,6 +115,7 @@ export function buildFaaliyetGiderFromMizanArtis(opts: {
       rows.push({
         butceYili: opts.butceYili,
         hesap: baz.hesap,
+        altHesapKodu: baz.hesap,
         ay,
         tutar: aylik,
       });

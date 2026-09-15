@@ -134,7 +134,10 @@ export type BilancoAylikRow = {
 /** Şirket geneli faaliyet giderleri — mizan 614xx, ay bazında bütçe tutarı. */
 export type FaaliyetGiderRow = {
   butceYili: number;
+  /** Ana hesap (61402–61406) — GT F190–194 gruplama. */
   hesap: string;
+  /** Tam muhasebe alt hesap kodu; yoksa hesap ile aynı (legacy). */
+  altHesapKodu?: string;
   hesapAd?: string;
   ay: number;
   tutar: number;

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   butceDataDurumu,
   loadBilancoAylikRows,
+  loadFaaliyetGiderRowsForYear,
   loadKpkKapanisTahmin,
   loadKpkVadeRows,
   loadMizanAylikFullRows,
@@ -116,6 +117,7 @@ async function runHesapla(body: Partial<V3VarsayimlarStore>) {
     oranAyar,
     kpkVade,
     kapanisTahmin,
+    faaliyetGiderImport,
   ] = await Promise.all([
     loadSatisButceRows(),
     loadUretimRows(),
@@ -128,6 +130,7 @@ async function runHesapla(body: Partial<V3VarsayimlarStore>) {
     loadOranAyarlar(),
     loadKpkVadeRows(),
     loadKpkKapanisTahmin(),
+    loadFaaliyetGiderRowsForYear(butceYili),
   ]);
 
   try {
@@ -144,6 +147,7 @@ async function runHesapla(body: Partial<V3VarsayimlarStore>) {
       oranAyar,
       kpkVade,
       kapanisTahmin,
+      faaliyetGiderImportRows: faaliyetGiderImport,
     });
 
     const ytdAnchorAy = sonuc.v3.ytdAnchorAy;

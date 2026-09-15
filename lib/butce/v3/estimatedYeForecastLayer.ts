@@ -31,6 +31,16 @@ import { uygulaMuallakH2Residual } from "./muallakH2Residual";
 import { MIZAN_DISI_SATIRLAR } from "./ytdOverlay";
 import { extractMizanGtAylik } from "./mizanGtExtract";
 import { geriYukleMizanYtdTam } from "./gtUstRollup";
+import {
+  computeForecastRatePolicy,
+  type ForecastRateAnalysis,
+  type ForecastRatePolicyBundle,
+} from "./forecastRatePolicy";
+import {
+  computeReinsuranceRatePolicy,
+  type ReinsuranceRateAnalysis,
+  type ReinsuranceRatePolicyBundle,
+} from "./forecastReinsuranceRatePolicy";
 import type { EyeQuality } from "./types";
 
 const KPK_FORECAST_CARI = [23, 26, 29] as const;
@@ -197,6 +207,8 @@ function uygulaForecastHasarZinciri(
   servis: MizanOranServisi,
   oranAyar: OranAyarStore,
   anchor: number,
+  hasarRateOverrides?: Map<string, number>,
+  f436Overrides?: Map<string, number>,
 ): { f22F96Ok: boolean; f22F96Hatalar: string[] } {
   const hatalar: string[] = [];
   let ok = true;
@@ -220,13 +232,17 @@ function uygulaForecastHasarZinciri(
 
       const ytd11 = ytdSum(f11, ay);
       const ytd32 = ytdSum(f32, ay);
-      const f320 = oranBrans(servis, "0211", oranAyar, b.bransKodu, month);
+      const f320 =
+        hasarRateOverrides?.get(b.bransKodu) ??
+        oranBrans(servis, "0211", oranAyar, b.bransKodu, month);
       const ytd96 = (ytd11 + f22stock + ytd32) * f320;
       const f96Mov = ytd96 - prevYtd96;
       f96[ay] = f96Mov;
       prevYtd96 = ytd96;
 
-      const f436 = oranBrans(servis, "0212", oranAyar, b.bransKodu, month);
+      const f436 =
+        f436Overrides?.get(b.bransKodu) ??
+        oranBrans(servis, "0212", oranAyar, b.bransKodu, month);
       f105[ay] = f96Mov * f436;
       f95[ay] = f96Mov + f105[ay];
 
@@ -300,6 +316,10 @@ export type EstimatedYeForecastSonuc = {
   quality: EyeQuality;
   f22F96Ok: boolean;
   f22F96Hatalar: string[];
+  forecastRatePolicy?: ForecastRatePolicyBundle;
+  forecastRateAnalysis?: ForecastRateAnalysis[];
+  reinsuranceRatePolicy?: ReinsuranceRatePolicyBundle;
+  reinsuranceRateAnalysis?: ReinsuranceRateAnalysis[];
 };
 
 export function uygulaEstimatedYeForecastLayer(
@@ -375,7 +395,38 @@ export function uygulaEstimatedYeForecastLayer(
     opts.kalemYilBirlestirme ?? {},
   );
 
-  const hasarSonuc = uygulaForecastHasarZinciri(gt, oranServisi, opts.oranAyar, anchor);
+  const bransKodlari = gt.branslar.map((b) => b.bransKodu);
+  const annualPrimByBrans: Record<string, number> = {};
+  for (const b of gt.branslar) annualPrimByBrans[b.bransKodu] = b.degerler[11] ?? 0;
+
+  const forecastRatePolicy = computeForecastRatePolicy({
+    mizan: opts.mizan,
+    mizanAylikFull: opts.mizanAylikFull,
+    butceYili: opts.butceYili,
+    anchorAy: anchor,
+    oranAyar: opts.oranAyar,
+    bransKodlari,
+    annualPrimByBrans,
+  });
+
+  const reinsuranceRatePolicy = computeReinsuranceRatePolicy({
+    mizan: opts.mizan,
+    mizanAylikFull: opts.mizanAylikFull,
+    butceYili: opts.butceYili,
+    anchorAy: anchor,
+    oranAyar: opts.oranAyar,
+    bransKodlari,
+    annualPrimByBrans,
+  });
+
+  const hasarSonuc = uygulaForecastHasarZinciri(
+    gt,
+    oranServisi,
+    opts.oranAyar,
+    anchor,
+    forecastRatePolicy.hasarForecastOran,
+    reinsuranceRatePolicy.forecastOranByBrans,
+  );
   if (!hasarSonuc.f22F96Ok) {
     uyarilar.push(...hasarSonuc.f22F96Hatalar.slice(0, 5));
   }
@@ -386,6 +437,8 @@ export function uygulaEstimatedYeForecastLayer(
     mizan: opts.mizan,
     mizanAylikFull: opts.mizanAylikFull,
     oranAyar: opts.oranAyar,
+    policyMuallakYillikHedef: forecastRatePolicy.muallakYillikHedefToplam,
+    policyMuallakByBrans: forecastRatePolicy.muallakYillikHedefByBrans,
   });
   uyarilar.push(...muallakH2.uyarilar);
 
@@ -406,9 +459,61 @@ export function uygulaEstimatedYeForecastLayer(
 
   const maliGelirProxyMonths = Array.from({ length: 12 - anchor }, (_, i) => anchor + 1 + i);
 
+  const h701 = forecastRatePolicy.hasar.get("701");
+  const hSirket = forecastRatePolicy.hasar.get("SIRKET");
+  const m701 = forecastRatePolicy.muallak.get("701");
+  const mSirket = forecastRatePolicy.muallak.get("SIRKET");
+  if (h701) {
+    uyarilar.push(
+      `Policy hasar 701: YTD=${h701.current2026Rate}% → seçilen=${h701.selectedForecastRatePct}% (${h701.oneOffShockSignal}/${h701.persistenceSignal}).`,
+    );
+  }
+  if (hSirket) {
+    uyarilar.push(
+      `Policy hasar şirket: YTD=${hSirket.current2026Rate}% → seçilen=${hSirket.selectedForecastRatePct}%.`,
+    );
+  }
+  if (m701) {
+    uyarilar.push(
+      `Policy muallak 701: YTD=${m701.current2026Rate}% → seçilen=${m701.selectedForecastRatePct}%.`,
+    );
+  }
+  if (mSirket) {
+    uyarilar.push(
+      `Policy muallak şirket: YTD=${mSirket.current2026Rate}% → seçilen=${mSirket.selectedForecastRatePct}%.`,
+    );
+  }
+
+  const r701 = reinsuranceRatePolicy.byBrans.get("701");
+  const rSirket = reinsuranceRatePolicy.byBrans.get("SIRKET");
+  if (r701) {
+    uyarilar.push(
+      `Policy F436 701: YTD=${r701.ytdRatePct}% motor=${r701.motorRatePct}% → H2=${r701.selectedForecastRatePct}% (${r701.selectionMethod}).`,
+    );
+  }
+  if (rSirket) {
+    uyarilar.push(
+      `Policy F436 şirket: YTD=${rSirket.ytdRatePct}% motor=${rSirket.motorRatePct}% → H2=${rSirket.selectedForecastRatePct}%.`,
+    );
+  }
+
   uyarilar.push(
-    `EYE forecast v1: kesim=${anchor}; actual KPK stok (mizan küm); forecast F96 zinciri ${anchor + 1}–12.`,
+    `EYE forecast v2-policy: kesim=${anchor}; F96 policy; muallak policy; F436 YTD policy.`,
   );
+
+  const forecastRateAnalysis: ForecastRateAnalysis[] = [];
+  for (const key of ["701", "SIRKET"] as const) {
+    const ha = forecastRatePolicy.hasar.get(key);
+    const ma = forecastRatePolicy.muallak.get(key);
+    if (ha) forecastRateAnalysis.push(ha);
+    if (ma) forecastRateAnalysis.push(ma);
+  }
+
+  const reinsuranceRateAnalysis: ReinsuranceRateAnalysis[] = [];
+  for (const key of ["701", "SIRKET"] as const) {
+    const r = reinsuranceRatePolicy.byBrans.get(key);
+    if (r) reinsuranceRateAnalysis.push(r);
+  }
 
   return {
     uyarilar,
@@ -416,11 +521,15 @@ export function uygulaEstimatedYeForecastLayer(
       f105Proxy: true,
       maliGelirProxyMonths,
       mizanRecon: { tutmayanSayisi: 0, satirlar: [] },
-      forecastMethodVersion: "eye-v1",
+      forecastMethodVersion: "eye-v2-policy",
       kpkRecon,
     },
     f22F96Ok: hasarSonuc.f22F96Ok,
     f22F96Hatalar: hasarSonuc.f22F96Hatalar,
+    forecastRatePolicy,
+    forecastRateAnalysis,
+    reinsuranceRatePolicy,
+    reinsuranceRateAnalysis,
   };
 }
 

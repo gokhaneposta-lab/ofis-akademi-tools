@@ -97,7 +97,7 @@ export function buildEyeSnapshotV1(opts: {
       kesimKaynak: opts.kesimKaynak,
       maxMizanAy: opts.maxMizanAy,
       uretimTarihi: new Date().toISOString(),
-      forecastMethodVersion: "eye-v1",
+      forecastMethodVersion: opts.quality.forecastMethodVersion ?? "eye-v1",
     },
     assumptions: {
       tarifeHedefleri: opts.varsayimlar.tarifeHedefleri ?? {},

@@ -7,6 +7,9 @@ export type { V2VarsayimlarStore, V2MaliGelirProxySonuc, V2MaliGelirAySatir } fr
 export type { V2GelirTablosuSonuc } from "../v2/buildV2GelirTablosu";
 export type { MizanReconSatir, MizanReconSonuc } from "./mizanV3Recon";
 export type { V3MaliGelirRollingSonuc };
+export type { MaliGelirPoolAnalysis, MaliGelirPoolItem } from "./forecastMaliGelirPoolPolicy";
+export type { GenelGiderImportLayerSonuc } from "./genelGiderImportLayer";
+export type { GenelGiderImportOzet, GenelGiderAnaOzet, GenelGiderAltSatir } from "./genelGiderSummary";
 
 export type V3VarsayimlarStore = {
   guncellemeIso?: string;
@@ -46,7 +49,7 @@ export type EyeQuality = {
     tutmayanSayisi: number;
     satirlar: import("./mizanV3Recon").MizanReconSatir[];
   };
-  forecastMethodVersion: "eye-v1";
+  forecastMethodVersion: "eye-v1" | "eye-v2-policy";
   kpkRecon: Record<string, number>;
 };
 
@@ -58,7 +61,7 @@ export type EyeSnapshotV1 = {
     kesimKaynak: "auto" | "manual";
     maxMizanAy: number | null;
     uretimTarihi: string;
-    forecastMethodVersion: "eye-v1";
+    forecastMethodVersion: "eye-v1" | "eye-v2-policy";
   };
   assumptions: {
     tarifeHedefleri: Record<string, number>;
@@ -98,6 +101,10 @@ export type V3GelirTablosuSonuc = V2GelirTablosuSonuc & {
       quality: EyeQuality;
       snapshotPath?: string;
       f22F96Ok: boolean;
+      forecastRateAnalysis?: import("./forecastRatePolicy").ForecastRateAnalysis[];
+      reinsuranceRateAnalysis?: import("./forecastReinsuranceRatePolicy").ReinsuranceRateAnalysis[];
+      maliGelirPoolAnalysis?: import("./forecastMaliGelirPoolPolicy").MaliGelirPoolAnalysis;
     };
+    genelGiderImport?: import("./genelGiderImportLayer").GenelGiderImportLayerSonuc | null;
   };
 };

@@ -31,6 +31,7 @@ import {
 import V2GtHesapTablo from "@/components/butce/V2GtHesapTablo";
 import V2GtFiltreBar from "@/components/butce/V2GtFiltreBar";
 import V2GtTeknikOranTablo from "@/components/butce/V2GtTeknikOranTablo";
+import GenelGiderImportPanel from "@/components/butce/GenelGiderImportPanel";
 import {
   v2CarpimAciklamalari,
   v2CarpimAciklamaMap,
@@ -87,6 +88,8 @@ export default function V3DashboardClient() {
   const [filtreMod, setFiltreMod] = useState<V2GtFiltreModu>("tarife");
   const [filtreSecim, setFiltreSecim] = useState<Set<string>>(() => new Set());
   const [hasMizan, setHasMizan] = useState(true);
+  const [faaliyetGiderImportSatir, setFaaliyetGiderImportSatir] = useState(0);
+  const [faaliyetGiderAltHesap, setFaaliyetGiderAltHesap] = useState(0);
   const [teknikOranTablo, setTeknikOranTablo] = useState<V2TeknikOranTablo | null>(null);
 
   const toplamPrim = useMemo(
@@ -140,6 +143,8 @@ export default function V3DashboardClient() {
     setYtdAnchorAy(data.ytdAnchorAy ?? 7);
     setV2SorunOzeti(data.v2SorunOzeti ?? []);
     setHasMizan(data.dataDurumu?.hasMizan !== false);
+    setFaaliyetGiderImportSatir(data.dataDurumu?.faaliyetGiderSatir ?? 0);
+    setFaaliyetGiderAltHesap(data.dataDurumu?.faaliyetGiderAltHesapSayisi ?? 0);
 
     const ozet = (data.tarifeOzet ?? []) as Array<{
       tarifeGrubu: string;
@@ -451,7 +456,14 @@ export default function V3DashboardClient() {
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-bold text-slate-900">2) Genel gider bütçesi (61402–06)</h2>
-          <p className="mt-1 text-xs text-slate-500">Yıllık tutar eşit aylık dağıtılır.</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Import varsa H2 (YTD sonrası) aylık alt-hesap bütçesi kullanılır; yoksa yıllık ÷12 motoru.
+          </p>
+          <GenelGiderImportPanel
+            butceYili={butceYili}
+            mevcutSatir={faaliyetGiderImportSatir}
+            mevcutAltHesap={faaliyetGiderAltHesap}
+          />
           <div className="mt-2 overflow-x-auto">
             <table className="min-w-full text-xs">
               <thead>

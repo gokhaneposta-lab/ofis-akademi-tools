@@ -138,8 +138,13 @@ function f466Yillik61102(
 }
 
 /** Brüt muallak yıllık hedef (61101, negatif gider). */
-function hedef61101Yillik(ytd: number, anchor: number, f325Tahmin: number): number {
-  const runRate = ytd * (12 / anchor);
+function hedef61101Yillik(
+  ytd: number,
+  anchor: number,
+  f325Tahmin: number,
+  policyYillikHedef?: number,
+): number {
+  const runRate = policyYillikHedef ?? ytd * (12 / anchor);
   const f325Neg = f325Tahmin > 0 ? -Math.abs(f325Tahmin) : f325Tahmin;
   if (ytd < 0 && f325Neg < 0) return Math.max(runRate, f325Neg);
   return f325Neg < 0 ? f325Neg : runRate;
@@ -163,6 +168,9 @@ export function uygulaMuallakH2Residual(
     mizan: MizanRow[];
     mizanAylikFull: MizanAylikRow[];
     oranAyar: OranAyarStore;
+    /** Policy katmanı: branş prim×seçilmiş muallak oranı toplamı (TL). */
+    policyMuallakYillikHedef?: number;
+    policyMuallakByBrans?: Map<string, number>;
   },
 ): { uyarilar: string[] } {
   const uyarilar: string[] = [];
@@ -182,7 +190,12 @@ export function uygulaMuallakH2Residual(
   // --- Brüt muallak (61101 / 611011) ---
   const ytd61101Sirket = ytdToplamSer(gt.aylikToplam[SATIR_61101], anchor);
   const f325Tahmin = f325Yillik61101(gt, servis, opts.oranAyar);
-  const hedef61101 = hedef61101Yillik(ytd61101Sirket, anchor, f325Tahmin);
+  const policyHedef =
+    opts.policyMuallakYillikHedef ??
+    (opts.policyMuallakByBrans
+      ? [...opts.policyMuallakByBrans.values()].reduce((a, x) => a + x, 0)
+      : undefined);
+  const hedef61101 = hedef61101Yillik(ytd61101Sirket, anchor, f325Tahmin, policyHedef);
   const h2_61101 = hedef61101 - ytd61101Sirket;
 
   const ytd61101Brans = new Map<string, number>();
@@ -250,7 +263,7 @@ export function uygulaMuallakH2Residual(
   const hedef61101Final = ytd61101Sirket + (Math.abs(h2_61102) < 1 ? h2_611Net : h2_61101);
 
   uyarilar.push(
-    `H2 muallak artık pay: 61101 hedef ${Math.round(hedef61101Final).toLocaleString("tr-TR")} (F325 ${Math.round(f325Tahmin).toLocaleString("tr-TR")}, H2 brüt ${Math.round(Math.abs(h2_61102) < 1 ? h2_611Net : h2_61101).toLocaleString("tr-TR")}).`,
+    `H2 muallak artık pay: 61101 hedef ${Math.round(hedef61101Final).toLocaleString("tr-TR")} (F325 ${Math.round(f325Tahmin).toLocaleString("tr-TR")}, policy ${policyHedef != null ? Math.round(policyHedef).toLocaleString("tr-TR") : "—"}, H2 brüt ${Math.round(Math.abs(h2_61102) < 1 ? h2_611Net : h2_61101).toLocaleString("tr-TR")}).`,
   );
   uyarilar.push(
     `H2 RE artık pay: 61102 hedef ${Math.round(hedef61102).toLocaleString("tr-TR")} (F466 ${Math.round(f466Tahmin).toLocaleString("tr-TR")}, H2 ${Math.round(h2_61102).toLocaleString("tr-TR")}).`,

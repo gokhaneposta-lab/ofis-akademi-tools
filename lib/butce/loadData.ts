@@ -20,6 +20,7 @@ import {
   BUTCE_V2_VARSAYIMLAR_JSON,
   BUTCE_V3_VARSAYIMLAR_JSON,
 } from "./paths";
+import { normalizeFaaliyetGiderRow } from "./import/genelGiderImportCore";
 import { readPrivateFile } from "./storage";
 import type {
   AylikPrimStore,
@@ -174,7 +175,12 @@ export async function loadUretimRows(): Promise<UretimRow[]> {
 export async function loadFaaliyetGiderRows(): Promise<FaaliyetGiderRow[]> {
   const raw = await readPrivateFile(BUTCE_FAALIYET_GIDER_JSON);
   if (!raw) return [];
-  return JSON.parse(raw) as FaaliyetGiderRow[];
+  return (JSON.parse(raw) as FaaliyetGiderRow[]).map(normalizeFaaliyetGiderRow);
+}
+
+export async function loadFaaliyetGiderRowsForYear(butceYili: number): Promise<FaaliyetGiderRow[]> {
+  const all = await loadFaaliyetGiderRows();
+  return all.filter((r) => r.butceYili === butceYili);
 }
 
 export async function loadBilancoAylikRows(): Promise<BilancoAylikRow[]> {
@@ -263,6 +269,9 @@ export async function butceDataDurumu() {
     uretimSatir: uretim.length,
     faaliyetGiderSatir: faaliyetGider.length,
     faaliyetGiderHesapSayisi: new Set(faaliyetGider.map((r) => r.hesap)).size,
+    faaliyetGiderAltHesapSayisi: new Set(
+      faaliyetGider.map((r) => r.altHesapKodu ?? r.hesap),
+    ).size,
     butceYili: meta?.butceYili ?? BUTCE_YILI_VARSAYILAN,
     meta,
   };

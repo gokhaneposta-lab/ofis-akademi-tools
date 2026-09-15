@@ -1,5 +1,9 @@
 import { importAylikGtBilancoFromBuffer } from "@/lib/butce/import/aylikGtBilancoImport";
-import { importFaaliyetGiderFromBuffer } from "@/lib/butce/import/faaliyetGiderImport";
+import {
+  importFaaliyetGiderFromBuffer,
+  normalizeFaaliyetGiderRow,
+} from "@/lib/butce/import/faaliyetGiderImport";
+import { loadFaaliyetGiderRows } from "@/lib/butce/loadData";
 import { importKpkVadeFromBuffer } from "@/lib/butce/import/kpkVadeImport";
 import { importMizanFromBuffer } from "@/lib/butce/import/mizanImport";
 import { importMizanAylikFromBuffer } from "@/lib/butce/import/mizanAylikImport";
@@ -133,10 +137,13 @@ export async function runButceUpload(
 
   if (kind === "faaliyet_gider") {
     const { rows, log } = importFaaliyetGiderFromBuffer(buf, butceYili);
-    await writePrivateFile(BUTCE_FAALIYET_GIDER_JSON, JSON.stringify(rows));
+    const existing = await loadFaaliyetGiderRows();
+    const otherYears = existing.filter((r) => r.butceYili !== butceYili);
+    const merged = [...otherYears, ...rows.map(normalizeFaaliyetGiderRow)];
+    await writePrivateFile(BUTCE_FAALIYET_GIDER_JSON, JSON.stringify(merged));
     meta.faaliyetGiderGuncellemeIso = new Date().toISOString();
-    meta.faaliyetGiderSatirSayisi = rows.length;
-    logs.push(log);
+    meta.faaliyetGiderSatirSayisi = merged.length;
+    logs.push(`${log} (toplam ${merged.length} satır, ${butceYili} yılı ${rows.length} satır)`);
   }
 
   if (kind === "uretim") {

@@ -22,6 +22,7 @@ import { createAylikDagilimTablosu } from "../prim/primDagilim";
 import type {
   AylikPrimStore,
   BilancoAylikRow,
+  FaaliyetGiderRow,
   KpkKapanisTahminStore,
   KpkVadeRow,
   MizanAylikRow,
@@ -32,6 +33,7 @@ import type {
   TarifeMapRow,
   UretimRow,
 } from "../types";
+import { uygulaGenelGiderImportLayer } from "./genelGiderImportLayer";
 import type { V2VarsayimlarStore } from "../v2/types";
 import { aylikMevsimOranlari, genelMevsimOranlari } from "./aylikMevsim";
 import {
@@ -111,6 +113,8 @@ export function buildV3GelirTablosu(opts: {
   oranAyar: OranAyarStore;
   kpkVade: KpkVadeRow[];
   kapanisTahmin: KpkKapanisTahminStore | null;
+  /** Aylık alt-hesap import (61402–61406); H2 GT F190–194 besler. */
+  faaliyetGiderImportRows?: FaaliyetGiderRow[];
 }): V3GelirTablosuSonuc {
   const uyarilar: string[] = [];
   const butceYili = opts.varsayimlar.butceYili;
@@ -277,6 +281,19 @@ export function buildV3GelirTablosu(opts: {
     ytdAnchorAy,
   );
 
+  const genelGiderImport =
+    opts.faaliyetGiderImportRows && opts.faaliyetGiderImportRows.length > 0
+      ? uygulaGenelGiderImportLayer(gtOverlay, {
+          butceYili,
+          anchorAy: ytdAnchorAy,
+          importRows: opts.faaliyetGiderImportRows,
+          mizan: opts.mizan,
+          oranAyar: opts.oranAyar,
+          mizanAylikFull: mizanFullEarly,
+        })
+      : null;
+  if (genelGiderImport) uyarilar.push(...genelGiderImport.uyarilar);
+
   const eyeSonuc = uygulaEstimatedYeForecastLayer(gtOverlay, {
     anchorAy: ytdAnchorAy,
     butceYili,
@@ -381,7 +398,11 @@ export function buildV3GelirTablosu(opts: {
         quality: eyeSonuc.quality,
         snapshotPath,
         f22F96Ok: eyeSonuc.f22F96Ok,
+        forecastRateAnalysis: eyeSonuc.forecastRateAnalysis,
+        reinsuranceRateAnalysis: eyeSonuc.reinsuranceRateAnalysis,
+        maliGelirPoolAnalysis: maliGelirRolling?.poolAnalysis,
       },
+      genelGiderImport,
     },
   };
 }

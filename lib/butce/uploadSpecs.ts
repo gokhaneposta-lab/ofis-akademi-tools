@@ -176,30 +176,32 @@ export const BUTCE_KPK_VADE_SPEC: UploadSpec = {
 
 export const BUTCE_FAALIYET_GIDER_SPEC: UploadSpec = {
   id: "faaliyet_gider",
-  title: "Faaliyet Giderleri (614)",
+  title: "Genel Gider Import (61402–61406)",
   summary:
-    "Şirket geneli faaliyet giderlerinin ay bazında bütçe tutarları (61402–61406). 61408/61409 import edilmez — gelir tablosunda brüt prim × F383/F388 oranıyla hesaplanır.",
-  fileHint: "61402–61406 hesap kodları, ay ve tutar (veya Oca–Ara kolonları)",
+    "Aylık × tam muhasebe alt hesap bütçesi. GT'de ilk 5 hane ile F190–194 gruplanır; branş dağılımı F368 ile yapılır.",
+  fileHint: "AltHesapKodu (tam kod), Ay, Tutar — veya geniş format (Oca–Ara)",
   sheetName: "İlk sayfa okunur",
   steps: [
-    "Finans ekibinden bütçe yılı faaliyet gider tablosunu alın: 61402 personel, 61403 yönetim, 61404 AR-GE, 61405 pazarlama, 61406 dış hizmet.",
-    "Tutarları pozitif gider olarak girin — veri şirket genelidir, branş kolonu yok.",
-    "Import sonrası tutarlar F368 (61402 branş payı) ile prim hedefi olan 7xx branşlara dağıtılır.",
-    "61408 ve 61409 bu dosyaya dahil değildir; GT'de brüt prim × teknik oran (0258/0259) ile otomatik gelir.",
+    "Her satır: butceYili, ay (1–12), altHesapKodu (ör. 61402215649), tutar (pozitif TL).",
+    "61402215649 ve 61402215678 ayrı kayıtlar kalır; GT'de ikisi de 61402 → F190 toplamına gider.",
+    "61407 ve dışı kodlar IMPORT ERROR — veri GT'ye girmez.",
+    "YTD (mizan) ayları import ile ezilmez; yalnızca anchor sonrası H2 ayları importtan gelir.",
   ],
   columns: [
-    { col: "A", field: "Hesap No", example: "61402", note: "61402–61406 (61408/61409 hariç)" },
-    { col: "B", field: "Hesap Adı", example: "PERSONEL GİDERLERİ", note: "İsteğe bağlı" },
-    { col: "C", field: "Ay", example: "3", note: "1–12; geniş formatta Oca–Ara kolonları da okunur" },
-    { col: "D", field: "Tutar", example: "12500000", note: "Aylık bütçe tutarı (TL, pozitif, şirket geneli)" },
+    { col: "A", field: "Bütçe Yılı", example: "2026", note: "butceYili (opsiyonel — yükleme yılı kullanılır)" },
+    { col: "B", field: "Alt Hesap Kodu", example: "61402215649", note: "Tam muhasebe kodu; ilk 5 hane 61402–61406" },
+    { col: "C", field: "Ay", example: "9", note: "1–12" },
+    { col: "D", field: "Tutar", example: "40000000", note: "Aylık bütçe (pozitif TL)" },
+    { col: "E", field: "Açıklama", example: "Personel maaşı", note: "İsteğe bağlı" },
   ],
   checks: [
-    "61402, 61403, 61404, 61405, 61406 import edilir.",
-    "61408/61409 satırları yok sayılır — diğer faaliyet giderleri orandan (F383/F388) hesaplanır.",
-    "Şirket geneli tutarlar F368 ile prim hedefi olan branşlara bölünür.",
+    "Duplicate (aynı yıl + ay + altHesap) → hata, satır numarası gösterilir.",
+    "61408/61409 bu importa dahil değildir.",
+    "2026 ve 2027 aynı dosya katmanında butceYili ile ayrılır.",
   ],
   errors: [
-    "«Faaliyet gider satırı okunamadı» → Hesap kodu 6140x mi, ay 1–12 mi, tutar dolu mu kontrol edin.",
-    "«Format okunamadı» → Ya «Ay» kolonu ya da Oca–Ara / 1–12 ay kolonları olmalı.",
+    "«OUT_OF_SCOPE» → İlk 5 hane 61402–61406 dışında.",
+    "«DUPLICATE» → Aynı yıl/ay/altHesap iki kez girilmiş.",
+    "«Format okunamadı» → Ay kolonu veya Oca–Ara geniş format gerekli.",
   ],
 };

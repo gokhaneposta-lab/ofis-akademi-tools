@@ -4,7 +4,18 @@ import { normalizeBransKodu } from "../textUtils";
 import { buildOncekiYilPrimSerisi } from "./oncekiYilPrimTahmin";
 import { buildKpkPrimGecmisi } from "./kpkPrimGecmisi";
 import { hesaplaKpkPortfoy, type KpkBransSonuc } from "./kpkMotoru";
-import type { MizanAylikRow, TarifeBransPayRow, KpkKapanisTahminStore } from "../types";
+import {
+  defaultKpkPrimKaynakModu,
+  resolveKpkPrimGirdisi,
+  type KpkPrimKaynakOpts,
+} from "./kpkPrimKaynak";
+import type {
+  MizanAylikRow,
+  TarifeBransPayRow,
+  KpkKapanisTahminStore,
+  TarifeMapRow,
+} from "../types";
+import { primKaynakForButceYili } from "./kpkPrimKaynak";
 
 export type KpkSonuc = {
   butceYili: number;
@@ -58,6 +69,12 @@ export function buildKpkSonuc(opts: {
   kapanisTahmin?: KpkKapanisTahminStore | null;
   mizanAylikFull?: MizanAylikRow[];
   v2Metodoloji?: boolean;
+  /** Faz 1: senaryo-aware prim; yoksa butce (2027 + mizan → butce_yplus1). */
+  primKaynak?: KpkPrimKaynakOpts;
+  /** EYE / Y-1 eye için anchor (1–12). */
+  kpkAnchorAy?: number;
+  /** 2027 Y-1 EYE 12 ay serisi için tarife map. */
+  tarifeMap?: TarifeMapRow[];
 }): KpkSonuc {
   // Tek kapanış store'u farklı bütçe yılına ait olabilir. Örneğin 2027 için
   // kaydedilmiş 2026/04 tahmini, 2026 bütçesinin tam 2025 serisini kesmemeli.
@@ -73,12 +90,40 @@ export function buildKpkSonuc(opts: {
     kapanisTahmin,
   });
 
-  const cariPrim: Record<string, number[]> = {};
-  if (opts.aylikPrim) {
-    for (const r of opts.aylikPrim.satirlar) {
-      cariPrim[normalizeBransKodu(r.bransKodu)] = r.aylar;
+  const mizanFull = opts.mizanAylikFull ?? [];
+  let primKaynak: KpkPrimKaynakOpts = opts.primKaynak ?? { mod: "butce" };
+  if (!opts.primKaynak) {
+    const yplus1 = primKaynakForButceYili({
+      butceYili: opts.butceYili,
+      mizanAylikFull: mizanFull,
+      tarifeMap: opts.tarifeMap,
+      eyeAnchorAy: opts.kpkAnchorAy,
+    });
+    if (yplus1) {
+      primKaynak = yplus1;
+    } else {
+      const auto = defaultKpkPrimKaynakModu(opts.butceYili, mizanFull);
+      primKaynak =
+        auto === "butce_yplus1" ? { mod: "butce_yplus1", oncekiYilEyePrim: {} } : { mod: "butce" };
     }
   }
+
+  const bransFromPrim = new Set<string>();
+  if (opts.aylikPrim) {
+    for (const r of opts.aylikPrim.satirlar) bransFromPrim.add(normalizeBransKodu(r.bransKodu));
+  }
+
+  const resolved = resolveKpkPrimGirdisi({
+    butceYili: opts.butceYili,
+    aylikPrim: opts.aylikPrim,
+    primKaynak,
+    mizanAylikFull: mizanFull,
+    mizanAylik: opts.mizanAylik,
+    tarifeBransPay: opts.tarifeBransPay,
+    bransKodlari: bransFromPrim.size > 0 ? [...bransFromPrim] : undefined,
+  });
+
+  const cariPrim = resolved.cariPrim;
 
   const reas = reasurOranlari(
     opts.mizan,
@@ -100,7 +145,8 @@ export function buildKpkSonuc(opts: {
     oncekiYilPrim: onceki.bransAylik,
     cariPrim,
     mizanAylik: opts.mizanAylik,
-    mizanAylikFull: opts.mizanAylikFull,
+    mizanAylikFull: mizanFull,
+    oncekiYilPrimOverride: resolved.oncekiYilPrimOverride,
   });
 
   const branslar = hesaplaKpkPortfoy({

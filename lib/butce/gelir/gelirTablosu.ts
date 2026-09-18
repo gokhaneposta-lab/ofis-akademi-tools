@@ -18,6 +18,7 @@ import type {
   OranYilBirlestirmeStore,
   TarifeBransPayRow,
   KpkKapanisTahminStore,
+  TarifeMapRow,
 } from "../types";
 import {
   buildFaaliyetGiderSonuc,
@@ -113,8 +114,10 @@ export function buildGelirTablosu(opts: {
   kalemYilBirlestirme?: OranYilBirlestirmeStore;
   /** V2: 611012/611022 — önceki yıl Aralık mizan, yalnızca Ocak (F126/F147 YTD düzeyi sabit). */
   muallakDevredenOcak?: Map<string, MuallakDevredenOcak>;
-  /** V2: 601012/601022 — önceki yıl Aralık mizan, yalnızca Ocak (F24/F27 YTD düzeyi sabit). */
+  /** V2: 601012/601022 — motor 31.12→01.01 devreden, yalnızca Ocak GT hareketi. */
   kpkDevredenOcak?: Map<string, KpkDevredenOcak>;
+  /** 2027 Y-1 EYE prim serisi (Faz 2). */
+  tarifeMap?: TarifeMapRow[];
 }): GelirTablosuSonuc {
   const {
     mizan,
@@ -136,6 +139,7 @@ export function buildGelirTablosu(opts: {
     kalemYilBirlestirme = {},
     muallakDevredenOcak,
     kpkDevredenOcak,
+    tarifeMap,
   } = opts;
 
   const satirlar = gosterimSatirlari ?? GT_GOSTERIM_SATIRLARI;
@@ -158,6 +162,7 @@ export function buildGelirTablosu(opts: {
           kapanisTahmin,
           mizanAylikFull,
           v2Metodoloji,
+          tarifeMap,
         })
       : null;
 

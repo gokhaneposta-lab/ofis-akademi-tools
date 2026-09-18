@@ -59,14 +59,24 @@ export function buildKpkPrimGecmisi(opts: {
   cariPrim: Record<string, number[]>;
   mizanAylik?: MizanAylikRow[];
   mizanAylikFull?: MizanAylikRow[];
+  /** Y-1 (butceYili−1) için pickSeri atlanır; tam 12 aylık seri (EYE Actual+Forecast). */
+  oncekiYilPrimOverride?: Record<string, number[]>;
 }): Record<string, KpkPrimAy[]> {
-  const { butceYili, oncekiYilPrim, cariPrim, mizanAylik = [], mizanAylikFull = [] } = opts;
+  const {
+    butceYili,
+    oncekiYilPrim,
+    cariPrim,
+    mizanAylik = [],
+    mizanAylikFull = [],
+    oncekiYilPrimOverride,
+  } = opts;
   const oncekiYil = butceYili - 1;
   const ikiYilOnce = butceYili - 2;
 
   const branslar = new Set<string>([
     ...Object.keys(oncekiYilPrim),
     ...Object.keys(cariPrim),
+    ...Object.keys(oncekiYilPrimOverride ?? {}),
   ]);
 
   const out: Record<string, KpkPrimAy[]> = {};
@@ -77,7 +87,9 @@ export function buildKpkPrimGecmisi(opts: {
     const ikiSeri = pickSeri(mizanAylikFull, mizanAylik, {}, ikiYilOnce, brans);
     if (ikiSeri.some((v) => v > 0)) kayitlar.push(...seriToPrimAy(ikiYilOnce, ikiSeri));
 
-    const oncekiSeri = pickSeri(mizanAylikFull, mizanAylik, oncekiYilPrim, oncekiYil, brans);
+    const oncekiSeri =
+      oncekiYilPrimOverride?.[brans] ??
+      pickSeri(mizanAylikFull, mizanAylik, oncekiYilPrim, oncekiYil, brans);
     if (oncekiSeri.some((v) => v > 0)) kayitlar.push(...seriToPrimAy(oncekiYil, oncekiSeri));
 
     const cari = cariPrim[brans];

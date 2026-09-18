@@ -24,6 +24,7 @@ import {
   devredenKpkOcakFromMizan,
   devredenKpkOcakOzet,
 } from "../gelir/kpkDevreden";
+import { buildDevredenKpkZincir } from "../kpk/kpkDevredenZincir";
 import {
   devredenMuallakOcakFromMizan,
   devredenMuallakOcakOzet,
@@ -279,16 +280,32 @@ export function buildV2GelirTablosu(opts: {
     );
   }
 
-  const kpkDevredenOcak = devredenKpkOcakFromMizan(mizanFull, butceYili);
+  const devredenZincir = buildDevredenKpkZincir({
+    butceYili,
+    mizan: opts.mizan,
+    mizanAylik: opts.mizanAylik,
+    mizanAylikFull: mizanFull,
+    tarifeBransPay: opts.tarifeBransPay,
+    vadeRows: opts.kpkVade,
+    aylikPrim,
+    oranAyar: opts.oranAyar,
+    kapanisTahmin: opts.kapanisTahmin,
+    v2Metodoloji: true,
+    tarifeMap: opts.tarifeMap,
+  });
+  const kpkDevredenOcak = devredenZincir.devredenOcak;
   const kdOzet = devredenKpkOcakOzet(kpkDevredenOcak);
-  if (kdOzet.bransSayisi === 0) {
+  if (devredenZincir.kaynakModu === "mizan_kapanis") {
     uyarilar.push(
-      `${butceYili} Ocak devreden KPK mizanı bulunamadı — 601012/601022 KPK motoru devreden tahminine düşüldü.`,
+      `Devreden KPK: 31.12.${butceYili - 1} mizan 01211 kapanış → 01.01.${butceYili} (601012=${Math.round(kdOzet.satir24Toplam).toLocaleString("tr-TR")} TL, ${kdOzet.bransSayisi} branş).`,
     );
   } else {
     uyarilar.push(
-      `Devreden KPK: ${butceYili} Ocak mizan (kapanış devralma) → yalnızca Ocak (601012=${Math.round(kdOzet.satir24Toplam).toLocaleString("tr-TR")} TL, ${kdOzet.bransSayisi} branş).`,
+      `Devreden KPK: 31.12.${butceYili - 1} motor Cari → 01.01.${butceYili} (601012=${Math.round(kdOzet.satir24Toplam).toLocaleString("tr-TR")} TL, ${kdOzet.bransSayisi} branş).`,
     );
+  }
+  if (devredenZincir.recon) {
+    uyarilar.push(devredenZincir.recon.mesaj);
   }
 
   const gtPass1 = buildGelirTablosu({
@@ -309,6 +326,7 @@ export function buildV2GelirTablosu(opts: {
     v2Metodoloji: true,
     muallakDevredenOcak: mdOzet.bransSayisi > 0 ? muallakDevredenOcak : undefined,
     kpkDevredenOcak: kdOzet.bransSayisi > 0 ? kpkDevredenOcak : undefined,
+    tarifeMap: opts.tarifeMap,
   });
 
   const acilis = resolveAcilisBanka({
@@ -352,6 +370,7 @@ export function buildV2GelirTablosu(opts: {
     v2Metodoloji: true,
     muallakDevredenOcak: mdOzet.bransSayisi > 0 ? muallakDevredenOcak : undefined,
     kpkDevredenOcak: kdOzet.bransSayisi > 0 ? kpkDevredenOcak : undefined,
+    tarifeMap: opts.tarifeMap,
   });
 
   // 603 (F38) dağılımını NET NAKİT AKIŞI payıyla yeniden hesapla.

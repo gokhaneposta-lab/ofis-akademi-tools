@@ -1,9 +1,10 @@
 /**
  * Devreden KPK (601012 / 601022): kapanış devralma tutarı → yalnızca Ocak.
  *
- * Kaynak: bütçe yılı Ocak mizan kümülatifi (GT 01212 / 01222). Bu, önceki yıl
- * kapanışının yeni yıla devralındığı GL kaydıdır; Şubat–Aralık aylık hareket = 0.
- * (Y-1 Aralık snapshot ile bütçe yılı Ocak tutarı mizan dosyasında farklı olabilir.)
+ * Bütçe (kapanmış önceki yıl): 31.12 mizan 01211 Cari → Ocak devreden (`devredenKpkOcakFromMizanKapanis`).
+ * EYE / açık yıl: 31.12 motor Cari KPK → `kpkDevredenZincir` motor dalı.
+ * `devredenKpkOcakFromMizan`: Ocak 01212 recon (GT stok karşılaştırma).
+ * Şubat–Aralık aylık hareket = 0.
  */
 import { normalizeBransKodu } from "../textUtils";
 import type { MizanAylikRow } from "../types";
@@ -19,6 +20,63 @@ const GT_DEVREDEN = [
   { gtKod: "01212", key: "satir24" as const },
   { gtKod: "01222", key: "satir27" as const },
 ] as const;
+
+/** Önceki yıl Aralık kapanış — Cari KPK stok (F23 / 601011). */
+const GT_KAPANIS_CARI = [
+  { gtKod: "01211", key: "f23Dec" as const },
+  { gtKod: "01221", key: "f26Dec" as const },
+] as const;
+
+/** mizan-aylik-full: Y−1 Aralık 01211 satırı var mı (en az bir branş, |tutar|>0). */
+export function hasKpkMizanKapanis(mizanAylikFull: MizanAylikRow[], butceYili: number): boolean {
+  const oncekiYil = butceYili - 1;
+  for (const r of mizanAylikFull) {
+    if (Number(r.yil) !== oncekiYil) continue;
+    if (Number(r.ay) !== 12) continue;
+    if (String(r.hesap) !== "01211") continue;
+    const b = normalizeBransKodu(r.bransKodu);
+    if (!/^7\d{2}$/.test(b)) continue;
+    if (Math.abs(Number(r.tutar) || 0) > 1) return true;
+  }
+  return false;
+}
+
+/**
+ * Önceki yıl 31.12 mizan Cari KPK (01211) → Ocak devreden GT girişi (F24/F27).
+ * `satir24` = F23@31.12 (mizan 01211 Aralık); RE payı motor ile aynı oran kuralı.
+ */
+export function devredenKpkOcakFromMizanKapanis(
+  mizanAylikFull: MizanAylikRow[],
+  butceYili: number,
+): Map<string, KpkDevredenOcak> {
+  const oncekiYil = butceYili - 1;
+  const raw = new Map<string, { f23Dec?: number; f26Dec?: number }>();
+
+  for (const { gtKod, key } of GT_KAPANIS_CARI) {
+    for (const r of mizanAylikFull) {
+      if (Number(r.yil) !== oncekiYil) continue;
+      if (Number(r.ay) !== 12) continue;
+      if (String(r.hesap) !== gtKod) continue;
+      const b = normalizeBransKodu(r.bransKodu);
+      if (!/^7\d{2}$/.test(b)) continue;
+      if (!raw.has(b)) raw.set(b, {});
+      const row = raw.get(b)!;
+      row[key] = (row[key] ?? 0) + (Number(r.tutar) || 0);
+    }
+  }
+
+  const out = new Map<string, KpkDevredenOcak>();
+  for (const [b, v] of raw) {
+    const f23Dec = v.f23Dec ?? 0;
+    const f26Dec = v.f26Dec ?? 0;
+    if (Math.abs(f23Dec) < 1 && Math.abs(f26Dec) < 1) continue;
+    const satir24 = f23Dec;
+    const reas = Math.abs(f23Dec) > 1e-9 ? f26Dec / f23Dec : 0;
+    const satir27 = -satir24 * reas;
+    out.set(b, { satir24, satir27 });
+  }
+  return out;
+}
 
 /** Devreden KPK yaprak satırları — Ocak dışı aylık hareket = 0. */
 export const KPK_DEVREDEN_SATIRLARI = [24, 27] as const;

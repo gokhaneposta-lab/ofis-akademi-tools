@@ -15,9 +15,15 @@ export function buildKpkGtHucreleri(
 ): KpkGtHucreleri {
   const gt = kpkBrans.gtAylik;
   const f23 = gt[23]?.[ayIndex] ?? 0;
-  const f24 = kpkDev?.satir24 ?? gt[24]?.[ayIndex] ?? 0;
+  const f24 =
+    ayIndex === 0
+      ? (kpkDev?.satir24 ?? gt[24]?.[ayIndex] ?? 0)
+      : (gt[24]?.[ayIndex] ?? 0);
   const f26 = gt[26]?.[ayIndex] ?? 0;
-  const f27 = kpkDev?.satir27 ?? gt[27]?.[ayIndex] ?? 0;
+  const f27 =
+    ayIndex === 0
+      ? (kpkDev?.satir27 ?? gt[27]?.[ayIndex] ?? 0)
+      : (gt[27]?.[ayIndex] ?? 0);
   const f29 = gt[29]?.[ayIndex] ?? 0;
   const f30 = gt[30]?.[ayIndex] ?? 0;
   const f22 = f23 + f24;

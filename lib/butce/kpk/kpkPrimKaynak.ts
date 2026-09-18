@@ -343,7 +343,15 @@ export function resolveKpkPrimGirdisi(opts: {
 
   if (mod === "eye") {
 
-    const anchorAy = opts.primKaynak.anchorAy;
+    const pk = opts.primKaynak;
+
+    if (pk?.mod !== "eye") {
+
+      return { mod: "butce", cariPrim: cariPrimFromAylikPrim(opts.aylikPrim), uyarilar };
+
+    }
+
+    const anchorAy = pk.anchorAy;
 
     const built = buildEyeCariPrimSerisi({
 
@@ -355,7 +363,7 @@ export function resolveKpkPrimGirdisi(opts: {
 
       bransKodlari: opts.bransKodlari,
 
-      h2ForecastPrim: opts.primKaynak.h2ForecastPrim,
+      h2ForecastPrim: pk.h2ForecastPrim,
 
     });
 
@@ -371,9 +379,11 @@ export function resolveKpkPrimGirdisi(opts: {
 
     opts.bransKodlari ?? Object.keys(cariPrimFromAylikPrim(opts.aylikPrim));
 
+  const pkYplus = opts.primKaynak;
+
   const provided =
 
-    opts.primKaynak.mod === "butce_yplus1" ? opts.primKaynak.oncekiYilEyePrim : {};
+    pkYplus?.mod === "butce_yplus1" ? pkYplus.oncekiYilEyePrim : {};
 
   let oncekiYilEyePrim: Record<string, number[]>;
 

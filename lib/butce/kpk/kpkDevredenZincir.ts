@@ -45,11 +45,13 @@ export function devredenOcakFromPrevYearDec31Cari(kpkPrevYil: KpkSonuc): Map<str
     const cariDec = b.cariStok[12] ?? 0;
     const f23Dec = b.gtAylik[23]?.[11] ?? -cariDec;
     const f26Dec = b.gtAylik[26]?.[11] ?? 0;
+    const f29Dec = b.gtAylik[29]?.[11] ?? 0;
     const satir24 = f23Dec;
     const reas = Math.abs(f23Dec) > 1e-9 ? f26Dec / f23Dec : 0;
     const satir27 = -satir24 * reas;
-    if (Math.abs(f23Dec) > 0 || Math.abs(cariDec) > 0) {
-      out.set(b.bransKodu, { satir24, satir27 });
+    const satir30 = b.bransKodu === "715" ? -f29Dec : 0;
+    if (Math.abs(f23Dec) > 0 || Math.abs(cariDec) > 0 || Math.abs(f29Dec) > 0) {
+      out.set(b.bransKodu, { satir24, satir27, satir30 });
     }
   }
   return out;

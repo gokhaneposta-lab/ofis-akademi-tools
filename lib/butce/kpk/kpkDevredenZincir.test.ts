@@ -82,7 +82,7 @@ describe("kpkDevredenZincir Faz 2", () => {
       gtAylik: { 23: Array(12).fill(-100), 24: Array(12).fill(999), 26: Array(12).fill(0), 27: Array(12).fill(888) },
       gtYillik: {},
     };
-    const dev = { satir24: 400, satir27: -40 };
+    const dev = { satir24: 400, satir27: -40, satir30: 32 };
     for (let i = 0; i < 12; i++) {
       const h = buildKpkGtHucreleri(brans, dev, i);
       assert.equal(h[24], 400, `ay ${i + 1} F24 devreden sabit`);
@@ -98,7 +98,7 @@ describe("kpkDevredenZincir Faz 2", () => {
       gtYillik: {},
       devredenStok: [],
     } as KpkBransSonuc;
-    const dev = { satir24: 100, satir27: -10 };
+    const dev = { satir24: 100, satir27: -10, satir30: 0 };
     for (let i = 0; i < 12; i++) {
       const h = buildKpkGtHucreleri(brans, dev, i);
       assert.equal(h[27], -10, `ay ${i + 1} F27 devreden sabit`);
@@ -107,8 +107,8 @@ describe("kpkDevredenZincir Faz 2", () => {
   });
 
   it("devreden_reconciliation raporlar fark", () => {
-    const motor = new Map([["701", { satir24: -100, satir27: 10 }]]);
-    const mizan = new Map([["701", { satir24: -90, satir27: 9 }]]);
+    const motor = new Map([["701", { satir24: -100, satir27: 10, satir30: 0 }]]);
+    const mizan = new Map([["701", { satir24: -90, satir27: 9, satir30: 0 }]]);
     const r = reconcileDevredenKpkWithMizan(motor, mizan);
     assert.ok(r);
     assert.equal(r!.uyariKod, "devreden_kpk_recon_warning");
@@ -116,14 +116,59 @@ describe("kpkDevredenZincir Faz 2", () => {
     assert.ok(Math.abs(r!.satirlar[0]!.farkPct! - -10 / 90) < 1e-6);
   });
 
-  it("mizan_kapanis: 01211/01221 Dec → 601012/601022 işaret tersi", () => {
+  it("mizan_kapanis: 01211/01221/01231 Dec → devreden işaret tersi", () => {
     const rows: MizanAylikRow[] = [
       { yil: 2025, ay: 12, hesap: "01211", bransKodu: "701", tutar: -1_000_000 },
       { yil: 2025, ay: 12, hesap: "01221", bransKodu: "701", tutar: 5_660_000 },
+      { yil: 2025, ay: 12, hesap: "01231", bransKodu: "701", tutar: -80_000 },
     ];
     const dev = devredenKpkOcakFromMizanKapanis(rows, 2026);
     assert.equal(dev.get("701")!.satir24, 1_000_000);
     assert.equal(dev.get("701")!.satir27, -5_660_000);
+    assert.equal(dev.get("701")!.satir30, 0);
+    const rows715: MizanAylikRow[] = [
+      { yil: 2025, ay: 12, hesap: "01231", bransKodu: "715", tutar: -80_000 },
+    ];
+    assert.equal(devredenKpkOcakFromMizanKapanis(rows715, 2026).get("715")!.satir30, 80_000);
+  });
+
+  it("f29_sgk_cari: yalnızca 715 → F29 = F23 × 0.08", () => {
+    const b715: KpkBransSonuc = {
+      bransKodu: "715",
+      cariStok: Array(13).fill(0),
+      devredenStok: [],
+      gtAylik: { 23: [-1_000_000], 26: [0], 29: [999], 30: [0] },
+      gtYillik: {},
+    };
+    const h715 = buildKpkGtHucreleri(b715, undefined, 0);
+    assert.equal(h715[29], -80_000);
+
+    const b701: KpkBransSonuc = {
+      bransKodu: "701",
+      cariStok: Array(13).fill(0),
+      devredenStok: [],
+      gtAylik: { 23: [-1_000_000], 29: [999], 30: [0] },
+      gtYillik: {},
+    };
+    const h701 = buildKpkGtHucreleri(b701, undefined, 0);
+    assert.equal(h701[29], 999);
+    assert.equal(h701[30], 0);
+  });
+
+  it("f30_devreden_stock_constant_jan_dec", () => {
+    const brans: KpkBransSonuc = {
+      bransKodu: "715",
+      cariStok: Array(13).fill(0),
+      devredenStok: [],
+      gtAylik: { 23: Array(12).fill(-100), 29: Array(12).fill(0), 30: Array(12).fill(888) },
+      gtYillik: {},
+    };
+    const dev = { satir24: 0, satir27: 0, satir30: 241_000 };
+    for (let i = 0; i < 12; i++) {
+      const h = buildKpkGtHucreleri(brans, dev, i);
+      assert.equal(h[30], 241_000);
+      assert.equal(h[29], -8);
+    }
   });
 
   it("resolveDevredenKpkKaynakModu: 2027 → motor (EYE)", () => {
@@ -339,10 +384,12 @@ describe("kpkDevredenZincir integration (data yoksa skip)", () => {
 
       const f24 = sonuc.gt.aylikToplam[24] ?? Array(12).fill(0);
       const f27 = sonuc.gt.aylikToplam[27] ?? Array(12).fill(0);
+      const f30 = sonuc.gt.aylikToplam[30] ?? Array(12).fill(0);
       assert.notEqual(f24[0], 0);
       for (let i = 1; i < 12; i++) {
         assert.equal(f24[i], f24[0], `F24 ay ${i + 1} = Ocak devreden stok`);
         assert.equal(f27[i], f27[0], `F27 ay ${i + 1} = Ocak devreden stok`);
+        assert.equal(f30[i], f30[0], `F30 ay ${i + 1} = Ocak devreden SGK stok`);
       }
       const aug = v2OzetDeger(sonuc.gt, 24, 8, null);
       const dec = v2OzetDeger(sonuc.gt, 24, 12, null);
@@ -359,6 +406,14 @@ describe("kpkDevredenZincir integration (data yoksa skip)", () => {
         const h601021 = gtYtdHesap(gt, "601021", ay);
         const h601022 = gtYtdHesap(gt, "601022", ay);
         assert.ok(Math.abs(h60102 - (h601021 + h601022)) < 1, `60102 @${ay}`);
+        const h60103 = gtYtdHesap(gt, "60103", ay);
+        const h601031 = gtYtdHesap(gt, "601031", ay);
+        const h601032 = gtYtdHesap(gt, "601032", ay);
+        assert.ok(Math.abs(h60103 - (h601031 + h601032)) < 1, `60103 @${ay}`);
+      }
+      const ab715 = gt.aylikBrans["715"];
+      if (ab715?.[23]?.[7] != null && ab715[29]?.[7] != null) {
+        assert.ok(Math.abs(ab715[29]![7]! - ab715[23]![7]! * 0.08) < 1, "715: F29 = F23×8% @Ağu");
       }
       assert.ok(
         sonuc.uyarilar.some((u) => u.includes("mizan 01211 kapanış")),

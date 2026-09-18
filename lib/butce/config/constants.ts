@@ -31,6 +31,9 @@ export const CARPIM_NET_KAZANILMIS_PRIM = "net_kazanilmis_prim";
 /** Dengeleme (F348): mizanda 613 gideri olan branşlarda net kazanılmış prim oranı. */
 export const DENGELEME_NET_KAZANILMIS_ORAN = -0.12;
 
+/** KPK SGK cari (601031 / F29) = 601011 (F23) × oran — bütçe V2 standart. */
+export const KPK_SGK_KPK_CARI_ORAN = 0.08;
+
 export const AYLAR = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
   "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",

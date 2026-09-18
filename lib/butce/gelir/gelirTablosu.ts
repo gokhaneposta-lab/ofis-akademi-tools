@@ -114,7 +114,7 @@ export function buildGelirTablosu(opts: {
   kalemYilBirlestirme?: OranYilBirlestirmeStore;
   /** V2: 611012/611022 — önceki yıl Aralık mizan, yalnızca Ocak (F126/F147 YTD düzeyi sabit). */
   muallakDevredenOcak?: Map<string, MuallakDevredenOcak>;
-  /** V2: 601012/601022 — motor 31.12→01.01 devreden, yalnızca Ocak GT hareketi. */
+  /** V2: 601012/601022 — devreden açılış stoku, Ocak–Aralık sabit seviye. */
   kpkDevredenOcak?: Map<string, KpkDevredenOcak>;
   /** 2027 Y-1 EYE prim serisi (Faz 2). */
   tarifeMap?: TarifeMapRow[];

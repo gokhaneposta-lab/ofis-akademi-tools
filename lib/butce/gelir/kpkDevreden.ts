@@ -1,18 +1,18 @@
 /**
- * Devreden KPK (601012 / 601022): kapanış devralma tutarı → yalnızca Ocak.
+ * Devreden KPK (601012 / 601022): önceki yıl kapanış → bütçe yılı boyunca sabit açılış stoku.
  *
- * Bütçe (kapanmış önceki yıl): 31.12 mizan 01211 Cari → Ocak devreden (`devredenKpkOcakFromMizanKapanis`).
- * EYE / açık yıl: 31.12 motor Cari KPK → `kpkDevredenZincir` motor dalı.
+ * Bütçe (kapanmış önceki yıl): 31.12 mizan 01211/01221 Cari → devreden (`devredenKpkOcakFromMizanKapanis`);
+ * GT F24/F27 = muhasebe işareti tersi (601012 / 601022).
+ * EYE / açık yıl: 31.12 motor Cari → `kpkDevredenZincir` motor dalı (işaret motor F23 ile hizalı).
  * `devredenKpkOcakFromMizan`: Ocak 01212 recon (GT stok karşılaştırma).
- * Şubat–Aralık aylık hareket = 0.
  */
 import { normalizeBransKodu } from "../textUtils";
 import type { MizanAylikRow } from "../types";
 
 export type KpkDevredenOcak = {
-  /** GT F24 — 601012 devreden KPK (Ocak hareketi). */
+  /** GT F24 / 601012 — devreden KPK stok seviyesi (Ocak–Aralık sabit). */
   satir24: number;
-  /** GT F27 — 601022 devreden KPK reasürör payı (Ocak hareketi). */
+  /** GT F27 / 601022 — devreden RE KPK stok seviyesi (Ocak–Aralık sabit). */
   satir27: number;
 };
 
@@ -43,7 +43,7 @@ export function hasKpkMizanKapanis(mizanAylikFull: MizanAylikRow[], butceYili: n
 
 /**
  * Önceki yıl 31.12 mizan Cari KPK (01211) → Ocak devreden GT girişi (F24/F27).
- * `satir24` = F23@31.12 (mizan 01211 Aralık); RE payı motor ile aynı oran kuralı.
+ * 601012 = −01211@31.12, 601022 = −01221@31.12 (Excel GT / muhasebe devreden işareti).
  */
 export function devredenKpkOcakFromMizanKapanis(
   mizanAylikFull: MizanAylikRow[],
@@ -70,15 +70,14 @@ export function devredenKpkOcakFromMizanKapanis(
     const f23Dec = v.f23Dec ?? 0;
     const f26Dec = v.f26Dec ?? 0;
     if (Math.abs(f23Dec) < 1 && Math.abs(f26Dec) < 1) continue;
-    const satir24 = f23Dec;
-    const reas = Math.abs(f23Dec) > 1e-9 ? f26Dec / f23Dec : 0;
-    const satir27 = -satir24 * reas;
+    const satir24 = -f23Dec;
+    const satir27 = -f26Dec;
     out.set(b, { satir24, satir27 });
   }
   return out;
 }
 
-/** Devreden KPK yaprak satırları — Ocak dışı aylık hareket = 0. */
+/** Devreden KPK yaprak satırları — stok seviyesi (buildKpkGtHucreleri yıl boyunca taşır). */
 export const KPK_DEVREDEN_SATIRLARI = [24, 27] as const;
 
 /**

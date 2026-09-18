@@ -74,42 +74,35 @@ describe("kpkDevredenZincir Faz 2", () => {
     assert.notEqual(recon1!.satirlar[0]!.farkTl, recon2!.satirlar[0]!.farkTl);
   });
 
-  it("f24_january_only", () => {
+  it("f24_devreden_stock_constant_jan_dec", () => {
     const brans: KpkBransSonuc = {
       bransKodu: "701",
       cariStok: Array(13).fill(0),
+      devredenStok: [],
       gtAylik: { 23: Array(12).fill(-100), 24: Array(12).fill(999), 26: Array(12).fill(0), 27: Array(12).fill(888) },
       gtYillik: {},
-      reasurStok: [],
-      sgkStok: [],
     };
-    const dev = { satir24: -400, satir27: 40 };
+    const dev = { satir24: 400, satir27: -40 };
     for (let i = 0; i < 12; i++) {
       const h = buildKpkGtHucreleri(brans, dev, i);
-      if (i === 0) {
-        assert.equal(h[24], -400);
-        assert.notEqual(h[24], 0);
-      } else {
-        assert.equal(h[24], 999);
-        assert.equal(h[24], brans.gtAylik[24]![i]);
-      }
+      assert.equal(h[24], 400, `ay ${i + 1} F24 devreden sabit`);
+      assert.notEqual(h[24], 999);
     }
   });
 
-  it("f27_january_only", () => {
+  it("f27_devreden_stock_constant_jan_dec", () => {
     const brans: KpkBransSonuc = {
       bransKodu: "701",
       cariStok: Array(13).fill(0),
       gtAylik: { 23: Array(12).fill(0), 24: Array(12).fill(0), 26: Array(12).fill(-10), 27: Array(12).fill(777) },
       gtYillik: {},
-      reasurStok: [],
-      sgkStok: [],
-    };
-    const dev = { satir24: -100, satir27: 10 };
+      devredenStok: [],
+    } as KpkBransSonuc;
+    const dev = { satir24: 100, satir27: -10 };
     for (let i = 0; i < 12; i++) {
       const h = buildKpkGtHucreleri(brans, dev, i);
-      if (i === 0) assert.equal(h[27], 10);
-      else assert.equal(h[27], 777);
+      assert.equal(h[27], -10, `ay ${i + 1} F27 devreden sabit`);
+      assert.notEqual(h[27], 777);
     }
   });
 
@@ -123,14 +116,14 @@ describe("kpkDevredenZincir Faz 2", () => {
     assert.ok(Math.abs(r!.satirlar[0]!.farkPct! - -10 / 90) < 1e-6);
   });
 
-  it("mizan_kapanis: 01211 Dec → satir24 (F23 işareti)", () => {
+  it("mizan_kapanis: 01211/01221 Dec → 601012/601022 işaret tersi", () => {
     const rows: MizanAylikRow[] = [
       { yil: 2025, ay: 12, hesap: "01211", bransKodu: "701", tutar: -1_000_000 },
-      { yil: 2025, ay: 12, hesap: "01221", bransKodu: "701", tutar: -100_000 },
+      { yil: 2025, ay: 12, hesap: "01221", bransKodu: "701", tutar: 5_660_000 },
     ];
     const dev = devredenKpkOcakFromMizanKapanis(rows, 2026);
-    assert.equal(dev.get("701")!.satir24, -1_000_000);
-    assert.equal(dev.get("701")!.satir27, 100_000);
+    assert.equal(dev.get("701")!.satir24, 1_000_000);
+    assert.equal(dev.get("701")!.satir27, -5_660_000);
   });
 
   it("resolveDevredenKpkKaynakModu: 2027 → motor (EYE)", () => {
@@ -228,7 +221,7 @@ describe("kpkDevredenZincir integration (data yoksa skip)", () => {
     }
   });
 
-  it("budget_2026_mizan_kapanis: devreden 2025-12 01211, F24 Ocak-only, 777 branş", async () => {
+  it("budget_2026_mizan_kapanis: devreden 2025-12 01211, 777 branş", async () => {
     const {
       loadMizanRows,
       loadMizanAylikRows,
@@ -275,7 +268,7 @@ describe("kpkDevredenZincir integration (data yoksa skip)", () => {
     }
   });
 
-  it("budget_2026_v2_gt: mizan kapanış uyarısı ve F24 Şub–Ara=0", async () => {
+  it("budget_2026_v2_gt: devreden stok Ocak–Aralık sabit, 60101/60102 rollup", async () => {
     const {
       loadMizanRows,
       loadMizanAylikRows,
@@ -289,6 +282,8 @@ describe("kpkDevredenZincir integration (data yoksa skip)", () => {
       loadOranAyarPaket,
     } = await import("../loadData");
     const { buildV2GelirTablosu } = await import("../v2/buildV2GelirTablosu");
+    const { v2OzetDeger } = await import("../v2/v2GtFiltre");
+    const { gtYtdHesap } = await import("../v2/gtHesapYtd");
     const { v3DefaultsStore2026, alignTarifeHedefleri } = await import("../v3/defaults");
     const { primHedefFromTarifeAna } = await import("../v3/primFromToplam");
     const { syntheticSatisFromTarife } = await import("../v3/syntheticSatis");
@@ -343,8 +338,28 @@ describe("kpkDevredenZincir integration (data yoksa skip)", () => {
       });
 
       const f24 = sonuc.gt.aylikToplam[24] ?? Array(12).fill(0);
+      const f27 = sonuc.gt.aylikToplam[27] ?? Array(12).fill(0);
       assert.notEqual(f24[0], 0);
-      for (let i = 1; i < 12; i++) assert.equal(f24[i], 0);
+      for (let i = 1; i < 12; i++) {
+        assert.equal(f24[i], f24[0], `F24 ay ${i + 1} = Ocak devreden stok`);
+        assert.equal(f27[i], f27[0], `F27 ay ${i + 1} = Ocak devreden stok`);
+      }
+      const aug = v2OzetDeger(sonuc.gt, 24, 8, null);
+      const dec = v2OzetDeger(sonuc.gt, 24, 12, null);
+      assert.equal(aug, dec);
+      assert.notEqual(aug, 0);
+      assert.equal(v2OzetDeger(sonuc.gt, 27, 8, null), v2OzetDeger(sonuc.gt, 27, 12, null));
+      const gt = sonuc.gt;
+      for (const ay of [1, 8, 12]) {
+        const h60101 = gtYtdHesap(gt, "60101", ay);
+        const h601011 = gtYtdHesap(gt, "601011", ay);
+        const h601012 = gtYtdHesap(gt, "601012", ay);
+        assert.ok(Math.abs(h60101 - (h601011 + h601012)) < 1, `60101 @${ay}`);
+        const h60102 = gtYtdHesap(gt, "60102", ay);
+        const h601021 = gtYtdHesap(gt, "601021", ay);
+        const h601022 = gtYtdHesap(gt, "601022", ay);
+        assert.ok(Math.abs(h60102 - (h601021 + h601022)) < 1, `60102 @${ay}`);
+      }
       assert.ok(
         sonuc.uyarilar.some((u) => u.includes("mizan 01211 kapanış")),
         "devreden mizan kapanış uyarısı",
@@ -353,6 +368,10 @@ describe("kpkDevredenZincir integration (data yoksa skip)", () => {
         !sonuc.uyarilar.some((u) => u.includes("motor vs mizan 01212")),
         "motor recon uyarısı olmamalı (mizan birincil)",
       );
+      const kd = devredenKpkOcakOzet(
+        devredenKpkOcakFromMizanKapanis(mizanFull, 2026),
+      );
+      assert.ok(kd.satir24Toplam > 0, "601012 devreden pozitif (01211 kapanış negatif)");
     } catch {
       return;
     }

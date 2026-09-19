@@ -58,6 +58,8 @@ function priorityFor(route: string): number {
   ) {
     return 0.9;
   }
+  if (route === "/sinav/tfrs-17") return 0.88;
+  if (route === "/sinav") return 0.86;
   if (route === "/sigorta/tsb") return 0.84;
   if (
     route === "/sigorta/kanal-prim" ||
@@ -84,6 +86,7 @@ function priorityFor(route: string): number {
 function changeFreqFor(route: string): MetadataRoute.Sitemap[0]["changeFrequency"] {
   if (route === "/") return "weekly";
   if (TSB_ROUTES.has(route)) return "weekly";
+  if (route === "/sinav" || route.startsWith("/sinav/")) return "weekly";
   if (route.startsWith("/blog/")) return "monthly";
   return "monthly";
 }

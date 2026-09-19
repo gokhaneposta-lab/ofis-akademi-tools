@@ -95,6 +95,28 @@ export default function FinansSigortaPage() {
           </div>
         </section>
 
+        <section className="mb-8 rounded-2xl border-2 border-slate-800/80 bg-gradient-to-b from-slate-50 to-white p-5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <span className="inline-flex items-center rounded-full bg-slate-900 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-white">
+                Yeni · Ücretsiz sınav
+              </span>
+              <h2 className="mt-2 text-lg font-bold text-gray-900 sm:text-xl">
+                TFRS 17 Deneme Sınavı — 50 soru, 60 dakika
+              </h2>
+              <p className="mt-1 text-[13px] text-gray-600 sm:text-sm">
+                300 soruluk havuzdan rastgele deneme. Giriş gerekmez; skor ve açıklamalar anında.
+              </p>
+            </div>
+            <Link
+              href="/sinav/tfrs-17"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition hover:bg-slate-800 sm:text-sm"
+            >
+              Sınava başla →
+            </Link>
+          </div>
+        </section>
+
         <section className="mb-10" aria-labelledby="tsb-sektor-baslik">
           <h2
             id="tsb-sektor-baslik"

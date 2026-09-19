@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { site } from "@/components/siteUi";
 
-type ExamMeta = {
+export type ExamMeta = {
   slug: string;
   title: string;
   description: string | null;
@@ -17,13 +17,20 @@ type ExamMeta = {
   ready: boolean;
 };
 
-export default function ExamLandingClient({ slug }: { slug: string }) {
+export default function ExamLandingClient({
+  slug,
+  initialExam,
+}: {
+  slug: string;
+  initialExam?: ExamMeta | null;
+}) {
   const router = useRouter();
-  const [exam, setExam] = useState<ExamMeta | null>(null);
+  const [exam, setExam] = useState<ExamMeta | null>(initialExam ?? null);
   const [error, setError] = useState("");
   const [starting, setStarting] = useState(false);
 
   useEffect(() => {
+    if (initialExam) return;
     void (async () => {
       const res = await fetch(`/api/exams/${slug}`);
       const data = (await res.json()) as { exam?: ExamMeta; error?: string };
@@ -33,7 +40,7 @@ export default function ExamLandingClient({ slug }: { slug: string }) {
       }
       setExam(data.exam);
     })();
-  }, [slug]);
+  }, [slug, initialExam]);
 
   async function start() {
     setStarting(true);
@@ -131,6 +138,28 @@ export default function ExamLandingClient({ slug }: { slug: string }) {
             çalıştırın.
           </p>
         ) : null}
+
+        <section className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-5 text-sm text-slate-700">
+          <h2 className="text-base font-semibold text-slate-900">
+            Bu sınav kimler için?
+          </h2>
+          <p className="mt-2 leading-relaxed">
+            Sigorta ve finans profesyonelleri, aktüerya / muhasebe ekipleri ve TFRS 17
+            (IFRS 17) sertifika veya işe alım hazırlığı yapanlar için ücretsiz online
+            deneme. CSM, RA, PAA, LIC/LRC ve gelir tablosu kavramlarını pratik sorularla
+            pekiştirirsiniz.
+          </p>
+          <p className="mt-3 text-xs text-slate-500">
+            İlgili kaynaklar:{" "}
+            <Link href="/blog/tfrs-17-yeni-sigorta-mali-tablosu-rehberi" className="text-emerald-800 underline">
+              IFRS 17 / TFRS 17 rehberi
+            </Link>
+            {" · "}
+            <Link href="/finans-sigorta" className="text-emerald-800 underline">
+              Finans &amp; Sigorta
+            </Link>
+          </p>
+        </section>
       </main>
     </div>
   );

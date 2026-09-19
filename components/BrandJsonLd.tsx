@@ -24,6 +24,8 @@ export default function BrandJsonLd({ baseUrl }: BrandJsonLdProps) {
       "Finansal Raporlama",
       "Sigorta KPI",
       "IFRS 17",
+      "TFRS 17",
+      "TFRS 17 deneme sınavı",
       "Power Query",
     ],
     founder: {

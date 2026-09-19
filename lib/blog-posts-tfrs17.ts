@@ -308,6 +308,7 @@ export const BLOG_POSTS_TFRS17: BlogPost[] = [
         type: "links",
         title: "Finans & Sigorta — ilgili başlıklar",
         items: [
+          { label: "TFRS 17 Deneme Sınavı (ücretsiz)", href: "/sinav/tfrs-17" },
           { label: "Finans & Sigorta ana hub", href: "/finans-sigorta" },
           { label: "Kazanılmış prim", href: "/finans-sigorta/kazanilmis-prim" },
           { label: "KPK (kazanılmamış prim karşılığı)", href: "/finans-sigorta/kazanilmamis-prim-karsiligi" },

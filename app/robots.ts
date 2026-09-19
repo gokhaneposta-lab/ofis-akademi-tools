@@ -20,6 +20,9 @@ export default function robots(): MetadataRoute.Robots {
           "/api/butce",
           "/newsletter-admin",
           "/api/newsletter-admin",
+          // Misafir sınav oturumları — index edilmesin
+          "/sinav/*/attempt/",
+          "/sinav/*/result/",
         ],
       },
     ],

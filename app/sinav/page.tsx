@@ -3,11 +3,40 @@ import Link from "next/link";
 import { site } from "@/components/siteUi";
 import { isExamDbConfigured } from "@/lib/exam/db";
 import { listActiveExams } from "@/lib/exam/queries";
+import { canonicalUrl, getSiteUrl } from "@/lib/site";
+import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
+
+const BASE = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Sınavlar",
+  title: "Online Deneme Sınavları — TFRS 17 & Finans | Ofis Akademi",
   description:
-    "Ofis Akademi online deneme sınavları. TFRS 17 ve ileride Excel, finans, muhasebe sınavları.",
+    "Ücretsiz online deneme sınavları. TFRS 17 (IFRS 17) finans sertifika hazırlık sınavı: 50 soru, 60 dakika, anında sonuç. Giriş gerekmez.",
+  keywords: [
+    "TFRS 17 sınav",
+    "IFRS 17 deneme sınavı",
+    "TFRS 17 deneme",
+    "sigorta muhasebe sınavı",
+    "finans sertifika hazırlık",
+    "online deneme sınavı",
+  ],
+  alternates: {
+    canonical: canonicalUrl("/sinav"),
+  },
+  openGraph: {
+    title: "Online Deneme Sınavları — TFRS 17 | Ofis Akademi",
+    description:
+      "Ücretsiz TFRS 17 deneme sınavı ve diğer finans/sigorta sınavları. Giriş gerekmez, anında sonuç.",
+    url: `${BASE}/sinav`,
+    siteName: "Ofis Akademi",
+    locale: "tr_TR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Online Deneme Sınavları | Ofis Akademi",
+    description: "TFRS 17 deneme sınavı — ücretsiz, online, anında sonuç.",
+  },
 };
 
 export const dynamic = "force-dynamic";
@@ -25,6 +54,12 @@ export default async function SinavHubPage() {
 
   return (
     <div className={site.pageBg}>
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Ana Sayfa", path: "/" },
+          { name: "Sınavlar", path: "/sinav" },
+        ]}
+      />
       <header className={site.pageHeader}>
         <div className={site.pageHeaderInner}>
           <Link href="/" className={site.backLink}>
@@ -33,7 +68,8 @@ export default async function SinavHubPage() {
           <h1 className={site.pageTitle}>Sınavlar</h1>
           <p className={site.pageLead}>
             Profesyonel deneme sınavları. Giriş gerekmez; sonuç sunucu tarafında
-            hesaplanır.
+            hesaplanır. TFRS 17 (IFRS 17) finans sertifika hazırlık sınavı ile
+            başlayın.
           </p>
         </div>
       </header>

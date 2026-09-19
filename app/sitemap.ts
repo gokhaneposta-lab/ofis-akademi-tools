@@ -18,6 +18,8 @@ const HUB_ROUTES = [
   "/egitimler/temel",
   "/egitimler/orta",
   "/egitimler/ileri",
+  "/sinav",
+  "/sinav/tfrs-17",
   "/formul-kutuphanesi",
   "/finans-sigorta",
   "/sigorta/tsb",

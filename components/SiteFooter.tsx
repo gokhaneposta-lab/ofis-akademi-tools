@@ -7,6 +7,7 @@ const quickLinks = [
   { label: "Sektör verileri (TSB)", href: "/sigorta/tsb" },
   { label: "Finans & Sigorta KPI", href: "/finans-sigorta" },
   { label: "Ofis Araçları", href: "/excel-araclari" },
+  { label: "Sınavlar", href: "/sinav" },
   { label: "Eğitimler", href: "/egitimler" },
   { label: "Blog", href: "/blog" },
   { label: "Formül Kütüphanesi", href: "/formul-kutuphanesi" },

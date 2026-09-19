@@ -31,7 +31,10 @@
     "subscription:sprint2-smoke": "npx --yes tsx scripts/subscription-sprint2-smoke.ts",
     "subscription:sprint3-smoke": "npx --yes tsx scripts/subscription-sprint3-smoke.ts",
     "subscription:migrate-legacy": "npx --yes tsx scripts/subscription-migrate-legacy.ts",
-    "subscription:campaign-smoke": "npx --yes tsx scripts/subscription-campaign-smoke.ts"
+    "subscription:campaign-smoke": "npx --yes tsx scripts/subscription-campaign-smoke.ts",
+    "exam:seed": "npx --yes tsx scripts/exam-seed.ts",
+    "exam:smoke": "npx --yes tsx scripts/exam-smoke.ts",
+    "exam:import-xlsx": "npx --yes tsx scripts/exam-import-xlsx.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

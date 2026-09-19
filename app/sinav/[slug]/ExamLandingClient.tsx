@@ -88,11 +88,6 @@ export default function ExamLandingClient({ slug }: { slug: string }) {
         </div>
       </header>
       <main className={site.main + " space-y-5"}>
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-950">
-          V1 soru bankası geliştirme/test amaçlı <strong>dummy</strong> sorular içerir.
-          Gerçek TFRS 17 içeriği değildir; daha sonra gerçek banka ile değiştirilecektir.
-        </div>
-
         <dl className="grid gap-3 rounded-xl border border-slate-200/80 bg-white p-5 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-xs text-slate-500">Soru sayısı</dt>

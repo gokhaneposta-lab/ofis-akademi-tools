@@ -45,6 +45,8 @@ export async function GET(_req: Request, ctx: Ctx) {
     passingScore: exam.passing_score,
   });
 
+  const hasDummy = review.some((r) => r.is_dummy);
+
   return NextResponse.json({
     ok: true,
     exam: {
@@ -61,7 +63,8 @@ export async function GET(_req: Request, ctx: Ctx) {
     },
     ...breakdown,
     review,
-    dummyNotice:
-      "Bu sonuç geliştirme/test bankası (dummy) sorularına dayanabilir. Gerçek TFRS 17 bankası ayrı aşamada yüklenecektir.",
+    dummyNotice: hasDummy
+      ? "Bu denemede test (dummy) sorular yer alıyor olabilir."
+      : undefined,
   });
 }

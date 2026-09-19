@@ -166,6 +166,12 @@ export default function HomeClient() {
                 Finans &amp; Sigorta
               </Link>
               <Link
+                href="/sinav"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-emerald-600 bg-white/70 px-5 py-3 text-sm font-medium text-emerald-900 shadow-sm transition hover:bg-white hover:border-emerald-700"
+              >
+                Sınavlar
+              </Link>
+              <Link
                 href="/sigorta/tsb"
                 className="inline-flex shrink-0 items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
               >

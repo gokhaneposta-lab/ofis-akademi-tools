@@ -42,6 +42,29 @@ function hasFlag(name: string): boolean {
   return process.argv.includes(`--${name}`);
 }
 
+/** Excel/CSV bazen UTF-8'i Latin-1 gibi okur (SÄ±nav → Sınav). */
+function fixMojibake(s: string): string {
+  if (!s) return s;
+  // Tipik bozulma: Ä± Å Ã§ Ã¶ Ã¼ Ä
+  if (!/[ÃÄÅ]/.test(s)) return s;
+  try {
+    const fixed = Buffer.from(s, "latin1").toString("utf8");
+    if (fixed.includes("\uFFFD")) return s;
+    return fixed;
+  } catch {
+    return s;
+  }
+}
+
+function normalizeRow(row: Row): Row {
+  const out: Row = {};
+  for (const [k, v] of Object.entries(row)) {
+    const key = fixMojibake(String(k));
+    out[key] = typeof v === "string" ? fixMojibake(v) : v;
+  }
+  return out;
+}
+
 function cell(row: Row, ...keys: string[]): string {
   for (const k of keys) {
     if (row[k] != null && String(row[k]).trim() !== "") return String(row[k]).trim();
@@ -117,8 +140,13 @@ async function main() {
   const wb = XLSX.read(buf, { type: "buffer" });
   const sheetName = wb.SheetNames[0]!;
   const sheet = wb.Sheets[sheetName]!;
-  const rows = XLSX.utils.sheet_to_json<Row>(sheet, { defval: "" });
+  const rows = XLSX.utils
+    .sheet_to_json<Row>(sheet, { defval: "" })
+    .map(normalizeRow);
   console.log(`Sayfa: ${sheetName}, satır: ${rows.length}`);
+  if (rows[0]) {
+    console.log("Kolonlar:", Object.keys(rows[0]).join(" | "));
+  }
 
   let ok = 0;
   let skip = 0;

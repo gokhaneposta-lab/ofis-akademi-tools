@@ -13,7 +13,7 @@ const BASE = getSiteUrl();
 const TFRS17_SEO = {
   title: "TFRS 17 Deneme Sınavı (Ücretsiz) — 50 Soru, 60 Dakika | Ofis Akademi",
   description:
-    "Ücretsiz TFRS 17 (IFRS 17) online deneme sınavı. 300 soruluk havuzdan rastgele 50 soru, 60 dakika, %70 baraj. Giriş gerekmez; anında skor ve açıklama.",
+    "Ücretsiz TFRS 17 (IFRS 17) online deneme sınavı. 450 soruluk havuzdan rastgele 50 soru, 60 dakika, %70 baraj. Giriş gerekmez; anında skor ve açıklama.",
   keywords: [
     "TFRS 17 sınav",
     "TFRS 17 deneme sınavı",

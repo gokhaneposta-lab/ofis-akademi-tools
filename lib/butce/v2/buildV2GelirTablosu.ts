@@ -26,7 +26,7 @@ import {
 } from "../gelir/kpkDevreden";
 import { buildDevredenKpkZincir } from "../kpk/kpkDevredenZincir";
 import {
-  devredenMuallakOcakFromMizan,
+  buildDevredenMuallakZincir,
   devredenMuallakOcakOzet,
 } from "../gelir/muallakDevreden";
 import { buildFaaliyetGiderFromMizanArtis } from "./faaliyetGiderFromMizanArtis";
@@ -270,15 +270,26 @@ export function buildV2GelirTablosu(opts: {
   uyarilar.push(...fg.uyarilar);
 
   const mizanFull = opts.mizanAylikFull ?? [];
-  const muallakDevredenOcak = devredenMuallakOcakFromMizan(mizanFull, butceYili);
+  const muallakDevredenZincir = buildDevredenMuallakZincir({
+    butceYili,
+    mizan: opts.mizan,
+    mizanAylikFull: mizanFull,
+    oranAyar: opts.oranAyar,
+    kalemYilBirlestirme: opts.kalemYilBirlestirme,
+  });
+  const muallakDevredenOcak = muallakDevredenZincir.devredenOcak;
   const mdOzet = devredenMuallakOcakOzet(muallakDevredenOcak);
   if (mdOzet.bransSayisi === 0) {
     uyarilar.push(
-      `${butceYili - 1} Aralık devreden muallak mizanı bulunamadı — 611012/611022 prim×oran yoluna düşüldü.`,
+      `${butceYili - 1} devreden muallak kaynağı bulunamadı — 611012/611022 boş.`,
+    );
+  } else if (muallakDevredenZincir.kaynakModu === "mizan_kapanis") {
+    uyarilar.push(
+      `Devreden muallak: 31.12.${butceYili - 1} cari mizan 611011/611021 → ters işaretle yalnızca Ocak (611012=${Math.round(mdOzet.satir126Toplam).toLocaleString("tr-TR")} TL).`,
     );
   } else {
     uyarilar.push(
-      `Devreden muallak: ${butceYili - 1} Aralık mizan → yalnızca Ocak (611012=${Math.round(mdOzet.satir126Toplam).toLocaleString("tr-TR")} TL, ${mdOzet.bransSayisi} branş).`,
+      `Devreden muallak: ${butceYili - 1} EYE (${muallakDevredenZincir.eyeAnchorAy}. ay gerçek + yıl sonu oranı) → ters işaretle yalnızca Ocak (611012=${Math.round(mdOzet.satir126Toplam).toLocaleString("tr-TR")} TL).`,
     );
   }
 

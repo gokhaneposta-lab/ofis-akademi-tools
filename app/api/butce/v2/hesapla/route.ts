@@ -30,8 +30,11 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   let body: Partial<V2VarsayimlarStore> = {};
+  let muallakYumusatma = false;
   try {
-    body = (await request.json()) as typeof body;
+    const raw = (await request.json()) as typeof body & { muallakYumusatma?: boolean };
+    body = raw;
+    muallakYumusatma = raw.muallakYumusatma === true;
   } catch {
     body = {};
   }
@@ -120,6 +123,7 @@ export async function POST(request: Request) {
       kalemYilBirlestirme: oranPaket.kalemYilBirlestirme,
       kpkVade,
       kapanisTahmin,
+      muallakYumusatma,
     });
 
     return NextResponse.json({

@@ -3,6 +3,7 @@ import { HAZINE_BRANS_SIRASI } from "../config/brans";
 import type { MizanAylikRow, MizanRow, OranAyarStore, OranYilBirlestirmeStore } from "../types";
 import { ORAN_KALEM_MIZAN } from "../oran/oranKalemLoader";
 import { MizanOranServisi } from "../oran/mizanOranlar";
+import { buildMuallakYumusatilmisOranlar } from "../oran/muallakOranYumusatma";
 
 /**
  * GT (gelir tablosu) formül-graf motoru.
@@ -74,6 +75,7 @@ export class GelirTablosuMotoru {
     mizanAylikFull: MizanAylikRow[] = [],
     v2Metodoloji = false,
     kalemYilBirlestirme: OranYilBirlestirmeStore = {},
+    muallakYumusatma = false,
   ) {
     this.oranServisi = new MizanOranServisi(
       mizan,
@@ -91,6 +93,16 @@ export class GelirTablosuMotoru {
         byHucre.set(hucre, map);
       }
       this.oranByAyHucreBrans.set(ay, byHucre);
+    }
+    if (muallakYumusatma) {
+      const ham = new Map<number, ReadonlyMap<string, number>>();
+      for (let ay = 1; ay <= 12; ay++) {
+        ham.set(ay, this.oranByAyHucreBrans.get(ay)?.get("F451") ?? new Map());
+      }
+      const yumusak = buildMuallakYumusatilmisOranlar(this.oranServisi, ham);
+      for (let ay = 1; ay <= 12; ay++) {
+        this.oranByAyHucreBrans.get(ay)?.set("F451", yumusak.get(ay) ?? new Map());
+      }
     }
   }
 

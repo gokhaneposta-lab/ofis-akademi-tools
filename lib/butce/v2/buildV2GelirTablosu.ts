@@ -198,6 +198,8 @@ export function buildV2GelirTablosu(opts: {
   /** V3: branş prim hedeflerini doğrudan kullan (A motoru atlanır). */
   primHedefleriOverride?: Record<string, number>;
   endirektPrimOverride?: Record<string, number>;
+  /** Geri alınabilir: yalnız 611011/F451 aylık oran yumuşatma. */
+  muallakYumusatma?: boolean;
 }): V2GelirTablosuSonuc {
   const uyarilar: string[] = [];
   const butceYili = opts.varsayimlar.butceYili;
@@ -327,6 +329,7 @@ export function buildV2GelirTablosu(opts: {
     muallakDevredenOcak: mdOzet.bransSayisi > 0 ? muallakDevredenOcak : undefined,
     kpkDevredenOcak: kdOzet.bransSayisi > 0 ? kpkDevredenOcak : undefined,
     tarifeMap: opts.tarifeMap,
+    muallakYumusatma: opts.muallakYumusatma,
   });
 
   const acilis = resolveAcilisBanka({
@@ -371,6 +374,7 @@ export function buildV2GelirTablosu(opts: {
     muallakDevredenOcak: mdOzet.bransSayisi > 0 ? muallakDevredenOcak : undefined,
     kpkDevredenOcak: kdOzet.bransSayisi > 0 ? kpkDevredenOcak : undefined,
     tarifeMap: opts.tarifeMap,
+    muallakYumusatma: opts.muallakYumusatma,
   });
 
   // 603 (F38) dağılımını NET NAKİT AKIŞI payıyla yeniden hesapla.

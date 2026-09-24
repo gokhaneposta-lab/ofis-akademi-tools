@@ -77,6 +77,7 @@ export default function V2DashboardClient() {
   const [yilAgirliklari, setYilAgirliklari] = useState(() =>
     referansYilAgirliklari("Son 2 Yıl Ortalaması (2024-2025)"),
   );
+  const [muallakYumusatma, setMuallakYumusatma] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -161,6 +162,7 @@ export default function V2DashboardClient() {
       giderArtisOrani: 0,
       faaliyetGiderButce,
       aylikGetiriOrani: getiriPct.map((x) => x / 100),
+      muallakYumusatma,
     };
   }
 
@@ -503,6 +505,19 @@ export default function V2DashboardClient() {
             </label>
           ))}
         </div>
+
+        <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+          <input
+            type="checkbox"
+            checked={muallakYumusatma}
+            onChange={(e) => setMuallakYumusatma(e.target.checked)}
+          />
+          Muallak oran yumuşatma: <strong>611011 / 60001</strong> aylık oranlarını
+          güvenilir baz ve mevsim eğrisiyle dengeler
+        </label>
+        <p className="ml-6 mt-1 text-xs text-slate-500">
+          Kapatıldığında mevcut V2 muallak hesabına geri döner.
+        </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
           <button

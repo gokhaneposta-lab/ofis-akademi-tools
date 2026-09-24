@@ -118,6 +118,8 @@ export function buildGelirTablosu(opts: {
   kpkDevredenOcak?: Map<string, KpkDevredenOcak>;
   /** 2027 Y-1 EYE prim serisi (Faz 2). */
   tarifeMap?: TarifeMapRow[];
+  /** Geri alınabilir V2 seçeneği: F451 aylık oran yumuşatma. */
+  muallakYumusatma?: boolean;
 }): GelirTablosuSonuc {
   const {
     mizan,
@@ -140,6 +142,7 @@ export function buildGelirTablosu(opts: {
     muallakDevredenOcak,
     kpkDevredenOcak,
     tarifeMap,
+    muallakYumusatma = false,
   } = opts;
 
   const satirlar = gosterimSatirlari ?? GT_GOSTERIM_SATIRLARI;
@@ -191,6 +194,7 @@ export function buildGelirTablosu(opts: {
     mizanAylikFull,
     v2Metodoloji,
     kalemYilBirlestirme,
+    muallakYumusatma,
   );
 
   const branslar: GelirBransKolon[] = [];

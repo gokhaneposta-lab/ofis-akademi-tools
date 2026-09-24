@@ -34,6 +34,12 @@ export const DENGELEME_NET_KAZANILMIS_ORAN = -0.12;
 /** KPK SGK cari (601031 / F29) = 601011 (F23) × oran — bütçe V2 standart. */
 export const KPK_SGK_KPK_CARI_ORAN = 0.08;
 
+/** GT 60003 / F20: yalnızca 715 brüt prim × %8 — SGK'ya aktarılan primler. */
+export const SGK_AKTARILAN_PRIM_ORAN = 0.08;
+
+/** SGK prim aktarımı ve KPK SGK payı uygulanan Trafik branşı. */
+export const SGK_TRAFIK_BRANS_KODU = "715";
+
 export const AYLAR = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
   "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",

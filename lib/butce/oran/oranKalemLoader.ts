@@ -71,6 +71,11 @@ const KOD_GT: Record<string, string> = {
 };
 
 const MANUEL: Record<string, Partial<OranKalemSpec>> = {
+  /** SGK hariç reasürans; 60003 ayrı F20 satırında hesaplanır. */
+  "0112": {
+    pay: ["60002"],
+    baz: ["60001"],
+  },
   "016": {
     pay: ["605"],
     baz: ["61001", "611011"],
@@ -179,7 +184,7 @@ const CARPIM_MAP: Record<string, string> = {
 
 const VARSAYILAN_ORAN: Record<string, number> = {
   "0112": -0.6,
-  "0113": -0.02,
+  "0113": -0.08,
   "0211": -0.45,
   "0212": -0.15,
   "016": 0,
@@ -264,10 +269,13 @@ export function buildOranKalemMizan(): Record<string, OranKalemSpec> {
   }
 
   out["0113"] = {
-    ad: "SGK'ya Aktarılan Primler",
+    ad: "SGK'ya Aktarılan Primler (715 trafik)",
     pay: ["60003"],
     baz: ["60001"],
     yil_birlestirme: [[1, 0.5], [2, 0.25], [3, 0.15], [4, 0.1]],
+    gt_hucre: "F310",
+    carpim: CARPIM_BRUT_PRIM,
+    excel_carpim: "F11*F310",
   };
 
   if (!out.F300) {

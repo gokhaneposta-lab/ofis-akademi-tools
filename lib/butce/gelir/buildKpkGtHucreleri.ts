@@ -20,7 +20,8 @@ export function buildKpkGtHucreleri(
   const f24 = kpkDev != null ? kpkDev.satir24 : (gt[24]?.[ayIndex] ?? 0);
   const f26 = gt[26]?.[ayIndex] ?? 0;
   const f27 = kpkDev != null ? kpkDev.satir27 : (gt[27]?.[ayIndex] ?? 0);
-  const f29 = sgk715 ? f23 * KPK_SGK_KPK_CARI_ORAN : (gt[29]?.[ayIndex] ?? 0);
+  /** 601031: Trafik cari KPK tutarının %8 SGK payı, GT gider işaretiyle. */
+  const f29 = sgk715 ? -f23 * KPK_SGK_KPK_CARI_ORAN : (gt[29]?.[ayIndex] ?? 0);
   const f30 =
     sgk715 && kpkDev != null ? kpkDev.satir30 : sgk715 ? (gt[30]?.[ayIndex] ?? 0) : 0;
   const f22 = f23 + f24;

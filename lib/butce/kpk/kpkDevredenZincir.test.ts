@@ -132,7 +132,7 @@ describe("kpkDevredenZincir Faz 2", () => {
     assert.equal(devredenKpkOcakFromMizanKapanis(rows715, 2026).get("715")!.satir30, 80_000);
   });
 
-  it("f29_sgk_cari: yalnızca 715 → F29 = F23 × 0.08", () => {
+  it("f29_sgk_cari: yalnızca 715 → F29 = −F23 × 0.08", () => {
     const b715: KpkBransSonuc = {
       bransKodu: "715",
       cariStok: Array(13).fill(0),
@@ -141,7 +141,7 @@ describe("kpkDevredenZincir Faz 2", () => {
       gtYillik: {},
     };
     const h715 = buildKpkGtHucreleri(b715, undefined, 0);
-    assert.equal(h715[29], -80_000);
+    assert.equal(h715[29], 80_000);
 
     const b701: KpkBransSonuc = {
       bransKodu: "701",
@@ -167,7 +167,7 @@ describe("kpkDevredenZincir Faz 2", () => {
     for (let i = 0; i < 12; i++) {
       const h = buildKpkGtHucreleri(brans, dev, i);
       assert.equal(h[30], 241_000);
-      assert.equal(h[29], -8);
+      assert.equal(h[29], 8);
     }
   });
 

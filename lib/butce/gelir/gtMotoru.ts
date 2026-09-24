@@ -1,5 +1,6 @@
 import gtHaritaRaw from "../data/gt_excel_harita.json";
 import { HAZINE_BRANS_SIRASI } from "../config/brans";
+import { SGK_AKTARILAN_PRIM_ORAN, SGK_TRAFIK_BRANS_KODU } from "../config/constants";
 import type { MizanAylikRow, MizanRow, OranAyarStore, OranYilBirlestirmeStore } from "../types";
 import { ORAN_KALEM_MIZAN } from "../oran/oranKalemLoader";
 import { MizanOranServisi } from "../oran/mizanOranlar";
@@ -108,6 +109,10 @@ export class GelirTablosuMotoru {
 
   private oranDeger(hucre: string, brans: string, ay = 12): number {
     const norm = hucre.replace("$", "");
+    // 60003 / F20: SGK'ya aktarılan prim yalnızca Trafik (715) branşında oluşur.
+    if (norm === "F310") {
+      return brans === SGK_TRAFIK_BRANS_KODU ? -SGK_AKTARILAN_PRIM_ORAN : 0;
+    }
     // DERK (F349): H1 kümülatif 0131 oranı 2025 gibi ağır yıllarda şişer.
     // YE net 013/prim; aylara prim mevsimiyle yayılır.
     const oranAy = norm === "F349" ? 12 : ay;
@@ -145,6 +150,9 @@ export class GelirTablosuMotoru {
       if (satir in disHucreler) return disHucreler[satir] ?? 0;
       if (satir === 11) return brutPrim;
       if (satir === 15) return endirektPrim;
+      if (satir === 20) {
+        return brutPrim * self.oranDeger("F310", brans, oranAy);
+      }
       if (memo.has(satir)) return memo.get(satir)!;
       if (zincir.has(satir)) return 0;
       zincir.add(satir);

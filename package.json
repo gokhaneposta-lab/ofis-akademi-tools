@@ -34,7 +34,10 @@
     "subscription:campaign-smoke": "npx --yes tsx scripts/subscription-campaign-smoke.ts",
     "exam:seed": "npx --yes tsx scripts/exam-seed.ts",
     "exam:smoke": "npx --yes tsx scripts/exam-smoke.ts",
-    "exam:import-xlsx": "npx --yes tsx scripts/exam-import-xlsx.ts"
+    "exam:import-xlsx": "npx --yes tsx scripts/exam-import-xlsx.ts",
+    "exam:audit": "npx --yes tsx scripts/exam-audit-bank.ts",
+    "exam:dedupe": "npx --yes tsx scripts/exam-dedupe-bank.ts",
+    "exam:test": "npx --yes tsx --test lib/exam/selectQuestions.test.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

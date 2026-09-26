@@ -11,6 +11,8 @@ import {
   startExamAttempt,
   upsertAnswer,
 } from "../lib/exam/queries";
+import { normalizeQuestionText } from "../lib/exam/dedupe";
+import { parseSelectionRules, sectionKeyForCategory } from "../lib/exam/sections";
 
 async function main() {
   const exam = await getExamBySlug("tfrs-17");
@@ -25,6 +27,18 @@ async function main() {
     throw new Error("LEAK: public payload contains secrets");
   }
   console.log("public questions", qs.length, "no leak ok");
+
+  const texts = new Set(qs.map((q) => normalizeQuestionText(q.question_text)));
+  if (texts.size !== qs.length) throw new Error(`DUPLICATE: ${qs.length - texts.size} tekrar eden soru`);
+  const rules = parseSelectionRules(exam.selection_rules);
+  if (rules) {
+    const dist: Record<string, number> = {};
+    for (const q of qs) {
+      const key = sectionKeyForCategory(q.category, rules) ?? "(yok)";
+      dist[key] = (dist[key] ?? 0) + 1;
+    }
+    console.log("konu dağılımı", dist);
+  }
 
   const first = qs[0]!;
   await upsertAnswer({

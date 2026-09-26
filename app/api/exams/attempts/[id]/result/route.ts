@@ -7,6 +7,7 @@ import {
   loadResultReview,
 } from "@/lib/exam/queries";
 import { computeScore } from "@/lib/exam/scoring";
+import { parseSelectionRules, sectionKeyForCategory } from "@/lib/exam/sections";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,6 +48,23 @@ export async function GET(_req: Request, ctx: Ctx) {
 
   const hasDummy = review.some((r) => r.is_dummy);
 
+  const rules = parseSelectionRules(exam.selection_rules);
+  const sections = rules
+    ? rules.sections
+        .map((s) => {
+          const items = review.filter(
+            (r) => sectionKeyForCategory(r.category, rules) === s.key,
+          );
+          return {
+            key: s.key,
+            label: s.label,
+            total: items.length,
+            correct: items.filter((r) => r.is_correct === true).length,
+          };
+        })
+        .filter((s) => s.total > 0)
+    : [];
+
   return NextResponse.json({
     ok: true,
     exam: {
@@ -62,6 +80,7 @@ export async function GET(_req: Request, ctx: Ctx) {
       expires_at: attempt.expires_at,
     },
     ...breakdown,
+    sections,
     review,
     dummyNotice: hasDummy
       ? "Bu denemede test (dummy) sorular yer alıyor olabilir."

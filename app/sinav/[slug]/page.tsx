@@ -3,6 +3,7 @@ import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 import ExamQuizJsonLd from "@/components/exam/ExamQuizJsonLd";
 import { isExamDbConfigured } from "@/lib/exam/db";
 import { countActiveQuestions, getExamBySlug } from "@/lib/exam/queries";
+import { parseSelectionRules } from "@/lib/exam/sections";
 import { canonicalUrl, getSiteUrl } from "@/lib/site";
 import ExamLandingClient, { type ExamMeta } from "./ExamLandingClient";
 
@@ -13,7 +14,7 @@ const BASE = getSiteUrl();
 const TFRS17_SEO = {
   title: "TFRS 17 Deneme Sınavı (Ücretsiz) — 50 Soru, 60 Dakika | Ofis Akademi",
   description:
-    "Ücretsiz TFRS 17 (IFRS 17) online deneme sınavı. 450 soruluk havuzdan rastgele 50 soru, 60 dakika, %70 baraj. Giriş gerekmez; anında skor ve açıklama.",
+    "Ücretsiz SEDDK TFRS 17 Finans sertifika deneme sınavı. 50 soru, 60 dakika: TFRS 17 %40, Muhasebe %30, Ekonomi %15, Sigortacılık Mevzuatı %15. Giriş gerekmez; konu bazında anında sonuç.",
   keywords: [
     "TFRS 17 sınav",
     "TFRS 17 deneme sınavı",
@@ -23,6 +24,8 @@ const TFRS17_SEO = {
     "sigorta muhasebe sınavı",
     "CSM sınav",
     "finans sertifika hazırlık",
+    "SEDDK TFRS 17 sertifika sınavı",
+    "SEDDK sertifika sınavı",
   ],
 };
 
@@ -42,6 +45,10 @@ async function loadExamMeta(slug: string): Promise<ExamMeta | null> {
       passing_score: exam.passing_score,
       bank_size,
       ready: bank_size >= exam.question_count,
+      sections: (parseSelectionRules(exam.selection_rules)?.sections ?? []).map((s) => ({
+        label: s.label,
+        weight: s.weight,
+      })),
     };
   } catch {
     return null;

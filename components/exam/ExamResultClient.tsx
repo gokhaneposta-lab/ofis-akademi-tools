@@ -14,6 +14,7 @@ type ResultPayload = {
   blank_count: number;
   total_questions: number;
   passed: boolean;
+  sections?: { key: string; label: string; total: number; correct: number }[];
   review: ResultQuestionReview[];
   dummyNotice?: string;
   attempt: { status: string };
@@ -115,6 +116,36 @@ export default function ExamResultClient({ attemptId, examSlug }: Props) {
               <dd className="font-semibold text-slate-800">{data.blank_count}</dd>
             </div>
           </dl>
+          {data.sections && data.sections.length > 0 ? (
+            <div className="mt-5">
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Konu bazında
+              </h2>
+              <ul className="space-y-2">
+                {data.sections.map((s) => {
+                  const pct = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
+                  return (
+                    <li key={s.key}>
+                      <div className="flex items-center justify-between gap-3 text-sm">
+                        <span className="text-slate-700">{s.label}</span>
+                        <span className="shrink-0 tabular-nums text-slate-600">
+                          {s.correct}/{s.total} · %{pct}
+                        </span>
+                      </div>
+                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className={`h-full rounded-full ${
+                            pct >= data.exam.passing_score ? "bg-emerald-500" : "bg-amber-500"
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : null}
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
               href={`/sinav/${examSlug}`}

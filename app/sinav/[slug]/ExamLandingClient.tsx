@@ -15,6 +15,7 @@ export type ExamMeta = {
   passing_score: number;
   bank_size: number;
   ready: boolean;
+  sections?: { label: string; weight: number }[];
 };
 
 export default function ExamLandingClient({
@@ -114,9 +115,31 @@ export default function ExamLandingClient({
           </div>
         </dl>
 
+        {exam.sections && exam.sections.length > 0 ? (
+          <section className="rounded-xl border border-slate-200/80 bg-white p-5 text-sm">
+            <h2 className="text-sm font-semibold text-slate-900">Konu dağılımı</h2>
+            <ul className="mt-3 space-y-2">
+              {exam.sections.map((s) => {
+                const approx = (s.weight / 100) * exam.question_count;
+                const countLabel = Number.isInteger(approx)
+                  ? `${approx} soru`
+                  : `${Math.floor(approx)}–${Math.ceil(approx)} soru`;
+                return (
+                  <li key={s.label} className="flex items-center justify-between gap-3">
+                    <span className="text-slate-700">{s.label}</span>
+                    <span className="shrink-0 tabular-nums text-slate-500">
+                      %{s.weight} · {countLabel}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ) : null}
+
         <ul className="list-disc space-y-1 pl-5 text-sm text-slate-600">
           <li>Giriş gerekmez (misafir sınav).</li>
-          <li>Sorular her denemede rastgele seçilir; sıra sabittir.</li>
+          <li>Sorular her denemede konu dağılımına göre rastgele seçilir; aynı soru bir denemede tekrar etmez.</li>
           <li>İleri/geri gezinebilir, cevaplarınız kaydedilir.</li>
           <li>Süre sunucu saatine göre yönetilir.</li>
           <li>Skor yalnızca sınav bitince hesaplanır.</li>

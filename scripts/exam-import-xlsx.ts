@@ -7,6 +7,10 @@
  *
  *   npm run exam:import-xlsx -- --exam tfrs-17 --file "C:/path/sorular.xlsx"
  *   npm run exam:import-xlsx -- --exam tfrs-17 --file "./data/exams/tfrs17.xlsx" --deactivate-dummy
+ *   npm run exam:import-xlsx -- --exam tfrs-17 --file "./yeni.xlsx" --id-offset 450
+ *
+ * --id-offset N   Dosyadaki ID'lere N ekler (1–150 → 451–600); mevcut soruların üzerine yazmayı önler.
+ * Bankada zaten olan (aynı / çok benzer metin) sorular atlanır; --allow-duplicates ile kapatılır.
  *
  * Requires: DATABASE_URL, migration 003 + 004
  */
@@ -15,6 +19,7 @@ import { resolve } from "path";
 import { loadEnvConfig } from "@next/env";
 import { neon } from "@neondatabase/serverless";
 import * as XLSX from "xlsx";
+import { clusterQuestions, stripCopySuffix } from "../lib/exam/dedupe";
 
 loadEnvConfig(process.cwd());
 
@@ -107,6 +112,8 @@ async function main() {
   const examSlug = arg("exam") ?? "tfrs-17";
   const fileArg = arg("file");
   const deactivateDummy = hasFlag("deactivate-dummy");
+  const allowDuplicates = hasFlag("allow-duplicates");
+  const idOffset = Number(arg("id-offset") ?? 0);
 
   if (!fileArg) {
     console.error('Kullanım: npm run exam:import-xlsx -- --exam tfrs-17 --file "C:/.../sorular.xlsx" [--deactivate-dummy]');
@@ -152,12 +159,52 @@ async function main() {
   let skip = 0;
   const errors: string[] = [];
 
+  const fileIdOf = (row: Row): string => {
+    const raw = cell(row, "ID", "Id", "id");
+    return idOffset && raw ? String(Number(raw) + idOffset) : raw;
+  };
+
+  // Bankada ya da dosyanın kendi içinde aynı/çok benzer metin varsa satırı atla
+  const duplicateRows = new Set<number>();
+  const duplicateNotes: string[] = [];
+  if (!allowDuplicates) {
+    const fileIds = new Set(rows.map(fileIdOf));
+    const bankRows = (await sql`
+      SELECT external_id, question_text FROM questions
+      WHERE exam_id = ${exam.id} AND is_active = true
+    `) as { external_id: string | null; question_text: string }[];
+    type Entry = { kind: "bank" | "file"; idx: number; id: string; text: string };
+    const entries: Entry[] = [
+      ...bankRows
+        .filter((b) => !fileIds.has(String(b.external_id)))
+        .map((b) => ({ kind: "bank" as const, idx: -1, id: String(b.external_id), text: b.question_text })),
+      ...rows
+        .map((r, idx) => ({ kind: "file" as const, idx, id: fileIdOf(r), text: cell(r, "Soru") }))
+        .filter((e) => e.text),
+    ];
+    for (const group of clusterQuestions(entries, (e) => e.text)) {
+      if (group.length < 2) continue;
+      const files = group.filter((e) => e.kind === "file");
+      const dropped = group.some((e) => e.kind === "bank") ? files : files.slice(1);
+      if (!dropped.length) continue;
+      const kept = group.find((e) => !dropped.includes(e))!;
+      for (const e of dropped) duplicateRows.add(e.idx);
+      duplicateNotes.push(
+        `${dropped.map((e) => `ID ${e.id}`).join(", ")} ≈ ${kept.kind === "bank" ? "bankadaki" : "dosyadaki"} ID ${kept.id}`,
+      );
+    }
+  }
+
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]!;
-    const externalId = cell(row, "ID", "Id", "id");
+    const externalId = fileIdOf(row);
+    if (duplicateRows.has(i)) {
+      skip += 1;
+      continue;
+    }
     const category = cell(row, "Konu", "Kategori");
     const difficulty = normalizeDifficulty(cell(row, "Zorluk"));
-    const questionText = cell(row, "Soru");
+    const questionText = stripCopySuffix(cell(row, "Soru"));
     const optA = cell(row, "A");
     const optB = cell(row, "B");
     const optC = cell(row, "C");
@@ -275,6 +322,10 @@ async function main() {
 
   console.log(`Import OK: ${ok}, atlanan: ${skip}`);
   console.log(`Aktif gerçek: ${activeReal}, aktif toplam: ${activeAll} (sınav seçim: ${exam.question_count})`);
+  if (duplicateNotes.length) {
+    console.log(`Tekrar nedeniyle atlanan: ${duplicateRows.size}`);
+    for (const n of duplicateNotes.slice(0, 20)) console.log(" -", n);
+  }
   if (errors.length) {
     console.log("İlk hatalar:");
     for (const e of errors.slice(0, 15)) console.log(" -", e);

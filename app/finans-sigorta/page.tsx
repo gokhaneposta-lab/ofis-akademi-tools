@@ -105,7 +105,7 @@ export default function FinansSigortaPage() {
                 TFRS 17 Deneme Sınavı — 50 soru, 60 dakika
               </h2>
               <p className="mt-1 text-[13px] text-gray-600 sm:text-sm">
-                450 soruluk havuzdan rastgele deneme. Giriş gerekmez; skor ve açıklamalar anında.
+                SEDDK Finans sertifika konu dağılımıyla deneme. Giriş gerekmez; konu bazında skor ve açıklamalar anında.
               </p>
             </div>
             <Link

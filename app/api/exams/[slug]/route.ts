@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isExamDbConfigured } from "@/lib/exam/db";
 import { countActiveQuestions, getExamBySlug } from "@/lib/exam/queries";
+import { parseSelectionRules } from "@/lib/exam/sections";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,6 +30,10 @@ export async function GET(_req: Request, ctx: Ctx) {
       passing_score: exam.passing_score,
       bank_size: bankSize,
       ready: bankSize >= exam.question_count,
+      sections: (parseSelectionRules(exam.selection_rules)?.sections ?? []).map((s) => ({
+        label: s.label,
+        weight: s.weight,
+      })),
     },
   });
 }

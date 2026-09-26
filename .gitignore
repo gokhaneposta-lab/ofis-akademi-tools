@@ -49,5 +49,8 @@ next-env.d.ts
 # Bütçe / projeksiyon — şirket içi veri (GT·BL, hedefler)
 /data/butce/private/
 
+# Soru bankası denetim raporları (soru metni içerir)
+/data/exams/audit-*.json
+
 .vercel
 .env*

@@ -1,5 +1,6 @@
 import { requireExamSql } from "./db";
-import { pickRandomQuestionIds } from "./selectQuestions";
+import { selectQuestionIds } from "./selectQuestions";
+import { parseSelectionRules } from "./sections";
 import { computeScore } from "./scoring";
 import type {
   ExamAttemptRow,
@@ -117,12 +118,20 @@ export async function startExamAttempt(exam: ExamRow): Promise<ExamAttemptRow> {
     );
   }
 
-  const idRows = await sql`
-    SELECT id FROM questions
+  const poolRows = await sql`
+    SELECT id, category, question_text FROM questions
     WHERE exam_id = ${exam.id} AND is_active = true
   `;
-  const allIds = (idRows as { id: string }[]).map((r) => String(r.id));
-  const selected = pickRandomQuestionIds(allIds, exam.question_count);
+  const pool = (poolRows as Record<string, unknown>[]).map((r) => ({
+    id: String(r.id),
+    category: String(r.category),
+    question_text: String(r.question_text),
+  }));
+  const selected = selectQuestionIds(
+    pool,
+    exam.question_count,
+    parseSelectionRules(exam.selection_rules),
+  );
 
   const expiresAt = new Date(
     Date.now() + exam.duration_minutes * 60_000,

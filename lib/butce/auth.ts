@@ -67,3 +67,25 @@ export function getButceLoggedInUser(cookieStore: CookieReader): string | undefi
   const user = cookieStore.get(BUTCE_USER_COOKIE)?.value?.trim();
   return user || undefined;
 }
+
+/**
+ * Newsletter Admin yetkisi: `NEWSLETTER_ADMIN_USERS=user1,user2`
+ * Boşsa kimse yetkili sayılmaz (menü + gönderim kapalı).
+ */
+export function parseNewsletterAdminUsers(): Set<string> {
+  const raw = process.env.NEWSLETTER_ADMIN_USERS?.trim() ?? "";
+  const set = new Set<string>();
+  if (!raw) return set;
+  for (const part of raw.split(",")) {
+    const u = part.trim().toLocaleLowerCase("tr-TR");
+    if (u) set.add(u);
+  }
+  return set;
+}
+
+export function isNewsletterAdminUser(username: string | undefined): boolean {
+  if (!username) return false;
+  const allow = parseNewsletterAdminUsers();
+  if (allow.size === 0) return false;
+  return allow.has(username.trim().toLocaleLowerCase("tr-TR"));
+}

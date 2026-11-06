@@ -1,11 +1,28 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import {
   BUTCE_SESSION_COOKIE,
   BUTCE_USER_COOKIE,
   butceSessionToken,
+  getButceLoggedInUser,
   isButceAuthConfigured,
+  isNewsletterAdminUser,
   verifyButceCredentials,
 } from "@/lib/butce/auth";
+
+/** Menü / istemci: oturum + newsletter yetkisi. */
+export async function GET() {
+  const cookieStore = await cookies();
+  const user = getButceLoggedInUser(cookieStore);
+  if (!user) {
+    return NextResponse.json({ authenticated: false, canNewsletterAdmin: false });
+  }
+  return NextResponse.json({
+    authenticated: true,
+    user,
+    canNewsletterAdmin: isNewsletterAdminUser(user),
+  });
+}
 
 export async function POST(request: Request) {
   if (!isButceAuthConfigured()) {

@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { BUTCE_SESSION_COOKIE, verifyButceSession } from "@/lib/butce/auth";
+import {
+  BUTCE_SESSION_COOKIE,
+  BUTCE_USER_COOKIE,
+  isNewsletterAdminUser,
+  verifyButceSession,
+} from "@/lib/butce/auth";
 
 const BUTCE_PREFIX = "/butce";
 const NEWSLETTER_ADMIN_PREFIX = "/newsletter-admin";
@@ -9,6 +14,13 @@ const NEWSLETTER_API_PREFIX = "/api/newsletter-admin";
 function isProtectedPath(pathname: string): boolean {
   return (
     pathname.startsWith(BUTCE_PREFIX) ||
+    pathname.startsWith(NEWSLETTER_ADMIN_PREFIX) ||
+    pathname.startsWith(NEWSLETTER_API_PREFIX)
+  );
+}
+
+function isNewsletterPath(pathname: string): boolean {
+  return (
     pathname.startsWith(NEWSLETTER_ADMIN_PREFIX) ||
     pathname.startsWith(NEWSLETTER_API_PREFIX)
   );
@@ -51,6 +63,20 @@ export function middleware(request: NextRequest) {
     const login = new URL(`${BUTCE_PREFIX}/login`, request.url);
     login.searchParams.set("next", pathname);
     return NextResponse.redirect(login);
+  }
+
+  // Newsletter: oturum yetmez — yalnızca NEWSLETTER_ADMIN_USERS listesindeki kullanıcı
+  if (isNewsletterPath(pathname)) {
+    const user = request.cookies.get(BUTCE_USER_COOKIE)?.value;
+    if (!isNewsletterAdminUser(user)) {
+      if (pathname.startsWith(NEWSLETTER_API_PREFIX)) {
+        return NextResponse.json(
+          { error: "Newsletter Admin yetkisi yok." },
+          { status: 403 },
+        );
+      }
+      return new NextResponse("Newsletter Admin yetkisi yok.", { status: 403 });
+    }
   }
 
   return NextResponse.next();

@@ -38,16 +38,19 @@ export async function POST(request: Request, ctx: Ctx) {
       const code = result.error ?? "send_failed";
       const status =
         code === "not_found" ? 404 : code === "invalid_email" ? 400 : 502;
+      const message =
+        code === "invalid_email"
+          ? "Geçerli test e-postası gerekli."
+          : code === "not_found"
+            ? "Kampanya yok."
+            : code === "RESEND_API_KEY missing"
+              ? "RESEND_API_KEY eksik (Vercel env)."
+              : `Test maili gönderilemedi: ${code}`;
       return NextResponse.json(
         {
           error: {
-            code,
-            message:
-              code === "invalid_email"
-                ? "Geçerli test e-postası gerekli."
-                : code === "not_found"
-                  ? "Kampanya yok."
-                  : "Test maili gönderilemedi.",
+            code: code.length > 80 ? "send_failed" : code,
+            message,
           },
         },
         { status },

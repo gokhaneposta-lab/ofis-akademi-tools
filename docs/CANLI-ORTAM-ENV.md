@@ -12,6 +12,7 @@ Kod GitHub’a push edildi. Site **Vercel**, **Netlify** veya başka bir platfor
 | `DATABASE_URL` | Neon / Vercel Postgres connection string | Newsletter v2 source of truth (`subscribers`). Yoksa `POST /api/subscriptions` → 503. |
 | `UNSUBSCRIBE_SECRET` | Uzun rastgele string (ör. `openssl rand -hex 32`) | Signed unsubscribe token. Yoksa `POST /api/subscriptions/unsubscribe` → 503. |
 | `BUTCE_SESSION_TOKEN` / `BUTCE_USERS` | Mevcut bütçe paneli | `/newsletter-admin` aynı oturumu kullanır (ayrı secret yok). |
+| `NEWSLETTER_ADMIN_USERS` | `kullanici1` veya `kullanici1,kullanici2` (`BUTCE_USERS` içindeki kullanıcı adları) | Sol menüde Newsletter Admin + gönderim yetkisi; sadece listedekiler görür/gönderir. |
 
 ---
 

@@ -163,13 +163,29 @@ const pathTitles: Record<string, string> = {
   "/egitimler/ileri": "Seviye 3 · İleri",
   "/formul-kutuphanesi": "Formül Kütüphanesi",
   "/finans-sigorta": "Finans & Sigorta",
+  "/newsletter-admin": "Newsletter Admin",
   ...Object.fromEntries(EXCEL_TOOLS.map((t) => [t.href, t.name])),
+};
+
+const NEWSLETTER_NAV: NavSection = {
+  label: "Newsletter Admin",
+  href: "/newsletter-admin",
+  icon: (
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      />
+    </svg>
+  ),
 };
 
 export default function SiteTopBar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [canNewsletterAdmin, setCanNewsletterAdmin] = useState(false);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -181,6 +197,23 @@ export default function SiteTopBar() {
   }, [pathname, close]);
 
   useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/butce/auth", { credentials: "same-origin" });
+        if (!res.ok) return;
+        const j = (await res.json()) as { canNewsletterAdmin?: boolean };
+        if (!cancelled) setCanNewsletterAdmin(Boolean(j.canNewsletterAdmin));
+      } catch {
+        if (!cancelled) setCanNewsletterAdmin(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
+
+  useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
     } else {
@@ -190,6 +223,8 @@ export default function SiteTopBar() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  const navSections = canNewsletterAdmin ? [...NAV, NEWSLETTER_NAV] : NAV;
 
   const currentTitle =
     pathTitles[pathname] ??
@@ -269,7 +304,7 @@ export default function SiteTopBar() {
         {/* Nav items */}
         <div className="flex-1 overflow-y-auto px-3 py-3">
           <ul className="space-y-1">
-            {NAV.map((section) => {
+            {navSections.map((section) => {
               const active = isSectionActive(section);
               const expanded = expandedSection === section.label;
               const hasChildren = section.children && section.children.length > 0;

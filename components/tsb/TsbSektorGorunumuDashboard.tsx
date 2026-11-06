@@ -26,6 +26,7 @@ import {
 } from "@/lib/tsbGelirTidyFetch";
 import { oncekiYilDonem } from "@/lib/tsbFinansalKarsilastirmaData";
 import { formatPrimYtdAralik } from "@/lib/tsbPrimDonemEtiket";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
 import {
   isTsbToplamSirketKodu,
   uniqueSortedPeriods,
@@ -354,7 +355,9 @@ export default function TsbSektorGorunumuDashboard() {
           >
             <TsbSelect value={finansalDonem} onChange={(e) => setFinansalDonem(e.target.value)}>
               {[...finansalDonemler].reverse().map((d) => (
-                <option key={d}>{d}</option>
+                <option key={d} value={d}>
+                  {formatFinansalDonemKisa(d)}
+                </option>
               ))}
             </TsbSelect>
           </TsbFilterField>
@@ -413,7 +416,7 @@ export default function TsbSektorGorunumuDashboard() {
           <div>
             <h2 id="sg-kpi" className={tsb.dataPanelTitle}>Finansal ana göstergeler</h2>
             <p className={tsb.sectionLead}>
-              {finansalDonem} · {POOL_LABEL[kpiPool]} · aynı çeyreğin yıllar arası seyri
+              {formatFinansalDonemKisa(finansalDonem)} · {POOL_LABEL[kpiPool]} · aynı çeyreğin yıllar arası seyri
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -486,7 +489,7 @@ export default function TsbSektorGorunumuDashboard() {
         <div className={tsb.dataPanelHeader}>
           <h2 className={tsb.dataPanelTitle}>Finansal sağlık oranları</h2>
           <p className={tsb.sectionLead}>
-            {finansalDonem} · HD, H/E ve birleşik sektör aynı hesap tabanında.
+            {formatFinansalDonemKisa(finansalDonem)} · HD, H/E ve birleşik sektör aynı hesap tabanında.
           </p>
         </div>
         <TsbTableShell>
@@ -523,7 +526,7 @@ export default function TsbSektorGorunumuDashboard() {
         <div className={tsb.dataPanelHeader}>
           <h2 className={tsb.dataPanelTitle}>Hayat dışı: İlk 10 şirket vs diğerleri</h2>
           <p className={tsb.sectionLead}>
-            {finansalDonem} · her dönemde brüt prime göre yeniden sıralanır.
+            {formatFinansalDonemKisa(finansalDonem)} · her dönemde brüt prime göre yeniden sıralanır.
           </p>
         </div>
         <TsbTableShell>

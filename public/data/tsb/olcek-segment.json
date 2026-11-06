@@ -1,5 +1,5 @@
 {
-  "guncellemeIso": "2026-10-20T04:56:44.024Z",
+  "guncellemeIso": "2026-11-06T10:08:58.366Z",
   "donemler": [
     "2022-1",
     "2022-2",
@@ -18,11 +18,12 @@
     "2025-3",
     "2025-4",
     "2026-1",
-    "2026-2"
+    "2026-2",
+    "2026-3"
   ],
-  "sonFinDonem": "2026-2",
+  "sonFinDonem": "2026-3",
   "hubOzet": {
-    "HD": 46,
+    "HD": 45,
     "HAYAT_EMEKLILIK": 19
   },
   "byDonem": {
@@ -28519,6 +28520,1562 @@
             "kpi": "NET_HP",
             "ortalama": 0.4117041131498722,
             "medyan": 0.4117041131498722,
+            "sirketSayisi": 1
+          }
+        ]
+      }
+    },
+    "2026-3": {
+      "HD": {
+        "peerSayisi": 45,
+        "segmentDagilimi": {
+          "A+": 5,
+          "A": 9,
+          "B": 18,
+          "C": 9,
+          "D": 4
+        },
+        "sirketler": [
+          {
+            "sirketKodu": 1004,
+            "sirketAdi": "Allianz Sigorta AŞ",
+            "olcekSkoru": 91.10724192838424,
+            "olcekSirasi": 1,
+            "olcekSegment": "A+",
+            "olcekSegmentAdi": "Üst Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 5,
+            "peerSayisi": 45,
+            "brutPrim": 110624279888.95001,
+            "ozsermaye": 71549519606.82999,
+            "toplamAktif": 209546217879.96
+          },
+          {
+            "sirketKodu": 1020,
+            "sirketAdi": "Türkiye Sigorta AŞ",
+            "olcekSkoru": 91.02970911966631,
+            "olcekSirasi": 2,
+            "olcekSegment": "A+",
+            "olcekSegmentAdi": "Üst Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 5,
+            "peerSayisi": 45,
+            "brutPrim": 134557275439.20003,
+            "ozsermaye": 55783819057.57994,
+            "toplamAktif": 184524080472.93997
+          },
+          {
+            "sirketKodu": 1005,
+            "sirketAdi": "Anadolu Anonim Türk Sigorta Şirketi",
+            "olcekSkoru": 64.87010647930202,
+            "olcekSirasi": 3,
+            "olcekSegment": "A+",
+            "olcekSegmentAdi": "Üst Ölçek",
+            "segmentSirasi": 3,
+            "segmentPeerSayisi": 5,
+            "peerSayisi": 45,
+            "brutPrim": 79425943139.47002,
+            "ozsermaye": 48959908634.11845,
+            "toplamAktif": 154996929692.1482
+          },
+          {
+            "sirketKodu": 1009,
+            "sirketAdi": "Axa Sigorta AŞ",
+            "olcekSkoru": 56.57910643382906,
+            "olcekSirasi": 4,
+            "olcekSegment": "A+",
+            "olcekSegmentAdi": "Üst Ölçek",
+            "segmentSirasi": 4,
+            "segmentPeerSayisi": 5,
+            "peerSayisi": 45,
+            "brutPrim": 79500741167.72,
+            "ozsermaye": 32809505869.640003,
+            "toplamAktif": 138445963548.6
+          },
+          {
+            "sirketKodu": 1035,
+            "sirketAdi": "Sompo Sigorta AŞ",
+            "olcekSkoru": 32.42452612954551,
+            "olcekSirasi": 5,
+            "olcekSegment": "A+",
+            "olcekSegmentAdi": "Üst Ölçek",
+            "segmentSirasi": 5,
+            "segmentPeerSayisi": 5,
+            "peerSayisi": 45,
+            "brutPrim": 44925691407.26893,
+            "ozsermaye": 17085422525.9689,
+            "toplamAktif": 88855272785.67998
+          },
+          {
+            "sirketKodu": 1022,
+            "sirketAdi": "HDI Sigorta AŞ",
+            "olcekSkoru": 27.989205087928255,
+            "olcekSirasi": 6,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 42084135418.51,
+            "ozsermaye": 12456631662.720001,
+            "toplamAktif": 73726782176.8
+          },
+          {
+            "sirketKodu": 1045,
+            "sirketAdi": "Quick Sigorta AŞ",
+            "olcekSkoru": 27.397866899297874,
+            "olcekSirasi": 7,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 22190347796.889996,
+            "ozsermaye": 26367872521.550003,
+            "toplamAktif": 84176000211.56
+          },
+          {
+            "sirketKodu": 2001,
+            "sirketAdi": "Bupa Acıbadem Sigorta AŞ",
+            "olcekSkoru": 22.976587228221284,
+            "olcekSirasi": 8,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 3,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 33546777860.920002,
+            "ozsermaye": 14445095602.699993,
+            "toplamAktif": 45874571296.70964
+          },
+          {
+            "sirketKodu": 1030,
+            "sirketAdi": "Neova Katılım Sigorta AŞ",
+            "olcekSkoru": 22.146828885043,
+            "olcekSirasi": 9,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 4,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 28962900825.86,
+            "ozsermaye": 12767341027.35,
+            "toplamAktif": 62286154538.31
+          },
+          {
+            "sirketKodu": 1053,
+            "sirketAdi": "Hepiyi Sigorta AŞ",
+            "olcekSkoru": 20.96848651640136,
+            "olcekSirasi": 10,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 5,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 26216988342.260002,
+            "ozsermaye": 14663233170.36,
+            "toplamAktif": 52390580568.59
+          },
+          {
+            "sirketKodu": 1032,
+            "sirketAdi": "Ray Sigorta AŞ",
+            "olcekSkoru": 20.912169565483154,
+            "olcekSirasi": 11,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 6,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 31529380218.54001,
+            "ozsermaye": 11094460853.359993,
+            "toplamAktif": 46729682717.22
+          },
+          {
+            "sirketKodu": 1003,
+            "sirketAdi": "Aksigorta AŞ",
+            "olcekSkoru": 20.148845463292226,
+            "olcekSirasi": 12,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 7,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 32607367177.210007,
+            "ozsermaye": 9387891847.399998,
+            "toplamAktif": 42008649221.02
+          },
+          {
+            "sirketKodu": 1028,
+            "sirketAdi": "Mapfre Sigorta AŞ",
+            "olcekSkoru": 15.1980781072407,
+            "olcekSirasi": 13,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 8,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 22693792407.749996,
+            "ozsermaye": 7863214669.33,
+            "toplamAktif": 35418386925.47
+          },
+          {
+            "sirketKodu": 1036,
+            "sirketAdi": "Doga Sigorta AŞ",
+            "olcekSkoru": 14.690713453676363,
+            "olcekSirasi": 14,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 9,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 25737557794.05001,
+            "ozsermaye": 5011585632.42,
+            "toplamAktif": 30727348477.120003
+          },
+          {
+            "sirketKodu": 1043,
+            "sirketAdi": "Zurich Sigorta AŞ",
+            "olcekSkoru": 13.72194139688131,
+            "olcekSirasi": 15,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 21559184756.620003,
+            "ozsermaye": 6517534108.793021,
+            "toplamAktif": 30268263095.00302
+          },
+          {
+            "sirketKodu": 1008,
+            "sirketAdi": "Unico Sigorta AŞ",
+            "olcekSkoru": 13.438605023074084,
+            "olcekSirasi": 16,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 19678080442.84,
+            "ozsermaye": 6370541104.67,
+            "toplamAktif": 35244322476.87
+          },
+          {
+            "sirketKodu": 1017,
+            "sirketAdi": "Eureko Sigorta AŞ",
+            "olcekSkoru": 13.415329942462966,
+            "olcekSirasi": 17,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 3,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 20684683480.180008,
+            "ozsermaye": 7026721271.173442,
+            "toplamAktif": 28244688868.853527
+          },
+          {
+            "sirketKodu": 1006,
+            "sirketAdi": "Ankara Anonim Türk Sigorta Şirketi",
+            "olcekSkoru": 12.112874824555682,
+            "olcekSirasi": 18,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 4,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 14262666705.949997,
+            "ozsermaye": 8824897967.66,
+            "toplamAktif": 31731444234.48
+          },
+          {
+            "sirketKodu": 1044,
+            "sirketAdi": "Ethica Sigorta AŞ",
+            "olcekSkoru": 10.417342807157944,
+            "olcekSirasi": 19,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 5,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 14453764720.430004,
+            "ozsermaye": 5784585451.89,
+            "toplamAktif": 26523404194.07
+          },
+          {
+            "sirketKodu": 1025,
+            "sirketAdi": "Bereket Sigorta AŞ",
+            "olcekSkoru": 9.311504869746521,
+            "olcekSirasi": 20,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 6,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 16591092699.470001,
+            "ozsermaye": 3466475080.7000003,
+            "toplamAktif": 16781436922.859999
+          },
+          {
+            "sirketKodu": 1048,
+            "sirketAdi": "Türkiye Katılım Sigorta AŞ",
+            "olcekSkoru": 7.975951040843253,
+            "olcekSirasi": 21,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 7,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 15401663406.349804,
+            "ozsermaye": 1743567903.6800056,
+            "toplamAktif": 14951531968.41
+          },
+          {
+            "sirketKodu": 1012,
+            "sirketAdi": "Corpus Sigorta AŞ",
+            "olcekSkoru": 6.827303484120445,
+            "olcekSirasi": 22,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 8,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 6599484672.7300005,
+            "ozsermaye": 5915500291.210001,
+            "toplamAktif": 18946035033.4
+          },
+          {
+            "sirketKodu": 1010,
+            "sirketAdi": "BNP Paribas Cardif Sigorta AŞ",
+            "olcekSkoru": 5.407011182612632,
+            "olcekSirasi": 23,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 9,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 5635887942.37,
+            "ozsermaye": 4315700268.520014,
+            "toplamAktif": 14820923111.60001
+          },
+          {
+            "sirketKodu": 1018,
+            "sirketAdi": "Referans Sigorta AŞ",
+            "olcekSkoru": 4.992352000662471,
+            "olcekSirasi": 24,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 10,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 6966480538.830002,
+            "ozsermaye": 2725491033.3500004,
+            "toplamAktif": 12252439108.789999
+          },
+          {
+            "sirketKodu": 1038,
+            "sirketAdi": "GIG Sigorta AŞ",
+            "olcekSkoru": 4.902733716440724,
+            "olcekSirasi": 25,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 11,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 6606048077.87,
+            "ozsermaye": 2860929623.0300255,
+            "toplamAktif": 12125636537.68001
+          },
+          {
+            "sirketKodu": 1061,
+            "sirketAdi": "Medisa Sigorta AŞ",
+            "olcekSkoru": 3.868688842744858,
+            "olcekSirasi": 26,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 12,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 5378743599.369998,
+            "ozsermaye": 2619584269.729998,
+            "toplamAktif": 7144279779.25
+          },
+          {
+            "sirketKodu": 1037,
+            "sirketAdi": "Koru Sigorta AŞ",
+            "olcekSkoru": 3.851580374647362,
+            "olcekSirasi": 27,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 13,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 6104206049.540001,
+            "ozsermaye": 1560201077.11,
+            "toplamAktif": 8761095588.189999
+          },
+          {
+            "sirketKodu": 1049,
+            "sirketAdi": "Ana Sigorta AŞ",
+            "olcekSkoru": 3.6593232698023694,
+            "olcekSirasi": 28,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 14,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 4766622646.929997,
+            "ozsermaye": 2339210811.4900002,
+            "toplamAktif": 8552454725.440008
+          },
+          {
+            "sirketKodu": 1034,
+            "sirketAdi": "Şeker Sigorta AŞ",
+            "olcekSkoru": 2.8806646242045177,
+            "olcekSirasi": 29,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 15,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 3878228972.190001,
+            "ozsermaye": 1395761556.54,
+            "toplamAktif": 7975794363.860001
+          },
+          {
+            "sirketKodu": 1001,
+            "sirketAdi": "Chubb European Group SE Merkezi Fransa Türkiye İstanbul Şubesi",
+            "olcekSkoru": 2.020405114154324,
+            "olcekSirasi": 30,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 16,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 2218546783.5100007,
+            "ozsermaye": 1588362868.9599998,
+            "toplamAktif": 4596558917.030001
+          },
+          {
+            "sirketKodu": 1040,
+            "sirketAdi": "Türk P&I Sigorta AŞ",
+            "olcekSkoru": 2.009075289634902,
+            "olcekSirasi": 31,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 17,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 2965095926,
+            "ozsermaye": 932406584,
+            "toplamAktif": 4437146300
+          },
+          {
+            "sirketKodu": 1039,
+            "sirketAdi": "Türk Nippon Sigorta AŞ",
+            "olcekSkoru": 1.777536910411628,
+            "olcekSirasi": 32,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 18,
+            "segmentPeerSayisi": 18,
+            "peerSayisi": 45,
+            "brutPrim": 2763959882.6899996,
+            "ozsermaye": 643214197.9900002,
+            "toplamAktif": 4058930634.8599997
+          },
+          {
+            "sirketKodu": 1031,
+            "sirketAdi": "Orient Sigorta AŞ",
+            "olcekSkoru": 1.5939880090255305,
+            "olcekSirasi": 33,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 1583885061.17,
+            "ozsermaye": 1490463403.9299998,
+            "toplamAktif": 3033670855.46
+          },
+          {
+            "sirketKodu": 1058,
+            "sirketAdi": "Fiba Sigorta AŞ",
+            "olcekSkoru": 1.4254393720940286,
+            "olcekSirasi": 34,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 2116413443.91,
+            "ozsermaye": 748410887.1700001,
+            "toplamAktif": 2438060797.2200003
+          },
+          {
+            "sirketKodu": 1057,
+            "sirketAdi": "HDI Katılım Sigorta AŞ",
+            "olcekSkoru": 1.1306194274242292,
+            "olcekSirasi": 35,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 3,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 807180479.97,
+            "ozsermaye": 919034211.5699999,
+            "toplamAktif": 3695620883.33
+          },
+          {
+            "sirketKodu": 1013,
+            "sirketAdi": "VHV Allgemeine Sigorta AŞ",
+            "olcekSkoru": 1.1177864306489527,
+            "olcekSirasi": 36,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 4,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 1902337962.7,
+            "ozsermaye": 64922858.83000046,
+            "toplamAktif": 3030871261.4999995
+          },
+          {
+            "sirketKodu": 1059,
+            "sirketAdi": "Turkcell Dijital Sigorta AŞ",
+            "olcekSkoru": 0.8962070522447242,
+            "olcekSirasi": 37,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 5,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 1131564631.21,
+            "ozsermaye": 502997396.83,
+            "toplamAktif": 1801697618.38
+          },
+          {
+            "sirketKodu": 1011,
+            "sirketAdi": "Coface Sigorta AŞ",
+            "olcekSkoru": 0.8718413507622551,
+            "olcekSirasi": 38,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 6,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 1138413707.88,
+            "ozsermaye": 347882145.229933,
+            "toplamAktif": 2195606415.480003
+          },
+          {
+            "sirketKodu": 1052,
+            "sirketAdi": "Prive Sigorta AŞ",
+            "olcekSkoru": 0.8579377665516291,
+            "olcekSirasi": 39,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 7,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 74754874.61999999,
+            "ozsermaye": 1391642101.87,
+            "toplamAktif": 1634353908.8400002
+          },
+          {
+            "sirketKodu": 1046,
+            "sirketAdi": "SS Atlas Sigorta Kooperatifi",
+            "olcekSkoru": 0.806533511002477,
+            "olcekSirasi": 40,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 8,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 1101134525.45,
+            "ozsermaye": 357013790.74000025,
+            "toplamAktif": 1618985339.7
+          },
+          {
+            "sirketKodu": 1016,
+            "sirketAdi": "Euler Hermes Sigorta AŞ",
+            "olcekSkoru": 0.7911816192646839,
+            "olcekSirasi": 41,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 9,
+            "segmentPeerSayisi": 9,
+            "peerSayisi": 45,
+            "brutPrim": 874768496.2599998,
+            "ozsermaye": 549629101.33,
+            "toplamAktif": 1498614333.3
+          },
+          {
+            "sirketKodu": 1060,
+            "sirketAdi": "Global World Sigorta AŞ",
+            "olcekSkoru": 0.6047121260426334,
+            "olcekSirasi": 42,
+            "olcekSegment": "D",
+            "olcekSegmentAdi": "Küçük Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 45,
+            "brutPrim": -236030.98,
+            "ozsermaye": 994769253.69,
+            "toplamAktif": 1009156377.03
+          },
+          {
+            "sirketKodu": 1027,
+            "sirketAdi": "Magdeburger Sigorta AŞ",
+            "olcekSkoru": 0.6044735289918997,
+            "olcekSirasi": 43,
+            "olcekSegment": "D",
+            "olcekSegmentAdi": "Küçük Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 45,
+            "brutPrim": 1105979746.51,
+            "ozsermaye": -415919539.9900055,
+            "toplamAktif": 2853869057.7399883
+          },
+          {
+            "sirketKodu": 1007,
+            "sirketAdi": "Atradius Crédito y Caución S.A. de Seguros y Reaseguros, İstanbul Şubesi",
+            "olcekSkoru": 0.5962616698027744,
+            "olcekSirasi": 44,
+            "olcekSegment": "D",
+            "olcekSegmentAdi": "Küçük Ölçek",
+            "segmentSirasi": 3,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 45,
+            "brutPrim": 632159234.6600002,
+            "ozsermaye": 242398281.93000048,
+            "toplamAktif": 1741735205.4000003
+          },
+          {
+            "sirketKodu": 1051,
+            "sirketAdi": "Arex Sigorta AŞ",
+            "olcekSkoru": 0.3748856513591122,
+            "olcekSirasi": 45,
+            "olcekSegment": "D",
+            "olcekSegmentAdi": "Küçük Ölçek",
+            "segmentSirasi": 4,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 45,
+            "brutPrim": -7250872.61,
+            "ozsermaye": 483374144.34000015,
+            "toplamAktif": 862698619.7500001
+          }
+        ],
+        "segmentOzetleri": [
+          {
+            "segment": "A+",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 89806786208.5218,
+            "medyan": 79500741167.72,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A+",
+            "kpi": "OZSERMAYE",
+            "ortalama": 45237635138.82746,
+            "medyan": 48959908634.11845,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A+",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 155273692875.86563,
+            "medyan": 154996929692.1482,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A+",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.31487055019669463,
+            "medyan": 0.34240732113541134,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A+",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": 0.014590847982215674,
+            "medyan": 0.019324985295908124,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A+",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": 0.5169409616533499,
+            "medyan": 0.4278133935775704,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A+",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.27778124963504935,
+            "medyan": 0.30231186582588343,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A+",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.7063614998160178,
+            "medyan": 0.7231315244379413,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A+",
+            "kpi": "NET_HP",
+            "ortalama": 0.7927964429665584,
+            "medyan": 0.7921801305140956,
+            "sirketSayisi": 5
+          },
+          {
+            "segment": "A",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 29507694204.665558,
+            "medyan": 28962900825.86,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "A",
+            "kpi": "OZSERMAYE",
+            "ortalama": 12673036331.909996,
+            "medyan": 12456631662.720001,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "A",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 52593128459.19995,
+            "medyan": 46729682717.22,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "A",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.32135638724885046,
+            "medyan": 0.2952487770273821,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "A",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": -0.044367912143652995,
+            "medyan": -0.020303054657365448,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "A",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": 0.6710166550963713,
+            "medyan": 0.6235082810928136,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "A",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.23643875551232407,
+            "medyan": 0.22347521335445725,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "A",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.815716088423684,
+            "medyan": 0.7767777115284769,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "A",
+            "kpi": "NET_HP",
+            "ortalama": 0.8836637179783136,
+            "medyan": 0.859998902604006,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "B",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 9806357850.21499,
+            "medyan": 6602766375.3,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "B",
+            "kpi": "OZSERMAYE",
+            "ortalama": 3701704748.360916,
+            "medyan": 2793210328.190013,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "B",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 15967576992.258144,
+            "medyan": 13536681110.195004,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "B",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.22062438768314055,
+            "medyan": 0.25262296179919697,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "B",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": -0.011773690415251122,
+            "medyan": -0.021405339308842444,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "B",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": 0.6038670410368746,
+            "medyan": 0.5083047288001078,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "B",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.2351930523357509,
+            "medyan": 0.22026920046257434,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "B",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.7340972741975196,
+            "medyan": 0.8090962630176453,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "B",
+            "kpi": "NET_HP",
+            "ortalama": 0.7790484766578472,
+            "medyan": 0.8385400178688783,
+            "sirketSayisi": 18
+          },
+          {
+            "segment": "C",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 1192272575.907778,
+            "medyan": 1131564631.21,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "C",
+            "kpi": "OZSERMAYE",
+            "ortalama": 707999544.1666592,
+            "medyan": 549629101.33,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "C",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 2327497934.801111,
+            "medyan": 2195606415.480003,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "C",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": -0.31862377655975566,
+            "medyan": 0.09138145186116219,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "C",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": 0.04711799986613431,
+            "medyan": 0.08903312243028938,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "C",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": 0.517134248258434,
+            "medyan": 0.3975518679822985,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "C",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.32719693504184927,
+            "medyan": 0.2791796979130555,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "C",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.366155719553386,
+            "medyan": 0.44711399821816467,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "C",
+            "kpi": "NET_HP",
+            "ortalama": 50.56383196175554,
+            "medyan": 0.48847377556113775,
+            "sirketSayisi": 9
+          },
+          {
+            "segment": "D",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 432663019.39500004,
+            "medyan": 315961601.8400001,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "OZSERMAYE",
+            "ortalama": 326155534.9924988,
+            "medyan": 362886213.13500035,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 1616864814.9799972,
+            "medyan": 1375445791.2150002,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.39766078953997397,
+            "medyan": 0.23518124873379664,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": -1.5506125382089626,
+            "medyan": 0.11393749604347153,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": -0.23517827586002515,
+            "medyan": 0.04967224318896603,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.3848699790571929,
+            "medyan": 0.34973766589748223,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.4513658726107499,
+            "medyan": 0.4079208614087894,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "NET_HP",
+            "ortalama": 0.5846385367859697,
+            "medyan": 0.48559233328673523,
+            "sirketSayisi": 4
+          }
+        ]
+      },
+      "HAYAT_EMEKLILIK": {
+        "peerSayisi": 19,
+        "segmentDagilimi": {
+          "A+": 2,
+          "A": 4,
+          "B": 8,
+          "C": 4,
+          "D": 1
+        },
+        "sirketler": [
+          {
+            "sirketKodu": 3018,
+            "sirketAdi": "Türkiye Hayat ve Emeklilik AŞ",
+            "olcekSkoru": 100,
+            "olcekSirasi": 1,
+            "olcekSegment": "A+",
+            "olcekSegmentAdi": "Üst Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 2,
+            "peerSayisi": 19,
+            "brutPrim": 31106708663.71,
+            "ozsermaye": 39381705119.23006,
+            "toplamAktif": 630578282566.8099
+          },
+          {
+            "sirketKodu": 3006,
+            "sirketAdi": "AgeSA Emeklilik ve Hayat AŞ",
+            "olcekSkoru": 67.21743390877417,
+            "olcekSirasi": 2,
+            "olcekSegment": "A+",
+            "olcekSegmentAdi": "Üst Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 2,
+            "peerSayisi": 19,
+            "brutPrim": 24238859627.079998,
+            "ozsermaye": 14255178212.689999,
+            "toplamAktif": 556559936671.18
+          },
+          {
+            "sirketKodu": 3004,
+            "sirketAdi": "Anadolu Hayat Emeklilik AŞ",
+            "olcekSkoru": 56.32722271785193,
+            "olcekSirasi": 3,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 19,
+            "brutPrim": 18317909626.06,
+            "ozsermaye": 14561255597,
+            "toplamAktif": 507961604257.42
+          },
+          {
+            "sirketKodu": 3012,
+            "sirketAdi": "Garanti Emeklilik ve Hayat AŞ",
+            "olcekSkoru": 55.145872850383725,
+            "olcekSirasi": 4,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 19,
+            "brutPrim": 19671049852.81,
+            "ozsermaye": 12301713461.14,
+            "toplamAktif": 456491854787.18
+          },
+          {
+            "sirketKodu": 3003,
+            "sirketAdi": "Allianz Yaşam ve Emeklilik AŞ",
+            "olcekSkoru": 52.71925300090068,
+            "olcekSirasi": 5,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 3,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 19,
+            "brutPrim": 18710113601.91,
+            "ozsermaye": 13110647544.570004,
+            "toplamAktif": 409456676660.64
+          },
+          {
+            "sirketKodu": 3001,
+            "sirketAdi": "Viennalife Emeklilik ve Hayat AŞ",
+            "olcekSkoru": 41.53464323940921,
+            "olcekSirasi": 6,
+            "olcekSegment": "A",
+            "olcekSegmentAdi": "Büyük Ölçek",
+            "segmentSirasi": 4,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 19,
+            "brutPrim": 20470601934.57,
+            "ozsermaye": 9059908123.569992,
+            "toplamAktif": 65527480350.73001
+          },
+          {
+            "sirketKodu": 3017,
+            "sirketAdi": "Metlife Emeklilik ve Hayat AŞ",
+            "olcekSkoru": 32.9878956541053,
+            "olcekSirasi": 7,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 8,
+            "peerSayisi": 19,
+            "brutPrim": 16543258955.060001,
+            "ozsermaye": 6845924904.590007,
+            "toplamAktif": 50139924428.470024
+          },
+          {
+            "sirketKodu": 3009,
+            "sirketAdi": "QNB Sağlık Hayat Sigorta ve Emeklilik AŞ",
+            "olcekSkoru": 31.807890207290736,
+            "olcekSirasi": 8,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 8,
+            "peerSayisi": 19,
+            "brutPrim": 16594419586.438662,
+            "ozsermaye": 6005200211.27,
+            "toplamAktif": 30723906452.956184
+          },
+          {
+            "sirketKodu": 3016,
+            "sirketAdi": "Katılım Emeklilik ve Hayat AŞ",
+            "olcekSkoru": 11.459876412391608,
+            "olcekSirasi": 9,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 3,
+            "segmentPeerSayisi": 8,
+            "peerSayisi": 19,
+            "brutPrim": 4485666179.499954,
+            "ozsermaye": 2716338637.2,
+            "toplamAktif": 86708527863.89786
+          },
+          {
+            "sirketKodu": 3011,
+            "sirketAdi": "Fiba Emeklilik ve Hayat AŞ",
+            "olcekSkoru": 9.111604070566308,
+            "olcekSirasi": 10,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 4,
+            "segmentPeerSayisi": 8,
+            "peerSayisi": 19,
+            "brutPrim": 4541273815.3482895,
+            "ozsermaye": 1233111789.6500003,
+            "toplamAktif": 45827492849.689964
+          },
+          {
+            "sirketKodu": 3008,
+            "sirketAdi": "BNP Paribas Cardif Emeklilik AŞ",
+            "olcekSkoru": 7.324605577895969,
+            "olcekSirasi": 11,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 5,
+            "segmentPeerSayisi": 8,
+            "peerSayisi": 19,
+            "brutPrim": 3124619220.97,
+            "ozsermaye": 1833991882.0100002,
+            "toplamAktif": 47206254241.51996
+          },
+          {
+            "sirketKodu": 3002,
+            "sirketAdi": "Allianz Hayat ve Emeklilik AŞ",
+            "olcekSkoru": 7.012106758700087,
+            "olcekSirasi": 12,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 6,
+            "segmentPeerSayisi": 8,
+            "peerSayisi": 19,
+            "brutPrim": 2666039181.49,
+            "ozsermaye": 1161786561.4200013,
+            "toplamAktif": 77016880782.94
+          },
+          {
+            "sirketKodu": 2002,
+            "sirketAdi": "BNP Paribas Cardif Hayat Sigorta AŞ",
+            "olcekSkoru": 6.200604334534947,
+            "olcekSirasi": 13,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 7,
+            "segmentPeerSayisi": 8,
+            "peerSayisi": 19,
+            "brutPrim": 3535237607.7,
+            "ozsermaye": 1258910082.02,
+            "toplamAktif": 4798469184.480001
+          },
+          {
+            "sirketKodu": 2006,
+            "sirketAdi": "Zurich Yaşam ve Emeklilik AŞ",
+            "olcekSkoru": 3.7903036405138715,
+            "olcekSirasi": 14,
+            "olcekSegment": "B",
+            "olcekSegmentAdi": "Orta Ölçek",
+            "segmentSirasi": 8,
+            "segmentPeerSayisi": 8,
+            "peerSayisi": 19,
+            "brutPrim": 637229771.67,
+            "ozsermaye": 2208957858.3200006,
+            "toplamAktif": 53601630048.42999
+          },
+          {
+            "sirketKodu": 3005,
+            "sirketAdi": "Bereket Emeklilik ve Hayat AŞ",
+            "olcekSkoru": 3.4885111752421225,
+            "olcekSirasi": 15,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 19,
+            "brutPrim": 1627219419.59,
+            "ozsermaye": 1239156520.9744911,
+            "toplamAktif": 17115499959.714493
+          },
+          {
+            "sirketKodu": 2005,
+            "sirketAdi": "Demir Sağlık ve Hayat Sigorta AŞ",
+            "olcekSkoru": 2.1946801695754874,
+            "olcekSirasi": 16,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 2,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 19,
+            "brutPrim": 1441413948.89,
+            "ozsermaye": 577289337.51,
+            "toplamAktif": 1862600139.65
+          },
+          {
+            "sirketKodu": 2007,
+            "sirketAdi": "Türkiye Katılım Hayat AŞ",
+            "olcekSkoru": 1.2691995264336802,
+            "olcekSirasi": 17,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 3,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 19,
+            "brutPrim": 375610874.52,
+            "ozsermaye": 1609128238.9599998,
+            "toplamAktif": 2056130469.039996
+          },
+          {
+            "sirketKodu": 3007,
+            "sirketAdi": "Axa Hayat ve Emeklilik AŞ",
+            "olcekSkoru": 0.9927881573460031,
+            "olcekSirasi": 18,
+            "olcekSegment": "C",
+            "olcekSegmentAdi": "Küçük-Orta Ölçek",
+            "segmentSirasi": 4,
+            "segmentPeerSayisi": 4,
+            "peerSayisi": 19,
+            "brutPrim": 336586584.40999997,
+            "ozsermaye": 825547927.16,
+            "toplamAktif": 14313644901.280003
+          },
+          {
+            "sirketKodu": 2008,
+            "sirketAdi": "Quick Hayat Sigorta AŞ",
+            "olcekSkoru": 0,
+            "olcekSirasi": 19,
+            "olcekSegment": "D",
+            "olcekSegmentAdi": "Küçük Ölçek",
+            "segmentSirasi": 1,
+            "segmentPeerSayisi": 1,
+            "peerSayisi": 19,
+            "brutPrim": 212287166.28,
+            "ozsermaye": 360294354.81000006,
+            "toplamAktif": 646355122.6999999
+          }
+        ],
+        "segmentOzetleri": [
+          {
+            "segment": "A+",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 27672784145.394997,
+            "medyan": 27672784145.394997,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A+",
+            "kpi": "OZSERMAYE",
+            "ortalama": 26818441665.96003,
+            "medyan": 26818441665.96003,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A+",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 593569109618.995,
+            "medyan": 593569109618.995,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A+",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.5343140434484567,
+            "medyan": 0.5343140434484567,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A+",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": 0.41971095486007926,
+            "medyan": 0.41971095486007926,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A+",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": 0.34539718625703575,
+            "medyan": 0.34539718625703575,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A+",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.044033165982985574,
+            "medyan": 0.044033165982985574,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A+",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.16552650644501926,
+            "medyan": 0.16552650644501926,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A+",
+            "kpi": "NET_HP",
+            "ortalama": 0.15668038060913633,
+            "medyan": 0.15668038060913633,
+            "sirketSayisi": 2
+          },
+          {
+            "segment": "A",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 19292418753.8375,
+            "medyan": 19190581727.36,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "A",
+            "kpi": "OZSERMAYE",
+            "ortalama": 12258381181.57,
+            "medyan": 12706180502.855001,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "A",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 359859404013.9925,
+            "medyan": 432974265723.91003,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "A",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.6383357013232234,
+            "medyan": 0.5756229820430625,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "A",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": 0.45338633871589124,
+            "medyan": 0.48643546159514295,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "A",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": 0.22460738781884015,
+            "medyan": 0.22559780076775582,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "A",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.05647381296265271,
+            "medyan": 0.030342838235732784,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "A",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.24446911855957512,
+            "medyan": 0.24852797399595492,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "A",
+            "kpi": "NET_HP",
+            "ortalama": 0.23211675217846045,
+            "medyan": 0.23572962672223433,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "B",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 6515968039.772113,
+            "medyan": 4010451893.599977,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "B",
+            "kpi": "OZSERMAYE",
+            "ortalama": 2908027740.8100014,
+            "medyan": 2021474870.1650004,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "B",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 49502885731.548,
+            "medyan": 48673089334.994995,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "B",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.5793623075457037,
+            "medyan": 0.6390108984145637,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "B",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": 0.3417656320546757,
+            "medyan": 0.2885879488728808,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "B",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": 0.485434124996303,
+            "medyan": 0.49654122248836396,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "B",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.09346636784165037,
+            "medyan": 0.04003062968873723,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "B",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.2969469566801075,
+            "medyan": 0.27540048491110003,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "B",
+            "kpi": "NET_HP",
+            "ortalama": 0.2836499773314119,
+            "medyan": 0.22995581051685204,
+            "sirketSayisi": 8
+          },
+          {
+            "segment": "C",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 945207706.8525,
+            "medyan": 908512411.705,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "C",
+            "kpi": "OZSERMAYE",
+            "ortalama": 1062780506.1511227,
+            "medyan": 1032352224.0672455,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "C",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 8836968867.421124,
+            "medyan": 8184887685.159999,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "C",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.34404874252480117,
+            "medyan": 0.26823480379593384,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "C",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": 0.5789947050547558,
+            "medyan": 0.6598831496480491,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "C",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": 0.21583332001434663,
+            "medyan": 0.1936501138629369,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "C",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.3056532153591429,
+            "medyan": 0.19116850545549496,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "C",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.32956468642845554,
+            "medyan": 0.35716520709042143,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "C",
+            "kpi": "NET_HP",
+            "ortalama": 0.3486190026625185,
+            "medyan": 0.3680629904428566,
+            "sirketSayisi": 4
+          },
+          {
+            "segment": "D",
+            "kpi": "BRUT_PRIM",
+            "ortalama": 212287166.28,
+            "medyan": 212287166.28,
+            "sirketSayisi": 1
+          },
+          {
+            "segment": "D",
+            "kpi": "OZSERMAYE",
+            "ortalama": 360294354.81000006,
+            "medyan": 360294354.81000006,
+            "sirketSayisi": 1
+          },
+          {
+            "segment": "D",
+            "kpi": "TOPLAM_AKTIF",
+            "ortalama": 646355122.6999999,
+            "medyan": 646355122.6999999,
+            "sirketSayisi": 1
+          },
+          {
+            "segment": "D",
+            "kpi": "VOK_OZSERMAYE",
+            "ortalama": 0.22278793136331432,
+            "medyan": 0.22278793136331432,
+            "sirketSayisi": 1
+          },
+          {
+            "segment": "D",
+            "kpi": "SAFI_TEKNIK_PRIM",
+            "ortalama": 1.4159653757096633,
+            "medyan": 1.4159653757096633,
+            "sirketSayisi": 1
+          },
+          {
+            "segment": "D",
+            "kpi": "YATIRIM_OZSERMAYE",
+            "ortalama": -0.000010689398678008631,
+            "medyan": -0.000010689398678008631,
+            "sirketSayisi": 1
+          },
+          {
+            "segment": "D",
+            "kpi": "OZSERMAYE_AKTIF",
+            "ortalama": 0.5574247687632663,
+            "medyan": 0.5574247687632663,
+            "sirketSayisi": 1
+          },
+          {
+            "segment": "D",
+            "kpi": "BRUT_HP",
+            "ortalama": 0.4090149378060127,
+            "medyan": 0.4090149378060127,
+            "sirketSayisi": 1
+          },
+          {
+            "segment": "D",
+            "kpi": "NET_HP",
+            "ortalama": 0.4090149378060127,
+            "medyan": 0.4090149378060127,
             "sirketSayisi": 1
           }
         ]

@@ -13,6 +13,7 @@ import {
   sonFinDonemPoolData,
 } from "@/lib/tsbOlcekSegmentDashboard";
 import { OLCEK_SEGMENT_HUB_LEGEND } from "@/lib/tsbOlcekSegmentCache";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
 import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
 import { useTsbDashboardUrlPrefs } from "@/components/tsb/useTsbDashboardUrlPrefs";
 import { SEGMENT_BADGE_CLASS } from "@/components/tsb/TsbOlcekSegmentHubKart";
@@ -92,7 +93,8 @@ export default function TsbOlcekSegmentasyonDashboard() {
         </TsbFilterGrid>
         <p className={cn(tsb.caption, "mt-2")}>
           Sınıflandırma dönemi:{" "}
-          <span className="font-semibold text-slate-800">{sonPool.donem}</span> (son finansal çeyrek). Ölçek
+          <span className="font-semibold text-slate-800">{formatFinansalDonemKisa(sonPool.donem)}</span> (son finansal
+          çeyrek). Ölçek
           skoru brüt prim (%50), özsermaye (%30) ve toplam aktif (%20) ile havuz içinde min-max normalize
           edilir.
         </p>

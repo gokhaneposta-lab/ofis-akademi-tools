@@ -7,6 +7,8 @@ import type {
   SektorGorunumuPool,
   SektorPrimSnapshot,
 } from "@/lib/tsbSektorGorunumu";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
+import { formatPrimYtdAralikKisa } from "@/lib/tsbPrimDonemEtiket";
 import { TsbSvgTooltip, tsbChartYoyLabel } from "@/components/tsb/TsbChartTooltip";
 
 const W = 860;
@@ -28,11 +30,6 @@ const tl = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 });
 
 function fmtMr(v: number): string {
   return `${tl.format(v / 1e9)} Mr`;
-}
-
-function xAt(i: number, n: number): number {
-  const inner = W - PAD.l - PAD.r;
-  return PAD.l + (n <= 1 ? inner / 2 : (i / (n - 1)) * inner);
 }
 
 type VokParcaKey = "safiTeknik" | "genelGider" | "aktarim603" | "maliNet";
@@ -95,7 +92,7 @@ export function TsbSektorKarBilesenleriChart({
             x: Math.min(W - 210, Math.max(PAD.l, cx + 14)),
             y: 8,
             lines: [
-              { text: `VÖK · ${p.donem}` },
+              { text: `VÖK · ${formatFinansalDonemKisa(p.donem)}` },
               { text: fmtMr(bu), muted: true as const },
               {
                 text: onceki ? tsbChartYoyLabel(bu, onc) : "Önceki dönem artışı: —",
@@ -250,7 +247,7 @@ export function TsbSektorKarBilesenleriChart({
               fill="#334155"
               fontWeight={active ? 700 : 500}
             >
-              {p.donem}
+              {formatFinansalDonemKisa(p.donem)}
             </text>
           </g>
         );
@@ -436,7 +433,7 @@ export function TsbSektorPrimUretimChart({
               fontWeight={isSecili ? 700 : 500}
               fill={labelFill}
             >
-              {p.donem}
+              {formatPrimYtdAralikKisa(p.donem)}
             </text>
             {isIlk || isSon ? (
               <text
@@ -570,7 +567,7 @@ export function TsbSektorBilançoStackedChart({
               />
             ) : null}
             <text x={cx} y={H - 18} textAnchor="middle" fontSize={10} fill="#334155" fontWeight={active ? 700 : 400}>
-              {p.donem}
+              {formatFinansalDonemKisa(p.donem)}
             </text>
           </g>
         );
@@ -642,10 +639,10 @@ export function TsbSektorBransBuyumeChart({
             y: 8,
             lines: [
               { text: s.anaBransH },
-              { text: `${donem}: ${fmtMr(s.primBu)}`, muted: true as const },
+              { text: `${formatPrimYtdAralikKisa(donem)}: ${fmtMr(s.primBu)}`, muted: true as const },
               {
                 text: oncekiDonem
-                  ? `${oncekiDonem}: ${fmtMr(s.primOnceki)}`
+                  ? `${formatPrimYtdAralikKisa(oncekiDonem)}: ${fmtMr(s.primOnceki)}`
                   : "Önceki yıl: —",
                 muted: true as const,
               },
@@ -682,11 +679,11 @@ export function TsbSektorBransBuyumeChart({
       <g transform={`translate(${chartW - padR - 250}, 16)`}>
         <rect x={0} y={0} width={12} height={8} fill={COLORS.bransBu} rx={1} />
         <text x={16} y={8} fontSize={10} fill="#475569">
-          {donem}
+          {formatPrimYtdAralikKisa(donem)}
         </text>
         <rect x={90} y={0} width={12} height={8} fill={COLORS.bransOnceki} rx={1} />
         <text x={106} y={8} fontSize={10} fill="#475569">
-          {oncekiDonem ?? "önceki yıl"}
+          {oncekiDonem ? formatPrimYtdAralikKisa(oncekiDonem) : "önceki yıl"}
         </text>
       </g>
       {ticks.map((tick, i) => {

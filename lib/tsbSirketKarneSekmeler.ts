@@ -1,5 +1,6 @@
 import { buildTsbDashboardHref, type TsbDashboardUrlPrefs } from "./tsbDashboardDeepLink";
 import type { SegmentSkorPool } from "./tsbSirketSegmentSkor";
+import { formatFinansalDonemKisa } from "./tsbDonemEtiket";
 import { formatPrimYtdAralikKisa } from "./tsbPrimDonemEtiket";
 
 export type TsbSirketKarneSekme = "ozet" | "finansal" | "teknik" | "prim" | "pazar";
@@ -44,11 +45,11 @@ export function karneSekmeAciklamasi(
         : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "ozet")!.description;
     case "finansal":
       return finDonem
-        ? `Çeyrek ${finDonem} · GT ve bilanço KPI önizleme`
+        ? `Çeyrek ${formatFinansalDonemKisa(finDonem)} · GT ve bilanço KPI önizleme`
         : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "finansal")!.description;
     case "teknik":
       return finDonem
-        ? `Çeyrek ${finDonem} · hasar/prim ve teknik sonuç`
+        ? `Çeyrek ${formatFinansalDonemKisa(finDonem)} · hasar/prim ve teknik sonuç`
         : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "teknik")!.description;
     case "prim":
       return ytdKisa
@@ -56,7 +57,7 @@ export function karneSekmeAciklamasi(
         : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "prim")!.description;
     case "pazar":
       return donem
-        ? `${donem} aylık üretim · branş payı ve sıralama`
+        ? `${formatPrimYtdAralikKisa(donem)} aylık üretim · branş payı ve sıralama`
         : TSB_SIRKET_KARNE_SEKMELER.find((t) => t.id === "pazar")!.description;
     default:
       return "";

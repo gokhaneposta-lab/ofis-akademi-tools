@@ -24,6 +24,7 @@ import {
 import { hasarPrimOranlariDetayFromLookup } from "@/lib/tsbHasarPrimOrani";
 import { buildGelirTidyDonemLookup } from "@/lib/tsbSirketSegmentSkor";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
 import {
   applyUrlSirketOrDefault,
   useTsbDashboardUrlPrefs,
@@ -535,7 +536,7 @@ export default function TsbHasarPrimDashboard() {
             <TsbSelect value={donem} onChange={(e) => setDonem(e.target.value)}>
               {[...tumDonemler].reverse().map((d) => (
                 <option key={d} value={d}>
-                  {d}
+                  {formatFinansalDonemKisa(d)}
                 </option>
               ))}
             </TsbSelect>

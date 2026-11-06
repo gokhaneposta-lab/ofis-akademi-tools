@@ -35,7 +35,8 @@ import {
   type FinansalKiyaslamaDonemPaketi,
   type FinansalKiyaslamaSatirTanim,
 } from "@/lib/tsbFinansalKarsilastirmaData";
-import { formatPrimYtdAralikKisa } from "@/lib/tsbPrimDonemEtiket";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
+import { formatPrimYtdAralik, formatPrimYtdAralikKisa } from "@/lib/tsbPrimDonemEtiket";
 import { olcekFinDonemForPrimDonem } from "@/lib/tsbOlcekSegmentCache";
 import { useOlcekSegmentCache } from "@/components/tsb/useOlcekSegmentCache";
 import {
@@ -225,7 +226,7 @@ function FinansalKarneTablo({
                   <>
                     <div>
                       <dt className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
-                        {finDonemOnceki}
+                        {formatFinansalDonemKisa(finDonemOnceki)}
                       </dt>
                       <dd className="mt-0.5 text-sm font-medium tabular-nums text-slate-800">
                         {formatFinansalHucre(onceDeg.sirket, tanim.format)}
@@ -245,7 +246,9 @@ function FinansalKarneTablo({
                   </>
                 ) : null}
                 <div className={finPaketOnceki ? "col-span-2 border-t border-slate-200/80 pt-2" : "col-span-2"}>
-                  <dt className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">{finDonem}</dt>
+                  <dt className="text-[10px] font-bold uppercase tracking-wide text-emerald-700">
+                    {formatFinansalDonemKisa(finDonem)}
+                  </dt>
                   <dd className="mt-0.5 text-base font-bold tabular-nums text-slate-900">
                     {formatFinansalHucre(buDeg.sirket, tanim.format)}
                   </dd>
@@ -263,11 +266,11 @@ function FinansalKarneTablo({
             <thead className={tsb.thead}>
               <tr>
                 <th className={cn(tsb.thSticky, thMobil, "text-left")}>KPI</th>
-                {finPaketOnceki ? (
-                  <th className={cn(tsb.th, "text-right")}>{finDonemOnceki}</th>
+                {finPaketOnceki && finDonemOnceki ? (
+                  <th className={cn(tsb.th, "text-right")}>{formatFinansalDonemKisa(finDonemOnceki)}</th>
                 ) : null}
                 {finPaketOnceki ? <th className={cn(tsb.th, "text-right")}>Δ %</th> : null}
-                <th className={cn(tsb.th, "text-right")}>{finDonem}</th>
+                <th className={cn(tsb.th, "text-right")}>{formatFinansalDonemKisa(finDonem)}</th>
               </tr>
             </thead>
             <tbody>
@@ -681,11 +684,13 @@ export default function TsbSirketKarneOzet({
             hint={
               finDonem ? (
                 <>
-                  Finansal çeyrek: <strong>{finDonem}</strong>
+                  Finansal çeyrek: <strong>{formatFinansalDonemKisa(finDonem)}</strong>
                   {primPaket ? (
                     <>
                       {" "}
-                      · Karşılaştırma: <strong>{donem}</strong> vs <strong>{primPaket.donemOnceki}</strong>
+                      · Karşılaştırma:{" "}
+                      <strong>{formatPrimYtdAralikKisa(donem)}</strong> vs{" "}
+                      <strong>{formatPrimYtdAralikKisa(primPaket.donemOnceki)}</strong>
                     </>
                   ) : null}
                 </>
@@ -697,7 +702,7 @@ export default function TsbSirketKarneOzet({
             <TsbSelect value={donem} onChange={(e) => setDonem(e.target.value)}>
               {[...sortedPrimDonemler].reverse().map((d) => (
                 <option key={d} value={d}>
-                  {d}
+                  {formatPrimYtdAralik(d)}
                 </option>
               ))}
             </TsbSelect>
@@ -728,8 +733,9 @@ export default function TsbSirketKarneOzet({
                 <p className={tsb.heroEyebrow}>{tsbPanelPageTitle("/sigorta/sirket-karne")}</p>
                 <h2 className={tsb.heroTitle}>{secilenAd}</h2>
                 <p className={tsb.heroMeta}>
-                  {SEGMENT_LABEL[segment]} · Prim {donem} vs {primPaket.donemOnceki}
-                  {finDonem ? ` · Fin ${finDonem}` : ""}
+                  {SEGMENT_LABEL[segment]} · Prim {formatPrimYtdAralikKisa(donem)} vs{" "}
+                  {formatPrimYtdAralikKisa(primPaket.donemOnceki)}
+                  {finDonem ? ` · Fin ${formatFinansalDonemKisa(finDonem)}` : ""}
                 </p>
                 {primPaket.portfoySirasi.sira !== null ? (
                   <p className={tsb.heroBadge}>
@@ -755,7 +761,7 @@ export default function TsbSirketKarneOzet({
 
           <KarneSectionFold
             title="Prim tablosu — aylık üretim ve pazar payı"
-            subtitle={`${donem} vs ${primPaket.donemOnceki}`}
+            subtitle={`${formatPrimYtdAralikKisa(donem)} vs ${formatPrimYtdAralikKisa(primPaket.donemOnceki)}`}
           >
             <PrimTablo
               satirlar={primPaket.aylikSatirlar}
@@ -767,7 +773,7 @@ export default function TsbSirketKarneOzet({
 
           <KarneSection
             title="Aylık prim — branş pay dağılımı"
-            subtitle={`${donem} vs ${primPaket.donemOnceki} · branş payları (%)`}
+            subtitle={`${formatPrimYtdAralikKisa(donem)} vs ${formatPrimYtdAralikKisa(primPaket.donemOnceki)} · branş payları (%)`}
           >
             <BransPayBarGrafik
               bu={primPaket.payDilimleriBu}
@@ -780,7 +786,7 @@ export default function TsbSirketKarneOzet({
           {finPaketBu && finDonem ? (
             <KarneSection
               title="Finansal tablo"
-              subtitle={`Çeyrek ${finDonem}${finPaketOnceki ? ` vs ${finDonemOnceki}` : ""}`}
+              subtitle={`Çeyrek ${formatFinansalDonemKisa(finDonem)}${finPaketOnceki && finDonemOnceki ? ` vs ${formatFinansalDonemKisa(finDonemOnceki)}` : ""}`}
             >
               <FinansalKarneTablo
                 finPaketBu={finPaketBu}
@@ -795,7 +801,7 @@ export default function TsbSirketKarneOzet({
 
           <KarneSectionFold
             title="Kanala göre üretim dağılımı"
-            subtitle={`${donem} yıl başından kümülatif · kanal payı · kanalda sektör payı`}
+            subtitle={`${formatPrimYtdAralikKisa(donem)} yıl başından kümülatif · kanal payı · kanalda sektör payı`}
           >
             <KanalTablo
               satirlar={primPaket.kanalSatirlari}

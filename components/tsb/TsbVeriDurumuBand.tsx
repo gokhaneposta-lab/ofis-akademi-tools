@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { cn, tsb } from "@/components/tsb/tsbDashboardUi";
+import { formatFinansalDonemEtiket } from "@/lib/tsbDonemEtiket";
+import { formatPrimYtdAralik } from "@/lib/tsbPrimDonemEtiket";
 import { formatTsbGuncellemeTarihi, type TsbVeriDurumu } from "@/lib/tsbVeriDurumu";
 
 type Props = {
@@ -57,8 +59,8 @@ export default function TsbVeriDurumuBand({ data, compact = false, variant = "de
         aria-label="Veri kapsamı ve dönemler"
       >
         <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-4 lg:gap-4">
-          <BandHucre label="Son prim dönemi" value={data.sonPrimDonem} />
-          <BandHucre label="Son finansal dönem (çeyrek)" value={data.sonFinansalDonem} />
+          <BandHucre label="Son prim dönemi" value={formatPrimYtdAralik(data.sonPrimDonem)} />
+          <BandHucre label="Son finansal dönem (çeyrek)" value={formatFinansalDonemEtiket(data.sonFinansalDonem)} />
           <BandHucre label="Kapsam" value={sirketKapsamMetni(data.sirketSayisiHd, data.sirketSayisiHayatEmeklilik)} />
           <BandHucre label="Son güncelleme" value={formatTsbGuncellemeTarihi(data.guncellemeIso)} />
         </div>
@@ -73,12 +75,12 @@ export default function TsbVeriDurumuBand({ data, compact = false, variant = "de
     >
       <Hucre
         label="Son prim verisi"
-        value={data.sonPrimDonem}
+        value={formatPrimYtdAralik(data.sonPrimDonem)}
         hint={compact ? undefined : "Aylık · TSB prim istatistikleri"}
       />
       <Hucre
         label="Son finansal dönem"
-        value={data.sonFinansalDonem}
+        value={formatFinansalDonemEtiket(data.sonFinansalDonem)}
         hint={compact ? undefined : "Çeyrek · gelir tablosu / bilanço"}
       />
       <Hucre

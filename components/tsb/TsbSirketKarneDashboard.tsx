@@ -51,6 +51,8 @@ import {
   type TsbSirketKarneSekme,
 } from "@/lib/tsbSirketKarneSekmeler";
 import { tsbPanelPageTitle } from "@/lib/tsbDashboardPanels";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
+import { formatPrimYtdAralikKisa } from "@/lib/tsbPrimDonemEtiket";
 
 const SEGMENT_LABEL: Record<TsbSektorSegment, string> = {
   hayatdisi: "Hayat dışı",
@@ -296,7 +298,7 @@ export default function TsbSirketKarneDashboard() {
             hint={
               finDonem ? (
                 <>
-                  Finansal çeyrek: <strong>{finDonem}</strong>
+                  Finansal çeyrek: <strong>{formatFinansalDonemKisa(finDonem)}</strong>
                 </>
               ) : (
                 "Finansal çeyrek eşlemesi yükleniyor…"
@@ -336,8 +338,8 @@ export default function TsbSirketKarneDashboard() {
                 <h2 className={tsb.heroTitle}>{secilenAd}</h2>
                 <p className={tsb.heroMeta}>
                   {SEGMENT_LABEL[segment]} · Kod {sirketKodu}
-                  {donem ? ` · Prim ${donem}` : ""}
-                  {finDonem ? ` · Fin ${finDonem}` : ""}
+                  {donem ? ` · Prim ${formatPrimYtdAralikKisa(donem)}` : ""}
+                  {finDonem ? ` · Fin ${formatFinansalDonemKisa(finDonem)}` : ""}
                 </p>
                 {primPaket?.portfoySirasi.sira !== null && primPaket ? (
                   <p className={tsb.heroBadge}>

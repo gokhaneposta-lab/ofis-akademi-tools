@@ -19,6 +19,7 @@ import {
   type FinansalKiyaslamaDonemPaketi,
 } from "@/lib/tsbFinansalKarsilastirmaData";
 import { fetchGelirTidyDonemIndex, fetchGelirTidyDonemler } from "@/lib/tsbGelirTidyFetch";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
 import {
   applyUrlSirketOrDefault,
   useTsbDashboardUrlPrefs,
@@ -180,7 +181,11 @@ export default function TsbFinansalKarsilastirmaDashboard() {
   if (error) return <TsbError message={error} />;
   if (tumDonemler.length === 0 && !error) return <TsbLoading message="Dönem listesi yükleniyor…" />;
   if (!rows || !donem || sirketKodu === "") {
-    return <TsbLoading message={donem ? `${donem} verisi yükleniyor…` : "Gelir verisi yükleniyor…"} />;
+    return (
+      <TsbLoading
+        message={donem ? `${formatFinansalDonemKisa(donem)} verisi yükleniyor…` : "Gelir verisi yükleniyor…"}
+      />
+    );
   }
 
   const segmentBenchmark = kiyasModu === "olcek";
@@ -212,10 +217,10 @@ export default function TsbFinansalKarsilastirmaDashboard() {
             label="Dönem"
             hint={
               <>
-                Karşılaştırma: <strong>{donem}</strong>{" "}
+                Karşılaştırma: <strong>{formatFinansalDonemKisa(donem)}</strong>{" "}
                 {donemOnceki ? (
                   <>
-                    vs <strong>{donemOnceki}</strong>{" "}
+                    vs <strong>{formatFinansalDonemKisa(donemOnceki)}</strong>{" "}
                     {onceYilVarMi ? "" : "(önceki yıl verisi yok — “—” gösterilir)"}
                   </>
                 ) : null}
@@ -225,7 +230,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
             <TsbSelect id="fk-donem" value={donem} onChange={(e) => setDonem(e.target.value)}>
               {[...tumDonemler].reverse().map((d) => (
                 <option key={d} value={d}>
-                  {d}
+                  {formatFinansalDonemKisa(d)}
                 </option>
               ))}
             </TsbSelect>
@@ -326,7 +331,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                 >
                   Fark
                   <span className="mt-0.5 block text-[9px] font-normal normal-case text-sky-800/80">
-                    vs segment ({donem})
+                    vs segment ({formatFinansalDonemKisa(donem)})
                   </span>
                 </th>
               ) : null}
@@ -340,7 +345,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                       blok === "sirket" ? "bg-emerald-50/40 text-emerald-900" : "bg-slate-100/70 text-slate-800"
                     }`}
                   >
-                    {donem}
+                    {formatFinansalDonemKisa(donem)}
                   </th>
                   <th
                     scope="col"
@@ -348,7 +353,7 @@ export default function TsbFinansalKarsilastirmaDashboard() {
                       blok === "sirket" ? "bg-emerald-50/30 text-emerald-900" : "bg-slate-100/60 text-slate-800"
                     }`}
                   >
-                    {donemOnceki ?? "—"}
+                    {donemOnceki ? formatFinansalDonemKisa(donemOnceki) : "—"}
                   </th>
                   <th
                     scope="col"

@@ -1,6 +1,7 @@
 "use client";
 
 import type { OlcekSegmentSirketKayit } from "@/lib/tsbOlcekSegment";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
 import { SEGMENT_BADGE_CLASS } from "@/components/tsb/TsbOlcekSegmentHubKart";
 import { cn, tsb } from "@/components/tsb/tsbDashboardUi";
 
@@ -56,7 +57,8 @@ export default function TsbOlcekSegmentRozeti({ sirketAdi, kayit, finDonem, yukl
           </p>
           {finDonem ? (
             <p className="mt-0.5 text-[10px] text-slate-500">
-              Sınıflandırma dönemi: <strong className="text-slate-700">{finDonem}</strong> (finansal çeyrek)
+              Sınıflandırma dönemi: <strong className="text-slate-700">{formatFinansalDonemKisa(finDonem)}</strong>{" "}
+              (finansal çeyrek)
             </p>
           ) : null}
         </div>

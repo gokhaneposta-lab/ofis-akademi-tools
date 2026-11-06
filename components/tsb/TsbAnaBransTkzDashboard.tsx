@@ -38,6 +38,7 @@ import type { TsbKiyasModu } from "@/lib/tsbKiyasHedef";
 import type { SegmentSkorPool } from "@/lib/tsbSirketSegmentSkor";
 import { listSirketleriGelirDonemForPool, coerceSegmentSkorPool } from "@/lib/tsbFinansalKarsilastirmaData";
 import type { TsbGelirTidyRowLike } from "@/lib/tsbYatirimGeliriKpi";
+import { formatFinansalDonemKisa } from "@/lib/tsbDonemEtiket";
 
 const POOL_LABELS: Record<SegmentSkorPool, string> = {
   HD: "Hayat dışı (HD)",
@@ -412,7 +413,7 @@ export default function TsbAnaBransTkzDashboard() {
             <TsbSelect id="tkz-ana-donem" value={donem} onChange={(e) => setDonem(e.target.value)}>
               {[...tumDonemler].reverse().map((d) => (
                 <option key={d} value={d}>
-                  {d}
+                  {formatFinansalDonemKisa(d)}
                 </option>
               ))}
             </TsbSelect>
